@@ -1,0 +1,1057 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Evolutionary &amp; swarm algorithms playground</title>
+<style>
+  :root{
+    --paper: #F2F1E9; --paper-line: #DAD8C8; --ink: #1E2A22; --ink-soft: #4A5A4E;
+    --moss: #2F6F4E; --moss-dim: #C7DBCB; --rust: #A6472F; --rust-dim: #EDD6CD;
+    --gold: #B8892B; --card: #FBFAF5; --border: #CFCDBB;
+  }
+  *{ box-sizing: border-box; }
+  body{
+    margin:0; background: var(--paper); color: var(--ink);
+    font-family: -apple-system, "Segoe UI", Helvetica, Arial, sans-serif; line-height: 1.5;
+    background-image: linear-gradient(var(--paper-line) 1px, transparent 1px), linear-gradient(90deg, var(--paper-line) 1px, transparent 1px);
+    background-size: 28px 28px; background-attachment: fixed;
+  }
+  .wrap{ max-width: 1100px; margin: 0 auto; padding: 36px 24px 80px; }
+  header.top{ margin-bottom: 18px; border-bottom: 2px solid var(--ink); padding-bottom: 14px; }
+  .eyebrow{ font-family: "SF Mono", SFMono-Regular, Consolas, monospace; font-size: 12px; letter-spacing: 0.12em; text-transform: uppercase; color: var(--moss); margin: 0 0 6px; }
+  h1{ font-family: Georgia, "Iowan Old Style", "Palatino Linotype", serif; font-weight: 400; font-size: 32px; margin: 0 0 8px; }
+  header.top p{ margin: 0; color: var(--ink-soft); max-width: 700px; font-size: 15px; }
+
+  .tabs{ display: flex; gap: 8px; margin: 20px 0 22px; flex-wrap: wrap; }
+  .tab{ padding: 9px 16px; font-size: 13px; font-weight: 600; border: 1px solid var(--ink); border-radius: 3px; background: var(--card); cursor: pointer; }
+  .tab.active{ background: var(--ink); color: #fff; }
+
+  .section{ display: none; }
+  .section.active{ display: block; }
+
+  .intro{ display:grid; grid-template-columns: 200px 1fr; gap: 20px; align-items:center; background: var(--card); border: 1px solid var(--border); border-radius: 4px; padding: 14px 18px; margin-bottom: 20px; }
+  @media (max-width: 700px){ .intro{ grid-template-columns: 1fr; } }
+  .intro svg{ width: 100%; height: auto; display:block; }
+  .intro .txt h3{ margin: 0 0 6px; font-family: Georgia, serif; font-size: 17px; font-weight: 400; }
+  .intro .txt p{ margin: 0; font-size: 13.5px; color: var(--ink-soft); }
+
+  .layout{ display: grid; grid-template-columns: 300px 1fr; gap: 24px; align-items: start; }
+  @media (max-width: 820px){
+    .layout{ grid-template-columns: 1fr; }
+    .panel{ position: static !important; top: auto !important; }
+  }
+
+  .panel{ background: var(--card); border: 1px solid var(--border); border-radius: 4px; padding: 18px; position: sticky; top: 20px; align-self: start; }
+  .panel h2{ font-family: "SF Mono", SFMono-Regular, Consolas, monospace; font-size: 12px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--ink-soft); margin: 18px 0 12px; border-bottom: 1px solid var(--border); padding-bottom: 6px; }
+  .panel h2:first-child{ margin-top: 0; }
+  .field{ margin-bottom: 14px; }
+  .field label{ display: flex; justify-content: space-between; font-size: 13px; font-weight: 600; margin-bottom: 5px; }
+  .field label span.val{ font-weight: 400; color: var(--moss); font-family: "SF Mono", SFMono-Regular, Consolas, monospace; }
+  .field input[type=range]{ width: 100%; accent-color: var(--moss); }
+  .field input[type=text]{ width: 100%; padding: 7px 8px; font-size: 13px; border: 1px solid var(--border); border-radius: 3px; background: #fff; color: var(--ink); font-family: inherit; }
+  .field select{ width: 100%; padding: 6px 8px; font-size: 13px; border: 1px solid var(--border); border-radius: 3px; background: #fff; font-family: inherit; }
+
+  .btn{ display: inline-block; padding: 8px 14px; font-size: 13px; font-weight: 600; border: 1px solid var(--ink); border-radius: 3px; background: var(--card); color: var(--ink); cursor: pointer; }
+  .btn:hover{ background: var(--paper-line); }
+  .btn.primary{ background: var(--moss); color: #fff; border-color: var(--moss); }
+  .btn.primary:hover{ background: #275c40; }
+  .btn.toggle.active{ background: var(--ink); color: #fff; }
+  .btn.block{ width: 100%; margin-bottom: 8px; }
+  .btngroup{ display:flex; gap:8px; margin-bottom: 16px; }
+  .btngroup .btn{ flex:1; }
+  .row2{ display: flex; gap: 8px; }
+  .row2 > *{ flex: 1; }
+
+  .stats{ display: flex; gap: 12px; margin-bottom: 20px; flex-wrap: wrap; }
+  .stat{ flex: 1; min-width: 130px; background: var(--card); border: 1px solid var(--border); border-radius: 4px; padding: 10px 14px; overflow: hidden; }
+  .stat .label{ font-size: 11px; letter-spacing: 0.08em; text-transform: uppercase; color: var(--ink-soft); font-family: "SF Mono", SFMono-Regular, Consolas, monospace; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .stat .value{ font-size: 20px; font-family: Georgia, serif; line-height: 1.2; word-break: break-word; overflow-wrap: break-word; }
+  .stat.hi .value{ color: var(--moss); }
+  .stat.warn .value{ color: var(--rust); }
+
+  .box{ background: var(--card); border: 1px solid var(--border); border-radius: 4px; padding: 12px 14px; margin-bottom: 20px; }
+  .box h2{ font-family: "SF Mono", SFMono-Regular, Consolas, monospace; font-size: 12px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--ink-soft); margin: 0 0 10px; }
+  canvas.main{ display:block; width: 100%; aspect-ratio: 1/1; border-radius: 3px; }
+  canvas.chart{ display:block; width: 100%; height: 150px; }
+
+  .legend{ display:flex; gap:16px; font-size:12px; color: var(--ink-soft); margin-top:8px; flex-wrap:wrap; }
+  .legend span{ display:inline-flex; align-items:center; gap:5px; }
+  .swatch{ width:10px; height:10px; border-radius:50%; display:inline-block; }
+
+  #gsPop, #gkPop{ display:flex; flex-direction:column; gap:6px; }
+  .indiv{ display: flex; align-items: center; gap: 12px; background: var(--card); border: 1px solid var(--border); border-radius: 4px; padding: 8px 12px; }
+  .indiv.selectable{ cursor: pointer; }
+  .indiv.selected{ border-color: var(--rust); box-shadow: 0 0 0 1px var(--rust); }
+  .genome{ flex: 1; font-family: "SF Mono", SFMono-Regular, Consolas, monospace; font-size: 15px; letter-spacing: 3px; }
+  .genome span{ display: inline-block; width: 16px; text-align: center; color: var(--ink-soft); }
+  .genome span.match{ color: var(--moss); font-weight: 700; }
+  .fitbar-wrap{ width: 90px; height: 8px; background: var(--paper-line); border-radius: 4px; overflow: hidden; }
+  .fitbar{ height: 100%; background: var(--moss); }
+  .fitnum{ font-family: "SF Mono", SFMono-Regular, Consolas, monospace; font-size: 12px; color: var(--ink-soft); min-width: 42px; text-align: right; }
+
+  .items{ display:flex; flex-wrap:wrap; gap:6px; }
+  .item{ display:flex; flex-direction:column; align-items:center; justify-content:center; width:52px; height:52px; border-radius:4px; border:1px solid var(--border); background:#fff; font-family:"SF Mono",monospace; font-size:10px; }
+  .item .w{ color: var(--ink-soft); }
+  .item .v{ font-weight:700; }
+  .bits{ display:flex; gap:2px; }
+  .bit{ width:14px; height:14px; border-radius:2px; border:1px solid var(--border); background:#fff; }
+  .bit.on{ background: var(--moss); border-color: var(--moss); }
+  .invalid .bits .bit.on{ background: var(--rust); border-color: var(--rust); }
+  .weightbar-wrap{ width:90px; height:8px; background:var(--paper-line); border-radius:4px; overflow:hidden; }
+  .weightbar{ height:100%; background: var(--moss); }
+  .invalid .weightbar{ background: var(--rust); }
+  .vnum{ font-family:"SF Mono",monospace; font-size:12px; color:var(--ink-soft); min-width:110px; text-align:right; }
+
+  #gsManualHint, #manualHintShared{ font-size: 13px; color: var(--ink-soft); background: var(--rust-dim); border: 1px solid var(--rust); border-radius: 4px; padding: 10px 14px; margin-bottom: 12px; display:none; }
+  .winMsg{ font-size: 14px; font-weight: 700; color: var(--moss); background: var(--moss-dim); border: 1px solid var(--moss); border-radius: 4px; padding: 10px 14px; display:none; margin-bottom: 16px; }
+
+  footer{ margin-top: 30px; border-top: 1px solid var(--border); padding-top: 14px; font-size: 12px; color: var(--ink-soft); }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<header class="top">
+  <p class="eyebrow">Evolutionary &amp; swarm algorithms</p>
+  <h1>Five ways a computer can search without knowing the answer</h1>
+  <p>Each tab is a different mechanism — breeding, cooling, swarming, or trail-laying — applied to a concrete problem. Tune the parameters on the left of each and watch the population, particle, walker, or colony behave differently.</p>
+</header>
+
+<div class="tabs">
+  <button class="tab active" data-tab="gs">GA · Match a phrase</button>
+  <button class="tab" data-tab="gk">GA · Knapsack</button>
+  <button class="tab" data-tab="pso">Particle Swarm</button>
+  <button class="tab" data-tab="sa">Simulated Annealing</button>
+  <button class="tab" data-tab="aco">Ant Colony · TSP</button>
+</div>
+
+<!-- ============ GA STRING ============ -->
+<div class="section active" id="sec-gs">
+  <div class="intro">
+    <svg viewBox="0 0 200 120" xmlns="http://www.w3.org/2000/svg">
+      <rect x="0" y="0" width="200" height="120" fill="none"/>
+      <g font-family="SF Mono, monospace" font-size="9" fill="#4A5A4E">
+        <text x="10" y="18">generation 0</text>
+      </g>
+      <g>
+        <rect x="10" y="24" width="14" height="14" rx="2" fill="#FBFAF5" stroke="#CFCDBB"/>
+        <rect x="27" y="24" width="14" height="14" rx="2" fill="#EDD6CD" stroke="#A6472F"/>
+        <rect x="44" y="24" width="14" height="14" rx="2" fill="#FBFAF5" stroke="#CFCDBB"/>
+        <rect x="61" y="24" width="14" height="14" rx="2" fill="#C7DBCB" stroke="#2F6F4E"/>
+        <rect x="78" y="24" width="14" height="14" rx="2" fill="#FBFAF5" stroke="#CFCDBB"/>
+        <rect x="95" y="24" width="14" height="14" rx="2" fill="#EDD6CD" stroke="#A6472F"/>
+        <rect x="112" y="24" width="14" height="14" rx="2" fill="#FBFAF5" stroke="#CFCDBB"/>
+      </g>
+      <path d="M100 50 C 60 65, 140 65, 100 80" fill="none" stroke="#1E2A22" stroke-width="1.5" marker-end="url(#arrow1)"/>
+      <defs><marker id="arrow1" markerWidth="6" markerHeight="6" refX="3" refY="3" orient="auto"><path d="M0,0 L6,3 L0,6 z" fill="#1E2A22"/></marker></defs>
+      <g font-family="SF Mono, monospace" font-size="9" fill="#4A5A4E">
+        <text x="10" y="98">generation 40</text>
+      </g>
+      <g>
+        <rect x="10" y="86" width="14" height="14" rx="2" fill="#2F6F4E"/>
+        <rect x="27" y="86" width="14" height="14" rx="2" fill="#2F6F4E"/>
+        <rect x="44" y="86" width="14" height="14" rx="2" fill="#2F6F4E"/>
+        <rect x="61" y="86" width="14" height="14" rx="2" fill="#2F6F4E"/>
+        <rect x="78" y="86" width="14" height="14" rx="2" fill="#2F6F4E"/>
+        <rect x="95" y="86" width="14" height="14" rx="2" fill="#2F6F4E"/>
+        <rect x="112" y="86" width="14" height="14" rx="2" fill="#2F6F4E"/>
+      </g>
+    </svg>
+    <div class="txt">
+      <h3>Match a target phrase</h3>
+      <p>A population of random letter-strings breeds and mutates toward a target phrase. Fitness is simply how many letters are already in the right place — no one is "trying" to spell the word, improvement just falls out of selection plus random variation.</p>
+    </div>
+  </div>
+
+  <div class="layout">
+    <div class="panel">
+      <h2>Setup</h2>
+      <div class="field"><label>Target phrase</label><input id="gsTarget" type="text" value="EVOLVE ME" maxlength="18"></div>
+      <button class="btn block" id="gsApplyTarget">Set target &amp; reset</button>
+
+      <h2>Selection mode</h2>
+      <div class="btngroup">
+        <button class="btn toggle active" id="gsModeAuto">Automatic</button>
+        <button class="btn toggle" id="gsModeManual">Manual</button>
+      </div>
+
+      <h2>Population parameters</h2>
+      <div class="field"><label>Population size <span class="val" id="gsPopSizeOut">10</span></label><input id="gsPopSize" type="range" min="4" max="24" value="10" step="1"></div>
+      <div class="field"><label>Mutation rate <span class="val" id="gsMutOut">5%</span></label><input id="gsMutRate" type="range" min="0" max="50" value="5" step="1"></div>
+      <div class="field"><label>Elitism <span class="val" id="gsEliteOut">1</span></label><input id="gsEliteCount" type="range" min="0" max="5" value="1" step="1"></div>
+
+      <h2>Genetic operators</h2>
+      <div class="field"><label>Crossover method</label>
+        <select id="gsCrossType"><option value="single">Single-point</option><option value="two">Two-point</option><option value="uniform">Uniform</option></select>
+      </div>
+      <div class="field" id="gsAutoOnlyParams"><label>Parent selection</label>
+        <select id="gsSelectType"><option value="top">Top half only</option><option value="tournament">Tournament</option><option value="roulette">Roulette wheel</option></select>
+      </div>
+      <div class="field" id="gsTournamentField"><label>Tournament size <span class="val" id="gsTourOut">3</span></label><input id="gsTourSize" type="range" min="2" max="8" value="3" step="1"></div>
+
+      <h2>Playback</h2>
+      <div class="field" id="gsSpeedField"><label>Speed <span class="val" id="gsSpeedOut">400ms</span></label><input id="gsSpeed" type="range" min="80" max="1000" value="400" step="20"></div>
+      <div id="gsAutoControls">
+        <div class="row2" style="margin-bottom:8px;">
+          <button class="btn" id="gsStepBtn">Step</button>
+          <button class="btn primary" id="gsPlayBtn">Play</button>
+        </div>
+      </div>
+      <div id="gsManualControls" style="display:none;">
+        <button class="btn primary block" id="gsBreedBtn">Breed selected pair</button>
+      </div>
+      <button class="btn block" id="gsResetBtn">Reset population</button>
+    </div>
+
+    <div>
+      <div class="winMsg" id="gsWinMsg">Target reached — this population converged.</div>
+      <div class="stats">
+        <div class="stat"><div class="label">Generation</div><div class="value" id="gsGenOut">0</div></div>
+        <div class="stat hi"><div class="label">Best fitness</div><div class="value" id="gsFitOut">0/0</div></div>
+        <div class="stat"><div class="label">Average fitness</div><div class="value" id="gsAvgOut">0.0</div></div>
+      </div>
+      <div class="box"><h2>Fitness over generations</h2><canvas class="chart" id="gsChart"></canvas></div>
+      <div id="gsManualHint">Click two individuals below to select them as parents, then press "Breed selected pair." Their children replace the two weakest individuals.</div>
+      <div id="gsPop"></div>
+    </div>
+  </div>
+</div>
+
+<!-- ============ GA KNAPSACK ============ -->
+<div class="section" id="sec-gk">
+  <div class="intro">
+    <svg viewBox="0 0 200 120" xmlns="http://www.w3.org/2000/svg">
+      <path d="M65 45 q0 -18 20 -18 q20 0 20 18 v12 h-40 z" fill="none" stroke="#1E2A22" stroke-width="2"/>
+      <rect x="55" y="55" width="70" height="55" rx="8" fill="#FBFAF5" stroke="#1E2A22" stroke-width="2"/>
+      <rect x="80" y="55" width="20" height="14" fill="#FBFAF5" stroke="#1E2A22" stroke-width="1.5"/>
+      <rect x="65" y="70" width="16" height="16" rx="2" fill="#2F6F4E"/>
+      <rect x="85" y="72" width="14" height="14" rx="2" fill="#2F6F4E"/>
+      <rect x="102" y="68" width="16" height="18" rx="2" fill="#C7DBCB" stroke="#2F6F4E"/>
+      <rect x="130" y="66" width="15" height="15" rx="2" fill="#EDD6CD" stroke="#A6472F"/>
+      <rect x="150" y="80" width="13" height="13" rx="2" fill="#EDD6CD" stroke="#A6472F"/>
+      <text x="128" y="102" font-family="SF Mono, monospace" font-size="9" fill="#A6472F">left out</text>
+      <text x="65" y="102" font-family="SF Mono, monospace" font-size="9" fill="#2F6F4E">packed</text>
+    </svg>
+    <div class="txt">
+      <h3>Pack the most value under a weight limit</h3>
+      <p>Each individual is a bitstring — one bit per item, 1 meaning "pack it." Total weight over capacity scores zero, so the population first has to find valid packings before it can improve them. An exact solver checks how close the GA gets to the true optimum.</p>
+    </div>
+  </div>
+
+  <div class="layout">
+    <div class="panel">
+      <h2>Problem</h2>
+      <div class="field"><label>Number of items <span class="val" id="gkNumItemsOut">12</span></label><input id="gkNumItems" type="range" min="6" max="20" value="12" step="1"></div>
+      <div class="field"><label>Capacity (% of total weight) <span class="val" id="gkCapOut">50%</span></label><input id="gkCapPct" type="range" min="20" max="80" value="50" step="5"></div>
+      <button class="btn block" id="gkNewItems">New random items</button>
+
+      <h2>Population</h2>
+      <div class="field"><label>Population size <span class="val" id="gkPopSizeOut">16</span></label><input id="gkPopSize" type="range" min="6" max="40" value="16" step="1"></div>
+      <div class="field"><label>Mutation rate <span class="val" id="gkMutOut">5%</span></label><input id="gkMutRate" type="range" min="0" max="40" value="5" step="1"></div>
+      <div class="field"><label>Elitism <span class="val" id="gkEliteOut">1</span></label><input id="gkEliteCount" type="range" min="0" max="5" value="1" step="1"></div>
+
+      <h2>Genetic operators</h2>
+      <div class="field"><label>Crossover method</label>
+        <select id="gkCrossType"><option value="single">Single-point</option><option value="two">Two-point</option><option value="uniform">Uniform</option></select>
+      </div>
+      <div class="field"><label>Parent selection</label>
+        <select id="gkSelectType"><option value="top">Top half only</option><option value="tournament">Tournament</option><option value="roulette">Roulette wheel</option></select>
+      </div>
+      <div class="field" id="gkTournamentField"><label>Tournament size <span class="val" id="gkTourOut">3</span></label><input id="gkTourSize" type="range" min="2" max="8" value="3" step="1"></div>
+
+      <h2>Playback</h2>
+      <div class="field"><label>Speed <span class="val" id="gkSpeedOut">300ms</span></label><input id="gkSpeed" type="range" min="60" max="1000" value="300" step="20"></div>
+      <div class="row2" style="margin-bottom:8px;">
+        <button class="btn" id="gkStepBtn">Step</button>
+        <button class="btn primary" id="gkPlayBtn">Play</button>
+      </div>
+      <button class="btn block" id="gkResetBtn">Reset population</button>
+    </div>
+
+    <div>
+      <div class="winMsg" id="gkWinMsg">The population found a provably optimal packing.</div>
+      <div class="stats">
+        <div class="stat"><div class="label">Generation</div><div class="value" id="gkGenOut">0</div></div>
+        <div class="stat hi"><div class="label">Best value found</div><div class="value" id="gkBestOut">0</div></div>
+        <div class="stat"><div class="label">Optimal (exact)</div><div class="value" id="gkOptOut">–</div></div>
+        <div class="stat warn"><div class="label">Gap to optimal</div><div class="value" id="gkGapOut">–</div></div>
+      </div>
+      <div class="box"><h2>Items in this problem (weight / value)</h2><div class="items" id="gkItemsDisplay"></div></div>
+      <div class="box"><h2>Best value vs. optimal, over generations</h2><canvas class="chart" id="gkChart"></canvas></div>
+      <div class="box"><h2>Population (green = valid packing, red = over capacity)</h2><div id="gkPop"></div></div>
+    </div>
+  </div>
+</div>
+
+<!-- ============ PSO ============ -->
+<div class="section" id="sec-pso">
+  <div class="intro">
+    <svg viewBox="0 0 200 120" xmlns="http://www.w3.org/2000/svg">
+      <path d="M100 60 l-3 -6" stroke="#B8892B" stroke-width="0" fill="none"/>
+      <path d="M30 25 Q 60 45 92 58" fill="none" stroke="#4A5A4E" stroke-width="1" stroke-dasharray="2,2"/>
+      <path d="M170 30 Q 140 48 108 58" fill="none" stroke="#4A5A4E" stroke-width="1" stroke-dasharray="2,2"/>
+      <path d="M40 100 Q 65 75 96 62" fill="none" stroke="#4A5A4E" stroke-width="1" stroke-dasharray="2,2"/>
+      <path d="M160 95 Q 135 78 104 63" fill="none" stroke="#4A5A4E" stroke-width="1" stroke-dasharray="2,2"/>
+      <circle cx="30" cy="25" r="5" fill="#A6472F"/>
+      <circle cx="170" cy="30" r="5" fill="#A6472F"/>
+      <circle cx="40" cy="100" r="5" fill="#A6472F"/>
+      <circle cx="160" cy="95" r="5" fill="#A6472F"/>
+      <circle cx="100" cy="60" r="8" fill="#B8892B" stroke="#1E2A22" stroke-width="1.5"/>
+    </svg>
+    <div class="txt">
+      <h3>A swarm hunting for the lowest point</h3>
+      <p>Particles fly over a 2D landscape, each pulled toward its own best-ever spot and the swarm's best-ever spot. No individual particle is smart — the pull toward shared information is what makes the group converge.</p>
+    </div>
+  </div>
+
+  <div class="layout">
+    <div class="panel">
+      <h2>Landscape</h2>
+      <div class="field"><label>Function to minimize</label>
+        <select id="psoLandscape"><option value="sphere">Single valley (sphere)</option><option value="himmelblau" selected>Four valleys (Himmelblau)</option><option value="rastrigin">Many ripples (Rastrigin)</option></select>
+      </div>
+      <h2>Swarm parameters</h2>
+      <div class="field"><label>Swarm size <span class="val" id="psoSizeOut">24</span></label><input id="psoSize" type="range" min="4" max="60" value="24" step="1"></div>
+      <div class="field"><label>Inertia (w) <span class="val" id="psoWOut">0.70</span></label><input id="psoW" type="range" min="0" max="120" value="70" step="1"></div>
+      <div class="field"><label>Cognitive pull (c1) <span class="val" id="psoC1Out">1.5</span></label><input id="psoC1" type="range" min="0" max="300" value="150" step="5"></div>
+      <div class="field"><label>Social pull (c2) <span class="val" id="psoC2Out">1.5</span></label><input id="psoC2" type="range" min="0" max="300" value="150" step="5"></div>
+      <div class="field"><label>Max speed <span class="val" id="psoVMaxOut">1.0</span></label><input id="psoVMax" type="range" min="10" max="400" value="100" step="5"></div>
+      <h2>Playback</h2>
+      <div class="field"><label>Speed <span class="val" id="psoSpeedOut">150ms</span></label><input id="psoSpeed" type="range" min="30" max="600" value="150" step="10"></div>
+      <div class="row2" style="margin-bottom:8px;"><button class="btn" id="psoStep">Step</button><button class="btn primary" id="psoPlay">Play</button></div>
+      <button class="btn block" id="psoReset">Reset swarm</button>
+    </div>
+    <div>
+      <div class="stats">
+        <div class="stat"><div class="label">Iteration</div><div class="value" id="psoIterOut">0</div></div>
+        <div class="stat hi"><div class="label">Best value found</div><div class="value" id="psoBestOut">–</div></div>
+      </div>
+      <div class="box"><h2>Search space</h2><canvas class="main" id="psoCanvas"></canvas>
+        <div class="legend"><span><i class="swatch" style="background:#A6472F"></i>particle</span><span><i class="swatch" style="background:#B8892B"></i>swarm best</span></div>
+      </div>
+      <div class="box"><h2>Best value vs. iteration</h2><canvas class="chart" id="psoChart"></canvas></div>
+    </div>
+  </div>
+</div>
+
+<!-- ============ SA ============ -->
+<div class="section" id="sec-sa">
+  <div class="intro">
+    <svg viewBox="0 0 200 120" xmlns="http://www.w3.org/2000/svg">
+      <path d="M10 90 Q 40 40 70 75 T 130 60 T 190 85" fill="none" stroke="#1E2A22" stroke-width="2"/>
+      <circle cx="72" cy="72" r="6" fill="#A6472F"/>
+      <rect x="165" y="20" width="10" height="55" rx="5" fill="none" stroke="#1E2A22" stroke-width="1.5"/>
+      <circle cx="170" cy="82" r="8" fill="#A6472F"/>
+      <rect x="167" y="55" width="6" height="22" fill="#A6472F"/>
+      <rect x="167" y="26" width="6" height="24" fill="#C7DBCB"/>
+      <text x="150" y="18" font-family="SF Mono, monospace" font-size="8" fill="#4A5A4E">hot → cool</text>
+    </svg>
+    <div class="txt">
+      <h3>One wanderer, gradually calming down</h3>
+      <p>A single solution takes random steps. Early on, with a high "temperature," it will accept moves that make things worse, letting it escape bad valleys. As it cools, it only accepts improvements — settling wherever it happens to be.</p>
+    </div>
+  </div>
+
+  <div class="layout">
+    <div class="panel">
+      <h2>Landscape</h2>
+      <div class="field"><label>Function to minimize</label>
+        <select id="saLandscape"><option value="sphere">Single valley (sphere)</option><option value="himmelblau" selected>Four valleys (Himmelblau)</option><option value="rastrigin">Many ripples (Rastrigin)</option></select>
+      </div>
+      <h2>Annealing schedule</h2>
+      <div class="field"><label>Initial temperature <span class="val" id="saTempOut">50.0</span></label><input id="saTemp" type="range" min="1" max="200" value="50" step="1"></div>
+      <div class="field"><label>Cooling rate <span class="val" id="saCoolOut">0.970</span></label><input id="saCool" type="range" min="850" max="999" value="970" step="1"></div>
+      <div class="field"><label>Step size <span class="val" id="saStepOut">0.8</span></label><input id="saStep" type="range" min="5" max="300" value="80" step="5"></div>
+      <h2>Playback</h2>
+      <div class="field"><label>Speed <span class="val" id="saSpeedOut">100ms</span></label><input id="saSpeed" type="range" min="20" max="500" value="100" step="10"></div>
+      <div class="row2" style="margin-bottom:8px;"><button class="btn" id="saStepBtn">Step</button><button class="btn primary" id="saPlay">Play</button></div>
+      <button class="btn block" id="saReset">Reset walker</button>
+    </div>
+    <div>
+      <div class="stats">
+        <div class="stat"><div class="label">Iteration</div><div class="value" id="saIterOut">0</div></div>
+        <div class="stat"><div class="label">Temperature</div><div class="value" id="saTOut">–</div></div>
+        <div class="stat hi"><div class="label">Best value found</div><div class="value" id="saBestOut">–</div></div>
+      </div>
+      <div class="box"><h2>Search space</h2><canvas class="main" id="saCanvas"></canvas>
+        <div class="legend"><span><i class="swatch" style="background:#A6472F"></i>current position</span><span><i class="swatch" style="background:#B8892B"></i>best found</span></div>
+      </div>
+      <div class="box"><h2>Value &amp; temperature vs. iteration</h2><canvas class="chart" id="saChart"></canvas>
+        <div class="legend"><span><i class="swatch" style="background:#A6472F"></i>current value</span><span><i class="swatch" style="background:#2F6F4E"></i>best value</span></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ============ ACO ============ -->
+<div class="section" id="sec-aco">
+  <div class="intro">
+    <svg viewBox="0 0 200 120" xmlns="http://www.w3.org/2000/svg">
+      <line x1="25" y1="90" x2="90" y2="25" stroke="#C7DBCB" stroke-width="5"/>
+      <line x1="90" y1="25" x2="160" y2="45" stroke="#2F6F4E" stroke-width="3"/>
+      <line x1="160" y1="45" x2="175" y2="95" stroke="#C7DBCB" stroke-width="4"/>
+      <line x1="175" y1="95" x2="25" y2="90" stroke="#2F6F4E" stroke-width="3"/>
+      <line x1="25" y1="90" x2="160" y2="45" stroke="#C7DBCB" stroke-width="2"/>
+      <circle cx="25" cy="90" r="6" fill="#1E2A22"/>
+      <circle cx="90" cy="25" r="6" fill="#1E2A22"/>
+      <circle cx="160" cy="45" r="6" fill="#1E2A22"/>
+      <circle cx="175" cy="95" r="6" fill="#1E2A22"/>
+      <ellipse cx="60" cy="58" rx="4" ry="2.5" fill="#A6472F"/>
+      <ellipse cx="130" cy="35" rx="4" ry="2.5" fill="#A6472F"/>
+    </svg>
+    <div class="txt">
+      <h3>A colony leaving trails for each other</h3>
+      <p>Ants build tours between cities, preferring paths with more pheromone. Every ant deposits pheromone along its route; trails evaporate over time, so busy, well-used shortcuts get reinforced while rarely-used ones fade.</p>
+    </div>
+  </div>
+
+  <div class="layout">
+    <div class="panel">
+      <h2>Cities</h2>
+      <div class="field"><label>Number of cities <span class="val" id="acoCitiesOut">16</span></label><input id="acoCities" type="range" min="6" max="30" value="16" step="1"></div>
+      <button class="btn block" id="acoNewCities">New random cities</button>
+      <h2>Colony parameters</h2>
+      <div class="field"><label>Number of ants <span class="val" id="acoAntsOut">20</span></label><input id="acoAnts" type="range" min="4" max="60" value="20" step="1"></div>
+      <div class="field"><label>Pheromone weight (α) <span class="val" id="acoAlphaOut">1.0</span></label><input id="acoAlpha" type="range" min="0" max="500" value="100" step="10"></div>
+      <div class="field"><label>Distance weight (β) <span class="val" id="acoBetaOut">3.0</span></label><input id="acoBeta" type="range" min="0" max="800" value="300" step="10"></div>
+      <div class="field"><label>Evaporation rate <span class="val" id="acoEvapOut">0.30</span></label><input id="acoEvap" type="range" min="1" max="90" value="30" step="1"></div>
+      <div class="field"><label>Deposit amount (Q) <span class="val" id="acoQOut">100</span></label><input id="acoQ" type="range" min="10" max="500" value="100" step="10"></div>
+      <h2>Playback</h2>
+      <div class="field"><label>Speed <span class="val" id="acoSpeedOut">200ms</span></label><input id="acoSpeed" type="range" min="30" max="800" value="200" step="10"></div>
+      <div class="row2" style="margin-bottom:8px;"><button class="btn" id="acoStepBtn">Step</button><button class="btn primary" id="acoPlay">Play</button></div>
+      <button class="btn block" id="acoReset">Reset pheromones</button>
+    </div>
+    <div>
+      <div class="stats">
+        <div class="stat"><div class="label">Iteration</div><div class="value" id="acoIterOut">0</div></div>
+        <div class="stat hi"><div class="label">Shortest tour found</div><div class="value" id="acoBestOut">–</div></div>
+      </div>
+      <div class="box"><h2>Cities &amp; pheromone trails</h2><canvas class="main" id="acoCanvas"></canvas>
+        <div class="legend"><span><i class="swatch" style="background:#1E2A22"></i>city</span><span><i class="swatch" style="background:#C7DBCB"></i>pheromone trail</span><span><i class="swatch" style="background:#2F6F4E"></i>best tour</span></div>
+      </div>
+      <div class="box"><h2>Shortest tour length vs. iteration</h2><canvas class="chart" id="acoChart"></canvas></div>
+    </div>
+  </div>
+</div>
+
+<footer>Every parameter updates the next step live. Switching tabs pauses whichever simulation you're leaving; each keeps its own state so you can come back to it.</footer>
+
+</div>
+
+<script>
+(function(){
+  const $ = id => document.getElementById(id);
+
+  // ---------- shared canvas / chart helpers ----------
+  function sizeCanvas(canvas){
+    const w = canvas.clientWidth, h = canvas.clientHeight;
+    if(canvas.width !== w*devicePixelRatio || canvas.height !== h*devicePixelRatio){
+      canvas.width = w*devicePixelRatio; canvas.height = h*devicePixelRatio;
+    }
+    const ctx = canvas.getContext('2d');
+    ctx.setTransform(devicePixelRatio,0,0,devicePixelRatio,0,0);
+    return {ctx, w, h};
+  }
+
+  function drawLineChart(canvas, series, historyArr, forcedMax){
+    const {ctx,w,h} = sizeCanvas(canvas);
+    ctx.clearRect(0,0,w,h);
+    const padL=34, padB=16, padT=8, padR=8;
+    const plotW=w-padL-padR, plotH=h-padT-padB;
+    let maxV = forcedMax || 0, minV = Infinity;
+    historyArr.forEach(pt=>{ series.forEach(s=>{ if(pt[s.key]>maxV) maxV=pt[s.key]; if(pt[s.key]<minV) minV=pt[s.key]; }); });
+    if(!isFinite(minV)) minV=0;
+    if(maxV===minV) maxV=minV+1;
+    const range = maxV-minV;
+    ctx.strokeStyle = '#CFCDBB'; ctx.fillStyle='#4A5A4E'; ctx.font='10px monospace'; ctx.lineWidth=1;
+    for(let i=0;i<=4;i++){
+      const v = minV + (range*i/4);
+      const y = padT + plotH - (i/4)*plotH;
+      ctx.beginPath(); ctx.moveTo(padL,y); ctx.lineTo(w-padR,y); ctx.stroke();
+      ctx.fillText(v.toFixed(1), 2, y+3);
+    }
+    if(historyArr.length<2) return {padL,padT,plotW,plotH,minV,range};
+    const n = historyArr.length;
+    const xStep = plotW/Math.max(1,n-1);
+    series.forEach(s=>{
+      ctx.strokeStyle = s.color; ctx.lineWidth=2; ctx.beginPath();
+      historyArr.forEach((pt,i)=>{
+        const x = padL+i*xStep;
+        const y = padT + plotH - ((pt[s.key]-minV)/range)*plotH;
+        if(i===0) ctx.moveTo(x,y); else ctx.lineTo(x,y);
+      });
+      ctx.stroke();
+    });
+    return {padL,padT,plotW,plotH,minV,range};
+  }
+
+  // ================= GA · STRING MATCH =================
+  const gs = { LETTERS:"ABCDEFGHIJKLMNOPQRSTUVWXYZ ", target:"EVOLVE ME", population:[], generation:0, mode:'auto', playing:false, timer:null, selected:[], history:[] };
+  function gsRandChar(){ return gs.LETTERS[Math.floor(Math.random()*gs.LETTERS.length)]; }
+  function gsRandString(len){ let s=""; for(let i=0;i<len;i++) s+=gsRandChar(); return s; }
+  function gsFitness(s){ let f=0; for(let i=0;i<gs.target.length;i++) if(s[i]===gs.target[i]) f++; return f; }
+  function gsPopSize(){ return parseInt($('gsPopSize').value,10); }
+  function gsMutRate(){ return parseInt($('gsMutRate').value,10)/100; }
+  function gsEliteCount(){ return parseInt($('gsEliteCount').value,10); }
+  function gsCrossType(){ return $('gsCrossType').value; }
+  function gsSelectType(){ return $('gsSelectType').value; }
+  function gsTourSize(){ return parseInt($('gsTourSize').value,10); }
+
+  function gsInitPop(){
+    const n = gsPopSize();
+    gs.population = [];
+    for(let i=0;i<n;i++) gs.population.push(gsRandString(gs.target.length));
+    gs.generation = 0; gs.selected = [];
+    gs.history = [{gen:0, best: Math.max(...gs.population.map(gsFitness)), avg: gsAvgFitness()}];
+    $('gsWinMsg').style.display='none';
+    gsStopPlay();
+  }
+  function gsAvgFitness(){ return gs.population.reduce((s,x)=>s+gsFitness(x),0)/gs.population.length; }
+  function gsMutate(s){
+    const r = gsMutRate(); let arr = s.split('');
+    for(let i=0;i<arr.length;i++) if(Math.random()<r) arr[i]=gsRandChar();
+    return arr.join('');
+  }
+  function gsCrossover(a,b){
+    const type = gsCrossType(); let child;
+    if(type==='single'){ const p=Math.floor(Math.random()*a.length); child=a.slice(0,p)+b.slice(p); }
+    else if(type==='two'){ let p1=Math.floor(Math.random()*a.length), p2=Math.floor(Math.random()*a.length); if(p1>p2)[p1,p2]=[p2,p1]; child=a.slice(0,p1)+b.slice(p1,p2)+a.slice(p2); }
+    else { let arr=[]; for(let i=0;i<a.length;i++) arr.push(Math.random()<0.5?a[i]:b[i]); child=arr.join(''); }
+    return gsMutate(child);
+  }
+  function gsPickParent(ranked, pool){
+    const type = gsSelectType();
+    if(type==='top') return pool[Math.floor(Math.random()*pool.length)].s;
+    if(type==='tournament'){
+      const k = gsTourSize(); let best=null;
+      for(let i=0;i<k;i++){ const c=ranked[Math.floor(Math.random()*ranked.length)]; if(best===null||c.f>best.f) best=c; }
+      return best.s;
+    }
+    const total = ranked.reduce((s,r)=>s+r.f+1,0); let r=Math.random()*total;
+    for(const it of ranked){ r-=(it.f+1); if(r<=0) return it.s; }
+    return ranked[ranked.length-1].s;
+  }
+  function gsStepAuto(){
+    const ranked = gs.population.map(s=>({s,f:gsFitness(s)})).sort((a,b)=>b.f-a.f);
+    const poolSize = Math.max(2, Math.floor(ranked.length/2));
+    const pool = ranked.slice(0,poolSize);
+    const elite = ranked.slice(0, gsEliteCount()).map(r=>r.s);
+    const next = elite.slice();
+    while(next.length < gs.population.length){
+      const p1 = gsPickParent(ranked,pool), p2 = gsPickParent(ranked,pool);
+      next.push(gsCrossover(p1,p2));
+    }
+    gs.population = next; gs.generation++;
+    gs.history.push({gen:gs.generation, best:Math.max(...gs.population.map(gsFitness)), avg:gsAvgFitness()});
+    gsRender();
+  }
+  function gsBreedManual(){
+    if(gs.selected.length!==2) return;
+    const p1=gs.population[gs.selected[0]], p2=gs.population[gs.selected[1]];
+    const c1=gsCrossover(p1,p2), c2=gsCrossover(p2,p1);
+    const byF = gs.population.map((s,i)=>({s,i,f:gsFitness(s)})).sort((a,b)=>a.f-b.f);
+    gs.population[byF[0].i]=c1; gs.population[byF[1].i]=c2;
+    gs.generation++; gs.selected=[];
+    gs.history.push({gen:gs.generation, best:Math.max(...gs.population.map(gsFitness)), avg:gsAvgFitness()});
+    gsRender();
+  }
+  function gsStopPlay(){ gs.playing=false; $('gsPlayBtn').textContent='Play'; if(gs.timer) clearInterval(gs.timer); gs.timer=null; }
+  function gsRender(){
+    $('gsGenOut').textContent = gs.generation;
+    const best = Math.max(...gs.population.map(gsFitness));
+    $('gsFitOut').textContent = best+" / "+gs.target.length;
+    $('gsAvgOut').textContent = gsAvgFitness().toFixed(1);
+    const popDiv = $('gsPop'); popDiv.innerHTML="";
+    gs.population.forEach((s,i)=>{
+      const f = gsFitness(s);
+      const row = document.createElement('div');
+      row.className = 'indiv'+(gs.mode==='manual'?' selectable':'')+(gs.selected.includes(i)?' selected':'');
+      let letters="";
+      for(let j=0;j<s.length;j++){ const m=s[j]===gs.target[j]; letters += "<span class='"+(m?'match':'')+"'>"+(s[j]===' '?'·':s[j])+"</span>"; }
+      const pct = Math.round((f/gs.target.length)*100);
+      row.innerHTML = "<div class='genome'>"+letters+"</div><div class='fitbar-wrap'><div class='fitbar' style='width:"+pct+"%;'></div></div><div class='fitnum'>"+f+"/"+gs.target.length+"</div>";
+      if(gs.mode==='manual'){
+        row.addEventListener('click', ()=>{
+          if(gs.selected.includes(i)) gs.selected = gs.selected.filter(x=>x!==i);
+          else if(gs.selected.length<2) gs.selected.push(i);
+          else gs.selected=[i];
+          gsRender();
+        });
+      }
+      popDiv.appendChild(row);
+    });
+    drawLineChart($('gsChart'), [{key:'avg',color:'#A6472F'},{key:'best',color:'#2F6F4E'}], gs.history, gs.target.length);
+    if(best === gs.target.length){ $('gsWinMsg').style.display='block'; gsStopPlay(); }
+  }
+
+  $('gsApplyTarget').addEventListener('click', ()=>{
+    const v = $('gsTarget').value.toUpperCase().replace(/[^A-Z ]/g,'');
+    if(v.length>0){ gs.target=v; gsInitPop(); gsRender(); }
+  });
+  $('gsPopSize').addEventListener('input', e=>{ $('gsPopSizeOut').textContent=e.target.value; });
+  $('gsPopSize').addEventListener('change', ()=>{ gsInitPop(); gsRender(); });
+  $('gsMutRate').addEventListener('input', e=>{ $('gsMutOut').textContent=e.target.value+'%'; });
+  $('gsEliteCount').addEventListener('input', e=>{ $('gsEliteOut').textContent=e.target.value; });
+  $('gsTourSize').addEventListener('input', e=>{ $('gsTourOut').textContent=e.target.value; });
+  $('gsSpeed').addEventListener('input', e=>{ $('gsSpeedOut').textContent=e.target.value+'ms'; if(gs.playing){ gsStopPlay(); $('gsPlayBtn').click(); } });
+  $('gsSelectType').addEventListener('change', ()=>{ $('gsTournamentField').style.display = $('gsSelectType').value==='tournament'?'block':'none'; });
+  $('gsStepBtn').addEventListener('click', gsStepAuto);
+  $('gsPlayBtn').addEventListener('click', ()=>{
+    if(gs.playing){ gsStopPlay(); return; }
+    gs.playing=true; $('gsPlayBtn').textContent='Pause';
+    gs.timer = setInterval(gsStepAuto, parseInt($('gsSpeed').value,10));
+  });
+  $('gsBreedBtn').addEventListener('click', gsBreedManual);
+  $('gsResetBtn').addEventListener('click', ()=>{ gsInitPop(); gsRender(); });
+  $('gsModeAuto').addEventListener('click', ()=>{
+    gs.mode='auto'; gs.selected=[];
+    $('gsModeAuto').classList.add('active'); $('gsModeManual').classList.remove('active');
+    $('gsAutoControls').style.display='block'; $('gsManualControls').style.display='none';
+    $('gsManualHint').style.display='none'; $('gsAutoOnlyParams').style.display='block'; $('gsSpeedField').style.display='block';
+    gsRender();
+  });
+  $('gsModeManual').addEventListener('click', ()=>{
+    gsStopPlay(); gs.mode='manual'; gs.selected=[];
+    $('gsModeManual').classList.add('active'); $('gsModeAuto').classList.remove('active');
+    $('gsAutoControls').style.display='none'; $('gsManualControls').style.display='block';
+    $('gsManualHint').style.display='block'; $('gsAutoOnlyParams').style.display='none'; $('gsSpeedField').style.display='none';
+    gsRender();
+  });
+
+  // ================= GA · KNAPSACK =================
+  const gk = { items:[], capacity:0, optimalValue:0, population:[], generation:0, history:[], playing:false, timer:null };
+  function gkNumItems(){ return parseInt($('gkNumItems').value,10); }
+  function gkCapPct(){ return parseInt($('gkCapPct').value,10)/100; }
+  function gkPopSize(){ return parseInt($('gkPopSize').value,10); }
+  function gkMutRate(){ return parseInt($('gkMutRate').value,10)/100; }
+  function gkEliteCount(){ return parseInt($('gkEliteCount').value,10); }
+  function gkCrossType(){ return $('gkCrossType').value; }
+  function gkSelectType(){ return $('gkSelectType').value; }
+  function gkTourSize(){ return parseInt($('gkTourSize').value,10); }
+  function gkRandItem(){ return { w: 1+Math.floor(Math.random()*20), v: 5+Math.floor(Math.random()*45) }; }
+  function gkGenerateItems(){
+    const n = gkNumItems(); gk.items = [];
+    for(let i=0;i<n;i++) gk.items.push(gkRandItem());
+    const totalW = gk.items.reduce((s,it)=>s+it.w,0);
+    gk.capacity = Math.max(1, Math.round(totalW*gkCapPct()));
+    gk.optimalValue = gkSolveDP();
+    gkRenderItemsDisplay();
+  }
+  function gkSolveDP(){
+    const n = gk.items.length;
+    const dp = new Array(gk.capacity+1).fill(0);
+    for(let i=0;i<n;i++) for(let c=gk.capacity;c>=gk.items[i].w;c--) dp[c]=Math.max(dp[c], dp[c-gk.items[i].w]+gk.items[i].v);
+    return dp[gk.capacity];
+  }
+  function gkRandGenome(){ const n=gkNumItems(); const g=[]; for(let i=0;i<n;i++) g.push(Math.random()<0.3?1:0); return g; }
+  function gkEval(g){
+    let w=0,v=0;
+    for(let i=0;i<g.length;i++) if(g[i]){ w+=gk.items[i].w; v+=gk.items[i].v; }
+    return { w, v, valid: w<=gk.capacity, fitness: (w<=gk.capacity ? v : 0) };
+  }
+  function gkInitPop(){
+    const n = gkPopSize(); gk.population=[];
+    for(let i=0;i<n;i++) gk.population.push(gkRandGenome());
+    gk.generation = 0;
+    const bestNow = Math.max(...gk.population.map(g=>gkEval(g).fitness));
+    gk.history = [{gen:0, best:bestNow, avg:gkAvg(), opt:gk.optimalValue}];
+    $('gkWinMsg').style.display='none';
+    gkStopPlay();
+  }
+  function gkAvg(){ return gk.population.reduce((s,g)=>s+gkEval(g).fitness,0)/gk.population.length; }
+  function gkMutate(g){ const r=gkMutRate(); return g.map(bit=> Math.random()<r?1-bit:bit); }
+  function gkCrossover(a,b){
+    const type = gkCrossType(); let child;
+    if(type==='single'){ const p=Math.floor(Math.random()*a.length); child=a.slice(0,p).concat(b.slice(p)); }
+    else if(type==='two'){ let p1=Math.floor(Math.random()*a.length), p2=Math.floor(Math.random()*a.length); if(p1>p2)[p1,p2]=[p2,p1]; child=a.slice(0,p1).concat(b.slice(p1,p2)).concat(a.slice(p2)); }
+    else { child = a.map((bit,i)=> Math.random()<0.5?bit:b[i]); }
+    return gkMutate(child);
+  }
+  function gkPickParent(ranked, pool){
+    const type = gkSelectType();
+    if(type==='top') return pool[Math.floor(Math.random()*pool.length)].g;
+    if(type==='tournament'){ const k=gkTourSize(); let best=null; for(let i=0;i<k;i++){ const c=ranked[Math.floor(Math.random()*ranked.length)]; if(best===null||c.f>best.f) best=c; } return best.g; }
+    const total = ranked.reduce((s,r)=>s+r.f+1,0); let r=Math.random()*total;
+    for(const it of ranked){ r-=(it.f+1); if(r<=0) return it.g; }
+    return ranked[ranked.length-1].g;
+  }
+  function gkStepGen(){
+    const ranked = gk.population.map(g=>({g,f:gkEval(g).fitness})).sort((a,b)=>b.f-a.f);
+    const poolSize = Math.max(2, Math.floor(ranked.length/2));
+    const pool = ranked.slice(0,poolSize);
+    const elite = ranked.slice(0, gkEliteCount()).map(r=>r.g);
+    const next = elite.slice();
+    while(next.length < gk.population.length){ next.push(gkCrossover(gkPickParent(ranked,pool), gkPickParent(ranked,pool))); }
+    gk.population = next; gk.generation++;
+    const bestNow = Math.max(...gk.population.map(g=>gkEval(g).fitness));
+    gk.history.push({gen:gk.generation, best:bestNow, avg:gkAvg(), opt:gk.optimalValue});
+    gkRender();
+  }
+  function gkStopPlay(){ gk.playing=false; $('gkPlayBtn').textContent='Play'; if(gk.timer) clearInterval(gk.timer); gk.timer=null; }
+  function gkRenderItemsDisplay(){
+    const div = $('gkItemsDisplay'); div.innerHTML="";
+    gk.items.forEach(it=>{
+      const cell = document.createElement('div'); cell.className='item';
+      cell.innerHTML = "<div class='w'>w:"+it.w+"</div><div class='v'>v:"+it.v+"</div>";
+      div.appendChild(cell);
+    });
+  }
+  function gkDrawChart(){
+    const canvas = $('gkChart');
+    const {ctx,w,h} = sizeCanvas(canvas);
+    ctx.clearRect(0,0,w,h);
+    const padL=32, padB=16, padT=8, padR=8;
+    const plotW=w-padL-padR, plotH=h-padT-padB;
+    const maxV = Math.max(gk.optimalValue, ...gk.history.map(p=>p.best))*1.05 || 1;
+    ctx.strokeStyle='#CFCDBB'; ctx.fillStyle='#4A5A4E'; ctx.font='10px monospace'; ctx.lineWidth=1;
+    for(let i=0;i<=4;i++){ const v=maxV*i/4; const y=padT+plotH-(i/4)*plotH; ctx.beginPath(); ctx.moveTo(padL,y); ctx.lineTo(w-padR,y); ctx.stroke(); ctx.fillText(v.toFixed(0),2,y+3); }
+    const optY = padT+plotH-(gk.optimalValue/maxV)*plotH;
+    ctx.setLineDash([4,4]); ctx.strokeStyle='#B8892B'; ctx.lineWidth=1.5;
+    ctx.beginPath(); ctx.moveTo(padL,optY); ctx.lineTo(w-padR,optY); ctx.stroke(); ctx.setLineDash([]);
+    if(gk.history.length<2) return;
+    const n = gk.history.length; const xStep = plotW/Math.max(1,n-1);
+    function plotLine(key,color){
+      ctx.strokeStyle=color; ctx.lineWidth=2; ctx.beginPath();
+      gk.history.forEach((pt,i)=>{ const x=padL+i*xStep; const y=padT+plotH-(pt[key]/maxV)*plotH; if(i===0) ctx.moveTo(x,y); else ctx.lineTo(x,y); });
+      ctx.stroke();
+    }
+    plotLine('avg','#A6472F'); plotLine('best','#2F6F4E');
+  }
+  function gkRender(){
+    $('gkGenOut').textContent = gk.generation;
+    const evals = gk.population.map(gkEval);
+    const bestIdx = evals.reduce((bi,e,i)=> e.fitness>evals[bi].fitness?i:bi, 0);
+    const best = evals[bestIdx];
+    $('gkBestOut').textContent = best.fitness;
+    $('gkOptOut').textContent = gk.optimalValue;
+    const gap = gk.optimalValue - best.fitness;
+    $('gkGapOut').textContent = gap<=0 ? 'Optimal!' : gap;
+    const popDiv = $('gkPop'); popDiv.innerHTML="";
+    gk.population.forEach(g=>{
+      const e = gkEval(g);
+      const row = document.createElement('div'); row.className='indiv'+(e.valid?'':' invalid');
+      let bits=""; g.forEach(bit=>{ bits += "<div class='bit"+(bit?' on':'')+"'></div>"; });
+      const pct = Math.min(100, Math.round((e.w/gk.capacity)*100));
+      row.innerHTML = "<div class='bits'>"+bits+"</div><div class='weightbar-wrap'><div class='weightbar' style='width:"+pct+"%;'></div></div><div class='vnum'>w:"+e.w+"/"+gk.capacity+" v:"+e.v+"</div>";
+      popDiv.appendChild(row);
+    });
+    gkDrawChart();
+    if(best.fitness>=gk.optimalValue && best.valid){ $('gkWinMsg').style.display='block'; gkStopPlay(); }
+  }
+  function gkFullReset(){ gkGenerateItems(); gkInitPop(); gkRender(); }
+
+  $('gkNumItems').addEventListener('input', e=>{ $('gkNumItemsOut').textContent=e.target.value; });
+  $('gkNumItems').addEventListener('change', gkFullReset);
+  $('gkCapPct').addEventListener('input', e=>{ $('gkCapOut').textContent=e.target.value+'%'; });
+  $('gkCapPct').addEventListener('change', gkFullReset);
+  $('gkNewItems').addEventListener('click', gkFullReset);
+  $('gkPopSize').addEventListener('input', e=>{ $('gkPopSizeOut').textContent=e.target.value; });
+  $('gkPopSize').addEventListener('change', ()=>{ gkInitPop(); gkRender(); });
+  $('gkMutRate').addEventListener('input', e=>{ $('gkMutOut').textContent=e.target.value+'%'; });
+  $('gkEliteCount').addEventListener('input', e=>{ $('gkEliteOut').textContent=e.target.value; });
+  $('gkTourSize').addEventListener('input', e=>{ $('gkTourOut').textContent=e.target.value; });
+  $('gkSpeed').addEventListener('input', e=>{ $('gkSpeedOut').textContent=e.target.value+'ms'; if(gk.playing){ gkStopPlay(); $('gkPlayBtn').click(); } });
+  $('gkSelectType').addEventListener('change', ()=>{ $('gkTournamentField').style.display = $('gkSelectType').value==='tournament'?'block':'none'; });
+  $('gkStepBtn').addEventListener('click', gkStepGen);
+  $('gkPlayBtn').addEventListener('click', ()=>{
+    if(gk.playing){ gkStopPlay(); return; }
+    gk.playing=true; $('gkPlayBtn').textContent='Pause';
+    gk.timer = setInterval(gkStepGen, parseInt($('gkSpeed').value,10));
+  });
+  $('gkResetBtn').addEventListener('click', ()=>{ gkInitPop(); gkRender(); });
+
+  // ---------- shared landscape helpers (PSO + SA) ----------
+  const DOMAIN = [-5, 5];
+  const LANDSCAPES = {
+    sphere: (x,y) => x*x + y*y,
+    himmelblau: (x,y) => Math.pow(x*x+y-11,2) + Math.pow(x+y*y-7,2),
+    rastrigin: (x,y) => 20 + x*x + y*y - 10*(Math.cos(2*Math.PI*x)+Math.cos(2*Math.PI*y))
+  };
+  const heatCache = {};
+  function buildHeatmap(key){
+    if(heatCache[key]) return heatCache[key];
+    const R = 110;
+    const off = document.createElement('canvas'); off.width=R; off.height=R;
+    const octx = off.getContext('2d'); const img = octx.createImageData(R,R);
+    const f = LANDSCAPES[key]; let vals = new Float32Array(R*R); let min=Infinity,max=-Infinity;
+    for(let j=0;j<R;j++){
+      const y = DOMAIN[1] - (j/(R-1))*(DOMAIN[1]-DOMAIN[0]);
+      for(let i=0;i<R;i++){
+        const x = DOMAIN[0] + (i/(R-1))*(DOMAIN[1]-DOMAIN[0]);
+        const v = f(x,y); vals[j*R+i]=v; if(v<min) min=v; if(v>max) max=v;
+      }
+    }
+    const lowC=[31,74,50], highC=[242,241,233];
+    for(let idx=0; idx<R*R; idx++){
+      let t=(vals[idx]-min)/(max-min+1e-9); t=Math.pow(t,0.5);
+      img.data[idx*4] = highC[0]+(lowC[0]-highC[0])*(1-t);
+      img.data[idx*4+1] = highC[1]+(lowC[1]-highC[1])*(1-t);
+      img.data[idx*4+2] = highC[2]+(lowC[2]-highC[2])*(1-t);
+      img.data[idx*4+3] = 255;
+    }
+    octx.putImageData(img,0,0); heatCache[key]=off; return off;
+  }
+  function toPx(x,y,w,h){ const px=(x-DOMAIN[0])/(DOMAIN[1]-DOMAIN[0])*w; const py=h-(y-DOMAIN[0])/(DOMAIN[1]-DOMAIN[0])*h; return [px,py]; }
+
+  // ================= PSO =================
+  const pso = { particles:[], gbest:null, gbestVal:Infinity, iter:0, history:[], playing:false, timer:null };
+  function psoLandscapeKey(){ return $('psoLandscape').value; }
+  function psoF(x,y){ return LANDSCAPES[psoLandscapeKey()](x,y); }
+  function psoParams(){ return { n:parseInt($('psoSize').value,10), w:parseInt($('psoW').value,10)/100, c1:parseInt($('psoC1').value,10)/100, c2:parseInt($('psoC2').value,10)/100, vmax:parseInt($('psoVMax').value,10)/100 }; }
+  function psoInit(){
+    const p = psoParams(); pso.particles=[]; pso.gbest=null; pso.gbestVal=Infinity; pso.iter=0; pso.history=[];
+    for(let i=0;i<p.n;i++){
+      const x=DOMAIN[0]+Math.random()*(DOMAIN[1]-DOMAIN[0]), y=DOMAIN[0]+Math.random()*(DOMAIN[1]-DOMAIN[0]);
+      const val = psoF(x,y);
+      const particle = {x,y,vx:(Math.random()-0.5),vy:(Math.random()-0.5),best:{x,y},bestVal:val};
+      pso.particles.push(particle);
+      if(val<pso.gbestVal){ pso.gbestVal=val; pso.gbest={x,y}; }
+    }
+    pso.history.push({iter:0, best:pso.gbestVal});
+    psoStopPlay();
+  }
+  function psoStep(){
+    const p = psoParams();
+    pso.particles.forEach(particle=>{
+      const r1=Math.random(), r2=Math.random();
+      particle.vx = p.w*particle.vx + p.c1*r1*(particle.best.x-particle.x) + p.c2*r2*(pso.gbest.x-particle.x);
+      particle.vy = p.w*particle.vy + p.c1*r1*(particle.best.y-particle.y) + p.c2*r2*(pso.gbest.y-particle.y);
+      particle.vx = Math.max(-p.vmax, Math.min(p.vmax, particle.vx));
+      particle.vy = Math.max(-p.vmax, Math.min(p.vmax, particle.vy));
+      particle.x = Math.max(DOMAIN[0], Math.min(DOMAIN[1], particle.x+particle.vx));
+      particle.y = Math.max(DOMAIN[0], Math.min(DOMAIN[1], particle.y+particle.vy));
+      const val = psoF(particle.x, particle.y);
+      if(val<particle.bestVal){ particle.bestVal=val; particle.best={x:particle.x,y:particle.y}; }
+      if(val<pso.gbestVal){ pso.gbestVal=val; pso.gbest={x:particle.x,y:particle.y}; }
+    });
+    pso.iter++; pso.history.push({iter:pso.iter, best:pso.gbestVal});
+    psoRender();
+  }
+  function psoStopPlay(){ pso.playing=false; $('psoPlay').textContent='Play'; if(pso.timer) clearInterval(pso.timer); pso.timer=null; }
+  function psoRender(){
+    $('psoIterOut').textContent = pso.iter; $('psoBestOut').textContent = pso.gbestVal.toFixed(3);
+    const canvas = $('psoCanvas'); const {ctx,w,h} = sizeCanvas(canvas);
+    ctx.drawImage(buildHeatmap(psoLandscapeKey()), 0,0,w,h);
+    pso.particles.forEach(particle=>{
+      const [px,py] = toPx(particle.x, particle.y, w, h);
+      ctx.beginPath(); ctx.arc(px,py,4,0,7); ctx.fillStyle='#A6472F'; ctx.fill();
+    });
+    if(pso.gbest){
+      const [gx,gy] = toPx(pso.gbest.x, pso.gbest.y, w, h);
+      ctx.beginPath(); ctx.arc(gx,gy,7,0,7); ctx.fillStyle='#B8892B'; ctx.fill();
+      ctx.lineWidth=2; ctx.strokeStyle='#1E2A22'; ctx.stroke();
+    }
+    drawLineChart($('psoChart'), [{key:'best',color:'#2F6F4E'}], pso.history);
+  }
+
+  // ================= Simulated Annealing =================
+  const sa = { x:0,y:0,val:0, best:{x:0,y:0}, bestVal:Infinity, T:50, iter:0, history:[], trail:[], playing:false, timer:null };
+  function saLandscapeKey(){ return $('saLandscape').value; }
+  function saF(x,y){ return LANDSCAPES[saLandscapeKey()](x,y); }
+  function saParams(){ return { T0:parseInt($('saTemp').value,10), cool:parseInt($('saCool').value,10)/1000, step:parseInt($('saStep').value,10)/100 }; }
+  function saInit(){
+    const p = saParams();
+    sa.x = DOMAIN[0]+Math.random()*(DOMAIN[1]-DOMAIN[0]); sa.y = DOMAIN[0]+Math.random()*(DOMAIN[1]-DOMAIN[0]);
+    sa.val = saF(sa.x,sa.y); sa.best={x:sa.x,y:sa.y}; sa.bestVal=sa.val;
+    sa.T = p.T0; sa.iter = 0; sa.history=[{iter:0,current:sa.val,best:sa.bestVal}]; sa.trail=[{x:sa.x,y:sa.y}];
+    saStopPlay();
+  }
+  function saGaussian(){ let u=Math.random(),v=Math.random(); return Math.sqrt(-2*Math.log(u))*Math.cos(2*Math.PI*v); }
+  function saStep(){
+    const p = saParams();
+    const nx = Math.max(DOMAIN[0], Math.min(DOMAIN[1], sa.x + saGaussian()*p.step));
+    const ny = Math.max(DOMAIN[0], Math.min(DOMAIN[1], sa.y + saGaussian()*p.step));
+    const nval = saF(nx,ny); const delta = nval - sa.val;
+    if(delta<0 || Math.random()<Math.exp(-delta/Math.max(sa.T,1e-6))){
+      sa.x=nx; sa.y=ny; sa.val=nval;
+      sa.trail.push({x:nx,y:ny}); if(sa.trail.length>25) sa.trail.shift();
+      if(nval<sa.bestVal){ sa.bestVal=nval; sa.best={x:nx,y:ny}; }
+    }
+    sa.T *= p.cool; sa.iter++;
+    sa.history.push({iter:sa.iter, current:sa.val, best:sa.bestVal});
+    saRender();
+  }
+  function saStopPlay(){ sa.playing=false; $('saPlay').textContent='Play'; if(sa.timer) clearInterval(sa.timer); sa.timer=null; }
+  function saRender(){
+    $('saIterOut').textContent = sa.iter; $('saTOut').textContent = sa.T.toFixed(2); $('saBestOut').textContent = sa.bestVal.toFixed(3);
+    const canvas = $('saCanvas'); const {ctx,w,h} = sizeCanvas(canvas);
+    ctx.drawImage(buildHeatmap(saLandscapeKey()), 0,0,w,h);
+    sa.trail.forEach((pt,i)=>{
+      const [px,py] = toPx(pt.x,pt.y,w,h);
+      ctx.beginPath(); ctx.arc(px,py,3,0,7); ctx.fillStyle='rgba(166,71,47,'+(0.15+0.6*(i/sa.trail.length))+')'; ctx.fill();
+    });
+    const [cx,cy] = toPx(sa.x,sa.y,w,h);
+    ctx.beginPath(); ctx.arc(cx,cy,5,0,7); ctx.fillStyle='#A6472F'; ctx.fill();
+    const [bx,by] = toPx(sa.best.x, sa.best.y, w, h);
+    ctx.beginPath(); ctx.arc(bx,by,7,0,7); ctx.fillStyle='#B8892B'; ctx.fill();
+    ctx.lineWidth=2; ctx.strokeStyle='#1E2A22'; ctx.stroke();
+    drawLineChart($('saChart'), [{key:'current',color:'#A6472F'},{key:'best',color:'#2F6F4E'}], sa.history);
+  }
+
+  // ================= ACO (TSP) =================
+  const aco = { cities:[], pher:[], dist:[], best:null, bestLen:Infinity, iter:0, history:[], playing:false, timer:null };
+  function acoParams(){ return { ants:parseInt($('acoAnts').value,10), alpha:parseInt($('acoAlpha').value,10)/100, beta:parseInt($('acoBeta').value,10)/100, evap:parseInt($('acoEvap').value,10)/100, Q:parseInt($('acoQ').value,10) }; }
+  function acoNewCities(){
+    const n = parseInt($('acoCities').value,10); aco.cities=[];
+    for(let i=0;i<n;i++) aco.cities.push({x:0.5+Math.random()*9, y:0.5+Math.random()*9});
+    aco.dist = aco.cities.map((a,i)=>aco.cities.map((b,j)=> i===j?1e-9:Math.hypot(a.x-b.x,a.y-b.y)));
+    aco.pher = aco.cities.map(()=>aco.cities.map(()=>1));
+    aco.best=null; aco.bestLen=Infinity; aco.iter=0; aco.history=[];
+    acoStopPlay(); acoRender();
+  }
+  function acoTourLength(tour){ let d=0; for(let i=0;i<tour.length;i++) d += aco.dist[tour[i]][tour[(i+1)%tour.length]]; return d; }
+  function acoBuildAntTour(p){
+    const n = aco.cities.length; const visited = new Array(n).fill(false);
+    let cur = Math.floor(Math.random()*n); visited[cur]=true; const tour=[cur];
+    for(let step=1;step<n;step++){
+      let probs=[], total=0;
+      for(let j=0;j<n;j++){
+        if(visited[j]) continue;
+        const tau = Math.pow(aco.pher[cur][j], p.alpha), eta = Math.pow(1/aco.dist[cur][j], p.beta);
+        const val = tau*eta; probs.push({j,val}); total+=val;
+      }
+      let r = Math.random()*total; let chosen = probs[probs.length-1].j;
+      for(const pr of probs){ r -= pr.val; if(r<=0){ chosen=pr.j; break; } }
+      visited[chosen]=true; tour.push(chosen); cur=chosen;
+    }
+    return tour;
+  }
+  function acoStep(){
+    const p = acoParams(); const n = aco.cities.length; const tours=[];
+    for(let a=0;a<p.ants;a++){
+      const tour = acoBuildAntTour(p); const len = acoTourLength(tour);
+      tours.push({tour,len});
+      if(len<aco.bestLen){ aco.bestLen=len; aco.best=tour; }
+    }
+    for(let i=0;i<n;i++) for(let j=0;j<n;j++) aco.pher[i][j] *= (1-p.evap);
+    tours.forEach(({tour,len})=>{
+      const deposit = p.Q/len;
+      for(let i=0;i<tour.length;i++){ const a=tour[i], b=tour[(i+1)%tour.length]; aco.pher[a][b]+=deposit; aco.pher[b][a]+=deposit; }
+    });
+    aco.iter++; aco.history.push({iter:aco.iter, best:aco.bestLen});
+    acoRender();
+  }
+  function acoStopPlay(){ aco.playing=false; $('acoPlay').textContent='Play'; if(aco.timer) clearInterval(aco.timer); aco.timer=null; }
+  function acoRender(){
+    $('acoIterOut').textContent = aco.iter;
+    $('acoBestOut').textContent = isFinite(aco.bestLen) ? aco.bestLen.toFixed(2) : '–';
+    const canvas = $('acoCanvas'); const {ctx,w,h} = sizeCanvas(canvas);
+    ctx.fillStyle='#FBFAF5'; ctx.fillRect(0,0,w,h);
+    const n = aco.cities.length; const toXY = c => [c.x/10*w, h - c.y/10*h];
+    let maxPher = 1;
+    if(n>0){
+      for(let i=0;i<n;i++) for(let j=0;j<n;j++) if(aco.pher[i][j]>maxPher) maxPher=aco.pher[i][j];
+      for(let i=0;i<n;i++){
+        for(let j=i+1;j<n;j++){
+          const strength = aco.pher[i][j]/maxPher; if(strength<0.04) continue;
+          const [x1,y1] = toXY(aco.cities[i]); const [x2,y2] = toXY(aco.cities[j]);
+          ctx.beginPath(); ctx.moveTo(x1,y1); ctx.lineTo(x2,y2);
+          ctx.strokeStyle = 'rgba(47,111,78,'+(0.06+0.5*strength)+')'; ctx.lineWidth = 1+3*strength; ctx.stroke();
+        }
+      }
+      if(aco.best){
+        ctx.beginPath();
+        aco.best.forEach((ci,idx)=>{ const [x,y]=toXY(aco.cities[ci]); if(idx===0) ctx.moveTo(x,y); else ctx.lineTo(x,y); });
+        const [x0,y0] = toXY(aco.cities[aco.best[0]]); ctx.lineTo(x0,y0);
+        ctx.strokeStyle='#2F6F4E'; ctx.lineWidth=2.5; ctx.stroke();
+      }
+      aco.cities.forEach(c=>{ const [x,y]=toXY(c); ctx.beginPath(); ctx.arc(x,y,5,0,7); ctx.fillStyle='#1E2A22'; ctx.fill(); });
+    }
+    drawLineChart($('acoChart'), [{key:'best',color:'#2F6F4E'}], aco.history);
+  }
+
+  // ---------- wiring: PSO / SA / ACO ----------
+  function bindRange(id, outId, fmt){ $(id).addEventListener('input', e=>{ $(outId).textContent = fmt(e.target.value); }); }
+  bindRange('psoSize','psoSizeOut', v=>v);
+  bindRange('psoW','psoWOut', v=>(v/100).toFixed(2));
+  bindRange('psoC1','psoC1Out', v=>(v/100).toFixed(2));
+  bindRange('psoC2','psoC2Out', v=>(v/100).toFixed(2));
+  bindRange('psoVMax','psoVMaxOut', v=>(v/100).toFixed(2));
+  bindRange('psoSpeed','psoSpeedOut', v=>v+'ms');
+  $('psoSize').addEventListener('change', psoInit);
+  $('psoLandscape').addEventListener('change', psoInit);
+  $('psoStep').addEventListener('click', psoStep);
+  $('psoReset').addEventListener('click', psoInit);
+  $('psoPlay').addEventListener('click', ()=>{
+    if(pso.playing){ psoStopPlay(); return; }
+    pso.playing=true; $('psoPlay').textContent='Pause';
+    pso.timer = setInterval(psoStep, parseInt($('psoSpeed').value,10));
+  });
+
+  bindRange('saTemp','saTempOut', v=>parseFloat(v).toFixed(1));
+  bindRange('saCool','saCoolOut', v=>(v/1000).toFixed(3));
+  bindRange('saStep','saStepOut', v=>(v/100).toFixed(2));
+  bindRange('saSpeed','saSpeedOut', v=>v+'ms');
+  $('saLandscape').addEventListener('change', saInit);
+  $('saStepBtn').addEventListener('click', saStep);
+  $('saReset').addEventListener('click', saInit);
+  $('saPlay').addEventListener('click', ()=>{
+    if(sa.playing){ saStopPlay(); return; }
+    sa.playing=true; $('saPlay').textContent='Pause';
+    sa.timer = setInterval(saStep, parseInt($('saSpeed').value,10));
+  });
+
+  bindRange('acoCities','acoCitiesOut', v=>v);
+  bindRange('acoAnts','acoAntsOut', v=>v);
+  bindRange('acoAlpha','acoAlphaOut', v=>(v/100).toFixed(2));
+  bindRange('acoBeta','acoBetaOut', v=>(v/100).toFixed(2));
+  bindRange('acoEvap','acoEvapOut', v=>(v/100).toFixed(2));
+  bindRange('acoQ','acoQOut', v=>v);
+  bindRange('acoSpeed','acoSpeedOut', v=>v+'ms');
+  $('acoCities').addEventListener('change', acoNewCities);
+  $('acoNewCities').addEventListener('click', acoNewCities);
+  $('acoStepBtn').addEventListener('click', acoStep);
+  $('acoReset').addEventListener('click', ()=>{
+    aco.pher = aco.cities.map(()=>aco.cities.map(()=>1));
+    aco.best=null; aco.bestLen=Infinity; aco.iter=0; aco.history=[];
+    acoStopPlay(); acoRender();
+  });
+  $('acoPlay').addEventListener('click', ()=>{
+    if(aco.playing){ acoStopPlay(); return; }
+    aco.playing=true; $('acoPlay').textContent='Pause';
+    aco.timer = setInterval(acoStep, parseInt($('acoSpeed').value,10));
+  });
+
+  // ---------- tabs ----------
+  document.querySelectorAll('.tab').forEach(tab=>{
+    tab.addEventListener('click', ()=>{
+      gsStopPlay(); gkStopPlay(); psoStopPlay(); saStopPlay(); acoStopPlay();
+      document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
+      document.querySelectorAll('.section').forEach(s=>s.classList.remove('active'));
+      tab.classList.add('active');
+      $('sec-'+tab.dataset.tab).classList.add('active');
+      if(tab.dataset.tab==='gs') gsRender();
+      if(tab.dataset.tab==='gk') gkRender();
+      if(tab.dataset.tab==='pso') psoRender();
+      if(tab.dataset.tab==='sa') saRender();
+      if(tab.dataset.tab==='aco') acoRender();
+    });
+  });
+
+  function renderActiveTab(){
+    const activeTab = document.querySelector('.tab.active');
+    if(!activeTab) return;
+    const key = activeTab.dataset.tab;
+    if(key==='gs') gsRender();
+    else if(key==='gk') gkRender();
+    else if(key==='pso') psoRender();
+    else if(key==='sa') saRender();
+    else if(key==='aco') acoRender();
+  }
+  let resizeTimer = null;
+  window.addEventListener('resize', ()=>{
+    clearTimeout(resizeTimer);
+    resizeTimer = setTimeout(renderActiveTab, 120);
+  });
+
+  // ---------- init all ----------
+  gsInitPop(); gsRender();
+  gkFullReset();
+  psoInit(); psoRender();
+  saInit(); saRender();
+  acoNewCities();
+})();
+</script>
+</body>
+</html>
