@@ -1,0 +1,332 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>Classical ML — scikit-learn, live</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@stlite/browser@1.8.1/build/stlite.css"/>
+<style>
+  #boot{
+    font-family: -apple-system, "Segoe UI", Helvetica, Arial, sans-serif;
+    max-width: 560px; margin: 18vh auto 0; padding: 24px 28px; text-align: center;
+    color: #1E2A22; background: #FBFAF5; border: 1px solid #CFCDBB; border-radius: 6px;
+  }
+  #boot h2{ font-family: Georgia, serif; font-weight: 400; margin: 0 0 8px; }
+  #boot p{ color: #4A5A4E; font-size: 14px; margin: 0 0 14px; }
+  #boot .bar{ height: 6px; background: #EAE8DA; border-radius: 3px; overflow: hidden; }
+  #boot .bar i{ display:block; height:100%; width: 30%; background:#2F6F4E; border-radius:3px;
+    animation: slide 1.2s ease-in-out infinite alternate; }
+  @keyframes slide{ from{ transform: translateX(-10%);} to{ transform: translateX(260%);} }
+  #boot small{ color:#4A5A4E; }
+  body{ margin:0; background:#F2F1E9; }
+</style>
+</head>
+<body>
+<div id="root">
+  <div id="boot">
+    <h2>Classical ML — scikit-learn, live</h2>
+    <p>Starting the Python runtime in your browser (Pyodide + NumPy + scikit-learn + Matplotlib).</p>
+    <div class="bar"><i></i></div>
+    <p style="margin-top:12px"><small>First visit downloads &asymp; 40 MB and can take up to a minute &mdash; it's cached after that. Nothing runs on a server; everything happens on this machine.</small></p>
+  </div>
+</div>
+
+<script type="text/plain" id="app-code">
+import numpy as np
+import matplotlib.pyplot as plt
+import streamlit as st
+from matplotlib.colors import ListedColormap
+from matplotlib.patches import Ellipse
+
+st.set_page_config(page_title="Classical ML — interactive", layout="wide")
+
+INK, MOSS, RUST, GOLD = "#1E2A22", "#2F6F4E", "#A6472F", "#B8892B"
+STRONG = [MOSS, RUST, GOLD]
+DIM = ListedColormap(["#C7DBCB", "#EDD6CD", "#EFE0BC"])
+
+st.title("Classical machine learning, interactively")
+st.caption("Every model here is scikit-learn — the same library you'll use in the labs. "
+           "Expand **Show the code** under each demo to see the 5 lines doing the work.")
+
+model = st.sidebar.radio("Model", [
+    "Polynomial regression", "k-Nearest Neighbors", "Support Vector Machine",
+    "Decision tree", "Gaussian Naive Bayes"])
+seed = st.sidebar.number_input("Random seed", 0, 999, 42)
+rng = np.random.default_rng(int(seed))
+
+
+def scatter(ax, X, y, svmask=None):
+    for c in np.unique(y):
+        m = y == c
+        ax.scatter(X[m, 0], X[m, 1], s=32, c=STRONG[int(c)],
+                   edgecolors="white", linewidths=1, zorder=3, label=f"class {int(c)}")
+    if svmask is not None:
+        ax.scatter(X[svmask, 0], X[svmask, 1], s=110, facecolors="none",
+                   edgecolors=INK, linewidths=1.6, zorder=4, label="support vector")
+
+
+def regions(ax, clf, X):
+    x0, x1 = X[:, 0].min() - .5, X[:, 0].max() + .5
+    y0, y1 = X[:, 1].min() - .5, X[:, 1].max() + .5
+    xx, yy = np.meshgrid(np.linspace(x0, x1, 220), np.linspace(y0, y1, 220))
+    Z = clf.predict(np.c_[xx.ravel(), yy.ravel()]).reshape(xx.shape)
+    ax.contourf(xx, yy, Z, alpha=1.0, cmap=DIM, levels=[-.5, .5, 1.5, 2.5], zorder=1)
+    ax.set_xlim(x0, x1); ax.set_ylim(y0, y1)
+
+
+def style(ax):
+    ax.set_facecolor("white")
+    for s in ax.spines.values():
+        s.set_color("#CFCDBB")
+    ax.tick_params(colors="#4A5A4E", labelsize=8)
+
+
+def make_2d(kind, n, noise, n_classes=2, rng=rng):
+    from sklearn.datasets import make_moons, make_circles, make_blobs
+    rs = int(seed)
+    if kind == "moons":
+        return make_moons(n_samples=n, noise=noise, random_state=rs)
+    if kind == "circles":
+        return make_circles(n_samples=n, noise=noise, factor=0.45, random_state=rs)
+    if kind == "blobs":
+        return make_blobs(n_samples=n, centers=n_classes, cluster_std=1.0 + 4 * noise, random_state=rs)
+    # spiral
+    per = n // n_classes
+    X, y = [], []
+    for c in range(n_classes):
+        t = np.linspace(0, 2.4 * np.pi, per) + rng.normal(0, noise * 2, per)
+        r = np.linspace(0.1, 1.0, per)
+        X.append(np.c_[r * np.cos(t + c * 2 * np.pi / n_classes),
+                       r * np.sin(t + c * 2 * np.pi / n_classes)])
+        y.append(np.full(per, c))
+    return np.vstack(X), np.concatenate(y)
+
+
+# ---------------------------------------------------------------- regression
+if model == "Polynomial regression":
+    st.header("Polynomial regression — and the overfitting picture")
+    c1, c2 = st.columns([1, 2])
+    with c1:
+        pattern = st.selectbox("True pattern", ["linear", "quadratic", "sine"])
+        n = st.slider("Points", 10, 120, 30)
+        noise = st.slider("Noise σ", 0.0, 0.5, 0.15, 0.01)
+        deg = st.slider("Polynomial degree", 1, 12, 1)
+
+    x = rng.uniform(0, 1, n)
+    f = {"linear": lambda x: 0.2 + 0.6 * x,
+         "quadratic": lambda x: 0.25 + 2.2 * (x - .5) ** 2,
+         "sine": lambda x: 0.5 + 0.3 * np.sin(3 * np.pi * x)}[pattern]
+    y = f(x) + rng.normal(0, noise, n)
+    tr = rng.random(n) < 0.7
+
+    from sklearn.pipeline import make_pipeline
+    from sklearn.preprocessing import PolynomialFeatures
+    from sklearn.linear_model import LinearRegression
+    from sklearn.metrics import mean_squared_error
+
+    def fit(d):
+        m = make_pipeline(PolynomialFeatures(d), LinearRegression())
+        m.fit(x[tr, None], y[tr]); return m
+
+    m = fit(deg)
+    xs = np.linspace(0, 1, 300)
+    tr_mse = mean_squared_error(y[tr], m.predict(x[tr, None]))
+    te_mse = mean_squared_error(y[~tr], m.predict(x[~tr, None])) if (~tr).sum() else np.nan
+
+    with c2:
+        a, b = st.columns(2)
+        a.metric("Train MSE", f"{tr_mse:.4f}")
+        b.metric("Test MSE", f"{te_mse:.4f}")
+        fig, (ax, ax2) = plt.subplots(1, 2, figsize=(9, 3.6))
+        ax.scatter(x[tr], y[tr], c=RUST, s=26, label="train")
+        ax.scatter(x[~tr], y[~tr], facecolors="none", edgecolors=RUST, s=26, label="test")
+        ax.plot(xs, m.predict(xs[:, None]), c=MOSS, lw=2.2, label=f"degree {deg}")
+        ax.plot(xs, f(xs), c="#AAA", ls="--", lw=1, label="true pattern")
+        ax.set_ylim(min(y) - .2, max(y) + .2); ax.legend(fontsize=7); style(ax)
+        degs = range(1, 13)
+        trs, tes = zip(*[(mean_squared_error(y[tr], fit(d).predict(x[tr, None])),
+                          mean_squared_error(y[~tr], fit(d).predict(x[~tr, None])))
+                         for d in degs])
+        ax2.semilogy(degs, trs, c=MOSS, marker="o", ms=3, label="train MSE")
+        ax2.semilogy(degs, tes, c=RUST, marker="o", ms=3, label="test MSE")
+        ax2.axvline(deg, c=GOLD, lw=1.5)
+        ax2.set_xlabel("degree"); ax2.legend(fontsize=7); style(ax2)
+        st.pyplot(fig, width="stretch")
+    st.info("Raise the degree: train error only falls, test error turns back up. "
+            "The gap between the two curves *is* overfitting.")
+    with st.expander("Show the code"):
+        st.code("""from sklearn.pipeline import make_pipeline
+from sklearn.preprocessing import PolynomialFeatures
+from sklearn.linear_model import LinearRegression
+
+model = make_pipeline(PolynomialFeatures(degree), LinearRegression())
+model.fit(x_train.reshape(-1, 1), y_train)
+y_hat = model.predict(x_test.reshape(-1, 1))""")
+
+# ---------------------------------------------------------------- knn
+elif model == "k-Nearest Neighbors":
+    st.header("k-NN — the neighbors vote")
+    c1, c2 = st.columns([1, 2])
+    with c1:
+        ds = st.selectbox("Dataset", ["moons", "circles", "blobs", "spiral"])
+        n = st.slider("Points", 30, 300, 120)
+        noise = st.slider("Noise", 0.0, 0.4, 0.2, 0.05)
+        k = st.slider("k (neighbors)", 1, 31, 3, 2)
+        weights = st.selectbox("Vote weighting", ["uniform", "distance"])
+    X, y = make_2d(ds, n, noise, n_classes=3 if ds in ("blobs", "spiral") else 2)
+
+    from sklearn.neighbors import KNeighborsClassifier
+    from sklearn.model_selection import cross_val_score
+    clf = KNeighborsClassifier(n_neighbors=k, weights=weights).fit(X, y)
+    cv = cross_val_score(clf, X, y, cv=5).mean()
+
+    with c2:
+        st.metric("5-fold cross-validation accuracy", f"{cv*100:.1f}%")
+        fig, ax = plt.subplots(figsize=(5.5, 5))
+        regions(ax, clf, X); scatter(ax, X, y); style(ax)
+        ax.set_title(f"k={k}, weights={weights}", fontsize=9, color=INK)
+        st.pyplot(fig, width="stretch")
+    st.info("k=1 memorises every noise point (jagged islands). Large k smooths the boundary "
+            "but can wash out real structure. Cross-validation is how we pick k honestly.")
+    with st.expander("Show the code"):
+        st.code("""from sklearn.neighbors import KNeighborsClassifier
+
+clf = KNeighborsClassifier(n_neighbors=k, weights="uniform")
+clf.fit(X, y)
+pred = clf.predict(X_new)""")
+
+# ---------------------------------------------------------------- svm
+elif model == "Support Vector Machine":
+    st.header("SVM — the widest street")
+    c1, c2 = st.columns([1, 2])
+    with c1:
+        ds = st.selectbox("Dataset", ["moons", "circles", "blobs"])
+        n = st.slider("Points", 30, 200, 90)
+        noise = st.slider("Noise", 0.0, 0.4, 0.15, 0.05)
+        kernel = st.selectbox("Kernel", ["rbf", "linear", "poly"])
+        C = st.select_slider("C (margin softness)", [0.01, 0.1, 1.0, 10.0, 100.0], 1.0)
+        gamma = st.select_slider("γ (RBF width)", [0.1, 0.5, 1.0, 5.0, 20.0], 1.0) \
+            if kernel == "rbf" else "scale"
+    X, y = make_2d(ds, n, noise)
+
+    from sklearn.svm import SVC
+    clf = SVC(kernel=kernel, C=C, gamma=gamma, degree=3).fit(X, y)
+    svmask = np.zeros(len(X), bool); svmask[clf.support_] = True
+
+    with c2:
+        a, b = st.columns(2)
+        a.metric("Support vectors", f"{len(clf.support_)} / {n}")
+        b.metric("Train accuracy", f"{clf.score(X, y)*100:.0f}%")
+        fig, ax = plt.subplots(figsize=(5.5, 5))
+        regions(ax, clf, X)
+        # margin contours
+        xx, yy = np.meshgrid(np.linspace(*ax.get_xlim(), 220), np.linspace(*ax.get_ylim(), 220))
+        Z = clf.decision_function(np.c_[xx.ravel(), yy.ravel()]).reshape(xx.shape)
+        ax.contour(xx, yy, Z, levels=[-1, 0, 1], colors=[INK], linewidths=[.8, 1.8, .8],
+                   linestyles=["--", "-", "--"])
+        scatter(ax, X, y, svmask); style(ax)
+        st.pyplot(fig, width="stretch")
+    st.info("Solid line = boundary, dashed = the margin. Only ringed points (support vectors) "
+            "define it. Lower C → wider, more forgiving street; higher γ → each support "
+            "vector's influence becomes more local, boundary gets wigglier.")
+    with st.expander("Show the code"):
+        st.code("""from sklearn.svm import SVC
+
+clf = SVC(kernel="rbf", C=1.0, gamma=1.0)
+clf.fit(X, y)
+print(clf.support_)   # indices of the support vectors""")
+
+# ---------------------------------------------------------------- tree
+elif model == "Decision tree":
+    st.header("Decision tree — split the plane with yes/no questions")
+    c1, c2 = st.columns([1, 2])
+    with c1:
+        ds = st.selectbox("Dataset", ["blobs", "moons", "circles", "spiral"])
+        n = st.slider("Points", 30, 300, 120)
+        noise = st.slider("Noise", 0.0, 0.4, 0.15, 0.05)
+        depth = st.slider("Max depth", 1, 12, 3)
+        crit = st.selectbox("Criterion", ["gini", "entropy"])
+    X, y = make_2d(ds, n, noise, n_classes=3 if ds in ("blobs", "spiral") else 2)
+
+    from sklearn.tree import DecisionTreeClassifier, plot_tree
+    clf = DecisionTreeClassifier(max_depth=depth, criterion=crit, random_state=0).fit(X, y)
+
+    with c2:
+        a, b = st.columns(2)
+        a.metric("Leaves", clf.get_n_leaves())
+        b.metric("Train accuracy", f"{clf.score(X, y)*100:.0f}%")
+        fig, ax = plt.subplots(figsize=(5.5, 5))
+        regions(ax, clf, X); scatter(ax, X, y); style(ax)
+        st.pyplot(fig, width="stretch")
+        fig2, ax2 = plt.subplots(figsize=(9, 3.2))
+        plot_tree(clf, ax=ax2, filled=True, impurity=True, fontsize=6,
+                  feature_names=["x", "y"])
+        st.pyplot(fig2, width="stretch")
+    st.info("All boundaries are axis-aligned rectangles — the tree can only ask "
+            "'is x ≤ t?'. Watch it build staircases on curvy data, and memorise noise "
+            "when max depth is large.")
+    with st.expander("Show the code"):
+        st.code("""from sklearn.tree import DecisionTreeClassifier, plot_tree
+
+clf = DecisionTreeClassifier(max_depth=3, criterion="gini")
+clf.fit(X, y)
+plot_tree(clf, filled=True)""")
+
+# ---------------------------------------------------------------- nb
+else:
+    st.header("Gaussian Naive Bayes — a bell curve per class, then Bayes' rule")
+    c1, c2 = st.columns([1, 2])
+    with c1:
+        ds = st.selectbox("Dataset", ["blobs", "moons", "circles"])
+        n = st.slider("Points", 30, 300, 120)
+        noise = st.slider("Noise", 0.0, 0.4, 0.15, 0.05)
+        n_classes = st.slider("Classes (blobs only)", 2, 3, 2)
+    X, y = make_2d(ds, n, noise, n_classes=n_classes)
+
+    from sklearn.naive_bayes import GaussianNB
+    clf = GaussianNB().fit(X, y)
+
+    with c2:
+        st.metric("Train accuracy", f"{clf.score(X, y)*100:.0f}%")
+        fig, ax = plt.subplots(figsize=(5.5, 5))
+        regions(ax, clf, X); scatter(ax, X, y)
+        for c in range(len(clf.classes_)):
+            mx, my = clf.theta_[c]
+            sx, sy = np.sqrt(clf.var_[c])
+            for mfac, ls in [(1, "-"), (2, "--")]:
+                ax.add_patch(Ellipse((mx, my), 2 * mfac * sx, 2 * mfac * sy,
+                                     fill=False, color=STRONG[c], lw=1.4, ls=ls, zorder=5))
+            ax.plot(mx, my, "+", c=INK, ms=10, mew=2, zorder=6)
+        style(ax)
+        st.pyplot(fig, width="stretch")
+        st.write("**The entire learned model:**")
+        st.write({f"class {int(c)}": {"prior": round(float(p), 3),
+                                      "mean": np.round(clf.theta_[i], 2).tolist(),
+                                      "var": np.round(clf.var_[i], 3).tolist()}
+                  for i, (c, p) in enumerate(zip(clf.classes_, clf.class_prior_))})
+    st.info("Ellipses are 1σ (solid) and 2σ (dashed) of the fitted Gaussians — always "
+            "axis-aligned, because features are assumed independent. The whole model is "
+            "the handful of numbers printed above.")
+    with st.expander("Show the code"):
+        st.code("""from sklearn.naive_bayes import GaussianNB
+
+clf = GaussianNB().fit(X, y)
+clf.theta_        # per-class feature means
+clf.var_          # per-class feature variances
+clf.class_prior_  # P(class)""")
+
+</script>
+
+<script type="module">
+  import { mount } from "https://cdn.jsdelivr.net/npm/@stlite/browser@1.8.1/build/stlite.js";
+  mount(
+    {
+      requirements: ["numpy", "matplotlib", "scikit-learn"],
+      entrypoint: "app.py",
+      files: { "app.py": document.getElementById("app-code").textContent },
+    },
+    document.getElementById("root"),
+  );
+</script>
+</body>
+</html>
