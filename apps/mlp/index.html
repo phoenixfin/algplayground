@@ -37,6 +37,13 @@ import matplotlib.pyplot as plt
 import streamlit as st
 from matplotlib.colors import ListedColormap
 
+# stlite ships a stub pyarrow without the classes sklearn's input validation
+# probes with isinstance(); give the stub harmless placeholders
+import pyarrow
+for _n in ("Table", "RecordBatch", "ChunkedArray", "Array"):
+    if not hasattr(pyarrow, _n):
+        setattr(pyarrow, _n, type(_n, (), {}))
+
 st.set_page_config(page_title="MLP from scratch", layout="wide")
 
 INK, MOSS, RUST, GOLD = "#1E2A22", "#2F6F4E", "#A6472F", "#B8892B"
