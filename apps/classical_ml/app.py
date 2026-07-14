@@ -20,7 +20,9 @@ DIM = ListedColormap(["#C7DBCB", "#EDD6CD", "#EFE0BC"])
 
 st.title("Classical machine learning, interactively")
 st.caption("Every model here is scikit-learn — the same library you'll use in the labs. "
-           "Expand **Show the code** under each demo to see the 5 lines doing the work.")
+           "Filled points are the **train set** (70%), hollow points the held-out **test set** (30%); "
+           "the gap between the two accuracies is the story to watch. Expand **Show the code** "
+           "under each demo to see the 5 lines doing the work.")
 
 model = st.sidebar.radio("Model", [
     "Polynomial regression", "k-Nearest Neighbors", "Support Vector Machine",
@@ -29,11 +31,15 @@ seed = st.sidebar.number_input("Random seed", 0, 999, 42)
 rng = np.random.default_rng(int(seed))
 
 
-def scatter(ax, X, y, svmask=None):
+def scatter(ax, X, y, svmask=None, hollow=False):
     for c in np.unique(y):
         m = y == c
-        ax.scatter(X[m, 0], X[m, 1], s=32, c=STRONG[int(c)],
-                   edgecolors="white", linewidths=1, zorder=3, label=f"class {int(c)}")
+        if hollow:
+            ax.scatter(X[m, 0], X[m, 1], s=30, facecolors="none",
+                       edgecolors=STRONG[int(c)], linewidths=1.2, zorder=3)
+        else:
+            ax.scatter(X[m, 0], X[m, 1], s=32, c=STRONG[int(c)],
+                       edgecolors="white", linewidths=1, zorder=3, label=f"class {int(c)}")
     if svmask is not None:
         ax.scatter(X[svmask, 0], X[svmask, 1], s=110, facecolors="none",
                    edgecolors=INK, linewidths=1.6, zorder=4, label="support vector")
@@ -68,6 +74,29 @@ def mark(ax, q):
     ax.plot(q[0], q[1], marker="*", ms=17, c=INK, mec="white", mew=1.3, zorder=6)
 
 
+def use_defaults(d):
+    for k, v in d.items():
+        st.session_state.setdefault(k, v)
+
+
+def story_row(model_key, stories):
+    # buttons must run before the keyed widgets so a click can set their state
+    cols = st.columns(len(stories))
+    for col, (label, spec) in zip(cols, stories.items()):
+        if col.button(label, key=f"btn_{model_key}_{label}", width="stretch"):
+            for k, v in spec["set"].items():
+                st.session_state[k] = v
+            st.session_state["story"] = (model_key, label, spec["note"])
+    story = st.session_state.get("story")
+    if story and story[0] == model_key:
+        st.success(f"**{story[1]}** — {story[2]}")
+
+
+def split(X, y):
+    from sklearn.model_selection import train_test_split
+    return train_test_split(X, y, test_size=0.3, random_state=int(seed), stratify=y)
+
+
 def make_2d(kind, n, noise, n_classes=2, rng=rng):
     from sklearn.datasets import make_moons, make_circles, make_blobs
     rs = int(seed)
@@ -92,12 +121,27 @@ def make_2d(kind, n, noise, n_classes=2, rng=rng):
 # ---------------------------------------------------------------- regression
 if model == "Polynomial regression":
     st.header("Polynomial regression — and the overfitting picture")
+    use_defaults({"pr_pat": "linear", "pr_n": 30, "pr_noise": 0.15, "pr_deg": 1})
+    story_row("poly", {
+        "Underfit": {
+            "set": {"pr_pat": "sine", "pr_n": 40, "pr_noise": 0.1, "pr_deg": 1},
+            "note": "a straight line through a sine wave. Train AND test MSE are both high — "
+                    "the model family is too simple, and no amount of data fixes that."},
+        "Sweet spot": {
+            "set": {"pr_pat": "sine", "pr_n": 40, "pr_noise": 0.1, "pr_deg": 5},
+            "note": "degree 5 is enough to follow the wave without chasing the noise. "
+                    "Train and test MSE are both low and close together."},
+        "Overfit": {
+            "set": {"pr_pat": "sine", "pr_n": 20, "pr_noise": 0.25, "pr_deg": 12},
+            "note": "12 degrees for 20 noisy points: train MSE collapses, test MSE explodes. "
+                    "Scroll to the coefficient table — the cᵢ have blown up to absurd values."},
+    })
     c1, c2 = st.columns([1, 2])
     with c1:
-        pattern = st.selectbox("True pattern", ["linear", "quadratic", "sine"])
-        n = st.slider("Points", 10, 120, 30)
-        noise = st.slider("Noise σ", 0.0, 0.5, 0.15, 0.01)
-        deg = st.slider("Polynomial degree", 1, 12, 1)
+        pattern = st.selectbox("True pattern", ["linear", "quadratic", "sine"], key="pr_pat")
+        n = st.slider("Points", 10, 120, key="pr_n")
+        noise = st.slider("Noise σ", 0.0, 0.5, step=0.01, key="pr_noise")
+        deg = st.slider("Polynomial degree", 1, 12, key="pr_deg")
         x0 = st.slider("Probe x₀", 0.0, 1.0, 0.5, 0.01)
 
     x = rng.uniform(0, 1, n)
@@ -173,45 +217,76 @@ y_hat = model.predict(x_test.reshape(-1, 1))""")
 # ---------------------------------------------------------------- knn
 elif model == "k-Nearest Neighbors":
     st.header("k-NN — the neighbors vote")
+    use_defaults({"knn_ds": "moons", "knn_n": 120, "knn_noise": 0.2,
+                  "knn_k": 3, "knn_w": "uniform"})
+    story_row("knn", {
+        "Memorize the noise": {
+            "set": {"knn_ds": "moons", "knn_n": 120, "knn_noise": 0.35,
+                    "knn_k": 1, "knn_w": "uniform"},
+            "note": "k=1 on noisy data: every training point gets its own little island, so "
+                    "train accuracy is 100% *by construction* — and test accuracy is clearly "
+                    "lower. Memorizing is not learning."},
+        "Let neighbors vote": {
+            "set": {"knn_ds": "moons", "knn_n": 120, "knn_noise": 0.35,
+                    "knn_k": 15, "knn_w": "uniform"},
+            "note": "same noisy data, k=15: the islands melt away and the train/test gap "
+                    "closes. Averaging over neighbors averages the noise out."},
+        "Too smooth": {
+            "set": {"knn_ds": "spiral", "knn_n": 120, "knn_noise": 0.1,
+                    "knn_k": 31, "knn_w": "uniform"},
+            "note": "k=31 on a spiral: the vote now reaches across arms and washes out real "
+                    "structure — test accuracy drops again. k is a dial between two failure modes."},
+    })
     c1, c2 = st.columns([1, 2])
     with c1:
-        ds = st.selectbox("Dataset", ["moons", "circles", "blobs", "spiral"])
-        n = st.slider("Points", 30, 300, 120)
-        noise = st.slider("Noise", 0.0, 0.4, 0.2, 0.05)
-        k = st.slider("k (neighbors)", 1, 31, 3, 2)
-        weights = st.selectbox("Vote weighting", ["uniform", "distance"])
+        ds = st.selectbox("Dataset", ["moons", "circles", "blobs", "spiral"], key="knn_ds")
+        n = st.slider("Points", 30, 300, key="knn_n")
+        noise = st.slider("Noise", 0.0, 0.4, step=0.05, key="knn_noise")
+        k = st.slider("k (neighbors)", 1, 31, step=2, key="knn_k")
+        weights = st.selectbox("Vote weighting", ["uniform", "distance"], key="knn_w")
     X, y = make_2d(ds, n, noise, n_classes=3 if ds in ("blobs", "spiral") else 2)
+    Xtr, Xte, ytr, yte = split(X, y)
     with c1:
         q = probe_sliders(X)
 
     from sklearn.neighbors import KNeighborsClassifier
     from sklearn.model_selection import cross_val_score
-    clf = KNeighborsClassifier(n_neighbors=k, weights=weights).fit(X, y)
-    cv = cross_val_score(clf, X, y, cv=5).mean()
+    k_eff = min(k, max(1, int(len(Xtr) * 0.8) - 1))
+    clf = KNeighborsClassifier(n_neighbors=k_eff, weights=weights).fit(Xtr, ytr)
+    cv = cross_val_score(clf, Xtr, ytr, cv=5).mean()
+    if k_eff < k:
+        st.caption(f"k capped at {k_eff}: only {len(Xtr)} training points after the 70/30 split.")
     dist, idx = clf.kneighbors(q[None])
     dist, idx = dist[0], idx[0]
     w = np.ones_like(dist) if weights == "uniform" else 1.0 / np.maximum(dist, 1e-9)
 
     with c2:
-        st.metric("5-fold cross-validation accuracy", f"{cv*100:.1f}%")
+        a, b, c3 = st.columns(3)
+        a.metric("Train accuracy", f"{clf.score(Xtr, ytr)*100:.1f}%")
+        b.metric("Test accuracy", f"{clf.score(Xte, yte)*100:.1f}%")
+        c3.metric("5-fold CV (on train)", f"{cv*100:.1f}%")
         fig, ax = plt.subplots(figsize=(5.5, 5))
-        regions(ax, clf, X); scatter(ax, X, y); style(ax)
+        regions(ax, clf, X)
+        scatter(ax, Xtr, ytr)
+        scatter(ax, Xte, yte, hollow=True)
+        style(ax)
         for i in idx:
-            ax.plot([q[0], X[i, 0]], [q[1], X[i, 1]], c=INK, lw=.8, alpha=.55, zorder=5)
+            ax.plot([q[0], Xtr[i, 0]], [q[1], Xtr[i, 1]], c=INK, lw=.8, alpha=.55, zorder=5)
         mark(ax, q)
-        ax.set_title(f"k={k}, weights={weights}", fontsize=9, color=INK)
+        ax.set_title(f"k={k_eff}, weights={weights}", fontsize=9, color=INK)
         st.pyplot(fig, width="stretch")
+        st.caption("filled = train (the model saw these) · hollow = test (it did not)")
     st.info("k=1 memorises every noise point (jagged islands). Large k smooths the boundary "
             "but can wash out real structure. Cross-validation is how we pick k honestly.")
 
     st.subheader("The exact numbers — the vote at ⭐")
     st.dataframe(pd.DataFrame({"rank": np.arange(1, len(idx) + 1),
                                "neighbor #": idx,
-                               "x": X[idx, 0].round(3), "y": X[idx, 1].round(3),
+                               "x": Xtr[idx, 0].round(3), "y": Xtr[idx, 1].round(3),
                                "distance to ⭐": dist.round(4),
-                               "class": y[idx].astype(int),
+                               "class": ytr[idx].astype(int),
                                "vote weight": w.round(4)}), hide_index=True)
-    tally = {int(c): float(w[y[idx] == c].sum()) for c in np.unique(y[idx])}
+    tally = {int(c): float(w[ytr[idx] == c].sum()) for c in np.unique(ytr[idx])}
     st.markdown("distance = √((x−x₀)² + (y−y₀)²) ; weight = 1 if uniform, 1/distance otherwise.  \n"
                 "Vote totals — " + " · ".join(f"class {c}: **{v:.4f}**" for c, v in tally.items())
                 + f" → prediction **class {int(clf.predict(q[None])[0])}** "
@@ -220,30 +295,53 @@ elif model == "k-Nearest Neighbors":
         st.code("""from sklearn.neighbors import KNeighborsClassifier
 
 clf = KNeighborsClassifier(n_neighbors=k, weights="uniform")
-clf.fit(X, y)
-pred = clf.predict(X_new)""")
+clf.fit(X_train, y_train)
+print(clf.score(X_test, y_test))""")
 
 # ---------------------------------------------------------------- svm
 elif model == "Support Vector Machine":
     st.header("SVM — the widest street")
+    use_defaults({"svm_ds": "moons", "svm_n": 90, "svm_noise": 0.15,
+                  "svm_kern": "rbf", "svm_C": 1.0, "svm_g": 1.0})
+    story_row("svm", {
+        "Widest street": {
+            "set": {"svm_ds": "blobs", "svm_n": 90, "svm_noise": 0.15,
+                    "svm_kern": "linear", "svm_C": 0.01},
+            "note": "a soft linear SVM on separable blobs: the street is as wide as the data "
+                    "allows, and lots of points become support vectors. Check w and the street "
+                    "width in the numbers below."},
+        "Memorize the noise": {
+            "set": {"svm_ds": "moons", "svm_n": 90, "svm_noise": 0.3,
+                    "svm_kern": "rbf", "svm_C": 100.0, "svm_g": 20.0},
+            "note": "huge C (no forgiveness) and huge γ (hyper-local influence): the boundary "
+                    "draws an island around every noise point. Train accuracy soars, test "
+                    "accuracy tells the truth."},
+        "Wrong tool": {
+            "set": {"svm_ds": "circles", "svm_n": 90, "svm_noise": 0.15,
+                    "svm_kern": "linear", "svm_C": 1.0},
+            "note": "a straight line cannot separate concentric rings — train AND test accuracy "
+                    "sit near chance, and no C will fix it. Switch the kernel to rbf and watch "
+                    "the same data become easy."},
+    })
     c1, c2 = st.columns([1, 2])
     with c1:
-        ds = st.selectbox("Dataset", ["moons", "circles", "blobs"])
-        n = st.slider("Points", 30, 200, 90)
-        noise = st.slider("Noise", 0.0, 0.4, 0.15, 0.05)
-        kernel = st.selectbox("Kernel", ["rbf", "linear", "poly"])
-        C = st.select_slider("C (margin softness)", [0.01, 0.1, 1.0, 10.0, 100.0], 1.0)
-        gamma = st.select_slider("γ (RBF width)", [0.1, 0.5, 1.0, 5.0, 20.0], 1.0) \
+        ds = st.selectbox("Dataset", ["moons", "circles", "blobs"], key="svm_ds")
+        n = st.slider("Points", 30, 200, key="svm_n")
+        noise = st.slider("Noise", 0.0, 0.4, step=0.05, key="svm_noise")
+        kernel = st.selectbox("Kernel", ["rbf", "linear", "poly"], key="svm_kern")
+        C = st.select_slider("C (margin softness)", [0.01, 0.1, 1.0, 10.0, 100.0], key="svm_C")
+        gamma = st.select_slider("γ (RBF width)", [0.1, 0.5, 1.0, 5.0, 20.0], key="svm_g") \
             if kernel == "rbf" else "scale"
     X, y = make_2d(ds, n, noise)
+    Xtr, Xte, ytr, yte = split(X, y)
     with c1:
         q = probe_sliders(X)
 
     from sklearn.svm import SVC
-    clf = SVC(kernel=kernel, C=C, gamma=gamma, degree=3).fit(X, y)
-    svmask = np.zeros(len(X), bool); svmask[clf.support_] = True
+    clf = SVC(kernel=kernel, C=C, gamma=gamma, degree=3).fit(Xtr, ytr)
+    svmask = np.zeros(len(Xtr), bool); svmask[clf.support_] = True
     g = getattr(clf, "_gamma",
-                1.0 / (X.shape[1] * X.var()) if gamma == "scale" else float(gamma))
+                1.0 / (Xtr.shape[1] * Xtr.var()) if gamma == "scale" else float(gamma))
     sv = clf.support_vectors_
     if kernel == "linear":
         kv = sv @ q
@@ -256,9 +354,10 @@ elif model == "Support Vector Machine":
     f_q = contrib.sum() + clf.intercept_[0]
 
     with c2:
-        a, b = st.columns(2)
-        a.metric("Support vectors", f"{len(clf.support_)} / {n}")
-        b.metric("Train accuracy", f"{clf.score(X, y)*100:.0f}%")
+        a, b, c3 = st.columns(3)
+        a.metric("Support vectors", f"{len(clf.support_)} / {len(Xtr)}")
+        b.metric("Train accuracy", f"{clf.score(Xtr, ytr)*100:.0f}%")
+        c3.metric("Test accuracy", f"{clf.score(Xte, yte)*100:.0f}%")
         fig, ax = plt.subplots(figsize=(5.5, 5))
         regions(ax, clf, X)
         # margin contours
@@ -266,8 +365,11 @@ elif model == "Support Vector Machine":
         Z = clf.decision_function(np.c_[xx.ravel(), yy.ravel()]).reshape(xx.shape)
         ax.contour(xx, yy, Z, levels=[-1, 0, 1], colors=[INK], linewidths=[.8, 1.8, .8],
                    linestyles=["--", "-", "--"])
-        scatter(ax, X, y, svmask); mark(ax, q); style(ax)
+        scatter(ax, Xtr, ytr, svmask)
+        scatter(ax, Xte, yte, hollow=True)
+        mark(ax, q); style(ax)
         st.pyplot(fig, width="stretch")
+        st.caption("filled = train (the model saw these) · hollow = test (it did not)")
     st.info("Solid line = boundary, dashed = the margin. Only ringed points (support vectors) "
             "define it. Lower C → wider, more forgiving street; higher γ → each support "
             "vector's influence becomes more local, boundary gets wigglier.")
@@ -277,7 +379,7 @@ elif model == "Support Vector Machine":
     order = np.argsort(-np.abs(contrib))[:8]
     st.dataframe(pd.DataFrame({"support vector #": clf.support_[order],
                                "x": sv[order, 0].round(3), "y": sv[order, 1].round(3),
-                               "class": y[clf.support_][order].astype(int),
+                               "class": ytr[clf.support_][order].astype(int),
                                "αᵢyᵢ": alpha_y[order].round(4),
                                "K(xᵢ, ⭐)": kv[order].round(4),
                                "αᵢyᵢ·K": contrib[order].round(4)}), hide_index=True)
@@ -296,33 +398,56 @@ elif model == "Support Vector Machine":
         st.code("""from sklearn.svm import SVC
 
 clf = SVC(kernel="rbf", C=1.0, gamma=1.0)
-clf.fit(X, y)
+clf.fit(X_train, y_train)
 print(clf.support_)   # indices of the support vectors""")
 
 # ---------------------------------------------------------------- tree
 elif model == "Decision tree":
     st.header("Decision tree — split the plane with yes/no questions")
+    use_defaults({"tr_ds": "blobs", "tr_n": 120, "tr_noise": 0.15,
+                  "tr_depth": 3, "tr_crit": "gini"})
+    story_row("tree", {
+        "One question": {
+            "set": {"tr_ds": "blobs", "tr_n": 120, "tr_noise": 0.15, "tr_depth": 1},
+            "note": "depth 1 = a single yes/no question = one straight cut through the plane. "
+                    "The whole model is one threshold — read it in the tree diagram."},
+        "Just right": {
+            "set": {"tr_ds": "moons", "tr_n": 120, "tr_noise": 0.2, "tr_depth": 3},
+            "note": "a few questions approximate the curve with a coarse staircase. Train and "
+                    "test accuracy are close — the tree learned structure, not noise."},
+        "Memorize the noise": {
+            "set": {"tr_ds": "moons", "tr_n": 120, "tr_noise": 0.3, "tr_depth": 12},
+            "note": "unlimited depth on noisy data: the staircase grows a rectangle around "
+                    "every stray point, leaves ≈ points, train accuracy 100% — and the test "
+                    "accuracy gap is the price."},
+    })
     c1, c2 = st.columns([1, 2])
     with c1:
-        ds = st.selectbox("Dataset", ["blobs", "moons", "circles", "spiral"])
-        n = st.slider("Points", 30, 300, 120)
-        noise = st.slider("Noise", 0.0, 0.4, 0.15, 0.05)
-        depth = st.slider("Max depth", 1, 12, 3)
-        crit = st.selectbox("Criterion", ["gini", "entropy"])
+        ds = st.selectbox("Dataset", ["blobs", "moons", "circles", "spiral"], key="tr_ds")
+        n = st.slider("Points", 30, 300, key="tr_n")
+        noise = st.slider("Noise", 0.0, 0.4, step=0.05, key="tr_noise")
+        depth = st.slider("Max depth", 1, 12, key="tr_depth")
+        crit = st.selectbox("Criterion", ["gini", "entropy"], key="tr_crit")
     X, y = make_2d(ds, n, noise, n_classes=3 if ds in ("blobs", "spiral") else 2)
+    Xtr, Xte, ytr, yte = split(X, y)
     with c1:
         q = probe_sliders(X)
 
     from sklearn.tree import DecisionTreeClassifier, plot_tree
-    clf = DecisionTreeClassifier(max_depth=depth, criterion=crit, random_state=0).fit(X, y)
+    clf = DecisionTreeClassifier(max_depth=depth, criterion=crit, random_state=0).fit(Xtr, ytr)
 
     with c2:
-        a, b = st.columns(2)
+        a, b, c3 = st.columns(3)
         a.metric("Leaves", clf.get_n_leaves())
-        b.metric("Train accuracy", f"{clf.score(X, y)*100:.0f}%")
+        b.metric("Train accuracy", f"{clf.score(Xtr, ytr)*100:.0f}%")
+        c3.metric("Test accuracy", f"{clf.score(Xte, yte)*100:.0f}%")
         fig, ax = plt.subplots(figsize=(5.5, 5))
-        regions(ax, clf, X); scatter(ax, X, y); mark(ax, q); style(ax)
+        regions(ax, clf, X)
+        scatter(ax, Xtr, ytr)
+        scatter(ax, Xte, yte, hollow=True)
+        mark(ax, q); style(ax)
         st.pyplot(fig, width="stretch")
+        st.caption("filled = train (the model saw these) · hollow = test (it did not)")
         fig2, ax2 = plt.subplots(figsize=(9, 3.2))
         plot_tree(clf, ax=ax2, filled=True, impurity=True, fontsize=6,
                   feature_names=["x", "y"])
@@ -351,29 +476,48 @@ elif model == "Decision tree":
         st.code("""from sklearn.tree import DecisionTreeClassifier, plot_tree
 
 clf = DecisionTreeClassifier(max_depth=3, criterion="gini")
-clf.fit(X, y)
+clf.fit(X_train, y_train)
 plot_tree(clf, filled=True)""")
 
 # ---------------------------------------------------------------- nb
 else:
     st.header("Gaussian Naive Bayes — a bell curve per class, then Bayes' rule")
+    use_defaults({"nb_ds": "blobs", "nb_n": 120, "nb_noise": 0.15, "nb_k": 2})
+    story_row("nb", {
+        "Assumptions hold": {
+            "set": {"nb_ds": "blobs", "nb_n": 120, "nb_noise": 0.15, "nb_k": 2},
+            "note": "Gaussian blobs are literally the model's world view — one bell curve per "
+                    "class. Train and test accuracy match, with only a handful of learned numbers."},
+        "Assumptions break": {
+            "set": {"nb_ds": "spiral", "nb_n": 120, "nb_noise": 0.15, "nb_k": 2},
+            "note": "two intertwined spiral arms share the same mean AND nearly the same "
+                    "variance, so the two fitted Gaussians are almost identical — look at the "
+                    "overlapping ellipses and the near-50/50 posteriors below. A model is only "
+                    "as good as its assumptions. (Try *circles* too: NB survives there because "
+                    "the class variances still differ.)"},
+    })
     c1, c2 = st.columns([1, 2])
     with c1:
-        ds = st.selectbox("Dataset", ["blobs", "moons", "circles"])
-        n = st.slider("Points", 30, 300, 120)
-        noise = st.slider("Noise", 0.0, 0.4, 0.15, 0.05)
-        n_classes = st.slider("Classes (blobs only)", 2, 3, 2)
+        ds = st.selectbox("Dataset", ["blobs", "moons", "circles", "spiral"], key="nb_ds")
+        n = st.slider("Points", 30, 300, key="nb_n")
+        noise = st.slider("Noise", 0.0, 0.4, step=0.05, key="nb_noise")
+        n_classes = st.slider("Classes (blobs only)", 2, 3, key="nb_k")
     X, y = make_2d(ds, n, noise, n_classes=n_classes)
+    Xtr, Xte, ytr, yte = split(X, y)
     with c1:
         q = probe_sliders(X)
 
     from sklearn.naive_bayes import GaussianNB
-    clf = GaussianNB().fit(X, y)
+    clf = GaussianNB().fit(Xtr, ytr)
 
     with c2:
-        st.metric("Train accuracy", f"{clf.score(X, y)*100:.0f}%")
+        a, b = st.columns(2)
+        a.metric("Train accuracy", f"{clf.score(Xtr, ytr)*100:.0f}%")
+        b.metric("Test accuracy", f"{clf.score(Xte, yte)*100:.0f}%")
         fig, ax = plt.subplots(figsize=(5.5, 5))
-        regions(ax, clf, X); scatter(ax, X, y)
+        regions(ax, clf, X)
+        scatter(ax, Xtr, ytr)
+        scatter(ax, Xte, yte, hollow=True)
         for c in range(len(clf.classes_)):
             mx, my = clf.theta_[c]
             sx, sy = np.sqrt(clf.var_[c])
@@ -384,6 +528,7 @@ else:
         mark(ax, q)
         style(ax)
         st.pyplot(fig, width="stretch")
+        st.caption("filled = train (the model saw these) · hollow = test (it did not)")
         st.write("**The entire learned model:**")
         st.write({f"class {int(c)}": {"prior": round(float(p), 3),
                                       "mean": np.round(clf.theta_[i], 2).tolist(),
@@ -412,7 +557,7 @@ else:
     with st.expander("Show the code"):
         st.code("""from sklearn.naive_bayes import GaussianNB
 
-clf = GaussianNB().fit(X, y)
+clf = GaussianNB().fit(X_train, y_train)
 clf.theta_        # per-class feature means
 clf.var_          # per-class feature variances
 clf.class_prior_  # P(class)""")
