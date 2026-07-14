@@ -59,8 +59,8 @@ st.caption("Every model here is scikit-learn — the same library you'll use in 
            "under each demo to see the 5 lines doing the work.")
 
 model = st.sidebar.radio("Model", [
-    "Polynomial regression", "k-Nearest Neighbors", "Support Vector Machine",
-    "Decision tree", "Gaussian Naive Bayes"])
+    "Polynomial regression", "Logistic regression", "k-Nearest Neighbors",
+    "Support Vector Machine", "Decision tree", "Gaussian Naive Bayes"])
 seed = st.sidebar.number_input("Random seed", 0, 999, 42)
 rng = np.random.default_rng(int(seed))
 
@@ -129,6 +129,16 @@ def story_row(model_key, stories):
 def split(X, y):
     from sklearn.model_selection import train_test_split
     return train_test_split(X, y, test_size=0.3, random_state=int(seed), stratify=y)
+
+
+def quiz(key, question, options, correct, explain):
+    with st.expander("🧠 Check yourself"):
+        ans = st.radio(question, options, index=None, key=f"quiz_{key}")
+        if ans is not None:
+            if options.index(ans) == correct:
+                st.success("Correct — " + explain)
+            else:
+                st.error("Not quite — " + explain)
 
 
 def make_2d(kind, n, noise, n_classes=2, rng=rng):
@@ -239,6 +249,13 @@ if model == "Polynomial regression":
     st.markdown(f"Sum of the last column → **ŷ({x0:.2f}) = {terms.sum():.4f}** — "
                 f"`model.predict` returns {m.predict([[x0]])[0]:.4f}. Move the probe "
                 f"and the degree: high-degree coefficients explode, a symptom of overfitting.")
+    quiz("poly", "You raise the polynomial degree; train MSE keeps falling but test MSE turns "
+                 "upward. What is happening?",
+         ["Overfitting — the model is memorizing noise in the training points",
+          "Underfitting — the model is too simple for the data",
+          "The data has too few features"],
+         0, "past the sweet spot, extra flexibility fits the noise, which helps on the training "
+            "points and hurts on unseen ones.")
     with st.expander("Show the code"):
         st.code("""from sklearn.pipeline import make_pipeline
 from sklearn.preprocessing import PolynomialFeatures
@@ -247,6 +264,81 @@ from sklearn.linear_model import LinearRegression
 model = make_pipeline(PolynomialFeatures(degree), LinearRegression())
 model.fit(x_train.reshape(-1, 1), y_train)
 y_hat = model.predict(x_test.reshape(-1, 1))""")
+
+# ---------------------------------------------------------------- logreg
+elif model == "Logistic regression":
+    st.header("Logistic regression — a line plus a squash (the bridge to neural nets)")
+    use_defaults({"lg_ds": "blobs", "lg_n": 120, "lg_noise": 0.15})
+    story_row("logreg", {
+        "Clean cut": {
+            "set": {"lg_ds": "blobs", "lg_n": 120, "lg_noise": 0.1},
+            "note": "linearly separable blobs: THREE numbers (w₁, w₂, b) draw the line, and "
+                    "the sigmoid turns signed distance from it into a probability. Slide ⭐ "
+                    "across the boundary and watch P pass through 0.5."},
+        "The line's limit": {
+            "set": {"lg_ds": "moons", "lg_n": 120, "lg_noise": 0.15},
+            "note": "moons curl around any straight line — this is the best 3 numbers can do. "
+                    "Stack several of these units and you get the MLP playground's network."},
+    })
+    c1, c2 = st.columns([1, 2])
+    with c1:
+        ds = st.selectbox("Dataset", ["blobs", "moons", "circles"], key="lg_ds")
+        n = st.slider("Points", 30, 300, key="lg_n")
+        noise = st.slider("Noise", 0.0, 0.4, step=0.05, key="lg_noise")
+    X, y = make_2d(ds, n, noise)
+    Xtr, Xte, ytr, yte = split(X, y)
+    with c1:
+        q = probe_sliders(X)
+
+    from sklearn.linear_model import LogisticRegression
+    clf = LogisticRegression().fit(Xtr, ytr)
+    w1, w2 = clf.coef_[0]
+    b0 = clf.intercept_[0]
+    z = w1 * q[0] + w2 * q[1] + b0
+    p1 = 1 / (1 + np.exp(-z))
+
+    with c2:
+        a, b = st.columns(2)
+        a.metric("Train accuracy", f"{clf.score(Xtr, ytr)*100:.0f}%")
+        b.metric("Test accuracy", f"{clf.score(Xte, yte)*100:.0f}%")
+        fig, ax = plt.subplots(figsize=(5.5, 5))
+        regions(ax, clf, X)
+        xx, yy = np.meshgrid(np.linspace(*ax.get_xlim(), 220), np.linspace(*ax.get_ylim(), 220))
+        P = clf.predict_proba(np.c_[xx.ravel(), yy.ravel()])[:, 1].reshape(xx.shape)
+        cs = ax.contour(xx, yy, P, levels=[0.1, 0.5, 0.9], colors=[INK],
+                        linewidths=[.8, 1.8, .8], linestyles=["--", "-", "--"])
+        ax.clabel(cs, fmt="P=%.1f", fontsize=7)
+        scatter(ax, Xtr, ytr)
+        scatter(ax, Xte, yte, hollow=True)
+        mark(ax, q); style(ax)
+        st.pyplot(fig, width="stretch")
+        st.caption("filled = train (the model saw these) · hollow = test (it did not)")
+    st.info("The solid line is P = 0.5 — the decision boundary, always straight because "
+            "z = w₁x + w₂y + b is linear. The dashed lines are where the model is 90% sure: "
+            "the further from the line, the more confident.")
+
+    st.subheader("The exact numbers — the whole model is 3 numbers")
+    st.latex(r"P(\text{class }1 \mid x, y) = \sigma(w_1 x + w_2 y + b), \qquad "
+             r"\sigma(z) = \frac{1}{1 + e^{-z}}")
+    st.markdown(f"Learned parameters: **w₁ = {w1:+.4f}, w₂ = {w2:+.4f}, b = {b0:+.4f}**")
+    st.markdown(f"At ⭐: z = ({w1:+.4f})·({q[0]:.2f}) + ({w2:+.4f})·({q[1]:.2f}) + ({b0:+.4f}) "
+                f"= **{z:+.4f}**  \n"
+                f"σ({z:+.4f}) = 1 / (1 + e^(−z)) = **{p1:.4f}** → prediction "
+                f"**class {int(p1 > 0.5)}** "
+                f"(sklearn predict_proba: {np.round(clf.predict_proba(q[None])[0], 4).tolist()})")
+    st.markdown("One weighted sum plus one squash is exactly a **neuron**. The MLP playground "
+                "stacks layers of these so the combined boundary can bend.")
+    quiz("logreg", "Why can logistic regression only draw straight decision boundaries?",
+         ["Because the sigmoid is a linear function",
+          "Because the boundary is where w₁x + w₂y + b = 0, which is a line",
+          "Because it only works on 2 classes"],
+         1, "σ is curved but monotone, so P = 0.5 exactly where z = 0 — and z = 0 is a straight line.")
+    with st.expander("Show the code"):
+        st.code("""from sklearn.linear_model import LogisticRegression
+
+clf = LogisticRegression().fit(X_train, y_train)
+clf.coef_, clf.intercept_   # the whole model: w1, w2, b
+clf.predict_proba(X_new)""")
 
 # ---------------------------------------------------------------- knn
 elif model == "k-Nearest Neighbors":
@@ -325,6 +417,12 @@ elif model == "k-Nearest Neighbors":
                 "Vote totals — " + " · ".join(f"class {c}: **{v:.4f}**" for c, v in tally.items())
                 + f" → prediction **class {int(clf.predict(q[None])[0])}** "
                 f"(predict_proba = {np.round(clf.predict_proba(q[None])[0], 3).tolist()})")
+    quiz("knn", "With k = 1, train accuracy is always 100%. Why?",
+         ["Because each training point's nearest neighbor is itself",
+          "Because k-NN always generalizes perfectly",
+          "Because the classes are balanced"],
+         0, "when predicting a training point, its own copy sits at distance 0 — so k=1 'learns' "
+            "every point, noise included. The test accuracy tells the real story.")
     with st.expander("Show the code"):
         st.code("""from sklearn.neighbors import KNeighborsClassifier
 
@@ -428,6 +526,12 @@ elif model == "Support Vector Machine":
         st.markdown(f"Linear kernel → an explicit weight vector exists: "
                     f"**w = ({w_vec[0]:+.3f}, {w_vec[1]:+.3f})**, "
                     f"street width 2/‖w‖ = {2 / np.linalg.norm(w_vec):.3f}")
+    quiz("svm", "Which training points actually define the SVM's decision boundary?",
+         ["All of them equally",
+          "Only the support vectors — the points on or inside the margin",
+          "Only the misclassified points"],
+         1, "every other point could be deleted and the boundary would not move — that is what "
+            "the α table above shows: everyone else has α = 0.")
     with st.expander("Show the code"):
         st.code("""from sklearn.svm import SVC
 
@@ -506,6 +610,12 @@ elif model == "Decision tree":
                 f"{np.round(t.value[node][0], 3).tolist()} → "
                 f"P(class) = {np.round(clf.predict_proba(q[None])[0], 3).tolist()} → "
                 f"prediction **class {int(clf.predict(q[None])[0])}**")
+    quiz("tree", "Why do decision-tree boundaries look like staircases on curved data?",
+         ["Because trees can only ask one-feature threshold questions like 'is x ≤ t?'",
+          "Because the data is noisy",
+          "Because gini impurity is a step function"],
+         0, "each split is an axis-aligned cut, so a curve can only be approximated by stacking "
+            "rectangles — more depth just makes the stairs finer.")
     with st.expander("Show the code"):
         st.code("""from sklearn.tree import DecisionTreeClassifier, plot_tree
 
@@ -588,6 +698,13 @@ else:
     st.markdown(f"argmax of the last column → **class {int(clf.classes_[post.argmax()])}** "
                 f"(sklearn predict_proba: {np.round(clf.predict_proba(q[None])[0], 4).tolist()}). "
                 f"Each density is just the bell-curve formula evaluated with the θ and σ² above.")
+    quiz("nb", "Gaussian Naive Bayes is nearly blind on the 2-class spiral. Why?",
+         ["The spiral has too many points",
+          "Both classes have almost the same mean and variance, so the fitted Gaussians are "
+          "nearly identical",
+          "Bayes' rule does not apply to spirals"],
+         1, "the model only sees per-class means and variances — and the spiral arms share both. "
+            "Nearly identical Gaussians → posteriors stuck near 50/50.")
     with st.expander("Show the code"):
         st.code("""from sklearn.naive_bayes import GaussianNB
 

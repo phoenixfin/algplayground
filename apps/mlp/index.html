@@ -52,7 +52,19 @@ DIM = ListedColormap(["#C7DBCB", "#EDD6CD", "#EFE0BC"])
 
 st.title("A multilayer perceptron, from scratch")
 st.caption("No framework — ~60 lines of NumPy. Forward pass, backprop, and the same "
-           "optimizers from the previous app, applied to a real (tiny) network.")
+           "optimizers from the previous app, applied to a real (tiny) network. "
+           "Train once, then **scrub through the epochs** to watch it learn.")
+
+
+def quiz(key, question, options, correct, explain):
+    with st.expander("🧠 Check yourself"):
+        ans = st.radio(question, options, index=None, key=f"quiz_{key}")
+        if ans is not None:
+            if options.index(ans) == correct:
+                st.success("Correct — " + explain)
+            else:
+                st.error("Not quite — " + explain)
+
 
 # ---------------------------------------------------------------- data
 def make_data(kind, n, noise, seed):
@@ -167,7 +179,7 @@ with c1:
 
 try:
     hidden_sizes = [int(s) for s in hidden.replace(" ", "").split(",") if s]
-    assert all(1 <= h <= 128 for h in hidden_sizes) and len(hidden_sizes) <= 4
+    assert all(1 <= h <= 128 for h in hidden_sizes) and 1 <= len(hidden_sizes) <= 4
 except Exception:
     st.error("Hidden layers must be 1–4 comma-separated integers between 1 and 128, e.g. `8,8`.")
     st.stop()
@@ -176,6 +188,7 @@ X, y = make_data(ds_key, n, noise, int(seed))
 n_classes = len(np.unique(y))
 sizes = [2] + hidden_sizes + [n_classes]
 n_params = sum(sizes[i] * sizes[i + 1] + sizes[i + 1] for i in range(len(sizes) - 1))
+cfg_now = (ds_key, n, noise, tuple(hidden_sizes), act, optname, lr, epochs, str(batch), int(seed))
 
 with c2:
     st.markdown(f"**Architecture:** `2 → {' → '.join(map(str, hidden_sizes))} → {n_classes}`"
@@ -187,8 +200,8 @@ with c2:
         opt = make_optimizer(optname, lr)
         Y = np.eye(n_classes)[y]
         rng = np.random.default_rng(int(seed))
-        losses, accs, snaps = [], [], {}
-        snap_at = {1, epochs // 10, epochs // 3, epochs}
+        losses, accs, snaps = [], [], []
+        every = max(1, epochs // 30)
         prog = st.progress(0.0, "training…")
         t = 0
         for ep in range(1, epochs + 1):
@@ -206,57 +219,129 @@ with c2:
             loss = -np.mean(np.log(probs_all[np.arange(len(y)), y] + 1e-12))
             losses.append(loss)
             accs.append((probs_all.argmax(1) == y).mean())
-            if ep in snap_at:
-                snaps[ep] = [{k: v.copy() for k, v in p.items()} for p in params]
+            if ep == 1 or ep == epochs or ep % every == 0:
+                snaps.append((ep, [{k: v.copy() for k, v in p.items()} for p in params]))
             if ep % max(1, epochs // 50) == 0:
                 prog.progress(ep / epochs, f"epoch {ep}/{epochs} — loss {loss:.3f}")
         prog.empty()
+        st.session_state["run"] = {"X": X, "y": y, "act": act, "n_classes": n_classes,
+                                   "losses": losses, "accs": accs, "snaps": snaps,
+                                   "cfg": cfg_now}
 
-        a, b = st.columns(2)
-        a.metric("Final loss", f"{losses[-1]:.4f}")
-        b.metric("Train accuracy", f"{accs[-1]*100:.1f}%")
-
-        # decision boundary evolution
-        pad = .4
-        gx = np.linspace(X[:, 0].min() - pad, X[:, 0].max() + pad, 200)
-        gy = np.linspace(X[:, 1].min() - pad, X[:, 1].max() + pad, 200)
-        XX, YY = np.meshgrid(gx, gy)
-        grid = np.c_[XX.ravel(), YY.ravel()]
-        fig, axes = plt.subplots(1, len(snaps), figsize=(3.1 * len(snaps), 3.1))
-        axes = np.atleast_1d(axes)
-        for ax, (ep, ps) in zip(axes, sorted(snaps.items())):
-            P, _ = forward(ps, grid, act)
-            ax.contourf(XX, YY, P.argmax(1).reshape(XX.shape),
-                        cmap=DIM, levels=[-.5, .5, 1.5, 2.5])
-            for c in range(n_classes):
-                m = y == c
-                ax.scatter(X[m, 0], X[m, 1], s=10, c=STRONG[c],
-                           edgecolors="white", linewidths=.4)
-            ax.set_title(f"epoch {ep}", fontsize=9)
-            ax.set_xticks([]); ax.set_yticks([])
-        fig.suptitle("How the decision boundary forms during training", fontsize=10)
-        st.pyplot(fig, width="stretch")
-
-        fig2, (axl, axa) = plt.subplots(1, 2, figsize=(9, 2.8))
-        axl.plot(losses, c=RUST, lw=1.4); axl.set_title("cross-entropy loss", fontsize=9)
-        axa.plot(accs, c=MOSS, lw=1.4); axa.set_title("train accuracy", fontsize=9)
-        axa.set_ylim(0, 1.02)
-        for a_ in (axl, axa):
-            a_.set_xlabel("epoch", fontsize=8); a_.set_facecolor("white")
-        st.pyplot(fig2, width="stretch")
-    else:
+    run = st.session_state.get("run")
+    if run is None:
         fig, ax = plt.subplots(figsize=(4.5, 4))
         for c in range(n_classes):
             m = y == c
             ax.scatter(X[m, 0], X[m, 1], s=16, c=STRONG[c], edgecolors="white", linewidths=.5)
         ax.set_title("The data — press Train", fontsize=10)
         st.pyplot(fig, width="stretch")
+    else:
+        if run["cfg"] != cfg_now:
+            st.warning("Settings changed since this run — press **Train** to retrain. "
+                       "Showing the previous run below.")
+        rX, ry = run["X"], run["y"]
+        ract, rnc = run["act"], run["n_classes"]
+        losses, accs, snaps = run["losses"], run["accs"], run["snaps"]
 
-st.info("Things worth trying in class:  **(1)** spiral with no hidden layers (edit to a single "
-        "small layer like `1`) — it can't do it: capacity matters.  **(2)** `relu` vs `tanh` — "
-        "relu makes visibly *piecewise-linear* boundaries.  **(3)** SGD vs Adam at the same "
-        "learning rate — the loss curves tell the optimizer story from the previous app, now "
-        "on a real network.")
+        a, b = st.columns(2)
+        a.metric("Final loss", f"{losses[-1]:.4f}")
+        b.metric("Train accuracy", f"{accs[-1]*100:.1f}%")
+
+        ep_options = [e for e, _ in snaps]
+        sel = st.select_slider("⏪ Scrub through training — epoch", options=ep_options,
+                               value=ep_options[-1])
+        ps = dict(snaps)[sel]
+
+        pad = .4
+        gx = np.linspace(rX[:, 0].min() - pad, rX[:, 0].max() + pad, 160)
+        gy = np.linspace(rX[:, 1].min() - pad, rX[:, 1].max() + pad, 160)
+        XX, YY = np.meshgrid(gx, gy)
+        grid = np.c_[XX.ravel(), YY.ravel()]
+        P, _ = forward(ps, grid, ract)
+
+        colA, colB = st.columns([1.1, 1])
+        with colA:
+            fig, ax = plt.subplots(figsize=(4.6, 4.2))
+            ax.contourf(XX, YY, P.argmax(1).reshape(XX.shape),
+                        cmap=DIM, levels=[-.5, .5, 1.5, 2.5])
+            for c in range(rnc):
+                m = ry == c
+                ax.scatter(rX[m, 0], rX[m, 1], s=10, c=STRONG[c],
+                           edgecolors="white", linewidths=.4)
+            ax.set_title(f"decision boundary at epoch {sel}", fontsize=9)
+            ax.set_xticks([]); ax.set_yticks([])
+            st.pyplot(fig, width="stretch")
+        with colB:
+            fig2, (axl, axa) = plt.subplots(2, 1, figsize=(4.2, 4.2), sharex=True)
+            eps_axis = np.arange(1, len(losses) + 1)
+            axl.plot(eps_axis, losses, c=RUST, lw=1.2)
+            axl.axvline(sel, c=GOLD, lw=1.2)
+            axl.set_title("cross-entropy loss", fontsize=9)
+            axa.plot(eps_axis, accs, c=MOSS, lw=1.2)
+            axa.axvline(sel, c=GOLD, lw=1.2)
+            axa.set_title("train accuracy", fontsize=9)
+            axa.set_ylim(0, 1.02); axa.set_xlabel("epoch", fontsize=8)
+            for a_ in (axl, axa):
+                a_.set_facecolor("white")
+            st.pyplot(fig2, width="stretch")
+
+        # -------- exact numbers 1: gradient magnitude per layer
+        st.subheader("The exact numbers — how strong is the learning signal in each layer?")
+        rY = np.eye(rnc)[ry]
+        probs_s, cache_s = forward(ps, rX, ract)
+        grads_s = backward(ps, cache_s, probs_s, rY, ract)
+        norms = [float(np.linalg.norm(g["W"])) for g in grads_s]
+        figg, axg = plt.subplots(figsize=(7, 2.4))
+        bars = axg.bar([f"layer {i + 1}" for i in range(len(norms))], norms, color=MOSS)
+        axg.bar_label(bars, fmt="%.2e", fontsize=7)
+        axg.set_title(f"gradient magnitude ‖∂L/∂W‖ per layer at epoch {sel} "
+                      "(layer 1 = closest to the input)", fontsize=9)
+        axg.set_facecolor("white")
+        st.pyplot(figg, width="stretch")
+        st.caption("Backprop passes the error signal from right to left, multiplying by the "
+                   "activation's derivative at every layer. Try **sigmoid** with hidden layers "
+                   "`8,8,8,8`: the left bars collapse toward zero — the *vanishing gradient* "
+                   "problem. Then switch to **relu** and watch them recover.")
+
+        # -------- exact numbers 2: what each hidden neuron sees
+        if len(ps) > 1:
+            st.subheader("The exact numbers — what each first-layer neuron sees")
+            f_act = ACTS[ract][0]
+            H = f_act(grid @ ps[0]["W"] + ps[0]["b"])
+            h1 = min(H.shape[1], 12)
+            ncols = 4
+            nrows = int(np.ceil(h1 / ncols))
+            fign, axes = plt.subplots(nrows, ncols, figsize=(2.1 * ncols, 1.9 * nrows))
+            for j, axn in enumerate(np.array(axes).ravel()):
+                if j < h1:
+                    axn.contourf(XX, YY, H[:, j].reshape(XX.shape), levels=12, cmap="Greys")
+                    axn.set_title(f"unit {j + 1}", fontsize=7)
+                else:
+                    axn.axis("off")
+                axn.set_xticks([]); axn.set_yticks([])
+            fign.suptitle(f"first-layer activations at epoch {sel} (dark = active)", fontsize=9)
+            st.pyplot(fign, width="stretch")
+            if H.shape[1] > 12:
+                st.caption(f"showing the first 12 of {H.shape[1]} units")
+            st.caption("Each hidden unit is a logistic-regression-like cell: one straight "
+                       "ridge. The layers above mix these simple shapes into the curved "
+                       "boundary on the left — scrub the epochs to watch the ridges rotate "
+                       "into place.")
+
+st.info("Things worth trying in class:  **(1)** spiral with a single tiny layer like `1` — "
+        "it can't do it: capacity matters.  **(2)** `relu` vs `tanh` — relu makes visibly "
+        "*piecewise-linear* boundaries.  **(3)** SGD vs Adam at the same learning rate — the "
+        "loss curves tell the optimizer story from the previous app, now on a real network.  "
+        "**(4)** sigmoid with `8,8,8,8` — watch the layer-1 gradient bar vanish.")
+quiz("mlp", "With sigmoid activations and 4 hidden layers, the layer-1 gradient bar is ~100× "
+            "smaller than the last layer's. What is this?",
+     ["The vanishing gradient problem — sigmoid's derivative ≤ 0.25 shrinks the signal at "
+      "every layer it passes through",
+      "Overfitting",
+      "A learning rate that is too small"],
+     0, "backprop multiplies by the activation derivative once per layer, so the error signal "
+        "decays geometrically on its way back — one big reason modern networks use relu.")
 
 with st.expander("The entire backprop, verbatim from this app"):
     st.code('''def backward(params, cache, probs, y_onehot, act):
