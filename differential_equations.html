@@ -1,0 +1,1051 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Differential equations &amp; physical simulation</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css" crossorigin="anonymous">
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js" crossorigin="anonymous"></script>
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/contrib/auto-render.min.js" crossorigin="anonymous" onload="window.__mathReady&&window.__mathReady()"></script>
+<style>
+  :root{
+    --paper: #F2F1E9; --paper-line: #DAD8C8; --ink: #1E2A22; --ink-soft: #4A5A4E;
+    --moss: #2F6F4E; --moss-dim: #C7DBCB; --rust: #A6472F; --rust-dim: #EDD6CD;
+    --gold: #B8892B; --gold-dim: #EFE0BC; --card: #FBFAF5; --border: #CFCDBB;
+  }
+  *{ box-sizing: border-box; }
+  body{
+    margin:0; background: var(--paper); color: var(--ink);
+    font-family: -apple-system, "Segoe UI", Helvetica, Arial, sans-serif; line-height: 1.5;
+    background-image: linear-gradient(var(--paper-line) 1px, transparent 1px), linear-gradient(90deg, var(--paper-line) 1px, transparent 1px);
+    background-size: 28px 28px; background-attachment: fixed;
+  }
+  .wrap{ max-width: 1100px; margin: 0 auto; padding: 36px 24px 80px; }
+  header.top{ margin-bottom: 18px; border-bottom: 2px solid var(--ink); padding-bottom: 14px; }
+  .eyebrow{ font-family: "SF Mono", SFMono-Regular, Consolas, monospace; font-size: 12px; letter-spacing: 0.12em; text-transform: uppercase; color: var(--moss); margin: 0 0 6px; }
+  h1{ font-family: Georgia, "Iowan Old Style", "Palatino Linotype", serif; font-weight: 400; font-size: 32px; margin: 0 0 8px; }
+  header.top p{ margin: 0; color: var(--ink-soft); max-width: 800px; font-size: 15px; }
+  .crumbs{ font-size: 12.5px; margin: 14px 0 0; }
+  .crumbs a{ color: var(--moss); }
+
+  .tabs{ display: flex; gap: 8px; margin: 20px 0 22px; flex-wrap: wrap; }
+  .tab{ padding: 9px 14px; font-size: 13px; font-weight: 600; border: 1px solid var(--ink); border-radius: 3px; background: var(--card); cursor: pointer; }
+  .tab.active{ background: var(--ink); color: #fff; }
+
+  .section{ display: none; }
+  .section.active{ display: block; }
+
+  .intro{ display:grid; grid-template-columns: 200px 1fr; gap: 20px; align-items:center; background: var(--card); border: 1px solid var(--border); border-radius: 4px; padding: 14px 18px; margin-bottom: 20px; }
+  @media (max-width: 700px){ .intro{ grid-template-columns: 1fr; } }
+  .intro svg{ width: 100%; height: auto; display:block; }
+  .intro .txt h3{ margin: 0 0 6px; font-family: Georgia, serif; font-size: 17px; font-weight: 400; }
+  .intro .txt p{ margin: 0; font-size: 13.5px; color: var(--ink-soft); }
+
+  .layout{ display: grid; grid-template-columns: 300px 1fr; gap: 24px; align-items: start; }
+  @media (max-width: 820px){
+    .layout{ grid-template-columns: 1fr; }
+    .panel{ position: static !important; top: auto !important; }
+  }
+  .panel{ background: var(--card); border: 1px solid var(--border); border-radius: 4px; padding: 18px; position: sticky; top: 20px; align-self: start; }
+  .panel h2{ font-family: "SF Mono", SFMono-Regular, Consolas, monospace; font-size: 12px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--ink-soft); margin: 18px 0 12px; border-bottom: 1px solid var(--border); padding-bottom: 6px; }
+  .panel h2:first-child{ margin-top: 0; }
+  .field{ margin-bottom: 14px; }
+  .field label{ display: flex; justify-content: space-between; font-size: 13px; font-weight: 600; margin-bottom: 5px; gap:8px; }
+  .field label span.val{ font-weight: 400; color: var(--moss); font-family: "SF Mono", SFMono-Regular, Consolas, monospace; white-space:nowrap; }
+  .field input[type=range]{ width: 100%; accent-color: var(--moss); }
+  .field select{ width: 100%; padding: 6px 8px; font-size: 13px; border: 1px solid var(--border); border-radius: 3px; background: #fff; font-family: inherit; }
+
+  .btn{ display: inline-block; padding: 8px 14px; font-size: 13px; font-weight: 600; border: 1px solid var(--ink); border-radius: 3px; background: var(--card); color: var(--ink); cursor: pointer; }
+  .btn:hover{ background: var(--paper-line); }
+  .btn.primary{ background: var(--moss); color: #fff; border-color: var(--moss); }
+  .btn.primary:hover{ background: #275c40; }
+  .btn.toggle.active{ background: var(--ink); color: #fff; }
+  .btn.block{ width: 100%; margin-bottom: 8px; }
+  .btngroup{ display:flex; gap:8px; margin-bottom: 14px; }
+  .btngroup .btn{ flex:1; }
+  .row2{ display: flex; gap: 8px; }
+  .row2 > *{ flex: 1; }
+  .hint{ font-size: 12.5px; color: var(--ink-soft); margin: 10px 0 0; }
+
+  .stats{ display: flex; gap: 12px; margin-bottom: 20px; flex-wrap: wrap; }
+  .stat{ flex: 1; min-width: 120px; background: var(--card); border: 1px solid var(--border); border-radius: 4px; padding: 10px 14px; overflow: hidden; }
+  .stat .label{ font-size: 11px; letter-spacing: 0.08em; text-transform: uppercase; color: var(--ink-soft); font-family: "SF Mono", SFMono-Regular, Consolas, monospace; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .stat .value{ font-size: 20px; font-family: Georgia, serif; line-height: 1.3; word-break: break-word; }
+  .stat .value.eqv{ font-size: 15px; padding-top: 4px; }
+  .stat.hi .value{ color: var(--moss); }
+  .stat.warn .value{ color: var(--rust); }
+
+  .box{ background: var(--card); border: 1px solid var(--border); border-radius: 4px; padding: 12px 14px; margin-bottom: 20px; }
+  .box h2{ font-family: "SF Mono", SFMono-Regular, Consolas, monospace; font-size: 12px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--ink-soft); margin: 0 0 10px; }
+  .box p{ font-size: 13.5px; color: var(--ink-soft); margin: 8px 0 0; }
+  .box p b{ color: var(--ink); }
+  canvas{ display:block; width:100%; }
+  canvas.big{ height: 430px; cursor: crosshair; }
+  canvas.mid{ height: 230px; }
+  canvas.small{ height: 160px; }
+  canvas.sq{ aspect-ratio: 1.15/1; height:auto; }
+  canvas.anim{ aspect-ratio: 1.15/1; height:auto; }
+  canvas.heat{ height: 200px; }
+
+  .cols2{ display:grid; grid-template-columns: 1fr 1fr; gap: 18px; margin-bottom:20px; }
+  @media (max-width: 900px){ .cols2{ grid-template-columns: 1fr; } }
+  .cols2 .box{ margin-bottom: 0; }
+
+  .legend{ display:flex; gap:16px; font-size:12px; color: var(--ink-soft); margin-top:8px; flex-wrap:wrap; }
+  .legend span{ display:inline-flex; align-items:center; gap:5px; }
+  .swatch{ width:10px; height:10px; border-radius:50%; display:inline-block; }
+
+  .try{ background: var(--gold-dim); border: 1px solid var(--gold); border-radius: 4px; padding: 10px 14px; font-size: 13px; margin-bottom: 20px; }
+  .try b{ text-transform: uppercase; font-size: 11px; letter-spacing: 0.08em; font-family: "SF Mono", SFMono-Regular, Consolas, monospace; color: #7a5a15; }
+  .try ol{ margin: 6px 0 0; padding-left: 20px; }
+  .try li{ margin-bottom: 3px; }
+
+  .eqk{ background:#fff; border:1px solid var(--border); border-radius:3px; padding:12px 14px; overflow-x:auto; margin-bottom:0; }
+  .eqk .katex-display{ margin:0; }
+  .katex{ font-size:1.04em; }
+
+  table.cmp{ width:100%; border-collapse:collapse; font-size:13px; }
+  table.cmp th, table.cmp td{ border:1px solid var(--border); padding:9px 12px; text-align:left; vertical-align:top; }
+  table.cmp th{ background:var(--paper); font-family:Georgia,serif; font-weight:400; font-size:15px; }
+  table.cmp td:first-child, table.cmp th:first-child{ background:var(--paper); font-weight:600; font-size:12px; text-transform:uppercase; letter-spacing:0.06em; font-family:"SF Mono",SFMono-Regular,Consolas,monospace; color:var(--ink-soft); width:120px; }
+  table.cmp td{ color: var(--ink); }
+
+  .q{ margin-bottom: 18px; }
+  .q .qt{ font-weight: 600; font-size: 14px; margin-bottom: 8px; }
+  .q .opts{ display:flex; flex-direction:column; gap:6px; }
+  .q button.opt{ border:1px solid var(--border); border-radius:3px; padding:8px 12px; cursor:pointer; background:#fff; text-align:left; font-size:13.5px; font-family:inherit; color:var(--ink); }
+  .q button.opt:hover{ border-color: var(--ink); }
+  .q button.opt.correct{ background: var(--moss-dim); border-color: var(--moss); font-weight:600; }
+  .q button.opt.wrong{ background: var(--rust-dim); border-color: var(--rust); }
+  .q .exp{ display:none; font-size:13px; color:var(--ink-soft); margin-top:8px; background:var(--paper); border-left:3px solid var(--moss); padding:8px 12px; }
+
+  .mono{ font-family:"SF Mono",SFMono-Regular,Consolas,monospace; }
+  footer{ margin-top: 30px; border-top: 1px solid var(--border); padding-top: 14px; font-size: 12px; color: var(--ink-soft); }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<header class="top">
+  <p class="eyebrow">Differential equations &amp; physical simulation</p>
+  <h1>How the world changes — and how a computer follows along</h1>
+  <p>Almost every law of physics is written as a <b>differential equation</b>: a rule that ties a quantity to its own rate of change. This playground starts from the very idea of a slope and builds up to chaos and to the equations behind heat and sound — the same equations that scientific machine learning later tries to learn. You only need one idea from calculus: <b>a derivative is a rate of change.</b></p>
+  <p class="crumbs">Part 1 of 2 · once these feel natural, continue to <a href="scientific_ml.html">Scientific machine learning →</a></p>
+</header>
+
+<div class="tabs">
+  <button class="tab active" data-tab="sf">1 · What is an ODE?</button>
+  <button class="tab" data-tab="ph">2 · Mechanics</button>
+  <button class="tab" data-tab="lz">3 · Chaos · Lorenz</button>
+  <button class="tab" data-tab="wv">4 · Waves (PDE)</button>
+  <button class="tab" data-tab="df">5 · Diffusion (PDE)</button>
+  <button class="tab" data-tab="map">6 · The zoo</button>
+</div>
+
+<!-- ==================== 1 · SLOPE FIELDS ==================== -->
+<div class="section active" id="sec-sf">
+  <div class="intro">
+    <svg viewBox="0 0 200 120" xmlns="http://www.w3.org/2000/svg">
+      <g stroke="#4A5A4E" stroke-width="1.4" opacity="0.55">
+        <line x1="14" y1="26" x2="26" y2="18"/><line x1="44" y1="30" x2="56" y2="24"/><line x1="74" y1="34" x2="86" y2="30"/><line x1="104" y1="37" x2="116" y2="34"/><line x1="134" y1="39" x2="146" y2="37"/><line x1="164" y1="40" x2="176" y2="39"/>
+        <line x1="14" y1="56" x2="26" y2="46"/><line x1="44" y1="60" x2="56" y2="52"/><line x1="74" y1="64" x2="86" y2="58"/><line x1="104" y1="67" x2="116" y2="63"/><line x1="134" y1="69" x2="146" y2="66"/><line x1="164" y1="71" x2="176" y2="69"/>
+        <line x1="14" y1="88" x2="26" y2="76"/><line x1="44" y1="92" x2="56" y2="82"/><line x1="74" y1="96" x2="86" y2="88"/><line x1="104" y1="99" x2="116" y2="93"/><line x1="134" y1="101" x2="146" y2="97"/><line x1="164" y1="103" x2="176" y2="100"/>
+      </g>
+      <path d="M14 104 C 60 96, 110 70, 186 30" fill="none" stroke="#2F6F4E" stroke-width="2.5"/>
+      <circle cx="14" cy="104" r="4" fill="#A6472F"/>
+    </svg>
+    <div class="txt">
+      <h3>A differential equation is a rule about slopes</h3>
+      <p>It never hands you the answer. It says: <i>"wherever you are, here is the direction you must move next."</i> Draw that direction as a tiny arrow at every point and you get a <b>slope field</b>. Solving means following the arrows from a starting point — that is the whole idea the rest of the playground builds on.</p>
+    </div>
+  </div>
+
+  <div class="layout">
+    <div class="panel">
+      <h2>Physical story</h2>
+      <div class="field"><select id="sfPreset">
+        <option value="cooling">Coffee cooling — Newton's law</option>
+        <option value="growth">Population growth / decay</option>
+        <option value="logistic">Logistic growth — limited food</option>
+      </select></div>
+      <div class="field"><label><span id="sfKLab">k — cooling rate</span> <span class="val" id="sfKOut">0.35</span></label><input id="sfK" type="range" min="0.05" max="1.2" step="0.01" value="0.35"></div>
+
+      <h2>Euler's method</h2>
+      <div class="field"><label>Step size h <span class="val" id="sfHOut">0.50</span></label><input id="sfH" type="range" min="0.05" max="2" step="0.05" value="0.5"></div>
+      <div class="row2" style="margin-bottom:8px">
+        <button class="btn toggle active" id="sfExact">Exact ✓</button>
+        <button class="btn" id="sfClear">Clear</button>
+      </div>
+      <button class="btn primary block" id="sfAnim">▶ Animate last path</button>
+      <p class="hint"><b>Click anywhere on the chart</b> to drop a starting point (an <i>initial condition</i>) and watch Euler's method follow the arrows from there.</p>
+    </div>
+
+    <div>
+      <div class="stats">
+        <div class="stat" style="flex:2.2"><div class="label">the equation</div><div class="value eqv" id="sfEq">…</div></div>
+        <div class="stat"><div class="label">euler steps</div><div class="value" id="sfSteps">–</div></div>
+        <div class="stat warn"><div class="label">error at end</div><div class="value" id="sfErr">–</div></div>
+      </div>
+
+      <div class="box">
+        <h2>Slope field — the equation drawn as arrows</h2>
+        <canvas id="sfMain" class="big"></canvas>
+        <div class="legend">
+          <span><i class="swatch" style="background:#2F6F4E"></i>Euler's method (steps of size h)</span>
+          <span><i class="swatch" style="background:#1E2A22"></i>exact solution</span>
+          <span><i class="swatch" style="background:#A6472F"></i>current slope</span>
+        </div>
+      </div>
+
+      <div class="box">
+        <h2>The rule, and the simplest solver</h2>
+        <div class="eqk" id="sfEqBig"></div>
+        <p><b>Euler's method</b> stands at a point, reads the local slope $f(t,y)$, walks straight in that direction for a small time $h$, and repeats. That single line of code is the ancestor of every physics engine and weather model. Notice what the equation gives you: not the answer, only the <i>rule the answer must obey</i> — remember that when you meet PINNs next door.</p>
+      </div>
+
+      <div class="try"><b>Try this</b>
+        <ol>
+          <li>Drop a hot coffee at 90&nbsp;°C. Arrows point down steeply — hot things cool fast; near 20&nbsp;°C they flatten out.</li>
+          <li>Set <span class="mono">h = 2</span>: Euler's straight jumps visibly miss the curve. Now <span class="mono">h = 0.05</span>: the error nearly vanishes. <b>Smaller steps = more accurate = more work.</b></li>
+          <li>Switch to <i>logistic growth</i> and start near $y=0.5$ and near $y=12$. Every history ends at the same place ($y=10$, the food limit). The field decides everyone's fate at once.</li>
+        </ol>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ==================== 2 · MECHANICS ==================== -->
+<div class="section" id="sec-ph">
+  <div class="intro">
+    <svg viewBox="0 0 200 120" xmlns="http://www.w3.org/2000/svg">
+      <line x1="10" y1="30" x2="10" y2="70" stroke="#1E2A22" stroke-width="3"/>
+      <path d="M10 50 l10 0 l6 -8 l10 16 l10 -16 l10 16 l10 -16 l6 8 l10 0" fill="none" stroke="#4A5A4E" stroke-width="2"/>
+      <rect x="82" y="38" width="26" height="24" rx="3" fill="#2F6F4E"/>
+      <line x1="150" y1="18" x2="150" y2="24" stroke="#1E2A22" stroke-width="3"/>
+      <line x1="150" y1="22" x2="176" y2="74" stroke="#4A5A4E" stroke-width="2"/>
+      <circle cx="176" cy="74" r="10" fill="#A6472F"/>
+    </svg>
+    <div class="txt">
+      <h3>Newton's F = ma is a differential equation</h3>
+      <p>Acceleration is the <i>second</i> derivative of position, so "force sets acceleration" is a rule about derivatives — and simulating motion means solving it step by step. Feel the two systems every physics course starts with, and discover why serious engines don't use plain Euler.</p>
+    </div>
+  </div>
+
+  <div class="layout">
+    <div class="panel">
+      <h2>System</h2>
+      <div class="btngroup">
+        <button class="btn toggle active" id="phSpring">Spring</button>
+        <button class="btn toggle" id="phPend">Pendulum</button>
+      </div>
+      <div id="phSpringCtl">
+        <div class="field"><label>Mass m <span class="val" id="phMOut">1.0</span></label><input id="phM" type="range" min="0.5" max="3" step="0.1" value="1"></div>
+        <div class="field"><label>Stiffness k <span class="val" id="phKOut">8.0</span></label><input id="phK" type="range" min="1" max="25" step="0.5" value="8"></div>
+      </div>
+      <div id="phPendCtl" style="display:none">
+        <div class="field"><label>Length L <span class="val" id="phLOut">1.0</span></label><input id="phL" type="range" min="0.5" max="2" step="0.05" value="1"></div>
+        <div class="field"><label>Start angle θ₀ <span class="val" id="phThOut">60°</span></label><input id="phTh" type="range" min="5" max="175" step="5" value="60"></div>
+      </div>
+      <div class="field"><label>Damping (friction) c <span class="val" id="phCOut">0.20</span></label><input id="phC" type="range" min="0" max="2" step="0.05" value="0.2"></div>
+
+      <h2>Numerical solver</h2>
+      <div class="btngroup">
+        <button class="btn toggle" id="phEuler">Euler</button>
+        <button class="btn toggle active" id="phRK4">RK4</button>
+      </div>
+      <div class="field"><label>Time step dt <span class="val" id="phDtOut">0.020</span></label><input id="phDt" type="range" min="0.002" max="0.09" step="0.002" value="0.02"></div>
+
+      <h2>Playback</h2>
+      <div class="row2">
+        <button class="btn primary" id="phPlay">▶ Play</button>
+        <button class="btn" id="phReset">Reset</button>
+      </div>
+    </div>
+
+    <div>
+      <div class="stats">
+        <div class="stat" style="flex:2.2"><div class="label">newton's law here</div><div class="value eqv" id="phEq">…</div></div>
+        <div class="stat"><div class="label">sim time</div><div class="value" id="phT">0.0 s</div></div>
+        <div class="stat" id="phDriftBox"><div class="label">energy drift</div><div class="value" id="phDrift">0%</div></div>
+      </div>
+
+      <div class="cols2">
+        <div class="box"><h2>The system, live</h2><canvas id="phAnim" class="anim"></canvas></div>
+        <div class="box"><h2>Phase portrait — position vs velocity</h2><canvas id="phPhase" class="sq"></canvas></div>
+      </div>
+      <div class="box"><h2>Position over time</h2><canvas id="phSeries" class="mid"></canvas></div>
+      <div class="box"><h2>Total energy over time — the honesty meter</h2><canvas id="phEnergy" class="small"></canvas>
+        <div class="legend"><span><i class="swatch" style="background:#A6472F"></i>energy of the simulation</span><span><i class="swatch" style="background:#B8892B"></i>true starting energy</span></div>
+      </div>
+
+      <div class="box">
+        <h2>The trick that makes F = ma solvable</h2>
+        <div class="eqk" id="phEqBig"></div>
+        <p>A second derivative is scary, so we split it into two first-order rules — position changes at the rate <i>velocity</i>, and velocity changes at the rate <i>force ÷ mass</i>. Now it is tab 1 twice at once. <b>RK4</b> (Runge–Kutta) probes the slope four times inside each step and blends them, like checking the road ahead before committing to a turn.</p>
+      </div>
+
+      <div class="try"><b>Try this</b>
+        <ol>
+          <li>Damping <span class="mono">c = 0</span>, <b>Euler</b>, dt = 0.05, play. With no friction the energy <i>must</i> stay flat — but the chart climbs and the phase portrait spirals <b>outward</b>. Euler quietly invents energy.</li>
+          <li>Same settings, switch to <b>RK4</b>: flat energy, closed loop. Same physics, same dt, a smarter solver.</li>
+          <li>Pendulum at θ₀ = 170°: it hesitates at the top, then whips around. No tidy formula predicts that shape — which is exactly why we simulate.</li>
+        </ol>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ==================== 3 · LORENZ ==================== -->
+<div class="section" id="sec-lz">
+  <div class="intro">
+    <svg viewBox="0 0 200 120" xmlns="http://www.w3.org/2000/svg">
+      <path d="M40 80 C 10 50, 40 24, 70 40 C 92 52, 74 76, 52 74 C 90 96, 150 84, 168 48 C 178 28, 150 20, 132 34 C 112 50, 128 74, 150 70" fill="none" stroke="#2F6F4E" stroke-width="1.6"/>
+      <circle cx="40" cy="80" r="3" fill="#A6472F"/>
+    </svg>
+    <div class="txt">
+      <h3>Deterministic, yet unpredictable</h3>
+      <p>The Lorenz system is three simple ODEs with no randomness at all. Yet two starts a millionth apart end up in totally different places — the <b>butterfly effect</b>. And the trajectory never repeats or settles: it traces a strange, winged shape called an <b>attractor</b>. This is where "we know the equation exactly" and "we can't predict the future" stop being opposites.</p>
+    </div>
+  </div>
+
+  <div class="layout">
+    <div class="panel">
+      <h2>Parameters</h2>
+      <div class="field"><label>σ — Prandtl <span class="val" id="lzSigOut">10.0</span></label><input id="lzSig" type="range" min="1" max="20" step="0.5" value="10"></div>
+      <div class="field"><label>ρ — Rayleigh <span class="val" id="lzRhoOut">28.0</span></label><input id="lzRho" type="range" min="1" max="60" step="0.5" value="28"></div>
+      <div class="field"><label>β <span class="val" id="lzBetaOut">2.67</span></label><input id="lzBeta" type="range" min="0.5" max="5" step="0.05" value="2.67"></div>
+      <div class="field"><label>Time step dt <span class="val" id="lzDtOut">0.008</span></label><input id="lzDt" type="range" min="0.002" max="0.02" step="0.001" value="0.008"></div>
+
+      <h2>The butterfly test</h2>
+      <button class="btn toggle block active" id="lzTwin">Two nearby starts: ON</button>
+      <div class="field" style="margin-top:12px"><label>Gap between the twins <span class="val" id="lzGapOut">10⁻⁵</span></label><input id="lzGap" type="range" min="-9" max="-1" step="0.5" value="-5"></div>
+      <p class="hint">Twin B starts this far from twin A. Shrinking the gap 1000× buys only a little extra forecast time — that is the whole tragedy of chaos.</p>
+
+      <h2>Playback</h2>
+      <div class="row2">
+        <button class="btn primary" id="lzPlay">▶ Play</button>
+        <button class="btn" id="lzReset">Reset</button>
+      </div>
+    </div>
+
+    <div>
+      <div class="stats">
+        <div class="stat" style="flex:2.6"><div class="label">the lorenz system</div><div class="value eqv" id="lzEq">…</div></div>
+        <div class="stat"><div class="label">sim time</div><div class="value" id="lzT">0.0</div></div>
+        <div class="stat warn"><div class="label">twin separation</div><div class="value" id="lzSep">–</div></div>
+        <div class="stat" id="lzHorBox"><div class="label">forecast horizon</div><div class="value" id="lzHor">–</div></div>
+      </div>
+
+      <div class="box">
+        <h2>The attractor — the x–z plane, trajectory painting itself</h2>
+        <canvas id="lzMain" class="big" style="cursor:default"></canvas>
+        <div class="legend">
+          <span><i class="swatch" style="background:#2F6F4E"></i>trajectory A</span>
+          <span><i class="swatch" style="background:#A6472F"></i>twin B (nearby start)</span>
+          <span><i class="swatch" style="background:#B8892B"></i>current position</span>
+        </div>
+      </div>
+
+      <div class="box">
+        <h2>Distance between the twins (log scale) — the butterfly effect, measured</h2>
+        <canvas id="lzSepCv" class="small"></canvas>
+        <p>A straight line on this log plot means the gap grows by a <i>constant factor</i> every second — exponential divergence. Its slope is the <b>Lyapunov exponent</b>; positive slope = chaos. The line flattens only when the twins are as far apart as the attractor is wide (they can't diverge further).</p>
+      </div>
+
+      <div class="box">
+        <h2>The equations</h2>
+        <div class="eqk" id="lzEqBig"></div>
+        <p>Three variables feeding back on each other — that is all. The nonlinear terms $xz$ and $xy$ are what make it chaotic; drop them and the system becomes a boring damped spiral.</p>
+      </div>
+
+      <div class="box">
+        <h2>What the letters mean — this is a weather toy</h2>
+        <p>Lorenz did not invent these equations for fun: he boiled the physics of <b>air heated from below</b> (a room, the atmosphere, a pot of water) down to three numbers. <b>x</b> = how fast the air is rolling over, <b>y</b> = the temperature gap between the rising and sinking streams, <b>z</b> = how far the vertical temperature profile has bent from a straight line. Warm air rises, cools, sinks, and shoves the roll — that feedback is the $xz$ and $xy$ terms.</p>
+        <p>So the butterfly you see is a stripped-down <b>atmosphere</b>, and the twin experiment is two weather forecasts started from almost-identical measurements. They agree, then abruptly don't — which is exactly why real forecasts fade out after a week or two. <b>Nothing here is random.</b> It is three lines of arithmetic, run forward. Unpredictable and deterministic at the same time.</p>
+      </div>
+
+      <div class="try"><b>Try this</b>
+        <ol>
+          <li>Play with twins ON. For a while the red and green curves are indistinguishable — then they split and wander onto opposite wings. Nothing changed but rounding at the 5th decimal.</li>
+          <li>Turn ρ down to about 14: the two wings collapse into one quiet spiral toward a fixed point. Raise ρ past ~24: the famous butterfly returns. A single knob flips order into chaos.</li>
+          <li>Increase dt toward 0.02: the attractor gets ragged. Even a "known" system is only as trustworthy as the step size — same lesson as tab 2.</li>
+        </ol>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ==================== 4 · WAVE ==================== -->
+<div class="section" id="sec-wv">
+  <div class="intro">
+    <svg viewBox="0 0 200 120" xmlns="http://www.w3.org/2000/svg">
+      <path d="M6 60 Q 30 20 54 60 T 102 60 T 150 60 T 198 60" fill="none" stroke="#2F6F4E" stroke-width="2"/>
+      <path d="M6 60 Q 30 96 54 60 T 102 60 T 150 60 T 198 60" fill="none" stroke="#C7DBCB" stroke-width="2"/>
+      <circle cx="6" cy="60" r="3" fill="#1E2A22"/><circle cx="198" cy="60" r="3" fill="#1E2A22"/>
+    </svg>
+    <div class="txt">
+      <h3>The wave equation — a rule at every point in space</h3>
+      <p>So far the unknown depended on time alone. A <b>partial differential equation (PDE)</b> lets it depend on space too: $u(x,t)$, the height of a string at position $x$ and time $t$. The wave equation says each little piece accelerates toward the average of its neighbours — pluck it and the shape travels. Same derivative-rule idea, now spread across a whole line.</p>
+    </div>
+  </div>
+
+  <div class="layout">
+    <div class="panel">
+      <h2>Physics</h2>
+      <div class="field"><label>Wave speed c <span class="val" id="wvCOut">1.00</span></label><input id="wvC" type="range" min="0.3" max="2.5" step="0.05" value="1"></div>
+      <div class="field"><label>Damping <span class="val" id="wvDampOut">0.00</span></label><input id="wvDamp" type="range" min="0" max="1.5" step="0.05" value="0"></div>
+      <div class="field"><label>Boundaries</label><select id="wvBC">
+        <option value="fixed">Fixed ends (tied down)</option>
+        <option value="free">Free ends (loose)</option>
+      </select></div>
+
+      <h2>Numerics</h2>
+      <div class="field"><label>Grid points N <span class="val" id="wvNOut">120</span></label><input id="wvN" type="range" min="40" max="200" step="10" value="120"></div>
+      <div class="field"><label>Time step dt <span class="val" id="wvDtOut">0.60</span></label><input id="wvDt" type="range" min="0.1" max="1.4" step="0.05" value="0.6"></div>
+
+      <h2>Start shape</h2>
+      <div class="row2" style="margin-bottom:8px">
+        <button class="btn" id="wvPluck">Pluck</button>
+        <button class="btn" id="wvTwo">Two pulses</button>
+      </div>
+      <p class="hint"><b>Or drag on the string</b> to shape it, then press play.</p>
+
+      <h2>Driver — shake one end</h2>
+      <button class="btn toggle block" id="wvDrive">Wiggle the left end: OFF</button>
+      <div class="field"><label>Drive shape (humps) <span class="val" id="wvModeOut">3.0</span></label><input id="wvMode" type="range" min="0.5" max="6" step="0.1" value="3"></div>
+      <p class="hint">Like pushing a child on a swing: at whole-number humps the whole string locks into a clean <b>standing wave</b> — resonance. Between them it stays choppy.</p>
+
+      <h2>Playback</h2>
+      <div class="row2">
+        <button class="btn primary" id="wvPlay">▶ Play</button>
+        <button class="btn" id="wvReset">Reset</button>
+      </div>
+    </div>
+
+    <div>
+      <div class="stats">
+        <div class="stat" style="flex:2.4"><div class="label">wave equation</div><div class="value eqv" id="wvEq">…</div></div>
+        <div class="stat" id="wvCflBox"><div class="label">CFL number</div><div class="value" id="wvCfl">–</div></div>
+      </div>
+
+      <div class="box">
+        <h2>The string, live</h2>
+        <canvas id="wvMain" class="mid" style="cursor:crosshair"></canvas>
+        <div class="legend">
+          <span><i class="swatch" style="background:#2F6F4E"></i>the string u(x)</span>
+          <span><i class="swatch" style="background:#B8892B"></i>markers that ride it — notice they only move <b>up and down</b>, never sideways</span>
+        </div>
+        <p style="font-size:12.5px;color:var(--ink-soft);margin:8px 0 0">The <i>shape</i> races along the string, but no bit of string travels — each point just bobs in place. That is the deep surprise of a wave: motion of a <b>pattern</b>, not of stuff. And all of it is the one equation below, applied at every point.</p>
+      </div>
+      <div class="box">
+        <h2>Space–time diagram — position across, time downward</h2>
+        <canvas id="wvHeat" class="heat"></canvas>
+        <p>Each row is one snapshot of the string; time runs downward. Travelling waves show up as <b>diagonal stripes</b> (a bump moving), reflecting off the walls. This "X" pattern is the signature of the wave equation.</p>
+      </div>
+
+      <div class="box">
+        <h2>The equation, and the stability rule</h2>
+        <div class="eqk" id="wvEqBig"></div>
+        <p>The explicit scheme is only stable when the <b>CFL number</b> $C = c\,\Delta t/\Delta x \le 1$: within one time step, information must not skip past a grid cell. Break it and the numbers explode — not because the physics is wrong, but because the solver outran the wave.</p>
+      </div>
+
+      <div class="try"><b>Try this</b>
+        <ol>
+          <li>Pluck and play with fixed ends: the bump splits into two halves that race apart, bounce off the walls <b>flipped upside-down</b>, and re-cross. Switch to free ends — now they bounce back <b>upright</b>.</li>
+          <li>Push dt up until the CFL badge turns red (C &gt; 1) and play: the string erupts into jagged infinity within a few steps. Nudge dt back below and it's calm again.</li>
+          <li>Add damping and watch the space–time stripes fade downward — energy leaking away, exactly like friction in the mechanics tab.</li>
+          <li>Turn on the <b>driver</b> and set humps to <b>3</b>: the string settles into three clean stationary loops — a <i>standing wave</i>. Slide humps to 3.5 and it turns choppy; back to 4 and four clean loops appear. Those magic integers are resonances, the same physics as a guitar string or an organ pipe.</li>
+        </ol>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ==================== 5 · DIFFUSION ==================== -->
+<div class="section" id="sec-df">
+  <div class="intro">
+    <svg viewBox="0 0 200 120" xmlns="http://www.w3.org/2000/svg">
+      <path d="M6 96 L 90 96 L 100 20 L 110 96 L 194 96" fill="none" stroke="#A6472F" stroke-width="2"/>
+      <path d="M6 96 C 60 92, 80 44, 100 44 C 120 44, 140 92, 194 96" fill="none" stroke="#B8892B" stroke-width="2"/>
+      <path d="M6 96 C 50 94, 78 72, 100 72 C 122 72, 150 94, 194 96" fill="none" stroke="#2F6F4E" stroke-width="2"/>
+    </svg>
+    <div class="txt">
+      <h3>The heat equation — smoothing, forgetting, spreading</h3>
+      <p>Change one sign from the wave equation (a first time-derivative instead of a second) and the character flips completely. Instead of travelling and bouncing forever, a hot spot <b>spreads out and fades</b>. Heat in a rod, ink in water, a rumour in a crowd — all obey $u_t = \alpha\,u_{xx}$. It is the arrow of time made into an equation.</p>
+    </div>
+  </div>
+
+  <div class="layout">
+    <div class="panel">
+      <h2>Physics</h2>
+      <div class="field"><label>Diffusivity α <span class="val" id="dfAOut">1.0</span></label><input id="dfA" type="range" min="0.2" max="3" step="0.1" value="1"></div>
+      <div class="field"><label>Boundaries</label><select id="dfBC">
+        <option value="fixed">Ends held cold (u = 0)</option>
+        <option value="insul">Insulated ends (no leak)</option>
+        <option value="hot">Left end on a stove (u = 1)</option>
+      </select></div>
+
+      <h2>Numerics</h2>
+      <div class="field"><label>Grid points N <span class="val" id="dfNOut">80</span></label><input id="dfN" type="range" min="30" max="160" step="10" value="80"></div>
+      <div class="field"><label>Time step dt <span class="val" id="dfDtOut">0.30</span></label><input id="dfDt" type="range" min="0.05" max="0.9" step="0.05" value="0.3"></div>
+
+      <h2>Start heat</h2>
+      <div class="row2" style="margin-bottom:8px">
+        <button class="btn" id="dfSpot">Hot spot</button>
+        <button class="btn" id="dfTwo">Two spots</button>
+      </div>
+      <p class="hint"><b>Or drag to paint</b> a temperature profile, then play.</p>
+
+      <h2>Playback</h2>
+      <div class="row2">
+        <button class="btn primary" id="dfPlay">▶ Play</button>
+        <button class="btn" id="dfReset">Reset</button>
+      </div>
+    </div>
+
+    <div>
+      <div class="stats">
+        <div class="stat" style="flex:2.2"><div class="label">heat equation</div><div class="value eqv" id="dfEq">…</div></div>
+        <div class="stat" id="dfStabBox"><div class="label">stability r</div><div class="value" id="dfStab">–</div></div>
+        <div class="stat"><div class="label">avg temperature</div><div class="value" id="dfHeat">–</div></div>
+      </div>
+
+      <div class="box">
+        <h2>The rod itself — temperature as colour</h2>
+        <canvas id="dfRod" style="height:46px;border-radius:3px"></canvas>
+        <p style="font-size:12.5px;color:var(--ink-soft);margin:8px 0 0">This is the physical object: a metal bar, hot spots glowing, cool spots dark. The curve below is the same thing plotted as height. Watch the colours smear together — heat flowing from hot to cold — which is nothing but the equation moving each point toward the average of its neighbours.</p>
+      </div>
+      <div class="box">
+        <h2>Temperature profile, live</h2>
+        <canvas id="dfMain" class="mid" style="cursor:crosshair"></canvas>
+      </div>
+      <div class="box">
+        <h2>Space–time diagram — watch the colours blur</h2>
+        <canvas id="dfHeat2" class="heat"></canvas>
+        <p>No diagonal stripes here — just a warm blob that <b>softens and bleeds outward</b> as time runs down. Diffusion has no memory of the exact starting shape; wave motion never forgets it. Two signs of a derivative, two opposite worlds.</p>
+      </div>
+
+      <div class="box">
+        <h2>The equation, and its stability rule</h2>
+        <div class="eqk" id="dfEqBig"></div>
+        <p>The explicit scheme is stable only when $r = \alpha\,\Delta t/\Delta x^2 \le \tfrac{1}{2}$. Because $\Delta x^2$ sits in the denominator, doubling the grid resolution forces a <b>4×</b> smaller time step — the reason fine simulations are so expensive, and a big motivation for the ML surrogates next door.</p>
+      </div>
+
+      <div class="try"><b>Try this</b>
+        <ol>
+          <li>Hot spot, held-cold ends, play: the peak melts down and drains out the sides — the average temperature falls toward zero.</li>
+          <li>Switch to <b>insulated ends</b>: now the average temperature stays <b>constant</b> while the profile flattens to a uniform lukewarm line. Conserved but forgotten.</li>
+          <li>Switch to <b>left end on a stove</b>: the rod starts cold, then heat creeps in from the left and settles into a steady <b>straight-line</b> slope from hot to cold — a fridge door left ajar, a soldering iron on a bar. The equation reaches a balance where inflow equals outflow.</li>
+          <li>Raise dt until the stability badge turns red ($r &gt; 0.5$): the smooth blob erupts into a jagged sawtooth. Same explicit-scheme trap as the wave, different threshold.</li>
+        </ol>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ==================== 6 · ZOO ==================== -->
+<div class="section" id="sec-map">
+  <div class="box">
+    <h2>One idea, many equations</h2>
+    <p style="margin-top:2px">Everything in this playground is a <b>rule about derivatives</b>. What changes is how many variables the rule touches, and how the time-derivative appears.</p>
+    <div style="overflow-x:auto; margin-top:12px">
+    <table class="cmp">
+      <tr><th></th><th>Depends on</th><th>Type</th><th>Character</th><th>Seen in</th></tr>
+      <tr><td>Cooling / logistic</td><td>time only</td><td>ODE, 1st order</td><td>settles to an equilibrium</td><td>tab 1</td></tr>
+      <tr><td>Spring / pendulum</td><td>time only</td><td>ODE, 2nd order</td><td>oscillates, conserves energy</td><td>tab 2</td></tr>
+      <tr><td>Lorenz</td><td>time only</td><td>ODE, nonlinear</td><td>chaotic, unpredictable</td><td>tab 3</td></tr>
+      <tr><td>Wave</td><td>space + time</td><td>PDE, hyperbolic</td><td>travels &amp; reflects, remembers</td><td>tab 4</td></tr>
+      <tr><td>Diffusion</td><td>space + time</td><td>PDE, parabolic</td><td>spreads &amp; smooths, forgets</td><td>tab 5</td></tr>
+    </table>
+    </div>
+  </div>
+
+  <div class="box">
+    <h2>Two lessons that carry into scientific ML</h2>
+    <p><b>1 · A model is only as good as its solver.</b> Euler invented energy; a too-big time step blew up the wave and the heat. Every classical simulation trades accuracy for compute, step by tiny step — and must re-run from scratch for every new setup. That cost is exactly what neural operators try to buy back.</p>
+    <p><b>2 · Knowing the equation is not the same as knowing the answer.</b> Lorenz is fully known and still unpredictable; the wave and heat equations need a whole grid marched through time. Scientific ML asks the mirror-image questions: can a network obey a known equation with almost no data (PINN)? recover an <i>unknown</i> equation from data (SINDy)? or learn the solver itself (DeepONet, FNO)?</p>
+    <p style="margin-top:12px"><b><a href="scientific_ml.html">Continue to Scientific machine learning →</a></b></p>
+  </div>
+
+  <div class="box">
+    <h2>Check yourself</h2>
+    <div id="quizBox"></div>
+  </div>
+</div>
+
+<footer>
+  Built for classroom use · every simulation runs live in this page — no server · companion to the <a href="scientific_ml.html">Scientific ML</a> playground and the other AI playgrounds.
+</footer>
+
+</div>
+<script>
+"use strict";
+const $ = id => document.getElementById(id);
+const COL = { ink:'#1E2A22', soft:'#4A5A4E', moss:'#2F6F4E', mossDim:'#C7DBCB', rust:'#A6472F',
+              rustDim:'#EDD6CD', gold:'#B8892B', goldDim:'#EFE0BC', border:'#CFCDBB', line:'#DAD8C8' };
+function fmt(v,d=2){ if(!isFinite(v)) return '–'; return v.toFixed(d).replace(/-/g,'−'); }
+function lerp(a,b,t){ return Math.round(a+(b-a)*t); }
+
+/* ---- KaTeX ---- */
+let KATEX_READY=false;
+function renderEq(el,tex,display){
+  if(!el) return;
+  el.dataset.tex=tex; el.dataset.disp=display?'1':'0';
+  if(KATEX_READY && window.katex){ try{ katex.render(tex,el,{displayMode:!!display,throwOnError:false}); return; }catch(e){} }
+  el.textContent=tex;
+}
+window.__mathReady=function(){
+  KATEX_READY=true;
+  document.querySelectorAll('[data-tex]').forEach(el=>{ try{ katex.render(el.dataset.tex,el,{displayMode:el.dataset.disp==='1',throwOnError:false}); }catch(e){} });
+  try{ if(window.renderMathInElement) renderMathInElement(document.body,{delimiters:[{left:'$$',right:'$$',display:true},{left:'$',right:'$',display:false},{left:'\\(',right:'\\)',display:false}],ignoredClasses:['mono']}); }catch(e){}
+};
+
+/* ---- canvas + plot ---- */
+function getCv(id){
+  const c=$(id); if(!c) return null; const r=c.getBoundingClientRect();
+  if(r.width<5) return null;
+  const dpr=window.devicePixelRatio||1, W=Math.round(r.width), H=Math.round(r.height);
+  if(c.width!==Math.round(W*dpr)||c.height!==Math.round(H*dpr)){ c.width=Math.round(W*dpr); c.height=Math.round(H*dpr); }
+  const x=c.getContext('2d'); x.setTransform(dpr,0,0,dpr,0,0);
+  return { x, w:W, h:H, el:c };
+}
+function niceStep(range,n){ const raw=range/Math.max(1,n), mag=Math.pow(10,Math.floor(Math.log10(raw))), nm=raw/mag;
+  return (nm<1.5?1:nm<3.5?2:nm<7.5?5:10)*mag; }
+function Plot(cv,x0,x1,y0,y1,opt={}){
+  const p={ l:opt.l??46, r:opt.r??10, t:opt.t??10, b:opt.b??24 };
+  const g=cv.x, W=cv.w, H=cv.h;
+  const px=v=>p.l+(v-x0)/(x1-x0)*(W-p.l-p.r);
+  const py=v=>H-p.b-(v-y0)/(y1-y0)*(H-p.t-p.b);
+  g.clearRect(0,0,W,H); g.fillStyle='#fff'; g.fillRect(p.l,p.t,W-p.l-p.r,H-p.t-p.b);
+  g.font='10px Consolas,monospace'; g.lineWidth=1;
+  const sx=niceStep(x1-x0,opt.nx??6);
+  for(let v=Math.ceil(x0/sx-1e-9)*sx; v<=x1+1e-9; v+=sx){
+    g.strokeStyle=COL.line; g.beginPath(); g.moveTo(px(v),p.t); g.lineTo(px(v),H-p.b); g.stroke();
+    g.fillStyle=COL.soft; g.textAlign='center'; g.fillText(Math.abs(v)<1e-9?'0':(+v.toFixed(6)).toString(), px(v), H-p.b+13);
+  }
+  const sy=niceStep(y1-y0,opt.ny??5);
+  for(let v=Math.ceil(y0/sy-1e-9)*sy; v<=y1+1e-9; v+=sy){
+    g.strokeStyle=COL.line; g.beginPath(); g.moveTo(p.l,py(v)); g.lineTo(W-p.r,py(v)); g.stroke();
+    g.fillStyle=COL.soft; g.textAlign='right'; g.fillText((+v.toFixed(6)).toString(), p.l-5, py(v)+3.5);
+  }
+  g.strokeStyle=COL.border; g.strokeRect(p.l,p.t,W-p.l-p.r,H-p.t-p.b);
+  if(opt.xlab){ g.fillStyle=COL.soft; g.textAlign='right'; g.font='11px Consolas,monospace'; g.fillText(opt.xlab,W-p.r-4,H-p.b-6); }
+  if(opt.ylab){ g.fillStyle=COL.soft; g.textAlign='left'; g.font='11px Consolas,monospace'; g.fillText(opt.ylab,p.l+6,p.t+13); }
+  return { g,px,py,x0,x1,y0,y1,p,W,H,
+    clip(){ g.save(); g.beginPath(); g.rect(p.l,p.t,W-p.l-p.r,H-p.t-p.b); g.clip(); },
+    unclip(){ g.restore(); },
+    line(xs,ys,color,wd=2,dash=[]){ g.strokeStyle=color; g.lineWidth=wd; g.setLineDash(dash); g.beginPath();
+      let st=false; for(let i=0;i<xs.length;i++){ const X=px(xs[i]),Y=py(ys[i]);
+        if(!isFinite(X)||!isFinite(Y)){ st=false; continue; } if(!st){ g.moveTo(X,Y); st=true; } else g.lineTo(X,Y); }
+      g.stroke(); g.setLineDash([]); },
+    dot(x,y,r,color,strokeC){ g.fillStyle=color; g.beginPath(); g.arc(px(x),py(y),r,0,7); g.fill();
+      if(strokeC){ g.strokeStyle=strokeC; g.lineWidth=1.2; g.stroke(); } },
+    invx(mx){ return x0+(mx-p.l)/(W-p.l-p.r)*(x1-x0); },
+    invy(my){ return y0+(H-p.b-my)/(H-p.t-p.b)*(y1-y0); },
+  };
+}
+function arrowSeg(g,x0,y0,x1,y1,color,wd=2){
+  g.strokeStyle=color; g.fillStyle=color; g.lineWidth=wd;
+  g.beginPath(); g.moveTo(x0,y0); g.lineTo(x1,y1); g.stroke();
+  const a=Math.atan2(y1-y0,x1-x0), s=6;
+  g.beginPath(); g.moveTo(x1,y1);
+  g.lineTo(x1-s*Math.cos(a-0.45),y1-s*Math.sin(a-0.45));
+  g.lineTo(x1-s*Math.cos(a+0.45),y1-s*Math.sin(a+0.45));
+  g.closePath(); g.fill();
+}
+const _tmpc = document.createElement('canvas');
+function drawHeat(cv, rows, N, vmax, diverging){
+  const g=cv.x, W=cv.w, H=cv.h;
+  g.clearRect(0,0,W,H); g.fillStyle='#fff'; g.fillRect(0,0,W,H);
+  const R=rows.length; if(R===0) return;
+  _tmpc.width=N; _tmpc.height=R;
+  const tg=_tmpc.getContext('2d'), img=tg.createImageData(N,R);
+  for(let r=0;r<R;r++){ const row=rows[r];
+    for(let i=0;i<N;i++){ let v=row[i]/(vmax||1), cr,cg,cb;
+      if(diverging){ const t=Math.max(-1,Math.min(1,v));
+        if(t>=0){ cr=lerp(247,166,t); cg=lerp(246,71,t); cb=lerp(239,47,t); }
+        else { const s=-t; cr=lerp(247,47,s); cg=lerp(246,111,s); cb=lerp(239,78,s); } }
+      else { const t=Math.max(0,Math.min(1,v));
+        if(t<0.5){ const s=t/0.5; cr=lerp(247,184,s); cg=lerp(246,137,s); cb=lerp(239,43,s); }
+        else { const s=(t-0.5)/0.5; cr=lerp(184,166,s); cg=lerp(137,71,s); cb=lerp(43,47,s); } }
+      const o=(r*N+i)*4; img.data[o]=cr; img.data[o+1]=cg; img.data[o+2]=cb; img.data[o+3]=255;
+    } }
+  tg.putImageData(img,0,0);
+  g.imageSmoothingEnabled=true; g.drawImage(_tmpc,0,0,N,R,0,0,W,H);
+}
+
+/* ---- tab plumbing + loop ---- */
+let ACTIVE='sf';
+const REDRAW={}, TICKS=[];
+document.querySelectorAll('.tab').forEach(b=>b.addEventListener('click',()=>{
+  document.querySelectorAll('.tab').forEach(x=>x.classList.toggle('active',x===b));
+  ACTIVE=b.dataset.tab;
+  document.querySelectorAll('.section').forEach(s=>s.classList.toggle('active',s.id==='sec-'+ACTIVE));
+  if(REDRAW[ACTIVE]) REDRAW[ACTIVE]();
+}));
+window.addEventListener('resize',()=>{ if(REDRAW[ACTIVE]) REDRAW[ACTIVE](); });
+let _lastTs=0;
+function _loop(ts){ const dt=Math.min(0.05,(ts-_lastTs)/1000); _lastTs=ts;
+  for(const f of TICKS) f(dt); requestAnimationFrame(_loop); }
+requestAnimationFrame(_loop);
+
+/* ==================== 1 · SLOPE FIELDS ==================== */
+(() => {
+const P = {
+  cooling:{ T:10, ylo:0, yhi:100, k:[0.05,1.2,0.01,0.35], klab:'k — cooling rate',
+    f:(t,y,k)=>-k*(y-20), ex:(t,t0,y0,k)=>20+(y0-20)*Math.exp(-k*(t-t0)),
+    eq:k=>`\\frac{dT}{dt} = -${fmt(k)}\\,(T-20)`, xlab:'time (min)', ylab:'temp °C' },
+  growth:{ T:6, ylo:0, yhi:12, k:[-1,1,0.05,0.45], klab:'r — growth rate',
+    f:(t,y,r)=>r*y, ex:(t,t0,y0,r)=>y0*Math.exp(r*(t-t0)),
+    eq:r=>`\\frac{dy}{dt} = ${fmt(r)}\\,y`, xlab:'time', ylab:'population y' },
+  logistic:{ T:14, ylo:0, yhi:13, k:[0.2,1.4,0.05,0.55], klab:'r — growth rate',
+    f:(t,y,r)=>r*y*(1-y/10), ex:(t,t0,y0,r)=>{ y0=Math.max(y0,1e-6); const A=(10-y0)/y0; return 10/(1+A*Math.exp(-r*(t-t0))); },
+    eq:r=>`\\frac{dy}{dt} = ${fmt(r)}\\,y\\left(1-\\frac{y}{10}\\right)`, xlab:'time', ylab:'population y' },
+};
+let cur='cooling', k=0.35, h=0.5, showExact=true, paths=[], anim=null, LP=null;
+function eulerPath(t0,y0){ const p=P[cur]; const pts=[[t0,y0]]; let t=t0,y=y0,n=0;
+  while(t<p.T-1e-9 && n<3000){ const hh=Math.min(h,p.T-t); y+=hh*p.f(t,y,k); t+=hh; n++;
+    if(!isFinite(y)||Math.abs(y)>1e6) break; pts.push([t,y]); } return pts; }
+function draw(){
+  const cv=getCv('sfMain'); if(!cv) return; const p=P[cur];
+  const pl=Plot(cv,0,p.T,p.ylo,p.yhi,{xlab:p.xlab,ylab:p.ylab}); LP=pl;
+  const nx=24, ny=15, seg=10;
+  const sxu=pl.px(1)-pl.px(0), syu=pl.py(p.ylo)-pl.py(p.ylo+1);
+  pl.g.strokeStyle='rgba(74,90,78,0.5)'; pl.g.lineWidth=1.3;
+  for(let i=0;i<nx;i++) for(let j=0;j<ny;j++){
+    const t=(i+0.5)/nx*p.T, y=p.ylo+(j+0.5)/ny*(p.yhi-p.ylo), m=p.f(t,y,k);
+    let vx=sxu, vy=m*syu; const L=Math.hypot(vx,vy)||1; vx*=seg/2/L; vy*=seg/2/L;
+    const X=pl.px(t), Y=pl.py(y);
+    pl.g.beginPath(); pl.g.moveTo(X-vx,Y+vy); pl.g.lineTo(X+vx,Y-vy); pl.g.stroke();
+  }
+  pl.clip();
+  paths.forEach((pt,ix)=>{ const last=ix===paths.length-1;
+    if(showExact){ const xs=[],ys=[]; for(let i=0;i<=200;i++){ const t=pt.t0+(p.T-pt.t0)*i/200; xs.push(t); ys.push(p.ex(t,pt.t0,pt.y0,k)); } pl.line(xs,ys,COL.ink,1.6,[6,4]); }
+    let ep=pt.pts; if(anim&&last) ep=ep.slice(0,anim.k+1);
+    pl.line(ep.map(q=>q[0]),ep.map(q=>q[1]),COL.moss,2.2);
+    ep.forEach(q=>pl.dot(q[0],q[1],2.6,COL.moss));
+    pl.dot(pt.t0,pt.y0,4.5,COL.rust,'#fff');
+    if(anim&&last&&anim.k<pt.pts.length-1){ const [tc,yc]=ep[ep.length-1]; const m=p.f(tc,yc,k);
+      let vx=sxu, vy=m*syu; const L=Math.hypot(vx,vy)||1; const al=34;
+      arrowSeg(pl.g,pl.px(tc),pl.py(yc),pl.px(tc)+vx*al/L,pl.py(yc)-vy*al/L,COL.rust,2.4); }
+  });
+  pl.unclip();
+  renderEq($('sfEq'),p.eq(k),false);
+  if(paths.length){ const pt=paths[paths.length-1]; $('sfSteps').textContent=pt.pts.length-1;
+    const yEnd=pt.pts[pt.pts.length-1][1], yTrue=p.ex(p.T,pt.t0,pt.y0,k);
+    $('sfErr').textContent=fmt(Math.abs(yEnd-yTrue),Math.abs(yEnd-yTrue)<0.1?3:1);
+  } else { $('sfSteps').textContent='–'; $('sfErr').textContent='–'; }
+}
+function rebuild(){ paths.forEach(pt=>pt.pts=eulerPath(pt.t0,pt.y0)); anim=null; draw(); }
+$('sfMain').addEventListener('click',e=>{ if(!LP) return;
+  const r=$('sfMain').getBoundingClientRect(); const t=LP.invx(e.clientX-r.left), y=LP.invy(e.clientY-r.top);
+  const p=P[cur]; if(t<0||t>p.T*0.95||y<p.ylo||y>p.yhi) return;
+  paths.push({t0:t,y0:y,pts:eulerPath(t,y)}); if(paths.length>4) paths.shift(); anim=null; draw(); });
+$('sfPreset').addEventListener('change',e=>{ cur=e.target.value; const kk=P[cur].k;
+  const s=$('sfK'); s.min=kk[0]; s.max=kk[1]; s.step=kk[2]; s.value=kk[3]; k=kk[3];
+  $('sfKLab').textContent=P[cur].klab; $('sfKOut').textContent=fmt(k); paths=[]; anim=null; draw(); });
+$('sfK').addEventListener('input',e=>{ k=+e.target.value; $('sfKOut').textContent=fmt(k); rebuild(); });
+$('sfH').addEventListener('input',e=>{ h=+e.target.value; $('sfHOut').textContent=fmt(h); rebuild(); });
+$('sfExact').addEventListener('click',e=>{ showExact=!showExact; e.target.classList.toggle('active',showExact);
+  e.target.textContent=showExact?'Exact ✓':'Exact ✗'; draw(); });
+$('sfClear').addEventListener('click',()=>{ paths=[]; anim=null; draw(); });
+$('sfAnim').addEventListener('click',()=>{ if(!paths.length) return; anim={k:0,timer:0}; draw(); });
+TICKS.push(dt=>{ if(ACTIVE!=='sf'||!anim) return; anim.timer+=dt;
+  const stepT=Math.max(0.06,0.5-paths[paths.length-1].pts.length*0.004);
+  if(anim.timer>stepT){ anim.timer=0; anim.k++; if(anim.k>=paths[paths.length-1].pts.length-1) anim=null; draw(); } });
+REDRAW.sf=draw;
+renderEq($('sfEqBig'),'\\frac{dy}{dt}=f(t,y)\\qquad\\Longrightarrow\\qquad y_{n+1}=y_n+h\\,f(t_n,y_n)',true);
+draw();
+})();
+
+/* ==================== 2 · MECHANICS ==================== */
+(() => {
+let sys='spring', solver='rk4', dt=0.02, playing=false, dirty=true;
+const prm={ m:1, k:8, c:0.2, L:1, th0:60 };
+let t=0, s=[1.4,0], hist=[], E0=1;
+function deriv(st){ if(sys==='spring'){ const [x,v]=st; return [v,-(prm.k/prm.m)*x-(prm.c/prm.m)*v]; }
+  const [th,om]=st; return [om,-(9.8/prm.L)*Math.sin(th)-prm.c*om]; }
+function energy(st){ if(sys==='spring'){ const [x,v]=st; return 0.5*prm.m*v*v+0.5*prm.k*x*x; }
+  const [th,om]=st; return 0.5*prm.L*prm.L*om*om+9.8*prm.L*(1-Math.cos(th)); }
+function stepOnce(){ if(solver==='euler'){ const d=deriv(s); s=[s[0]+dt*d[0],s[1]+dt*d[1]]; }
+  else { const k1=deriv(s), k2=deriv([s[0]+dt/2*k1[0],s[1]+dt/2*k1[1]]), k3=deriv([s[0]+dt/2*k2[0],s[1]+dt/2*k2[1]]), k4=deriv([s[0]+dt*k3[0],s[1]+dt*k3[1]]);
+    s=[s[0]+dt/6*(k1[0]+2*k2[0]+2*k3[0]+k4[0]), s[1]+dt/6*(k1[1]+2*k2[1]+2*k3[1]+k4[1])]; } t+=dt; }
+function push(){ hist.push({t,a:s[0],b:s[1],E:energy(s)}); if(hist.length>12000) hist=hist.filter((_,i)=>i%2===0); }
+function reset(){ t=0; s=sys==='spring'?[1.4,0]:[prm.th0*Math.PI/180,0]; hist=[]; E0=energy(s); push(); dirty=true; }
+function eqText(){ if(sys==='spring') return `${fmt(prm.m,1)}\\,\\ddot{x} = -${fmt(prm.k,1)}\\,x - ${fmt(prm.c)}\\,\\dot{x}`;
+  return `\\ddot{\\theta} = -\\tfrac{9.8}{${fmt(prm.L)}}\\sin\\theta - ${fmt(prm.c)}\\,\\dot{\\theta}`; }
+function drawAnim(){ const cv=getCv('phAnim'); if(!cv) return; const g=cv.x,W=cv.w,H=cv.h;
+  g.clearRect(0,0,W,H); g.fillStyle='#fff'; g.fillRect(0,0,W,H); g.strokeStyle=COL.border; g.strokeRect(0.5,0.5,W-1,H-1);
+  if(sys==='spring'){ const cy=H/2, x0=Math.max(0,Math.min(1,(s[0]+2.4)/4.8)), bx=30+x0*(W-90);
+    g.strokeStyle=COL.line; g.lineWidth=1; g.beginPath(); g.moveTo(10,cy+34); g.lineTo(W-10,cy+34); g.stroke();
+    g.fillStyle=COL.ink; g.fillRect(8,cy-52,6,104);
+    const eqx=30+0.5*(W-90); g.strokeStyle=COL.line; g.setLineDash([4,4]); g.beginPath(); g.moveTo(eqx+17,cy-52); g.lineTo(eqx+17,cy+34); g.stroke(); g.setLineDash([]);
+    const n=9, sx=14, ex=bx; g.strokeStyle=COL.soft; g.lineWidth=2; g.beginPath(); g.moveTo(sx,cy);
+    for(let i=1;i<=n;i++){ const xx=sx+(ex-sx)*i/(n+1); g.lineTo(xx,cy+(i%2?-13:13)); } g.lineTo(ex,cy); g.stroke();
+    g.fillStyle=COL.moss; g.fillRect(bx,cy-17,34,34); g.strokeStyle=COL.ink; g.strokeRect(bx,cy-17,34,34);
+    if(Math.abs(s[1])>0.15) arrowSeg(g,bx+17,cy-30,bx+17+Math.max(-46,Math.min(46,s[1]*10)),cy-30,COL.rust,2);
+    g.fillStyle=COL.soft; g.font='11px Consolas,monospace'; g.textAlign='left'; g.fillText(`x = ${fmt(s[0])}   v = ${fmt(s[1])}`,12,H-10);
+  } else { const cx=W/2, cy=44, Lpx=(H-100)*Math.min(1,0.35+prm.L*0.32);
+    const bx=cx+Lpx*Math.sin(s[0]), by=cy+Lpx*Math.cos(s[0]);
+    g.strokeStyle=COL.line; g.setLineDash([3,4]); g.beginPath(); g.arc(cx,cy,Lpx,0.25*Math.PI,0.75*Math.PI); g.stroke(); g.setLineDash([]);
+    g.fillStyle=COL.ink; g.fillRect(cx-22,cy-8,44,8); g.strokeStyle=COL.soft; g.lineWidth=2.5;
+    g.beginPath(); g.moveTo(cx,cy); g.lineTo(bx,by); g.stroke();
+    g.fillStyle=COL.rust; g.beginPath(); g.arc(bx,by,13,0,7); g.fill(); g.strokeStyle=COL.ink; g.stroke();
+    g.fillStyle=COL.soft; g.font='11px Consolas,monospace'; g.textAlign='left'; g.fillText(`θ = ${fmt(s[0]*180/Math.PI,0)}°   ω = ${fmt(s[1])}`,12,H-10);
+  } }
+function draw(){ drawAnim();
+  const win=12, t1=Math.max(win,t), t0v=t1-win, hv=hist.filter(q=>q.t>=t0v), isSp=sys==='spring';
+  const cv1=getCv('phSeries');
+  if(cv1){ let lo=-2,hi=2; if(!isSp){ lo=-Math.PI-0.4; hi=Math.PI+0.4; }
+    const amax=hv.reduce((m,q)=>Math.max(m,Math.abs(q.a)),1e-6); if(amax>hi){ hi=amax*1.1; lo=-hi; }
+    const pl=Plot(cv1,t0v,t1,lo,hi,{xlab:'t (s)',ylab:isSp?'x':'θ'});
+    pl.clip(); pl.g.strokeStyle=COL.line; pl.g.beginPath(); pl.g.moveTo(pl.px(t0v),pl.py(0)); pl.g.lineTo(pl.px(t1),pl.py(0)); pl.g.stroke();
+    pl.line(hv.map(q=>q.t),hv.map(q=>q.a),COL.moss,2); pl.unclip(); }
+  const cv2=getCv('phEnergy');
+  if(cv2){ const em=hv.reduce((m,q)=>Math.max(m,q.E),E0); const pl=Plot(cv2,t0v,t1,0,em*1.15+1e-6,{xlab:'t (s)',ylab:'E'});
+    pl.clip(); pl.line([t0v,t1],[E0,E0],COL.gold,1.6,[5,4]); pl.line(hv.map(q=>q.t),hv.map(q=>q.E),COL.rust,2); pl.unclip(); }
+  const cv3=getCv('phPhase');
+  if(cv3){ const ph=hist.slice(-3500); let ax=1e-6,bx=1e-6; ph.forEach(q=>{ ax=Math.max(ax,Math.abs(q.a)); bx=Math.max(bx,Math.abs(q.b)); });
+    ax=Math.max(ax*1.15,isSp?1.6:1); bx=Math.max(bx*1.15,1);
+    const pl=Plot(cv3,-ax,ax,-bx,bx,{xlab:isSp?'x':'θ',ylab:isSp?'v':'ω',nx:5});
+    pl.clip(); pl.g.strokeStyle=COL.line; pl.g.beginPath(); pl.g.moveTo(pl.px(0),pl.p.t); pl.g.lineTo(pl.px(0),pl.H-pl.p.b); pl.g.stroke();
+    pl.g.beginPath(); pl.g.moveTo(pl.p.l,pl.py(0)); pl.g.lineTo(pl.W-pl.p.r,pl.py(0)); pl.g.stroke();
+    pl.g.strokeStyle='rgba(47,111,78,0.45)'; pl.g.lineWidth=1.4; pl.g.beginPath();
+    ph.forEach((q,i)=>{ const X=pl.px(q.a),Y=pl.py(q.b); if(i===0)pl.g.moveTo(X,Y); else pl.g.lineTo(X,Y); }); pl.g.stroke();
+    if(ph.length) pl.dot(ph[ph.length-1].a,ph[ph.length-1].b,5,COL.moss,'#fff'); pl.unclip(); }
+  renderEq($('phEq'),eqText(),false); $('phT').textContent=fmt(t,1)+' s';
+  const E=energy(s), drift=(E-E0)/Math.max(E0,1e-9)*100;
+  $('phDrift').textContent=(drift>=0?'+':'')+fmt(drift,1)+'%';
+  $('phDriftBox').className='stat '+(Math.abs(drift)>5?'warn':'hi');
+}
+TICKS.push(dtR=>{ if(ACTIVE!=='ph') return;
+  if(playing){ let n=Math.min(Math.round(dtR/dt)||1,600); for(let i=0;i<n;i++){ stepOnce(); push(); }
+    if(!isFinite(s[0])||Math.abs(s[0])>1e8){ playing=false; $('phPlay').textContent='▶ Play'; reset(); } draw(); }
+  else if(dirty){ draw(); dirty=false; } });
+function bindRange(id,out,key,fm){ $(id).addEventListener('input',e=>{ prm[key]=+e.target.value; $(out).textContent=fm(prm[key]); reset(); }); }
+bindRange('phM','phMOut','m',v=>fmt(v,1)); bindRange('phK','phKOut','k',v=>fmt(v,1)); bindRange('phC','phCOut','c',v=>fmt(v));
+bindRange('phL','phLOut','L',v=>fmt(v)); bindRange('phTh','phThOut','th0',v=>fmt(v,0)+'°');
+$('phSpring').addEventListener('click',()=>{ sys='spring'; $('phSpring').classList.add('active'); $('phPend').classList.remove('active');
+  $('phSpringCtl').style.display=''; $('phPendCtl').style.display='none'; reset(); });
+$('phPend').addEventListener('click',()=>{ sys='pend'; $('phPend').classList.add('active'); $('phSpring').classList.remove('active');
+  $('phSpringCtl').style.display='none'; $('phPendCtl').style.display=''; reset(); });
+$('phEuler').addEventListener('click',()=>{ solver='euler'; $('phEuler').classList.add('active'); $('phRK4').classList.remove('active'); reset(); });
+$('phRK4').addEventListener('click',()=>{ solver='rk4'; $('phRK4').classList.add('active'); $('phEuler').classList.remove('active'); reset(); });
+$('phDt').addEventListener('input',e=>{ dt=+e.target.value; $('phDtOut').textContent=fmt(dt,3); reset(); });
+$('phPlay').addEventListener('click',()=>{ playing=!playing; $('phPlay').textContent=playing?'⏸ Pause':'▶ Play'; });
+$('phReset').addEventListener('click',()=>{ reset(); });
+REDRAW.ph=()=>{ dirty=true; };
+renderEq($('phEqBig'),'\\ddot{x}=\\frac{F}{m}\\quad\\Longrightarrow\\quad \\dot{x}=v,\\qquad \\dot{v}=\\frac{F}{m}',true);
+reset();
+})();
+
+/* ==================== 3 · LORENZ ==================== */
+(() => {
+let sig=10, rho=28, beta=2.67, dt=0.008, twin=true, playing=false, dirty=true;
+let gap=1e-5, horizon=null;
+let A,B,trail=[], sepH=[], t=0;
+const HOR_THRESH=1.0;
+function f(s){ return [sig*(s[1]-s[0]), s[0]*(rho-s[2])-s[1], s[0]*s[1]-beta*s[2]]; }
+function rk4(s){ const k1=f(s), k2=f([s[0]+dt/2*k1[0],s[1]+dt/2*k1[1],s[2]+dt/2*k1[2]]),
+    k3=f([s[0]+dt/2*k2[0],s[1]+dt/2*k2[1],s[2]+dt/2*k2[2]]), k4=f([s[0]+dt*k3[0],s[1]+dt*k3[1],s[2]+dt*k3[2]]);
+  return [s[0]+dt/6*(k1[0]+2*k2[0]+2*k3[0]+k4[0]), s[1]+dt/6*(k1[1]+2*k2[1]+2*k3[1]+k4[1]), s[2]+dt/6*(k1[2]+2*k2[2]+2*k3[2]+k4[2])]; }
+function reset(){ A=[1,1,1]; B=[1+gap,1,1]; trail=[[A[0],A[2],B[0],B[2]]]; sepH=[]; t=0; horizon=null; dirty=true; }
+function eqTex(){ return `\\begin{aligned}\\dot{x}&=${fmt(sig,1)}\\,(y-x)\\\\ \\dot{y}&=x\\,(${fmt(rho,1)}-z)-y\\\\ \\dot{z}&=xy-${fmt(beta,2)}\\,z\\end{aligned}`; }
+function draw(){
+  const cv=getCv('lzMain'); if(!cv) return;
+  const pl=Plot(cv,-25,25,0,50,{xlab:'x',ylab:'z',nx:6});
+  pl.clip();
+  pl.g.lineWidth=1.1; pl.g.strokeStyle='rgba(47,111,78,0.5)'; pl.g.beginPath();
+  for(let i=0;i<trail.length;i++){ const X=pl.px(trail[i][0]),Y=pl.py(trail[i][1]); if(i===0)pl.g.moveTo(X,Y); else pl.g.lineTo(X,Y); } pl.g.stroke();
+  if(twin){ pl.g.strokeStyle='rgba(166,71,47,0.5)'; pl.g.beginPath();
+    for(let i=0;i<trail.length;i++){ const X=pl.px(trail[i][2]),Y=pl.py(trail[i][3]); if(i===0)pl.g.moveTo(X,Y); else pl.g.lineTo(X,Y); } pl.g.stroke(); }
+  pl.dot(A[0],A[2],4,COL.gold,'#fff'); if(twin) pl.dot(B[0],B[2],4,COL.rust,'#fff');
+  pl.unclip();
+  const cv2=getCv('lzSepCv');
+  if(cv2){ if(sepH.length>1){ const lg=v=>Math.log10(Math.max(v,1e-12));
+      let lo=-6,hi=2; const pl2=Plot(cv2,0,Math.max(4,t),lo,hi,{xlab:'time',ylab:'log₁₀ gap'});
+      pl2.clip(); pl2.line(sepH.map(q=>q[0]),sepH.map(q=>lg(q[1])),COL.rust,1.8); pl2.unclip();
+    } else Plot(cv2,0,4,-6,2,{xlab:'time',ylab:'log₁₀ gap'}); }
+  renderEq($('lzEq'),`\\sigma{=}${fmt(sig,1)},\\ \\rho{=}${fmt(rho,1)},\\ \\beta{=}${fmt(beta,2)}`,false);
+  renderEq($('lzEqBig'),eqTex(),true);
+  $('lzT').textContent=fmt(t,1);
+  if(twin){ const sep=Math.hypot(A[0]-B[0],A[1]-B[1],A[2]-B[2]); $('lzSep').textContent=sep<0.001?sep.toExponential(1).replace(/-/g,'−'):fmt(sep,2); }
+  else $('lzSep').textContent='off';
+  if(!twin) $('lzHor').textContent='off';
+  else if(horizon!==null) $('lzHor').textContent='t ≈ '+fmt(horizon,1);
+  else $('lzHor').textContent='holding…';
+  $('lzHorBox').className='stat '+(horizon!==null?'hi':'');
+}
+TICKS.push(dtR=>{ if(ACTIVE!=='lz') return;
+  if(playing){ let n=Math.min(Math.max(1,Math.round(4*dtR/dt)),80);
+    for(let i=0;i<n;i++){ A=rk4(A); if(twin) B=rk4(B); t+=dt;
+      trail.push([A[0],A[2],B[0],B[2]]); if(trail.length>4000) trail.shift();
+      if(twin){ const sep=Math.hypot(A[0]-B[0],A[1]-B[1],A[2]-B[2]);
+        if(sepH.length===0 || t-sepH[sepH.length-1][0]>0.03) sepH.push([t,sep]);
+        if(horizon===null && sep>HOR_THRESH) horizon=t; }
+      if(sepH.length>1200) sepH.shift(); }
+    if(!isFinite(A[0])||Math.abs(A[0])>1e4){ playing=false; $('lzPlay').textContent='▶ Play'; reset(); } draw(); }
+  else if(dirty){ draw(); dirty=false; } });
+$('lzSig').addEventListener('input',e=>{ sig=+e.target.value; $('lzSigOut').textContent=fmt(sig,1); reset(); });
+$('lzRho').addEventListener('input',e=>{ rho=+e.target.value; $('lzRhoOut').textContent=fmt(rho,1); reset(); });
+$('lzBeta').addEventListener('input',e=>{ beta=+e.target.value; $('lzBetaOut').textContent=fmt(beta,2); reset(); });
+$('lzDt').addEventListener('input',e=>{ dt=+e.target.value; $('lzDtOut').textContent=fmt(dt,3); reset(); });
+const _sup={'-':'⁻','0':'⁰','1':'¹','2':'²','3':'³','4':'⁴','5':'⁵','6':'⁶','7':'⁷','8':'⁸','9':'⁹'};
+const supNum=n=>String(n).split('').map(c=>_sup[c]||c).join('');
+function gapLabel(){ const exp=Math.floor(Math.log10(gap)+1e-9), mant=gap/Math.pow(10,exp);
+  const m=Math.abs(mant-1)<0.06?'':(Math.round(mant)+'×'); return m+'10'+supNum(exp); }
+$('lzGap').addEventListener('input',e=>{ gap=Math.pow(10,+e.target.value); $('lzGapOut').textContent=gapLabel(); reset(); });
+$('lzTwin').addEventListener('click',e=>{ twin=!twin; e.target.classList.toggle('active',twin); e.target.textContent='Two nearby starts: '+(twin?'ON':'OFF'); reset(); });
+$('lzPlay').addEventListener('click',()=>{ playing=!playing; $('lzPlay').textContent=playing?'⏸ Pause':'▶ Play'; });
+$('lzReset').addEventListener('click',()=>{ reset(); });
+REDRAW.lz=()=>{ dirty=true; };
+reset();
+})();
+
+/* ==================== 4 · WAVE ==================== */
+(() => {
+let c=1, damp=0, bc='fixed', N=120, dt=0.6, playing=false, dirty=true;
+let drive=false, mode=3, simT=0;
+let u, uprev, rows=[], LP=null, VMAX=1;
+function pluck(){ u=new Float64Array(N); for(let i=0;i<N;i++){ const x=i/(N-1); u[i]=Math.exp(-Math.pow((x-0.5)/0.05,2)); } uprev=u.slice(); rows=[]; simT=0; VMAX=1; dirty=true; }
+function twoPulse(){ u=new Float64Array(N); for(let i=0;i<N;i++){ const x=i/(N-1); u[i]=Math.exp(-Math.pow((x-0.3)/0.045,2))-Math.exp(-Math.pow((x-0.7)/0.045,2)); } uprev=u.slice(); rows=[]; simT=0; VMAX=1; dirty=true; }
+function flat(){ u=new Float64Array(N); uprev=new Float64Array(N); rows=[]; simT=0; VMAX=1; dirty=true; }
+function applyBC(a){ if(bc==='fixed'){ a[0]=0; a[N-1]=0; } else { a[0]=a[1]; a[N-1]=a[N-2]; } }
+function step(){ const C=c*dt, C2=C*C, dEff=drive?Math.max(damp,0.04):damp, un=new Float64Array(N);
+  for(let i=1;i<N-1;i++){ const lap=u[i+1]-2*u[i]+u[i-1]; un[i]=2*u[i]-uprev[i]+C2*lap-dEff*dt*(u[i]-uprev[i]); }
+  if(drive){ simT+=dt; const f=mode*c/(2*N); un[0]=0.6*Math.sin(2*Math.PI*f*simT);
+    if(bc==='fixed') un[N-1]=0; else un[N-1]=un[N-2]; }
+  else applyBC(un);
+  uprev=u; u=un; }
+function record(){ const r=new Float64Array(N); r.set(u); rows.push(r); if(rows.length>140) rows.shift(); }
+function draw(){
+  const cv=getCv('wvMain'); if(cv){ const pl=Plot(cv,0,1,-1.35,1.35,{xlab:'position x',ylab:'height u',nx:5}); LP=pl;
+    pl.clip(); pl.g.strokeStyle=COL.line; pl.g.beginPath(); pl.g.moveTo(pl.px(0),pl.py(0)); pl.g.lineTo(pl.px(1),pl.py(0)); pl.g.stroke();
+    const xs=[],ys=[]; for(let i=0;i<N;i++){ xs.push(i/(N-1)); ys.push(u[i]); } pl.line(xs,ys,COL.moss,2.4);
+    const nm=9; for(let k=1;k<=nm;k++){ const xf=k/(nm+1), idx=Math.round(xf*(N-1)); pl.dot(xf,u[idx],3.2,COL.gold,'#fff'); }
+    pl.dot(0,u[0],3,COL.ink); pl.dot(1,u[N-1],3,COL.ink); pl.unclip(); }
+  const cvh=getCv('wvHeat'); if(cvh) drawHeat(cvh,rows,N,VMAX,true);
+  const C=c*dt;
+  renderEq($('wvEq'), damp>0 ? `u_{tt} = ${fmt(c*c)}\\,u_{xx} - ${fmt(damp)}\\,u_t` : `\\dfrac{\\partial^2 u}{\\partial t^2} = ${fmt(c*c)}\\,\\dfrac{\\partial^2 u}{\\partial x^2}`, false);
+  $('wvCfl').textContent='C = '+fmt(C);
+  $('wvCflBox').className='stat '+(C>1?'warn':'hi');
+}
+TICKS.push(dtR=>{ if(ACTIVE!=='wv') return;
+  if(playing){ for(let i=0;i<3;i++){ step(); } record();
+    if(!isFinite(u[(N/2)|0])||Math.abs(u[(N/2)|0])>1e3){ playing=false; $('wvPlay').textContent='▶ Play'; } draw(); }
+  else if(dirty){ draw(); dirty=false; } });
+// drag to shape
+let drawing=false; const wvEl=$('wvMain');
+function pen(e){ if(!LP) return null; const r=wvEl.getBoundingClientRect();
+  const x=Math.max(0,Math.min(1,LP.invx(e.clientX-r.left))), y=Math.max(-1.3,Math.min(1.3,LP.invy(e.clientY-r.top))); return [x,y]; }
+wvEl.addEventListener('pointerdown',e=>{ const p=pen(e); if(!p) return; drawing=true; wvEl.setPointerCapture(e.pointerId);
+  const i=Math.round(p[0]*(N-1)); u[i]=p[1]; uprev[i]=p[1]; dirty=true; e.preventDefault(); });
+wvEl.addEventListener('pointermove',e=>{ if(!drawing) return; const p=pen(e); if(!p) return;
+  const i=Math.round(p[0]*(N-1)); for(let d=-1;d<=1;d++){ const j=i+d; if(j>=0&&j<N){ u[j]=p[1]; uprev[j]=p[1]; } } dirty=true; e.preventDefault(); });
+window.addEventListener('pointerup',()=>{ if(drawing){ drawing=false; rows=[]; dirty=true; } });
+$('wvC').addEventListener('input',e=>{ c=+e.target.value; $('wvCOut').textContent=fmt(c); dirty=true; });
+$('wvDamp').addEventListener('input',e=>{ damp=+e.target.value; $('wvDampOut').textContent=fmt(damp); dirty=true; });
+$('wvBC').addEventListener('change',e=>{ bc=e.target.value; dirty=true; });
+$('wvDrive').addEventListener('click',e=>{ drive=!drive; e.target.classList.toggle('active',drive);
+  e.target.textContent='Wiggle the left end: '+(drive?'ON':'OFF'); if(drive) flat(); else pluck(); });
+$('wvMode').addEventListener('input',e=>{ mode=+e.target.value; $('wvModeOut').textContent=fmt(mode,1); dirty=true; });
+$('wvN').addEventListener('input',e=>{ N=+e.target.value; $('wvNOut').textContent=N; if(drive) flat(); else pluck(); });
+$('wvDt').addEventListener('input',e=>{ dt=+e.target.value; $('wvDtOut').textContent=fmt(dt); dirty=true; });
+$('wvPluck').addEventListener('click',()=>{ pluck(); });
+$('wvTwo').addEventListener('click',()=>{ twoPulse(); });
+$('wvPlay').addEventListener('click',()=>{ playing=!playing; $('wvPlay').textContent=playing?'⏸ Pause':'▶ Play'; });
+$('wvReset').addEventListener('click',()=>{ if(drive) flat(); else pluck(); playing=false; $('wvPlay').textContent='▶ Play'; });
+REDRAW.wv=()=>{ dirty=true; };
+renderEq($('wvEqBig'),'\\underbrace{\\frac{\\partial^2 u}{\\partial t^2}}_{\\text{acceleration}} = c^2\\,\\underbrace{\\frac{\\partial^2 u}{\\partial x^2}}_{\\text{curvature}}\\qquad C=\\frac{c\\,\\Delta t}{\\Delta x}\\le 1',true);
+pluck();
+})();
+
+/* ==================== 5 · DIFFUSION ==================== */
+(() => {
+let alpha=1, bc='fixed', N=80, dt=0.3, playing=false, dirty=true;
+let u, rows=[], LP=null, VMAX=1, H0=1;
+function coldRod(){ u=new Float64Array(N); u[0]=1; finishInit(); }
+function spot(){ if(bc==='hot'){ coldRod(); return; } u=new Float64Array(N); for(let i=0;i<N;i++){ const x=i/(N-1); u[i]=Math.exp(-Math.pow((x-0.5)/0.06,2)); } finishInit(); }
+function twoSpot(){ u=new Float64Array(N); for(let i=0;i<N;i++){ const x=i/(N-1); u[i]=Math.exp(-Math.pow((x-0.3)/0.05,2))+0.7*Math.exp(-Math.pow((x-0.72)/0.05,2)); } finishInit(); }
+function finishInit(){ rows=[]; VMAX=Math.max(...u,0.001); H0=u.reduce((a,b)=>a+b,0); dirty=true; }
+function step(){ const r=alpha*dt, un=new Float64Array(N);
+  for(let i=1;i<N-1;i++) un[i]=u[i]+r*(u[i+1]-2*u[i]+u[i-1]);
+  if(bc==='fixed'){ un[0]=0; un[N-1]=0; }
+  else if(bc==='hot'){ un[0]=1; un[N-1]=0; }
+  else { un[0]=un[1]; un[N-1]=un[N-2]; } u=un; }
+function record(){ const r=new Float64Array(N); r.set(u); rows.push(r); if(rows.length>140) rows.shift(); }
+function draw(){
+  const cv=getCv('dfMain'); if(cv){ const pl=Plot(cv,0,1,-0.1,1.25,{xlab:'position x',ylab:'temp u',nx:5}); LP=pl;
+    pl.clip(); pl.g.strokeStyle=COL.line; pl.g.beginPath(); pl.g.moveTo(pl.px(0),pl.py(0)); pl.g.lineTo(pl.px(1),pl.py(0)); pl.g.stroke();
+    const xs=[],ys=[]; for(let i=0;i<N;i++){ xs.push(i/(N-1)); ys.push(u[i]); }
+    pl.g.fillStyle='rgba(184,137,43,0.18)'; pl.g.beginPath(); pl.g.moveTo(pl.px(0),pl.py(0));
+    for(let i=0;i<N;i++) pl.g.lineTo(pl.px(xs[i]),pl.py(Math.max(0,ys[i]))); pl.g.lineTo(pl.px(1),pl.py(0)); pl.g.closePath(); pl.g.fill();
+    pl.line(xs,ys,COL.rust,2.4); pl.unclip(); }
+  const cvh=getCv('dfHeat2'); if(cvh) drawHeat(cvh,rows,N,VMAX,false);
+  const cvr=getCv('dfRod'); if(cvr) drawHeat(cvr,[u],N,Math.max(VMAX,0.001),false);
+  const r=alpha*dt;
+  renderEq($('dfEq'),`\\dfrac{\\partial u}{\\partial t} = ${fmt(alpha)}\\,\\dfrac{\\partial^2 u}{\\partial x^2}`,false);
+  $('dfStab').textContent='r = '+fmt(r); $('dfStabBox').className='stat '+(r>0.5?'warn':'hi');
+  const mean=u.reduce((a,b)=>a+b,0)/N; $('dfHeat').textContent=fmt(mean,3);
+}
+TICKS.push(dtR=>{ if(ACTIVE!=='df') return;
+  if(playing){ for(let i=0;i<2;i++){ step(); } record();
+    if(!isFinite(u[(N/2)|0])||Math.abs(u[(N/2)|0])>1e4){ playing=false; $('dfPlay').textContent='▶ Play'; } draw(); }
+  else if(dirty){ draw(); dirty=false; } });
+let drawing=false; const dfEl=$('dfMain');
+function pen(e){ if(!LP) return null; const r=dfEl.getBoundingClientRect();
+  const x=Math.max(0,Math.min(1,LP.invx(e.clientX-r.left))), y=Math.max(0,Math.min(1.2,LP.invy(e.clientY-r.top))); return [x,y]; }
+dfEl.addEventListener('pointerdown',e=>{ const p=pen(e); if(!p) return; drawing=true; dfEl.setPointerCapture(e.pointerId);
+  u[Math.round(p[0]*(N-1))]=p[1]; dirty=true; e.preventDefault(); });
+dfEl.addEventListener('pointermove',e=>{ if(!drawing) return; const p=pen(e); if(!p) return;
+  const i=Math.round(p[0]*(N-1)); for(let d=-1;d<=1;d++){ const j=i+d; if(j>=0&&j<N) u[j]=p[1]; } dirty=true; e.preventDefault(); });
+window.addEventListener('pointerup',()=>{ if(drawing){ drawing=false; VMAX=Math.max(...u,0.001); H0=u.reduce((a,b)=>a+b,0); rows=[]; dirty=true; } });
+$('dfA').addEventListener('input',e=>{ alpha=+e.target.value; $('dfAOut').textContent=fmt(alpha,1); dirty=true; });
+$('dfBC').addEventListener('change',e=>{ bc=e.target.value; spot(); });
+$('dfN').addEventListener('input',e=>{ N=+e.target.value; $('dfNOut').textContent=N; spot(); });
+$('dfDt').addEventListener('input',e=>{ dt=+e.target.value; $('dfDtOut').textContent=fmt(dt); dirty=true; });
+$('dfSpot').addEventListener('click',()=>{ spot(); });
+$('dfTwo').addEventListener('click',()=>{ twoSpot(); });
+$('dfPlay').addEventListener('click',()=>{ playing=!playing; $('dfPlay').textContent=playing?'⏸ Pause':'▶ Play'; });
+$('dfReset').addEventListener('click',()=>{ spot(); playing=false; $('dfPlay').textContent='▶ Play'; });
+REDRAW.df=()=>{ dirty=true; };
+renderEq($('dfEqBig'),'\\frac{\\partial u}{\\partial t} = \\alpha\\,\\frac{\\partial^2 u}{\\partial x^2}\\qquad r=\\frac{\\alpha\\,\\Delta t}{\\Delta x^2}\\le \\frac{1}{2}',true);
+spot();
+})();
+
+/* ==================== QUIZ ==================== */
+(() => {
+const QS=[
+  { q:'A differential equation gives you…',
+    o:['the answer as a formula','the slope/rate of change at every point — you build the answer by following it','the average value','a random guess'],
+    a:1, e:'It is a local rule. Euler and RK4 turn that rule into an actual trajectory, one step at a time.' },
+  { q:'You simulate a frictionless spring with plain Euler. The energy chart…',
+    o:['stays flat','decays to zero','climbs — the solver invents energy','oscillates randomly'],
+    a:2, e:'Euler steps along the tangent and drifts outside the true orbit, adding energy every step. RK4 fixes it at the same dt.' },
+  { q:'Two Lorenz trajectories start 0.00001 apart. Over time they…',
+    o:['stay 0.00001 apart forever','diverge exponentially until they are totally different','always converge','crash the simulation'],
+    a:1, e:'That exponential divergence — a positive Lyapunov exponent — is chaos. The system is fully deterministic yet unpredictable.' },
+  { q:'What makes the wave equation a PDE rather than an ODE?',
+    o:['it is nonlinear','the unknown depends on both space and time, so there are partial derivatives','it has no solution','it uses RK4'],
+    a:1, e:'u(x,t) varies in space and time, so the rule involves ∂/∂x and ∂/∂t — partial derivatives.' },
+  { q:'The wave equation remembers its initial shape; the diffusion equation forgets it. The key difference is…',
+    o:['the number of grid points','wave has a 2nd time-derivative (oscillates), diffusion a 1st (relaxes/smooths)','the boundary colour','diffusion is always unstable'],
+    a:1, e:'Second time-derivative → oscillatory, energy-preserving, travelling. First time-derivative → dissipative, smoothing, irreversible.' },
+  { q:'Your explicit heat simulation suddenly explodes into a sawtooth. Most likely cause?',
+    o:['the physics is wrong','the stability limit r = αΔt/Δx² > 0.5 was crossed','too few colours','the CFL number is fine'],
+    a:1, e:'Explicit schemes have a stability ceiling. Cross it and rounding errors amplify each step. Smaller dt (or coarser grid) restores stability.' },
+];
+const box=$('quizBox');
+QS.forEach((Q,qi)=>{ const d=document.createElement('div'); d.className='q';
+  d.innerHTML=`<div class="qt">${qi+1}. ${Q.q}</div>`;
+  const opts=document.createElement('div'); opts.className='opts';
+  Q.o.forEach((o,oi)=>{ const b=document.createElement('button'); b.className='opt'; b.textContent=o;
+    b.addEventListener('click',()=>{ if(oi===Q.a){ opts.querySelectorAll('.opt').forEach(x=>x.classList.remove('wrong')); b.classList.add('correct'); exp.style.display='block'; } else b.classList.add('wrong'); });
+    opts.appendChild(b); });
+  const exp=document.createElement('div'); exp.className='exp'; exp.textContent=Q.e;
+  d.appendChild(opts); d.appendChild(exp); box.appendChild(d);
+});
+})();
+</script>
+</body>
+</html>
