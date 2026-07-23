@@ -16,6 +16,7 @@ TPL = """<!DOCTYPE html>
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
 <title>{title}</title>
+<link rel="icon" type="image/svg+xml" href="../../logo.svg"/>
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@stlite/browser@{v}/build/stlite.css"/>
 <style>
   #boot{{
@@ -36,6 +37,7 @@ TPL = """<!DOCTYPE html>
 <body>
 <div id="root">
   <div id="boot">
+    <img src="../../logo.svg" alt="" style="width:46px;height:46px;border-radius:10px;margin:0 auto 12px;display:block"/>
     <h2>{title}</h2>
     <p>Starting the Python runtime in your browser (Pyodide + NumPy + scikit-learn + Matplotlib).</p>
     <div class="bar"><i></i></div>

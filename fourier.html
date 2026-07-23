@@ -1,0 +1,723 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="icon" type="image/svg+xml" href="logo.svg">
+<title>Fourier — building and breaking down waves</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css" crossorigin="anonymous">
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js" crossorigin="anonymous"></script>
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/contrib/auto-render.min.js" crossorigin="anonymous" onload="window.__mathReady&&window.__mathReady()"></script>
+<style>
+  :root{
+    --paper: #F2F1E9; --paper-line: #DAD8C8; --ink: #1E2A22; --ink-soft: #4A5A4E;
+    --moss: #2F6F4E; --moss-dim: #C7DBCB; --rust: #A6472F; --rust-dim: #EDD6CD;
+    --gold: #B8892B; --gold-dim: #EFE0BC; --card: #FBFAF5; --border: #CFCDBB;
+  }
+  *{ box-sizing: border-box; }
+  body{
+    margin:0; background: var(--paper); color: var(--ink);
+    font-family: -apple-system, "Segoe UI", Helvetica, Arial, sans-serif; line-height: 1.5;
+    background-image: linear-gradient(var(--paper-line) 1px, transparent 1px), linear-gradient(90deg, var(--paper-line) 1px, transparent 1px);
+    background-size: 28px 28px; background-attachment: fixed;
+  }
+  .wrap{ max-width: 1100px; margin: 0 auto; padding: 36px 24px 80px; }
+  header.top{ margin-bottom: 18px; border-bottom: 2px solid var(--ink); padding-bottom: 14px; }
+  .eyebrow{ font-family: "SF Mono", SFMono-Regular, Consolas, monospace; font-size: 12px; letter-spacing: 0.12em; text-transform: uppercase; color: var(--moss); margin: 0 0 6px; }
+  h1{ font-family: Georgia, "Iowan Old Style", "Palatino Linotype", serif; font-weight: 400; font-size: 32px; margin: 0 0 8px; }
+  header.top p{ margin: 0; color: var(--ink-soft); max-width: 800px; font-size: 15px; }
+  .crumbs{ font-size: 12.5px; margin: 14px 0 0; }
+  .crumbs a{ color: var(--moss); }
+
+  .tabs{ display: flex; gap: 8px; margin: 20px 0 22px; flex-wrap: wrap; }
+  .tab{ padding: 9px 14px; font-size: 13px; font-weight: 600; border: 1px solid var(--ink); border-radius: 3px; background: var(--card); cursor: pointer; }
+  .tab.active{ background: var(--ink); color: #fff; }
+
+  .section{ display: none; }
+  .section.active{ display: block; }
+
+  .intro{ display:grid; grid-template-columns: 200px 1fr; gap: 20px; align-items:center; background: var(--card); border: 1px solid var(--border); border-radius: 4px; padding: 14px 18px; margin-bottom: 20px; }
+  @media (max-width: 700px){ .intro{ grid-template-columns: 1fr; } }
+  .intro svg{ width: 100%; height: auto; display:block; }
+  .intro .txt h3{ margin: 0 0 6px; font-family: Georgia, serif; font-size: 17px; font-weight: 400; }
+  .intro .txt p{ margin: 0; font-size: 13.5px; color: var(--ink-soft); }
+
+  .layout{ display: grid; grid-template-columns: 300px 1fr; gap: 24px; align-items: start; }
+  @media (max-width: 820px){
+    .layout{ grid-template-columns: 1fr; }
+    .panel{ position: static !important; top: auto !important; }
+  }
+  .panel{ background: var(--card); border: 1px solid var(--border); border-radius: 4px; padding: 18px; position: sticky; top: 20px; align-self: start; }
+  .panel h2{ font-family: "SF Mono", SFMono-Regular, Consolas, monospace; font-size: 12px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--ink-soft); margin: 18px 0 12px; border-bottom: 1px solid var(--border); padding-bottom: 6px; }
+  .panel h2:first-child{ margin-top: 0; }
+  .field{ margin-bottom: 14px; }
+  .field label{ display: flex; justify-content: space-between; font-size: 13px; font-weight: 600; margin-bottom: 5px; gap:8px; }
+  .field label span.val{ font-weight: 400; color: var(--moss); font-family: "SF Mono", SFMono-Regular, Consolas, monospace; white-space:nowrap; }
+  .field input[type=range]{ width: 100%; accent-color: var(--moss); }
+  .field select{ width: 100%; padding: 6px 8px; font-size: 13px; border: 1px solid var(--border); border-radius: 3px; background: #fff; font-family: inherit; }
+
+  .btn{ display: inline-block; padding: 8px 14px; font-size: 13px; font-weight: 600; border: 1px solid var(--ink); border-radius: 3px; background: var(--card); color: var(--ink); cursor: pointer; }
+  .btn:hover{ background: var(--paper-line); }
+  .btn.primary{ background: var(--moss); color: #fff; border-color: var(--moss); }
+  .btn.primary:hover{ background: #275c40; }
+  .btn.toggle.active{ background: var(--ink); color: #fff; }
+  .btn.block{ width: 100%; margin-bottom: 8px; }
+  .btngroup{ display:flex; gap:8px; margin-bottom: 14px; }
+  .btngroup .btn{ flex:1; }
+  .row2{ display: flex; gap: 8px; }
+  .row2 > *{ flex: 1; }
+  .hint{ font-size: 12.5px; color: var(--ink-soft); margin: 10px 0 0; }
+
+  .stats{ display: flex; gap: 12px; margin-bottom: 20px; flex-wrap: wrap; }
+  .stat{ flex: 1; min-width: 120px; background: var(--card); border: 1px solid var(--border); border-radius: 4px; padding: 10px 14px; overflow: hidden; }
+  .stat .label{ font-size: 11px; letter-spacing: 0.08em; text-transform: uppercase; color: var(--ink-soft); font-family: "SF Mono", SFMono-Regular, Consolas, monospace; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .stat .value{ font-size: 20px; font-family: Georgia, serif; line-height: 1.3; word-break: break-word; }
+  .stat .value.eqv{ font-size: 15px; padding-top: 4px; }
+  .stat.hi .value{ color: var(--moss); }
+  .stat.warn .value{ color: var(--rust); }
+
+  .box{ background: var(--card); border: 1px solid var(--border); border-radius: 4px; padding: 12px 14px; margin-bottom: 20px; }
+  .box h2{ font-family: "SF Mono", SFMono-Regular, Consolas, monospace; font-size: 12px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--ink-soft); margin: 0 0 10px; }
+  .box p{ font-size: 13.5px; color: var(--ink-soft); margin: 8px 0 0; }
+  .box p b{ color: var(--ink); }
+  canvas{ display:block; width:100%; }
+  canvas.big{ height: 430px; cursor: crosshair; }
+  canvas.mid{ height: 230px; }
+  canvas.small{ height: 160px; }
+  canvas.sq{ aspect-ratio: 1.15/1; height:auto; }
+  canvas.anim{ aspect-ratio: 1.15/1; height:auto; }
+  canvas.heat{ height: 200px; }
+
+  .cols2{ display:grid; grid-template-columns: 1fr 1fr; gap: 18px; margin-bottom:20px; }
+  @media (max-width: 900px){ .cols2{ grid-template-columns: 1fr; } }
+  .cols2 .box{ margin-bottom: 0; }
+
+  .legend{ display:flex; gap:16px; font-size:12px; color: var(--ink-soft); margin-top:8px; flex-wrap:wrap; }
+  .legend span{ display:inline-flex; align-items:center; gap:5px; }
+  .swatch{ width:10px; height:10px; border-radius:50%; display:inline-block; }
+
+  .try{ background: var(--gold-dim); border: 1px solid var(--gold); border-radius: 4px; padding: 10px 14px; font-size: 13px; margin-bottom: 20px; }
+  .try b{ text-transform: uppercase; font-size: 11px; letter-spacing: 0.08em; font-family: "SF Mono", SFMono-Regular, Consolas, monospace; color: #7a5a15; }
+  .try ol{ margin: 6px 0 0; padding-left: 20px; }
+  .try li{ margin-bottom: 3px; }
+
+  .eqk{ background:#fff; border:1px solid var(--border); border-radius:3px; padding:12px 14px; overflow-x:auto; margin-bottom:0; }
+  .eqk .katex-display{ margin:0; }
+  .katex{ font-size:1.04em; }
+
+  table.cmp{ width:100%; border-collapse:collapse; font-size:13px; }
+  table.cmp th, table.cmp td{ border:1px solid var(--border); padding:9px 12px; text-align:left; vertical-align:top; }
+  table.cmp th{ background:var(--paper); font-family:Georgia,serif; font-weight:400; font-size:15px; }
+  table.cmp td:first-child, table.cmp th:first-child{ background:var(--paper); font-weight:600; font-size:12px; text-transform:uppercase; letter-spacing:0.06em; font-family:"SF Mono",SFMono-Regular,Consolas,monospace; color:var(--ink-soft); width:120px; }
+  table.cmp td{ color: var(--ink); }
+
+  .q{ margin-bottom: 18px; }
+  .q .qt{ font-weight: 600; font-size: 14px; margin-bottom: 8px; }
+  .q .opts{ display:flex; flex-direction:column; gap:6px; }
+  .q button.opt{ border:1px solid var(--border); border-radius:3px; padding:8px 12px; cursor:pointer; background:#fff; text-align:left; font-size:13.5px; font-family:inherit; color:var(--ink); }
+  .q button.opt:hover{ border-color: var(--ink); }
+  .q button.opt.correct{ background: var(--moss-dim); border-color: var(--moss); font-weight:600; }
+  .q button.opt.wrong{ background: var(--rust-dim); border-color: var(--rust); }
+  .q .exp{ display:none; font-size:13px; color:var(--ink-soft); margin-top:8px; background:var(--paper); border-left:3px solid var(--moss); padding:8px 12px; }
+
+  .mono{ font-family:"SF Mono",SFMono-Regular,Consolas,monospace; }
+  footer{ margin-top: 30px; border-top: 1px solid var(--border); padding-top: 14px; font-size: 12px; color: var(--ink-soft); }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<nav style="display:flex;align-items:center;gap:16px;font-family:'SF Mono',SFMono-Regular,Consolas,monospace;font-size:13px;margin-bottom:24px;flex-wrap:wrap">
+<a href="https://phx.my.id" style="display:inline-flex;align-items:center;gap:9px;text-decoration:none;color:#1E2A22;font-weight:600"><img src="logo.svg" alt="" style="width:30px;height:30px;border-radius:7px;display:block">phx.my.id</a>
+<span style="flex:1;min-width:12px"></span>
+<a href="https://phx.my.id" style="text-decoration:none;color:#4A5A4E">Home</a>
+<a href="https://research.phx.my.id" style="text-decoration:none;color:#4A5A4E">Research</a>
+<a href="index.html" style="text-decoration:none;color:#2F6F4E;font-weight:600">Playgrounds</a>
+</nav>
+
+<header class="top">
+  <p class="eyebrow">Fourier — a math primer</p>
+  <h1>Every signal is a chord of pure waves</h1>
+  <p>The one idea behind spectrograms, JPEG, MP3, MRI — and the Fourier Neural Operator. Any repeating shape, however jagged, is a sum of smooth sine waves. Once you can move a signal between its everyday form and its list of frequencies, calculus turns into simple multiplication and the FNO stops looking like magic. Only basic trig assumed.</p>
+  <p class="crumbs">Companion primer · pairs with <a href="differential_equations.html">Differential equations</a> and the FNO tab of <a href="scientific_ml.html">Scientific ML</a>.</p>
+</header>
+
+<div class="tabs">
+  <button class="tab active" data-tab="syn">1 · Build from sines</button>
+  <button class="tab" data-tab="ana">2 · Find the frequencies</button>
+  <button class="tab" data-tab="ops">3 · Calculus = multiply</button>
+  <button class="tab" data-tab="map">4 · Where it's used</button>
+</div>
+
+<!-- ==================== 1 · SYNTHESIS ==================== -->
+<div class="section active" id="sec-syn">
+  <div class="intro">
+    <svg viewBox="0 0 200 120" xmlns="http://www.w3.org/2000/svg">
+      <path d="M6 60 Q 30 30 54 60 T 102 60 T 150 60 T 198 60" fill="none" stroke="#C7DBCB" stroke-width="1.6"/>
+      <path d="M6 60 q 8 -20 16 0 t 16 0 t 16 0 t 16 0 t 16 0 t 16 0 t 16 0 t 16 0 t 16 0 t 16 0 t 16 0 t 16 0" fill="none" stroke="#EDD6CD" stroke-width="1.2"/>
+      <path d="M6 84 L6 36 L102 36 L102 84 L198 84 L198 36" fill="none" stroke="#1E2A22" stroke-width="1.4" stroke-dasharray="3 3"/>
+      <path d="M6 82 C 30 40, 30 40, 54 60 S 78 82, 102 40 S 150 82, 198 40" fill="none" stroke="#2F6F4E" stroke-width="2"/>
+    </svg>
+    <div class="txt">
+      <h3>Stack sine waves, get any shape</h3>
+      <p>Pick a low, smooth sine. Add a faster one, a faster one still, each a bit weaker. Keep going and the gentle ripples conspire into <b>sharp corners and flat plateaus</b> — a square wave. Nothing here is a curve-fitting trick: it is an exact fact of mathematics that <i>every</i> repeating signal is a sum of pure sine tones. This is Fourier's whole idea, and it runs in reverse too (next tab).</p>
+    </div>
+  </div>
+
+  <div class="layout">
+    <div class="panel">
+      <h2>Target shape</h2>
+      <div class="field"><select id="synPreset">
+        <option value="square">Square wave</option>
+        <option value="saw">Sawtooth</option>
+        <option value="triangle">Triangle</option>
+      </select></div>
+
+      <h2>How many sine waves</h2>
+      <div class="field"><label>Terms in the sum <span class="val" id="synNOut">5</span></label><input id="synN" type="range" min="1" max="30" step="1" value="5"></div>
+      <button class="btn toggle block active" id="synComp">Show each sine: ON</button>
+      <p class="hint">Each term is one pure tone. More terms sharpen the corners — but a jump can never be caught perfectly, leaving a little overshoot (the <b>Gibbs</b> ear).</p>
+    </div>
+
+    <div>
+      <div class="stats">
+        <div class="stat"><div class="label">terms used</div><div class="value" id="synNStat">5</div></div>
+        <div class="stat warn"><div class="label">Gibbs overshoot</div><div class="value" id="synGibbs">–</div></div>
+      </div>
+
+      <div class="box">
+        <h2>The target vs the running sum</h2>
+        <canvas id="synMain" class="big" style="cursor:default"></canvas>
+        <div class="legend">
+          <span><i class="swatch" style="background:#1E2A22"></i>target shape</span>
+          <span><i class="swatch" style="background:#2F6F4E"></i>sum of the sines so far</span>
+          <span><i class="swatch" style="background:#EDD6CD"></i>individual sine terms</span>
+        </div>
+      </div>
+
+      <div class="cols2">
+        <div class="box"><h2>The recipe — amplitude of each frequency</h2><canvas id="synSpec" class="mid"></canvas>
+          <p style="margin-top:8px">This bar chart <i>is</i> the shape, written as a list of ingredients. It is what the next tab will recover from a raw signal.</p></div>
+        <div class="box"><h2>The formula</h2><div class="eqk" id="synEq"></div>
+          <p style="margin-top:10px">A square wave uses only <b>odd</b> harmonics, each fading like $1/k$. A triangle fades faster ($1/k^2$) — which is exactly why it looks smoother.</p></div>
+      </div>
+
+      <div class="try"><b>Try this</b>
+        <ol>
+          <li>Start at 1 term: a single lonely sine. Drag terms up and watch the corners of the square sharpen one harmonic at a time.</li>
+          <li>Zoom your eyes to the jump: the little overshoot never disappears, it just gets thinner. That stubborn ear is the <b>Gibbs phenomenon</b> — real, and why sharp edges are hard for the FNO too.</li>
+          <li>Switch to <i>triangle</i>: it needs far fewer terms to look right, because its recipe drops off as $1/k^2$. Smooth shapes are cheap in frequencies; sharp ones are expensive.</li>
+        </ol>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ==================== 2 · ANALYSIS ==================== -->
+<div class="section" id="sec-ana">
+  <div class="intro">
+    <svg viewBox="0 0 200 120" xmlns="http://www.w3.org/2000/svg">
+      <path d="M6 40 C 20 20, 34 60, 48 40 S 76 10, 90 45 S 118 70, 132 35 S 160 20, 194 44" fill="none" stroke="#A6472F" stroke-width="1.8"/>
+      <path d="M104 100 h 12" stroke="#1E2A22" stroke-width="1.3" marker-end="url(#aana)"/>
+      <defs><marker id="aana" markerWidth="6" markerHeight="6" refX="3" refY="3" orient="auto"><path d="M0,0 L6,3 L0,6 z" fill="#1E2A22"/></marker></defs>
+      <g fill="#2F6F4E"><rect x="128" y="92" width="7" height="24"/><rect x="140" y="78" width="7" height="38"/><rect x="152" y="98" width="7" height="18"/><rect x="164" y="104" width="7" height="12"/><rect x="176" y="100" width="7" height="16"/></g>
+    </svg>
+    <div class="txt">
+      <h3>Run the machine backwards</h3>
+      <p>Synthesis built a signal from known ingredients. <b>Analysis</b> is the reverse and the useful direction: hand the computer any signal — even one you scribble — and it returns the recipe, the amplitude of every frequency inside it. Then keep only the strongest few and you have compressed it. This exact move is the front end of the Fourier Neural Operator.</p>
+    </div>
+  </div>
+
+  <div class="layout">
+    <div class="panel">
+      <h2>A signal to analyse</h2>
+      <div class="row2" style="margin-bottom:8px">
+        <button class="btn" id="anaSquare">square</button>
+        <button class="btn" id="anaSaw">sawtooth</button>
+      </div>
+      <div class="row2" style="margin-bottom:8px">
+        <button class="btn" id="anaTwo">two tones</button>
+        <button class="btn" id="anaPulse">pulse</button>
+      </div>
+      <button class="btn block" id="anaNoisy">noisy sine</button>
+      <p class="hint"><b>Or draw your own</b> on the red chart, then watch its spectrum appear.</p>
+
+      <h2>Compression</h2>
+      <div class="field"><label>Keep strongest modes <span class="val" id="anaKOut">6</span></label><input id="anaK" type="range" min="1" max="40" step="1" value="6"></div>
+      <p class="hint">Rebuild the signal from only its biggest frequencies. A handful is often plenty — the idea behind JPEG and MP3.</p>
+    </div>
+
+    <div>
+      <div class="stats">
+        <div class="stat"><div class="label">modes kept</div><div class="value" id="anaKStat">6</div></div>
+        <div class="stat hi"><div class="label">rebuilt accuracy</div><div class="value" id="anaAcc">–</div></div>
+        <div class="stat"><div class="label">compression</div><div class="value" id="anaComp">–</div></div>
+      </div>
+
+      <div class="cols2">
+        <div class="box">
+          <h2>Signal — draw here — with the rebuilt version on top</h2>
+          <canvas id="anaMain" class="sq" style="cursor:crosshair"></canvas>
+          <div class="legend"><span><i class="swatch" style="background:#A6472F"></i>your signal</span><span><i class="swatch" style="background:#2F6F4E"></i>rebuilt from kept modes</span></div>
+        </div>
+        <div class="box">
+          <h2>Its spectrum — the frequencies inside</h2>
+          <canvas id="anaSpec" class="sq"></canvas>
+          <div class="legend"><span><i class="swatch" style="background:#2F6F4E"></i>kept</span><span><i class="swatch" style="background:rgba(47,111,78,0.28)"></i>discarded</span></div>
+        </div>
+      </div>
+
+      <div class="try"><b>Try this</b>
+        <ol>
+          <li>Click <i>two tones</i>: the spectrum shows exactly <b>two</b> tall bars. The wiggly signal was hiding two clean frequencies all along — that is what "analysis" reveals.</li>
+          <li>Draw a slow, smooth curve: nearly all the bars are near the left (low frequencies). Now draw something jagged: tall bars appear on the right. <b>Rough = high frequencies.</b></li>
+          <li>Click <i>noisy sine</i> and set keep-modes to 2: the reconstruction throws the noise away and recovers the clean sine. Keeping few modes is a <b>low-pass filter</b> — denoising for free.</li>
+        </ol>
+      </div>
+
+      <div class="box">
+        <h2>What just happened</h2>
+        <p>The computer projected your signal onto every frequency — for each $k$ it asked "how much sine-of-$k$ and cosine-of-$k$ is in here?" — giving one amplitude per frequency. That list is the <b>Fourier transform</b>. Keeping only the largest entries and rebuilding is lossy compression, denoising, and — in the FNO — the compact form the network actually operates on.</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ==================== 3 · OPERATIONS ==================== -->
+<div class="section" id="sec-ops">
+  <div class="intro">
+    <svg viewBox="0 0 200 120" xmlns="http://www.w3.org/2000/svg">
+      <g fill="#A6472F"><rect x="10" y="70" width="7" height="30"/><rect x="22" y="52" width="7" height="48"/><rect x="34" y="80" width="7" height="20"/><rect x="46" y="88" width="7" height="12"/><rect x="58" y="84" width="7" height="16"/></g>
+      <text x="80" y="80" font-family="SF Mono,monospace" font-size="20" fill="#4A5A4E">×</text>
+      <path d="M100 40 C 110 40, 112 96, 124 96" fill="none" stroke="#1E2A22" stroke-width="1.6"/>
+      <text x="128" y="80" font-family="SF Mono,monospace" font-size="20" fill="#4A5A4E">=</text>
+      <g fill="#2F6F4E"><rect x="150" y="60" width="7" height="40"/><rect x="162" y="66" width="7" height="34"/><rect x="174" y="88" width="7" height="12"/><rect x="186" y="96" width="7" height="4"/></g>
+    </svg>
+    <div class="txt">
+      <h3>In frequency space, hard calculus is just scaling</h3>
+      <p>Here is the payoff. Smoothing a signal, differentiating it, integrating it — messy operations in the everyday view — each become a single <b>multiply each frequency by a number</b> in Fourier space. Blur = shrink the high notes. Differentiate = boost them. That is why heat-flow is easy in frequency space, and it is <i>exactly</i> what the FNO learns: one weight per frequency.</p>
+    </div>
+  </div>
+
+  <div class="layout">
+    <div class="panel">
+      <h2>Input signal</h2>
+      <div class="row2" style="margin-bottom:8px">
+        <button class="btn" id="opsSine">sine</button>
+        <button class="btn" id="opsSquare">square</button>
+      </div>
+      <div class="row2" style="margin-bottom:8px">
+        <button class="btn" id="opsPulse">pulse</button>
+        <button class="btn" id="opsNoisy">noisy</button>
+      </div>
+      <p class="hint"><b>Or draw your own</b> on the red chart.</p>
+
+      <h2>Operation</h2>
+      <div class="field"><select id="opsOp">
+        <option value="smooth">Smooth / blur (like diffusion)</option>
+        <option value="deriv">Differentiate (slope)</option>
+        <option value="integ">Integrate (area)</option>
+        <option value="lowpass">Low-pass (keep low modes)</option>
+      </select></div>
+      <div class="field"><label><span id="opsStrLab">Strength α</span> <span class="val" id="opsStrOut">0.04</span></label><input id="opsStr" type="range" min="0.005" max="0.2" step="0.005" value="0.04"></div>
+    </div>
+
+    <div>
+      <div class="stats">
+        <div class="stat" style="flex:2.4"><div class="label">the multiplier applied to mode k</div><div class="value eqv" id="opsEq">…</div></div>
+      </div>
+
+      <div class="cols2">
+        <div class="box"><h2>Input f</h2><canvas id="opsIn" class="sq" style="cursor:crosshair"></canvas></div>
+        <div class="box"><h2>Output — the operation, done in frequency space</h2><canvas id="opsOut" class="sq"></canvas></div>
+      </div>
+
+      <div class="box">
+        <h2>What the operation does to each frequency</h2>
+        <canvas id="opsSpec" class="mid"></canvas>
+        <div class="legend">
+          <span><i class="swatch" style="background:rgba(166,71,47,0.5)"></i>input spectrum</span>
+          <span><i class="swatch" style="background:#1E2A22"></i>multiplier per mode</span>
+          <span><i class="swatch" style="background:#2F6F4E"></i>output spectrum</span>
+        </div>
+      </div>
+
+      <div class="try"><b>Try this</b>
+        <ol>
+          <li><i>Smooth</i> a noisy signal: the multiplier curve dives toward zero at high $k$, the tall right-hand bars vanish, and the output comes out clean. That black curve is $e^{-\alpha k^2}$ — the very same one the diffusion tab used, and the one the FNO learned for its "smooth" operator.</li>
+          <li><i>Differentiate</i>: now the multiplier <b>grows</b> with $k$, so high-frequency wiggles get amplified — which is why differentiating noisy data is dangerous (recall SINDy's struggle).</li>
+          <li><i>Integrate</i>: the opposite, high frequencies are crushed by $1/k$, so the output is always smoother than the input.</li>
+        </ol>
+      </div>
+
+      <div class="box">
+        <h2>What just happened — and the bridge to the FNO</h2>
+        <p>Differentiation multiplies mode $k$ by $2\pi k$; integration divides by it; diffusion multiplies by $e^{-\alpha k^2}$; a low-pass keeps modes below a cutoff. In every case an entire calculus operation collapses to <b>one number per frequency</b>.</p>
+        <p>That is the secret of the <b>Fourier Neural Operator</b>: instead of being told these multipliers, it <i>learns</i> them from examples — a handful of weights, one per mode. Go back to the FNO tab now and its bar chart of learned weights will read as exactly this: a calculus operation, discovered.</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ==================== 4 · MAP ==================== -->
+<div class="section" id="sec-map">
+  <div class="box">
+    <h2>The same idea, everywhere</h2>
+    <div style="overflow-x:auto">
+    <table class="cmp">
+      <tr><th>You see it as</th><th>What Fourier does</th><th>In this collection</th></tr>
+      <tr><td>MP3 / JPEG</td><td>Keep only the frequencies your ears/eyes notice, drop the rest</td><td>Analysis tab — keep strongest modes</td></tr>
+      <tr><td>A guitar string / organ pipe</td><td>Its pure tones are the frequency modes; resonances pick them out</td><td>Wave tab — standing waves are modes</td></tr>
+      <tr><td>Heat spreading in a bar</td><td>Each frequency decays at its own rate, high ones fastest</td><td>Diffusion tab — smoothing = $e^{-\alpha k^2}$</td></tr>
+      <tr><td>An MRI scanner</td><td>Measures frequencies directly, then transforms back to an image</td><td>Analysis ↔ synthesis, both directions</td></tr>
+      <tr><td>A Fourier Neural Operator</td><td>Learns one weight per frequency to imitate a physics solver</td><td>FNO tab — learned multipliers</td></tr>
+    </table>
+    </div>
+    <p>Fourier is the hinge between the two big playgrounds: it is why the wave and heat equations have clean solutions, and it is the machinery the FNO runs on. Learn it once and three other tabs light up.</p>
+  </div>
+
+  <div class="box">
+    <h2>Check yourself</h2>
+    <div id="quizBox"></div>
+  </div>
+</div>
+
+<footer>
+  Built for classroom use · every transform runs live in this page — no server · a primer for the <a href="scientific_ml.html">Scientific ML</a> playground's FNO tab.
+</footer>
+
+</div>
+<script>
+"use strict";
+const $ = id => document.getElementById(id);
+const COL = { ink:'#1E2A22', soft:'#4A5A4E', moss:'#2F6F4E', mossDim:'#C7DBCB', rust:'#A6472F',
+              rustDim:'#EDD6CD', gold:'#B8892B', goldDim:'#EFE0BC', border:'#CFCDBB', line:'#DAD8C8' };
+function fmt(v,d=2){ if(!isFinite(v)) return '–'; return v.toFixed(d).replace(/-/g,'−'); }
+function lerp(a,b,t){ return Math.round(a+(b-a)*t); }
+
+/* ---- KaTeX ---- */
+let KATEX_READY=false;
+function renderEq(el,tex,display){
+  if(!el) return;
+  el.dataset.tex=tex; el.dataset.disp=display?'1':'0';
+  if(KATEX_READY && window.katex){ try{ katex.render(tex,el,{displayMode:!!display,throwOnError:false}); return; }catch(e){} }
+  el.textContent=tex;
+}
+window.__mathReady=function(){
+  KATEX_READY=true;
+  document.querySelectorAll('[data-tex]').forEach(el=>{ try{ katex.render(el.dataset.tex,el,{displayMode:el.dataset.disp==='1',throwOnError:false}); }catch(e){} });
+  try{ if(window.renderMathInElement) renderMathInElement(document.body,{delimiters:[{left:'$$',right:'$$',display:true},{left:'$',right:'$',display:false},{left:'\\(',right:'\\)',display:false}],ignoredClasses:['mono']}); }catch(e){}
+};
+
+/* ---- canvas + plot ---- */
+function getCv(id){
+  const c=$(id); if(!c) return null; const r=c.getBoundingClientRect();
+  if(r.width<5) return null;
+  const dpr=window.devicePixelRatio||1, W=Math.round(r.width), H=Math.round(r.height);
+  if(c.width!==Math.round(W*dpr)||c.height!==Math.round(H*dpr)){ c.width=Math.round(W*dpr); c.height=Math.round(H*dpr); }
+  const x=c.getContext('2d'); x.setTransform(dpr,0,0,dpr,0,0);
+  return { x, w:W, h:H, el:c };
+}
+function niceStep(range,n){ const raw=range/Math.max(1,n), mag=Math.pow(10,Math.floor(Math.log10(raw))), nm=raw/mag;
+  return (nm<1.5?1:nm<3.5?2:nm<7.5?5:10)*mag; }
+function Plot(cv,x0,x1,y0,y1,opt={}){
+  const p={ l:opt.l??46, r:opt.r??10, t:opt.t??10, b:opt.b??24 };
+  const g=cv.x, W=cv.w, H=cv.h;
+  const px=v=>p.l+(v-x0)/(x1-x0)*(W-p.l-p.r);
+  const py=v=>H-p.b-(v-y0)/(y1-y0)*(H-p.t-p.b);
+  g.clearRect(0,0,W,H); g.fillStyle='#fff'; g.fillRect(p.l,p.t,W-p.l-p.r,H-p.t-p.b);
+  g.font='10px Consolas,monospace'; g.lineWidth=1;
+  const sx=niceStep(x1-x0,opt.nx??6);
+  for(let v=Math.ceil(x0/sx-1e-9)*sx; v<=x1+1e-9; v+=sx){
+    g.strokeStyle=COL.line; g.beginPath(); g.moveTo(px(v),p.t); g.lineTo(px(v),H-p.b); g.stroke();
+    g.fillStyle=COL.soft; g.textAlign='center'; g.fillText(Math.abs(v)<1e-9?'0':(+v.toFixed(6)).toString(), px(v), H-p.b+13);
+  }
+  const sy=niceStep(y1-y0,opt.ny??5);
+  for(let v=Math.ceil(y0/sy-1e-9)*sy; v<=y1+1e-9; v+=sy){
+    g.strokeStyle=COL.line; g.beginPath(); g.moveTo(p.l,py(v)); g.lineTo(W-p.r,py(v)); g.stroke();
+    g.fillStyle=COL.soft; g.textAlign='right'; g.fillText((+v.toFixed(6)).toString(), p.l-5, py(v)+3.5);
+  }
+  g.strokeStyle=COL.border; g.strokeRect(p.l,p.t,W-p.l-p.r,H-p.t-p.b);
+  if(opt.xlab){ g.fillStyle=COL.soft; g.textAlign='right'; g.font='11px Consolas,monospace'; g.fillText(opt.xlab,W-p.r-4,H-p.b-6); }
+  if(opt.ylab){ g.fillStyle=COL.soft; g.textAlign='left'; g.font='11px Consolas,monospace'; g.fillText(opt.ylab,p.l+6,p.t+13); }
+  return { g,px,py,x0,x1,y0,y1,p,W,H,
+    clip(){ g.save(); g.beginPath(); g.rect(p.l,p.t,W-p.l-p.r,H-p.t-p.b); g.clip(); },
+    unclip(){ g.restore(); },
+    line(xs,ys,color,wd=2,dash=[]){ g.strokeStyle=color; g.lineWidth=wd; g.setLineDash(dash); g.beginPath();
+      let st=false; for(let i=0;i<xs.length;i++){ const X=px(xs[i]),Y=py(ys[i]);
+        if(!isFinite(X)||!isFinite(Y)){ st=false; continue; } if(!st){ g.moveTo(X,Y); st=true; } else g.lineTo(X,Y); }
+      g.stroke(); g.setLineDash([]); },
+    dot(x,y,r,color,strokeC){ g.fillStyle=color; g.beginPath(); g.arc(px(x),py(y),r,0,7); g.fill();
+      if(strokeC){ g.strokeStyle=strokeC; g.lineWidth=1.2; g.stroke(); } },
+    invx(mx){ return x0+(mx-p.l)/(W-p.l-p.r)*(x1-x0); },
+    invy(my){ return y0+(H-p.b-my)/(H-p.t-p.b)*(y1-y0); },
+  };
+}
+function arrowSeg(g,x0,y0,x1,y1,color,wd=2){
+  g.strokeStyle=color; g.fillStyle=color; g.lineWidth=wd;
+  g.beginPath(); g.moveTo(x0,y0); g.lineTo(x1,y1); g.stroke();
+  const a=Math.atan2(y1-y0,x1-x0), s=6;
+  g.beginPath(); g.moveTo(x1,y1);
+  g.lineTo(x1-s*Math.cos(a-0.45),y1-s*Math.sin(a-0.45));
+  g.lineTo(x1-s*Math.cos(a+0.45),y1-s*Math.sin(a+0.45));
+  g.closePath(); g.fill();
+}
+const _tmpc = document.createElement('canvas');
+function drawHeat(cv, rows, N, vmax, diverging){
+  const g=cv.x, W=cv.w, H=cv.h;
+  g.clearRect(0,0,W,H); g.fillStyle='#fff'; g.fillRect(0,0,W,H);
+  const R=rows.length; if(R===0) return;
+  _tmpc.width=N; _tmpc.height=R;
+  const tg=_tmpc.getContext('2d'), img=tg.createImageData(N,R);
+  for(let r=0;r<R;r++){ const row=rows[r];
+    for(let i=0;i<N;i++){ let v=row[i]/(vmax||1), cr,cg,cb;
+      if(diverging){ const t=Math.max(-1,Math.min(1,v));
+        if(t>=0){ cr=lerp(247,166,t); cg=lerp(246,71,t); cb=lerp(239,47,t); }
+        else { const s=-t; cr=lerp(247,47,s); cg=lerp(246,111,s); cb=lerp(239,78,s); } }
+      else { const t=Math.max(0,Math.min(1,v));
+        if(t<0.5){ const s=t/0.5; cr=lerp(247,184,s); cg=lerp(246,137,s); cb=lerp(239,43,s); }
+        else { const s=(t-0.5)/0.5; cr=lerp(184,166,s); cg=lerp(137,71,s); cb=lerp(43,47,s); } }
+      const o=(r*N+i)*4; img.data[o]=cr; img.data[o+1]=cg; img.data[o+2]=cb; img.data[o+3]=255;
+    } }
+  tg.putImageData(img,0,0);
+  g.imageSmoothingEnabled=true; g.drawImage(_tmpc,0,0,N,R,0,0,W,H);
+}
+
+/* ---- tab plumbing + loop ---- */
+let ACTIVE='sf';
+const REDRAW={}, TICKS=[];
+document.querySelectorAll('.tab').forEach(b=>b.addEventListener('click',()=>{
+  document.querySelectorAll('.tab').forEach(x=>x.classList.toggle('active',x===b));
+  ACTIVE=b.dataset.tab;
+  document.querySelectorAll('.section').forEach(s=>s.classList.toggle('active',s.id==='sec-'+ACTIVE));
+  if(REDRAW[ACTIVE]) REDRAW[ACTIVE]();
+}));
+window.addEventListener('resize',()=>{ if(REDRAW[ACTIVE]) REDRAW[ACTIVE](); });
+let _lastTs=0;
+function _loop(ts){ const dt=Math.min(0.05,(ts-_lastTs)/1000); _lastTs=ts;
+  for(const f of TICKS) f(dt); requestAnimationFrame(_loop); }
+requestAnimationFrame(_loop);
+
+
+/* ===== shared Fourier helpers ===== */
+const NF=128, KF=40;
+function analyze(f,K){ const N=f.length, a=new Float64Array(K+1), b=new Float64Array(K+1);
+  for(let k=0;k<=K;k++){ let sa=0,sb=0; for(let n=0;n<N;n++){ const t=2*Math.PI*k*n/N; sa+=f[n]*Math.cos(t); sb+=f[n]*Math.sin(t); } a[k]=2*sa/N; b[k]=2*sb/N; } a[0]/=2; return {a,b}; }
+function reconAll(a,b,N,K){ const f=new Float64Array(N);
+  for(let n=0;n<N;n++){ let s=a[0]; for(let k=1;k<=K;k++){ const t=2*Math.PI*k*n/N; s+=a[k]*Math.cos(t)+b[k]*Math.sin(t); } f[n]=s; } return f; }
+function reconSet(a,b,N,keptSet){ const f=new Float64Array(N);
+  for(let n=0;n<N;n++){ let s=keptSet.has(0)?a[0]:0; keptSet.forEach(k=>{ if(k===0) return; const t=2*Math.PI*k*n/N; s+=a[k]*Math.cos(t)+b[k]*Math.sin(t); }); f[n]=s; } return f; }
+function specBars(cv, amps, keptSet, opt){
+  const K=amps.length-1; let mx=1e-6; for(let k=0;k<=K;k++) mx=Math.max(mx,amps[k]);
+  const pl=Plot(cv,-0.7,K+0.7,0,mx*1.12,Object.assign({xlab:'frequency k',ylab:'amplitude',nx:Math.min(K,10)},opt||{}));
+  pl.clip(); const bw=Math.max(2,(pl.px(1)-pl.px(0))*0.62);
+  for(let k=0;k<=K;k++){ const on=keptSet?keptSet.has(k):true; const X=pl.px(k),Y0=pl.py(0),Y=pl.py(amps[k]);
+    pl.g.fillStyle=on?COL.moss:'rgba(47,111,78,0.28)'; pl.g.fillRect(X-bw/2,Y,bw,Y0-Y); }
+  pl.unclip(); return pl;
+}
+
+/* ==================== 1 · SYNTHESIS ==================== */
+(() => {
+let preset='square', n=5, showComp=true;
+function coef(k){ if(k<1) return 0;
+  if(preset==='square') return (k%2===1)?4/(Math.PI*k):0;
+  if(preset==='saw') return (2/(Math.PI*k))*(k%2===1?1:-1);
+  if(k%2===1){ const s=(((k-1)/2)%2===0)?1:-1; return 8/(Math.PI*Math.PI*k*k)*s; }
+  return 0;
+}
+function eqTex(){
+  if(preset==='square') return 'f(x)=\\frac{4}{\\pi}\\sum_{k\\,\\text{odd}}\\frac{1}{k}\\sin(2\\pi k x)';
+  if(preset==='saw') return 'f(x)=\\frac{2}{\\pi}\\sum_{k\\ge 1}\\frac{(-1)^{k+1}}{k}\\sin(2\\pi k x)';
+  return 'f(x)=\\frac{8}{\\pi^2}\\sum_{k\\,\\text{odd}}\\frac{(-1)^{(k-1)/2}}{k^2}\\sin(2\\pi k x)';
+}
+function draw(){
+  const cv=getCv('synMain');
+  if(cv){ const pl=Plot(cv,0,1,-1.4,1.4,{xlab:'x',ylab:'f(x)',nx:5});
+    pl.clip(); pl.g.strokeStyle=COL.line; pl.g.beginPath(); pl.g.moveTo(pl.px(0),pl.py(0)); pl.g.lineTo(pl.px(1),pl.py(0)); pl.g.stroke();
+    const XT=240, xs=[],yt=[],yp=[];
+    for(let i=0;i<=XT;i++){ const x=i/XT; let st=0,sp=0; for(let k=1;k<=140;k++){ const c=coef(k); if(c){ const v=c*Math.sin(2*Math.PI*k*x); st+=v; if(k<=n) sp+=v; } } xs.push(x); yt.push(st); yp.push(sp); }
+    if(showComp){ for(let k=1;k<=n;k++){ const c=coef(k); if(!c) continue; const ys=xs.map(x=>c*Math.sin(2*Math.PI*k*x)); pl.line(xs,ys,'rgba(166,71,47,0.28)',1); } }
+    pl.line(xs,yt,COL.ink,1.6,[6,4]);
+    pl.line(xs,yp,COL.moss,2.6);
+    pl.unclip(); }
+  const cv2=getCv('synSpec'); if(cv2){ const amps=new Float64Array(n+1); for(let k=1;k<=n;k++) amps[k]=Math.abs(coef(k)); specBars(cv2,amps,null); }
+  let mp=0; for(let i=0;i<=500;i++){ const x=i/500; let sp=0; for(let k=1;k<=n;k++){ const c=coef(k); if(c) sp+=c*Math.sin(2*Math.PI*k*x); } mp=Math.max(mp,sp); }
+  $('synGibbs').textContent=fmt(Math.max(0,(mp-1))*100,1)+'%';
+  $('synNStat').textContent=n;
+  renderEq($('synEq'),eqTex(),true);
+}
+$('synPreset').addEventListener('change',e=>{ preset=e.target.value; draw(); });
+$('synN').addEventListener('input',e=>{ n=+e.target.value; $('synNOut').textContent=n; draw(); });
+$('synComp').addEventListener('click',e=>{ showComp=!showComp; e.target.classList.toggle('active',showComp); e.target.textContent='Show each sine: '+(showComp?'ON':'OFF'); draw(); });
+REDRAW.syn=draw;
+draw();
+})();
+
+/* ==================== 2 · ANALYSIS ==================== */
+(() => {
+let sig=new Float64Array(NF), keep=6, LP=null;
+function setSig(fn){ for(let i=0;i<NF;i++) sig[i]=fn(i/NF); draw(); }
+function pSquare(){ setSig(x=>x<0.5?1:-1); }
+function pSaw(){ setSig(x=>2*x-1); }
+function pTwo(){ setSig(x=>0.7*Math.sin(2*Math.PI*2*x)+0.5*Math.sin(2*Math.PI*5*x)); }
+function pPulse(){ setSig(x=>(x>0.4&&x<0.6)?1:0); }
+function pNoisy(){ setSig(x=>Math.sin(2*Math.PI*3*x)+0.3*(Math.random()*2-1)); }
+function draw(){
+  const {a,b}=analyze(sig,KF);
+  const amps=new Float64Array(KF+1); for(let k=0;k<=KF;k++) amps[k]=Math.hypot(a[k],b[k]);
+  const order=[...Array(KF+1).keys()].sort((i,j)=>amps[j]-amps[i]);
+  const keptSet=new Set(order.slice(0,keep));
+  const recon=reconSet(a,b,NF,keptSet);
+  const cv=getCv('anaMain');
+  if(cv){ let lo=1e9,hi=-1e9; for(let i=0;i<NF;i++){ lo=Math.min(lo,sig[i],recon[i]); hi=Math.max(hi,sig[i],recon[i]); }
+    const mid=(lo+hi)/2, half=Math.max((hi-lo)/2*1.15,0.3);
+    const pl=Plot(cv,0,1,mid-half,mid+half,{xlab:'x',ylab:'signal',nx:5}); LP=pl;
+    pl.clip(); pl.g.strokeStyle=COL.line; pl.g.beginPath(); pl.g.moveTo(pl.px(0),pl.py(0)); pl.g.lineTo(pl.px(1),pl.py(0)); pl.g.stroke();
+    const xs=Array.from({length:NF},(_,i)=>i/NF);
+    pl.line(xs,Array.from(sig),COL.rust,2);
+    pl.line(xs,Array.from(recon),COL.moss,2.4,[6,4]);
+    pl.unclip(); }
+  const cv2=getCv('anaSpec'); if(cv2) specBars(cv2,amps,keptSet);
+  let er=0,en=0; for(let i=0;i<NF;i++){ er+=Math.pow(recon[i]-sig[i],2); en+=sig[i]*sig[i]; }
+  const acc=Math.max(0,(1-Math.sqrt(er/Math.max(en,1e-9)))*100);
+  $('anaAcc').textContent=fmt(acc,0)+'%';
+  $('anaKStat').textContent=keep;
+  $('anaComp').textContent=fmt(NF/(2*keep),1)+'×';
+}
+$('anaSquare').addEventListener('click',pSquare);
+$('anaSaw').addEventListener('click',pSaw);
+$('anaTwo').addEventListener('click',pTwo);
+$('anaPulse').addEventListener('click',pPulse);
+$('anaNoisy').addEventListener('click',pNoisy);
+$('anaK').addEventListener('input',e=>{ keep=+e.target.value; $('anaKOut').textContent=keep; draw(); });
+let drawing=false; const el=$('anaMain');
+function pen(e){ if(!LP) return null; const r=el.getBoundingClientRect();
+  return [Math.max(0,Math.min(0.999,LP.invx(e.clientX-r.left))), LP.invy(e.clientY-r.top)]; }
+let lastI=null;
+el.addEventListener('pointerdown',e=>{ const p=pen(e); if(!p) return; drawing=true; el.setPointerCapture(e.pointerId);
+  lastI=Math.round(p[0]*(NF-1)); sig[lastI]=p[1]; draw(); e.preventDefault(); });
+el.addEventListener('pointermove',e=>{ if(!drawing) return; const p=pen(e); if(!p) return;
+  const i=Math.round(p[0]*(NF-1)), lo=Math.min(lastI,i), hi=Math.max(lastI,i);
+  for(let j=lo;j<=hi;j++){ const fr=hi===lo?0:(j-lo)/(hi-lo); const va=lastI<=i?sig[lastI]:p[1], vb=lastI<=i?p[1]:sig[lastI]; sig[j]=va+(vb-va)*fr; }
+  lastI=i; draw(); e.preventDefault(); });
+window.addEventListener('pointerup',()=>{ drawing=false; });
+REDRAW.ana=draw;
+pTwo();
+})();
+
+/* ==================== 3 · OPERATIONS ==================== */
+(() => {
+let op='smooth', strength=0.04, LP=null;
+let sig=new Float64Array(NF);
+function setSig(fn){ for(let i=0;i<NF;i++) sig[i]=fn(i/NF); draw(); }
+function pSine(){ setSig(x=>Math.sin(2*Math.PI*2*x)); }
+function pSquare(){ setSig(x=>x<0.5?0.8:-0.8); }
+function pPulse(){ setSig(x=>Math.exp(-Math.pow((x-0.5)/0.05,2))); }
+function pNoisy(){ setSig(x=>Math.sin(2*Math.PI*2*x)+0.35*(Math.random()*2-1)); }
+function mult(k){ if(op==='smooth') return Math.exp(-strength*k*k); if(op==='deriv') return 2*Math.PI*k; if(op==='integ') return k===0?0:1/(2*Math.PI*k); return k<=strength?1:0; }
+function transform(a,b){ const na=a.slice(), nb=b.slice();
+  for(let k=0;k<=KF;k++){
+    if(op==='smooth'){ const m=Math.exp(-strength*k*k); na[k]*=m; nb[k]*=m; }
+    else if(op==='deriv'){ const A=na[k],B=nb[k]; na[k]=2*Math.PI*k*B; nb[k]=-2*Math.PI*k*A; }
+    else if(op==='integ'){ if(k===0){ na[0]=0; } else { const A=na[k],B=nb[k]; na[k]=-B/(2*Math.PI*k); nb[k]=A/(2*Math.PI*k); } }
+    else { if(k>strength){ na[k]=0; nb[k]=0; } }
+  }
+  return {a:na,b:nb};
+}
+function eqTex(){
+  if(op==='smooth') return '\\hat f_k \\;\\to\\; e^{-\\alpha k^2}\\,\\hat f_k';
+  if(op==='deriv') return '\\hat f_k \\;\\to\\; (2\\pi k)\\,\\hat f_k';
+  if(op==='integ') return '\\hat f_k \\;\\to\\; \\dfrac{1}{2\\pi k}\\,\\hat f_k';
+  return '\\hat f_k \\;\\to\\; \\hat f_k\\ (k\\le K_c),\\ 0\\ \\text{else}';
+}
+function draw(){
+  const {a,b}=analyze(sig,KF);
+  const inAmp=new Float64Array(KF+1); for(let k=0;k<=KF;k++) inAmp[k]=Math.hypot(a[k],b[k]);
+  const T=transform(a,b); const out=reconAll(T.a,T.b,NF,KF);
+  const outAmp=new Float64Array(KF+1); for(let k=0;k<=KF;k++) outAmp[k]=Math.hypot(T.a[k],T.b[k]);
+  const cvi=getCv('opsIn');
+  if(cvi){ let lo=1e9,hi=-1e9; for(let i=0;i<NF;i++){ lo=Math.min(lo,sig[i]); hi=Math.max(hi,sig[i]); }
+    const mid=(lo+hi)/2, half=Math.max((hi-lo)/2*1.15,0.4);
+    const pl=Plot(cvi,0,1,mid-half,mid+half,{xlab:'x',ylab:'f',nx:5}); LP=pl;
+    pl.clip(); pl.g.strokeStyle=COL.line; pl.g.beginPath(); pl.g.moveTo(pl.px(0),pl.py(0)); pl.g.lineTo(pl.px(1),pl.py(0)); pl.g.stroke();
+    pl.line(Array.from({length:NF},(_,i)=>i/NF),Array.from(sig),COL.rust,2.2); pl.unclip(); }
+  const cvo=getCv('opsOut');
+  if(cvo){ let lo=1e9,hi=-1e9; for(let i=0;i<NF;i++){ lo=Math.min(lo,out[i]); hi=Math.max(hi,out[i]); }
+    if(!isFinite(lo)){ lo=-1; hi=1; } const mid=(lo+hi)/2, half=Math.max((hi-lo)/2*1.15,1e-4);
+    const pl=Plot(cvo,0,1,mid-half,mid+half,{xlab:'x',ylab:'result',nx:5});
+    pl.clip(); pl.g.strokeStyle=COL.line; pl.g.beginPath(); pl.g.moveTo(pl.px(0),pl.py(0)); pl.g.lineTo(pl.px(1),pl.py(0)); pl.g.stroke();
+    pl.line(Array.from({length:NF},(_,i)=>i/NF),Array.from(out),COL.moss,2.4); pl.unclip(); }
+  const cvs=getCv('opsSpec');
+  if(cvs){ let mx=1e-6; for(let k=0;k<=KF;k++) mx=Math.max(mx,inAmp[k],outAmp[k]);
+    const pl=Plot(cvs,-0.7,KF+0.7,0,mx*1.12,{xlab:'frequency k',ylab:'amplitude',nx:10});
+    pl.clip(); const bw=Math.max(2,(pl.px(1)-pl.px(0))*0.6);
+    for(let k=0;k<=KF;k++){ pl.g.fillStyle='rgba(166,71,47,0.45)'; const Y=pl.py(inAmp[k]); pl.g.fillRect(pl.px(k)-bw/2,Y,bw*0.5,pl.py(0)-Y); }
+    for(let k=0;k<=KF;k++){ pl.g.fillStyle=COL.moss; const Y=pl.py(outAmp[k]); pl.g.fillRect(pl.px(k),Y,bw*0.5,pl.py(0)-Y); }
+    let mmax=1e-9; for(let k=0;k<=KF;k++) mmax=Math.max(mmax,mult(k));
+    const mx2=[],my2=[]; for(let k=0;k<=KF;k++){ mx2.push(k); my2.push(mult(k)/mmax*mx*1.0); }
+    pl.line(mx2,my2,COL.ink,2);
+    pl.unclip(); }
+  renderEq($('opsEq'),eqTex(),false);
+}
+$('opsSine').addEventListener('click',pSine);
+$('opsSquare').addEventListener('click',pSquare);
+$('opsPulse').addEventListener('click',pPulse);
+$('opsNoisy').addEventListener('click',pNoisy);
+$('opsOp').addEventListener('change',e=>{ op=e.target.value; const s=$('opsStr');
+  if(op==='smooth'){ s.min=0.005; s.max=0.2; s.step=0.005; s.value=0.04; strength=0.04; $('opsStrLab').textContent='Blur strength α'; s.disabled=false; $('opsStrOut').textContent=fmt(strength,3); }
+  else if(op==='lowpass'){ s.min=1; s.max=30; s.step=1; s.value=8; strength=8; $('opsStrLab').textContent='Cutoff frequency Kc'; s.disabled=false; $('opsStrOut').textContent=String(strength); }
+  else { $('opsStrLab').textContent='(not used)'; s.disabled=true; }
+  draw(); });
+$('opsStr').addEventListener('input',e=>{ strength=+e.target.value; $('opsStrOut').textContent = op==='lowpass'?String(Math.round(strength)):fmt(strength,3); draw(); });
+let drawing=false; const el=$('opsIn');
+function pen(e){ if(!LP) return null; const r=el.getBoundingClientRect();
+  return [Math.max(0,Math.min(0.999,LP.invx(e.clientX-r.left))), LP.invy(e.clientY-r.top)]; }
+let lastI=null;
+el.addEventListener('pointerdown',e=>{ const p=pen(e); if(!p) return; drawing=true; el.setPointerCapture(e.pointerId);
+  lastI=Math.round(p[0]*(NF-1)); sig[lastI]=p[1]; draw(); e.preventDefault(); });
+el.addEventListener('pointermove',e=>{ if(!drawing) return; const p=pen(e); if(!p) return;
+  const i=Math.round(p[0]*(NF-1)), lo=Math.min(lastI,i), hi=Math.max(lastI,i);
+  for(let j=lo;j<=hi;j++){ const fr=hi===lo?0:(j-lo)/(hi-lo); const va=lastI<=i?sig[lastI]:p[1], vb=lastI<=i?p[1]:sig[lastI]; sig[j]=va+(vb-va)*fr; }
+  lastI=i; draw(); e.preventDefault(); });
+window.addEventListener('pointerup',()=>{ drawing=false; });
+REDRAW.ops=draw;
+pNoisy();
+})();
+
+/* ==================== QUIZ ==================== */
+(() => {
+const QS=[
+  { q:'A perfect square wave is exactly equal to…',
+    o:['one fast sine wave','an infinite sum of sine waves (its odd harmonics)','a straight line','random noise'],
+    a:1, e:'Every repeating shape, however sharp, is a sum of pure sines. The square uses only odd harmonics, each fading like 1/k.' },
+  { q:'You draw a jagged, spiky signal. Its spectrum will have…',
+    o:['only a low-frequency bar','tall bars at high frequencies too','no bars','one bar'],
+    a:1, e:'Sharp, rapid changes need high frequencies to build them. Smooth signals live at low frequencies; rough ones reach high.' },
+  { q:'Keeping only the strongest few frequencies and rebuilding the signal is the core idea behind…',
+    o:['JPEG and MP3 compression','sorting algorithms','encryption','random number generation'],
+    a:0, e:'Drop the frequencies the eye or ear barely notices and you shrink the file. That is exactly the analysis-tab slider.' },
+  { q:'In frequency space, differentiating a signal means multiplying each frequency k by…',
+    o:['zero','a number that grows with k (≈2πk) — boosting high frequencies','1/k always','a random number'],
+    a:1, e:'Differentiation amplifies high frequencies, which is why differentiating noisy data explodes — the same trap SINDy hit.' },
+  { q:'Smoothing/diffusion multiplies each frequency by e^(−αk²). This…',
+    o:['boosts high frequencies','crushes high frequencies, leaving the smooth low ones','keeps everything equal','deletes low frequencies'],
+    a:1, e:'High frequencies (the fine wiggles) get killed fastest, so the signal smooths out — the heat equation, seen in frequency space.' },
+  { q:'Why does the Fourier Neural Operator store one learned weight per frequency?',
+    o:['to save memory','because many physics operations ARE per-frequency multiplications, so it just learns those multipliers','to encrypt the data','for no reason'],
+    a:1, e:'Smoothing, integrating, differentiating — each is one number per frequency. The FNO learns those numbers from examples instead of being told them.' },
+];
+const box=$('quizBox');
+QS.forEach((Q,qi)=>{ const d=document.createElement('div'); d.className='q';
+  d.innerHTML=`<div class="qt">${qi+1}. ${Q.q}</div>`;
+  const opts=document.createElement('div'); opts.className='opts';
+  Q.o.forEach((o,oi)=>{ const b=document.createElement('button'); b.className='opt'; b.textContent=o;
+    b.addEventListener('click',()=>{ if(oi===Q.a){ opts.querySelectorAll('.opt').forEach(x=>x.classList.remove('wrong')); b.classList.add('correct'); exp.style.display='block'; } else b.classList.add('wrong'); });
+    opts.appendChild(b); });
+  const exp=document.createElement('div'); exp.className='exp'; exp.textContent=Q.e;
+  d.appendChild(opts); d.appendChild(exp); box.appendChild(d);
+});
+})();
+
+</script>
+</body>
+</html>

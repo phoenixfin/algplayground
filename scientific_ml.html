@@ -3,6 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="icon" type="image/svg+xml" href="logo.svg">
 <title>Scientific machine learning — PINN, SINDy, Neural ODE, DeepONet, FNO</title>
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css" crossorigin="anonymous">
 <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js" crossorigin="anonymous"></script>
@@ -125,6 +126,14 @@
 </head>
 <body>
 <div class="wrap">
+
+<nav style="display:flex;align-items:center;gap:16px;font-family:'SF Mono',SFMono-Regular,Consolas,monospace;font-size:13px;margin-bottom:24px;flex-wrap:wrap">
+<a href="https://phx.my.id" style="display:inline-flex;align-items:center;gap:9px;text-decoration:none;color:#1E2A22;font-weight:600"><img src="logo.svg" alt="" style="width:30px;height:30px;border-radius:7px;display:block">phx.my.id</a>
+<span style="flex:1;min-width:12px"></span>
+<a href="https://phx.my.id" style="text-decoration:none;color:#4A5A4E">Home</a>
+<a href="https://research.phx.my.id" style="text-decoration:none;color:#4A5A4E">Research</a>
+<a href="index.html" style="text-decoration:none;color:#2F6F4E;font-weight:600">Playgrounds</a>
+</nav>
 
 <header class="top">
   <p class="eyebrow">Scientific machine learning</p>
@@ -514,6 +523,7 @@
     <div class="txt">
       <h3>FNO — learn the operator in frequency space</h3>
       <p>DeepONet learned an operator by sampling the input at sensor points. A <b>Fourier Neural Operator</b> does it differently and often better: it moves the input into <b>frequency space</b> (a Fourier transform), rescales each frequency by a learned weight, and transforms back. Many physical operators — smoothing, integrating, diffusing — are almost <i>diagonal</i> in frequency, so this is a stunningly natural fit. Watch it rediscover the exact multipliers.</p>
+      <p style="margin:8px 0 0;font-size:13px"><b>New to Fourier transforms?</b> The <a href="fourier.html">Fourier primer →</a> builds frequency space from scratch and shows why smoothing/integrating are just per-mode multiplies — the weights this tab learns.</p>
     </div>
   </div>
 
