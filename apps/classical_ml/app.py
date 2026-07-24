@@ -14,9 +14,9 @@ for _n in ("Table", "RecordBatch", "ChunkedArray", "Array"):
 
 st.set_page_config(page_title="Classical ML — interactive", layout="wide")
 
-INK, MOSS, RUST, GOLD = "#1E2A22", "#2F6F4E", "#A6472F", "#B8892B"
+INK, MOSS, RUST, GOLD = "#2D2D2D", "#C17A3E", "#A8392A", "#2F7069"
 STRONG = [MOSS, RUST, GOLD]
-DIM = ListedColormap(["#C7DBCB", "#EDD6CD", "#EFE0BC"])
+DIM = ListedColormap(["#F0DCC6", "#F3DBD5", "#D3E5E2"])
 
 st.title("Classical machine learning, interactively")
 st.caption("Every model here is scikit-learn — the same library you'll use in the labs. "
@@ -57,8 +57,8 @@ def regions(ax, clf, X):
 def style(ax):
     ax.set_facecolor("white")
     for s in ax.spines.values():
-        s.set_color("#CFCDBB")
-    ax.tick_params(colors="#4A5A4E", labelsize=8)
+        s.set_color("#E4DACB")
+    ax.tick_params(colors="#6E6259", labelsize=8)
 
 
 def probe_sliders(X):

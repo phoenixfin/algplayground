@@ -3,33 +3,37 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<link rel="icon" type="image/svg+xml" href="logo.svg">
+<link rel="icon" type="image/png" href="logo.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=Lato:wght@300;400;700&display=swap" rel="stylesheet">
 <title>Fourier — building and breaking down waves</title>
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css" crossorigin="anonymous">
 <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js" crossorigin="anonymous"></script>
 <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/contrib/auto-render.min.js" crossorigin="anonymous" onload="window.__mathReady&&window.__mathReady()"></script>
 <style>
   :root{
-    --paper: #F2F1E9; --paper-line: #DAD8C8; --ink: #1E2A22; --ink-soft: #4A5A4E;
-    --moss: #2F6F4E; --moss-dim: #C7DBCB; --rust: #A6472F; --rust-dim: #EDD6CD;
-    --gold: #B8892B; --gold-dim: #EFE0BC; --card: #FBFAF5; --border: #CFCDBB;
+    --paper: #FAF7F2; --paper-line: #EDE4D8; --ink: #2D2D2D; --ink-soft: #6E6259;
+    --moss: #C17A3E; --moss-dim: #F0DCC6; --rust: #A8392A; --rust-dim: #F3DBD5;
+    --gold: #2F7069; --accent-deep: #8F5620; --gold-dim: #D3E5E2; --card: #FFFDF9; --border: #E4DACB;
   }
   *{ box-sizing: border-box; }
   body{
     margin:0; background: var(--paper); color: var(--ink);
-    font-family: -apple-system, "Segoe UI", Helvetica, Arial, sans-serif; line-height: 1.5;
+    font-family: Lato, "Helvetica Neue", Helvetica, Arial, sans-serif; line-height: 1.5;
     background-image: linear-gradient(var(--paper-line) 1px, transparent 1px), linear-gradient(90deg, var(--paper-line) 1px, transparent 1px);
     background-size: 28px 28px; background-attachment: fixed;
   }
   .wrap{ max-width: 1100px; margin: 0 auto; padding: 36px 24px 80px; }
   header.top{ margin-bottom: 18px; border-bottom: 2px solid var(--ink); padding-bottom: 14px; }
   .eyebrow{ font-family: "SF Mono", SFMono-Regular, Consolas, monospace; font-size: 12px; letter-spacing: 0.12em; text-transform: uppercase; color: var(--moss); margin: 0 0 6px; }
-  h1{ font-family: Georgia, "Iowan Old Style", "Palatino Linotype", serif; font-weight: 400; font-size: 32px; margin: 0 0 8px; }
+  h1{ font-family: "Playfair Display", "Playfair Display", Georgia, serif; font-weight: 600; font-size: 32px; margin: 0 0 8px; }
   header.top p{ margin: 0; color: var(--ink-soft); max-width: 800px; font-size: 15px; }
+  header.top p.eyebrow{ color: var(--accent-deep); }
   .crumbs{ font-size: 12.5px; margin: 14px 0 0; }
   .crumbs a{ color: var(--moss); }
 
-  .tabs{ display: flex; gap: 8px; margin: 20px 0 22px; flex-wrap: wrap; }
+  .tabs{ display: flex; gap: 8px; margin: 0 0 22px; flex-wrap: wrap;  position: sticky; top: 0; z-index: 20; background: var(--paper); padding: 12px 0 10px; border-bottom: 1px solid var(--border); }
   .tab{ padding: 9px 14px; font-size: 13px; font-weight: 600; border: 1px solid var(--ink); border-radius: 3px; background: var(--card); cursor: pointer; }
   .tab.active{ background: var(--ink); color: #fff; }
 
@@ -39,7 +43,7 @@
   .intro{ display:grid; grid-template-columns: 200px 1fr; gap: 20px; align-items:center; background: var(--card); border: 1px solid var(--border); border-radius: 4px; padding: 14px 18px; margin-bottom: 20px; }
   @media (max-width: 700px){ .intro{ grid-template-columns: 1fr; } }
   .intro svg{ width: 100%; height: auto; display:block; }
-  .intro .txt h3{ margin: 0 0 6px; font-family: Georgia, serif; font-size: 17px; font-weight: 400; }
+  .intro .txt h3{ margin: 0 0 6px; font-family: "Playfair Display", Georgia, serif; font-size: 17px; font-weight: 400; }
   .intro .txt p{ margin: 0; font-size: 13.5px; color: var(--ink-soft); }
 
   .layout{ display: grid; grid-template-columns: 300px 1fr; gap: 24px; align-items: start; }
@@ -47,7 +51,7 @@
     .layout{ grid-template-columns: 1fr; }
     .panel{ position: static !important; top: auto !important; }
   }
-  .panel{ background: var(--card); border: 1px solid var(--border); border-radius: 4px; padding: 18px; position: sticky; top: 20px; align-self: start; }
+  .panel{ background: var(--card); border: 1px solid var(--border); border-radius: 4px; padding: 18px; position: sticky; top: 84px; align-self: start; }
   .panel h2{ font-family: "SF Mono", SFMono-Regular, Consolas, monospace; font-size: 12px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--ink-soft); margin: 18px 0 12px; border-bottom: 1px solid var(--border); padding-bottom: 6px; }
   .panel h2:first-child{ margin-top: 0; }
   .field{ margin-bottom: 14px; }
@@ -59,7 +63,7 @@
   .btn{ display: inline-block; padding: 8px 14px; font-size: 13px; font-weight: 600; border: 1px solid var(--ink); border-radius: 3px; background: var(--card); color: var(--ink); cursor: pointer; }
   .btn:hover{ background: var(--paper-line); }
   .btn.primary{ background: var(--moss); color: #fff; border-color: var(--moss); }
-  .btn.primary:hover{ background: #275c40; }
+  .btn.primary:hover{ background: #A6642F; }
   .btn.toggle.active{ background: var(--ink); color: #fff; }
   .btn.block{ width: 100%; margin-bottom: 8px; }
   .btngroup{ display:flex; gap:8px; margin-bottom: 14px; }
@@ -71,7 +75,7 @@
   .stats{ display: flex; gap: 12px; margin-bottom: 20px; flex-wrap: wrap; }
   .stat{ flex: 1; min-width: 120px; background: var(--card); border: 1px solid var(--border); border-radius: 4px; padding: 10px 14px; overflow: hidden; }
   .stat .label{ font-size: 11px; letter-spacing: 0.08em; text-transform: uppercase; color: var(--ink-soft); font-family: "SF Mono", SFMono-Regular, Consolas, monospace; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-  .stat .value{ font-size: 20px; font-family: Georgia, serif; line-height: 1.3; word-break: break-word; }
+  .stat .value{ font-size: 20px; font-family: "Playfair Display", Georgia, serif; line-height: 1.3; word-break: break-word; }
   .stat .value.eqv{ font-size: 15px; padding-top: 4px; }
   .stat.hi .value{ color: var(--moss); }
   .stat.warn .value{ color: var(--rust); }
@@ -97,7 +101,7 @@
   .swatch{ width:10px; height:10px; border-radius:50%; display:inline-block; }
 
   .try{ background: var(--gold-dim); border: 1px solid var(--gold); border-radius: 4px; padding: 10px 14px; font-size: 13px; margin-bottom: 20px; }
-  .try b{ text-transform: uppercase; font-size: 11px; letter-spacing: 0.08em; font-family: "SF Mono", SFMono-Regular, Consolas, monospace; color: #7a5a15; }
+  .try b{ text-transform: uppercase; font-size: 11px; letter-spacing: 0.08em; font-family: "SF Mono", SFMono-Regular, Consolas, monospace; color: #27585A; }
   .try ol{ margin: 6px 0 0; padding-left: 20px; }
   .try li{ margin-bottom: 3px; }
 
@@ -107,7 +111,7 @@
 
   table.cmp{ width:100%; border-collapse:collapse; font-size:13px; }
   table.cmp th, table.cmp td{ border:1px solid var(--border); padding:9px 12px; text-align:left; vertical-align:top; }
-  table.cmp th{ background:var(--paper); font-family:Georgia,serif; font-weight:400; font-size:15px; }
+  table.cmp th{ background:var(--paper); font-family:"Playfair Display", Georgia, serif; font-weight:400; font-size:15px; }
   table.cmp td:first-child, table.cmp th:first-child{ background:var(--paper); font-weight:600; font-size:12px; text-transform:uppercase; letter-spacing:0.06em; font-family:"SF Mono",SFMono-Regular,Consolas,monospace; color:var(--ink-soft); width:120px; }
   table.cmp td{ color: var(--ink); }
 
@@ -128,11 +132,11 @@
 <div class="wrap">
 
 <nav style="display:flex;align-items:center;gap:16px;font-family:'SF Mono',SFMono-Regular,Consolas,monospace;font-size:13px;margin-bottom:24px;flex-wrap:wrap">
-<a href="https://phx.my.id" style="display:inline-flex;align-items:center;gap:9px;text-decoration:none;color:#1E2A22;font-weight:600"><img src="logo.svg" alt="" style="width:30px;height:30px;border-radius:7px;display:block">phx.my.id</a>
+<a href="https://phx.my.id" style="display:inline-flex;align-items:center;gap:9px;text-decoration:none;color:#2D2D2D;font-weight:600"><img src="logo.png" alt="" style="width:30px;height:30px;border-radius:7px;display:block">phx.my.id</a>
 <span style="flex:1;min-width:12px"></span>
-<a href="https://phx.my.id" style="text-decoration:none;color:#4A5A4E">Home</a>
-<a href="https://research.phx.my.id" style="text-decoration:none;color:#4A5A4E">Research</a>
-<a href="index.html" style="text-decoration:none;color:#2F6F4E;font-weight:600">Playgrounds</a>
+<a href="https://phx.my.id" style="text-decoration:none;color:#6E6259">Home</a>
+<a href="https://research.phx.my.id" style="text-decoration:none;color:#6E6259">Research</a>
+<a href="index.html" style="text-decoration:none;color:#8F5620;font-weight:600">Playgrounds</a>
 </nav>
 
 <header class="top">
@@ -153,10 +157,10 @@
 <div class="section active" id="sec-syn">
   <div class="intro">
     <svg viewBox="0 0 200 120" xmlns="http://www.w3.org/2000/svg">
-      <path d="M6 60 Q 30 30 54 60 T 102 60 T 150 60 T 198 60" fill="none" stroke="#C7DBCB" stroke-width="1.6"/>
-      <path d="M6 60 q 8 -20 16 0 t 16 0 t 16 0 t 16 0 t 16 0 t 16 0 t 16 0 t 16 0 t 16 0 t 16 0 t 16 0 t 16 0" fill="none" stroke="#EDD6CD" stroke-width="1.2"/>
-      <path d="M6 84 L6 36 L102 36 L102 84 L198 84 L198 36" fill="none" stroke="#1E2A22" stroke-width="1.4" stroke-dasharray="3 3"/>
-      <path d="M6 82 C 30 40, 30 40, 54 60 S 78 82, 102 40 S 150 82, 198 40" fill="none" stroke="#2F6F4E" stroke-width="2"/>
+      <path d="M6 60 Q 30 30 54 60 T 102 60 T 150 60 T 198 60" fill="none" stroke="#F0DCC6" stroke-width="1.6"/>
+      <path d="M6 60 q 8 -20 16 0 t 16 0 t 16 0 t 16 0 t 16 0 t 16 0 t 16 0 t 16 0 t 16 0 t 16 0 t 16 0 t 16 0" fill="none" stroke="#F3DBD5" stroke-width="1.2"/>
+      <path d="M6 84 L6 36 L102 36 L102 84 L198 84 L198 36" fill="none" stroke="#2D2D2D" stroke-width="1.4" stroke-dasharray="3 3"/>
+      <path d="M6 82 C 30 40, 30 40, 54 60 S 78 82, 102 40 S 150 82, 198 40" fill="none" stroke="#C17A3E" stroke-width="2"/>
     </svg>
     <div class="txt">
       <h3>Stack sine waves, get any shape</h3>
@@ -189,9 +193,9 @@
         <h2>The target vs the running sum</h2>
         <canvas id="synMain" class="big" style="cursor:default"></canvas>
         <div class="legend">
-          <span><i class="swatch" style="background:#1E2A22"></i>target shape</span>
-          <span><i class="swatch" style="background:#2F6F4E"></i>sum of the sines so far</span>
-          <span><i class="swatch" style="background:#EDD6CD"></i>individual sine terms</span>
+          <span><i class="swatch" style="background:#2D2D2D"></i>target shape</span>
+          <span><i class="swatch" style="background:#C17A3E"></i>sum of the sines so far</span>
+          <span><i class="swatch" style="background:#F3DBD5"></i>individual sine terms</span>
         </div>
       </div>
 
@@ -217,10 +221,10 @@
 <div class="section" id="sec-ana">
   <div class="intro">
     <svg viewBox="0 0 200 120" xmlns="http://www.w3.org/2000/svg">
-      <path d="M6 40 C 20 20, 34 60, 48 40 S 76 10, 90 45 S 118 70, 132 35 S 160 20, 194 44" fill="none" stroke="#A6472F" stroke-width="1.8"/>
-      <path d="M104 100 h 12" stroke="#1E2A22" stroke-width="1.3" marker-end="url(#aana)"/>
-      <defs><marker id="aana" markerWidth="6" markerHeight="6" refX="3" refY="3" orient="auto"><path d="M0,0 L6,3 L0,6 z" fill="#1E2A22"/></marker></defs>
-      <g fill="#2F6F4E"><rect x="128" y="92" width="7" height="24"/><rect x="140" y="78" width="7" height="38"/><rect x="152" y="98" width="7" height="18"/><rect x="164" y="104" width="7" height="12"/><rect x="176" y="100" width="7" height="16"/></g>
+      <path d="M6 40 C 20 20, 34 60, 48 40 S 76 10, 90 45 S 118 70, 132 35 S 160 20, 194 44" fill="none" stroke="#A8392A" stroke-width="1.8"/>
+      <path d="M104 100 h 12" stroke="#2D2D2D" stroke-width="1.3" marker-end="url(#aana)"/>
+      <defs><marker id="aana" markerWidth="6" markerHeight="6" refX="3" refY="3" orient="auto"><path d="M0,0 L6,3 L0,6 z" fill="#2D2D2D"/></marker></defs>
+      <g fill="#C17A3E"><rect x="128" y="92" width="7" height="24"/><rect x="140" y="78" width="7" height="38"/><rect x="152" y="98" width="7" height="18"/><rect x="164" y="104" width="7" height="12"/><rect x="176" y="100" width="7" height="16"/></g>
     </svg>
     <div class="txt">
       <h3>Run the machine backwards</h3>
@@ -258,12 +262,12 @@
         <div class="box">
           <h2>Signal — draw here — with the rebuilt version on top</h2>
           <canvas id="anaMain" class="sq" style="cursor:crosshair"></canvas>
-          <div class="legend"><span><i class="swatch" style="background:#A6472F"></i>your signal</span><span><i class="swatch" style="background:#2F6F4E"></i>rebuilt from kept modes</span></div>
+          <div class="legend"><span><i class="swatch" style="background:#A8392A"></i>your signal</span><span><i class="swatch" style="background:#C17A3E"></i>rebuilt from kept modes</span></div>
         </div>
         <div class="box">
           <h2>Its spectrum — the frequencies inside</h2>
           <canvas id="anaSpec" class="sq"></canvas>
-          <div class="legend"><span><i class="swatch" style="background:#2F6F4E"></i>kept</span><span><i class="swatch" style="background:rgba(47,111,78,0.28)"></i>discarded</span></div>
+          <div class="legend"><span><i class="swatch" style="background:#C17A3E"></i>kept</span><span><i class="swatch" style="background:rgba(193,122,62,0.28)"></i>discarded</span></div>
         </div>
       </div>
 
@@ -287,11 +291,11 @@
 <div class="section" id="sec-ops">
   <div class="intro">
     <svg viewBox="0 0 200 120" xmlns="http://www.w3.org/2000/svg">
-      <g fill="#A6472F"><rect x="10" y="70" width="7" height="30"/><rect x="22" y="52" width="7" height="48"/><rect x="34" y="80" width="7" height="20"/><rect x="46" y="88" width="7" height="12"/><rect x="58" y="84" width="7" height="16"/></g>
-      <text x="80" y="80" font-family="SF Mono,monospace" font-size="20" fill="#4A5A4E">×</text>
-      <path d="M100 40 C 110 40, 112 96, 124 96" fill="none" stroke="#1E2A22" stroke-width="1.6"/>
-      <text x="128" y="80" font-family="SF Mono,monospace" font-size="20" fill="#4A5A4E">=</text>
-      <g fill="#2F6F4E"><rect x="150" y="60" width="7" height="40"/><rect x="162" y="66" width="7" height="34"/><rect x="174" y="88" width="7" height="12"/><rect x="186" y="96" width="7" height="4"/></g>
+      <g fill="#A8392A"><rect x="10" y="70" width="7" height="30"/><rect x="22" y="52" width="7" height="48"/><rect x="34" y="80" width="7" height="20"/><rect x="46" y="88" width="7" height="12"/><rect x="58" y="84" width="7" height="16"/></g>
+      <text x="80" y="80" font-family="SF Mono,monospace" font-size="20" fill="#6E6259">×</text>
+      <path d="M100 40 C 110 40, 112 96, 124 96" fill="none" stroke="#2D2D2D" stroke-width="1.6"/>
+      <text x="128" y="80" font-family="SF Mono,monospace" font-size="20" fill="#6E6259">=</text>
+      <g fill="#C17A3E"><rect x="150" y="60" width="7" height="40"/><rect x="162" y="66" width="7" height="34"/><rect x="174" y="88" width="7" height="12"/><rect x="186" y="96" width="7" height="4"/></g>
     </svg>
     <div class="txt">
       <h3>In frequency space, hard calculus is just scaling</h3>
@@ -336,9 +340,9 @@
         <h2>What the operation does to each frequency</h2>
         <canvas id="opsSpec" class="mid"></canvas>
         <div class="legend">
-          <span><i class="swatch" style="background:rgba(166,71,47,0.5)"></i>input spectrum</span>
-          <span><i class="swatch" style="background:#1E2A22"></i>multiplier per mode</span>
-          <span><i class="swatch" style="background:#2F6F4E"></i>output spectrum</span>
+          <span><i class="swatch" style="background:rgba(168,57,42,0.5)"></i>input spectrum</span>
+          <span><i class="swatch" style="background:#2D2D2D"></i>multiplier per mode</span>
+          <span><i class="swatch" style="background:#C17A3E"></i>output spectrum</span>
         </div>
       </div>
 
@@ -390,8 +394,8 @@
 <script>
 "use strict";
 const $ = id => document.getElementById(id);
-const COL = { ink:'#1E2A22', soft:'#4A5A4E', moss:'#2F6F4E', mossDim:'#C7DBCB', rust:'#A6472F',
-              rustDim:'#EDD6CD', gold:'#B8892B', goldDim:'#EFE0BC', border:'#CFCDBB', line:'#DAD8C8' };
+const COL = { ink:'#2D2D2D', soft:'#6E6259', moss:'#C17A3E', mossDim:'#F0DCC6', rust:'#A8392A',
+              rustDim:'#F3DBD5', gold:'#2F7069', goldDim:'#D3E5E2', border:'#E4DACB', line:'#EDE4D8' };
 function fmt(v,d=2){ if(!isFinite(v)) return '–'; return v.toFixed(d).replace(/-/g,'−'); }
 function lerp(a,b,t){ return Math.round(a+(b-a)*t); }
 
@@ -512,7 +516,7 @@ function specBars(cv, amps, keptSet, opt){
   const pl=Plot(cv,-0.7,K+0.7,0,mx*1.12,Object.assign({xlab:'frequency k',ylab:'amplitude',nx:Math.min(K,10)},opt||{}));
   pl.clip(); const bw=Math.max(2,(pl.px(1)-pl.px(0))*0.62);
   for(let k=0;k<=K;k++){ const on=keptSet?keptSet.has(k):true; const X=pl.px(k),Y0=pl.py(0),Y=pl.py(amps[k]);
-    pl.g.fillStyle=on?COL.moss:'rgba(47,111,78,0.28)'; pl.g.fillRect(X-bw/2,Y,bw,Y0-Y); }
+    pl.g.fillStyle=on?COL.moss:'rgba(193,122,62,0.28)'; pl.g.fillRect(X-bw/2,Y,bw,Y0-Y); }
   pl.unclip(); return pl;
 }
 
@@ -536,7 +540,7 @@ function draw(){
     pl.clip(); pl.g.strokeStyle=COL.line; pl.g.beginPath(); pl.g.moveTo(pl.px(0),pl.py(0)); pl.g.lineTo(pl.px(1),pl.py(0)); pl.g.stroke();
     const XT=240, xs=[],yt=[],yp=[];
     for(let i=0;i<=XT;i++){ const x=i/XT; let st=0,sp=0; for(let k=1;k<=140;k++){ const c=coef(k); if(c){ const v=c*Math.sin(2*Math.PI*k*x); st+=v; if(k<=n) sp+=v; } } xs.push(x); yt.push(st); yp.push(sp); }
-    if(showComp){ for(let k=1;k<=n;k++){ const c=coef(k); if(!c) continue; const ys=xs.map(x=>c*Math.sin(2*Math.PI*k*x)); pl.line(xs,ys,'rgba(166,71,47,0.28)',1); } }
+    if(showComp){ for(let k=1;k<=n;k++){ const c=coef(k); if(!c) continue; const ys=xs.map(x=>c*Math.sin(2*Math.PI*k*x)); pl.line(xs,ys,'rgba(168,57,42,0.28)',1); } }
     pl.line(xs,yt,COL.ink,1.6,[6,4]);
     pl.line(xs,yp,COL.moss,2.6);
     pl.unclip(); }
@@ -651,7 +655,7 @@ function draw(){
   if(cvs){ let mx=1e-6; for(let k=0;k<=KF;k++) mx=Math.max(mx,inAmp[k],outAmp[k]);
     const pl=Plot(cvs,-0.7,KF+0.7,0,mx*1.12,{xlab:'frequency k',ylab:'amplitude',nx:10});
     pl.clip(); const bw=Math.max(2,(pl.px(1)-pl.px(0))*0.6);
-    for(let k=0;k<=KF;k++){ pl.g.fillStyle='rgba(166,71,47,0.45)'; const Y=pl.py(inAmp[k]); pl.g.fillRect(pl.px(k)-bw/2,Y,bw*0.5,pl.py(0)-Y); }
+    for(let k=0;k<=KF;k++){ pl.g.fillStyle='rgba(168,57,42,0.45)'; const Y=pl.py(inAmp[k]); pl.g.fillRect(pl.px(k)-bw/2,Y,bw*0.5,pl.py(0)-Y); }
     for(let k=0;k<=KF;k++){ pl.g.fillStyle=COL.moss; const Y=pl.py(outAmp[k]); pl.g.fillRect(pl.px(k),Y,bw*0.5,pl.py(0)-Y); }
     let mmax=1e-9; for(let k=0;k<=KF;k++) mmax=Math.max(mmax,mult(k));
     const mx2=[],my2=[]; for(let k=0;k<=KF;k++){ mx2.push(k); my2.push(mult(k)/mmax*mx*1.0); }

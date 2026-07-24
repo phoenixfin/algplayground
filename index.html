@@ -4,17 +4,22 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Interactive Playgrounds</title>
-<link rel="icon" type="image/svg+xml" href="logo.svg">
+<link rel="icon" type="image/png" href="logo.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=Lato:wght@300;400;700&display=swap" rel="stylesheet">
+<script>try{var _l=localStorage.getItem('phxLang');if(_l==='id'||_l==='en')document.documentElement.lang=_l;}catch(e){}</script>
 <style>
   :root{
-    --paper: #F2F1E9; --paper-line: #DAD8C8; --ink: #1E2A22; --ink-soft: #4A5A4E;
-    --moss: #2F6F4E; --moss-dim: #C7DBCB; --rust: #A6472F; --rust-dim: #EDD6CD;
-    --gold: #B8892B; --gold-dim: #EFE0BC; --card: #FBFAF5; --border: #CFCDBB;
+    --paper: #FAF7F2; --paper-line: #EDE4D8; --ink: #2D2D2D; --ink-soft: #6E6259;
+    --moss: #C17A3E; --moss-dim: #F0DCC6; --rust: #A8392A; --rust-dim: #F3DBD5;
+    --gold: #2F7069; --accent-deep: #8F5620; --gold-dim: #D3E5E2; --card: #FFFDF9; --border: #E4DACB;
   }
   *{ box-sizing: border-box; }
+  html[lang="en"] [data-lang="id"], html[lang="id"] [data-lang="en"]{ display: none !important; }
   body{
     margin:0; background: var(--paper); color: var(--ink);
-    font-family: -apple-system, "Segoe UI", Helvetica, Arial, sans-serif; line-height: 1.5;
+    font-family: Lato, "Helvetica Neue", Helvetica, Arial, sans-serif; line-height: 1.5;
     background-image: linear-gradient(var(--paper-line) 1px, transparent 1px), linear-gradient(90deg, var(--paper-line) 1px, transparent 1px);
     background-size: 28px 28px; background-attachment: fixed;
   }
@@ -26,10 +31,14 @@
   .topnav a:hover{ color: var(--ink); }
   .topnav a.home{ display: inline-flex; align-items: center; gap: 9px; color: var(--ink); font-weight: 600; }
   .topnav a.home img{ width: 30px; height: 30px; border-radius: 7px; display: block; }
-  .topnav a.here{ color: var(--moss); font-weight: 600; }
+  .topnav a.here{ color: var(--accent-deep); font-weight: 600; }
+  .langtog{ display: inline-flex; border: 1px solid var(--border); border-radius: 20px; overflow: hidden; }
+  .langtog button{ font-family: inherit; font-size: 11.5px; letter-spacing: 0.06em; padding: 4px 11px; border: 0; background: #fff; color: var(--ink-soft); cursor: pointer; }
+  .langtog button.on{ background: var(--accent-deep); color: #fff; font-weight: 700; }
   .eyebrow{ font-family: "SF Mono", SFMono-Regular, Consolas, monospace; font-size: 12px; letter-spacing: 0.12em; text-transform: uppercase; color: var(--moss); margin: 0; }
-  h1{ font-family: Georgia, "Iowan Old Style", "Palatino Linotype", serif; font-weight: 400; font-size: 36px; margin: 0 0 10px; }
+  h1{ font-family: "Playfair Display", Georgia, serif; font-weight: 600; font-size: 36px; margin: 0 0 10px; }
   header.top p{ margin: 0; color: var(--ink-soft); max-width: 640px; font-size: 15px; }
+  header.top p.eyebrow{ color: var(--accent-deep); }
 
   .grid{ display: grid; grid-template-columns: 1fr; gap: 18px; }
 
@@ -47,14 +56,14 @@
   }
   .ill svg{ width: 46px; height: 46px; display: block; }
   .ill small{ font-family: "SF Mono", SFMono-Regular, Consolas, monospace; font-size: 9.5px; letter-spacing: 0.09em; text-transform: uppercase; color: var(--ink-soft); text-align: center; line-height: 1.3; }
-  .card h2{ font-family: Georgia, serif; font-weight: 400; font-size: 21px; margin: 0 0 6px; }
+  .card h2{ font-family: "Playfair Display", Georgia, serif; font-weight: 600; font-size: 21px; margin: 0 0 6px; }
   .card p{ margin: 0 0 10px; font-size: 13.5px; color: var(--ink-soft); }
   .tags{ display: flex; flex-wrap: wrap; gap: 6px; }
   .tag{
     font-family: "SF Mono", SFMono-Regular, Consolas, monospace; font-size: 11px;
     padding: 2px 8px; border: 1px solid var(--border); border-radius: 10px; background: #fff; color: var(--ink-soft);
   }
-  .go{ align-self: center; font-family: "SF Mono", SFMono-Regular, Consolas, monospace; font-size: 13px; color: var(--moss); white-space: nowrap; }
+  .go{ align-self: center; font-family: "SF Mono", SFMono-Regular, Consolas, monospace; font-size: 13px; color: var(--accent-deep); white-space: nowrap; }
 
   @media (max-width: 640px){
     a.card{ grid-template-columns: 1fr; }
@@ -69,17 +78,19 @@
 <div class="wrap">
 
 <nav class="topnav">
-  <a class="home" href="https://phx.my.id"><img src="logo.svg" alt="">phx.my.id</a>
+  <a class="home" href="https://phx.my.id"><img src="logo.png" alt="">phx.my.id</a>
   <span class="spacer"></span>
-  <a href="https://phx.my.id">Home</a>
-  <a href="https://research.phx.my.id">Research</a>
-  <a class="here" href="index.html">Playgrounds</a>
+  <a href="https://phx.my.id"><span data-lang="en">Home</span><span data-lang="id">Beranda</span></a>
+  <a href="https://research.phx.my.id"><span data-lang="en">Research</span><span data-lang="id">Riset</span></a>
+  <a class="here" href="index.html"><span data-lang="en">Playgrounds</span><span data-lang="id">Playground</span></a>
+  <span class="langtog"><button data-lang-btn="en">EN</button><button data-lang-btn="id">ID</button></span>
 </nav>
 
 <header class="top">
-  <p class="eyebrow">Interactive learning playground</p>
+  <p class="eyebrow"><span data-lang="en">Interactive learning playground</span><span data-lang="id">Playground belajar interaktif</span></p>
   <h1>Interactive Playgrounds</h1>
-  <p>Learn by doing. Each playground runs entirely in your browser — tweak the parameters, edit the data, draw your own inputs, and watch the idea come to life. From search and machine learning to differential equations and Fourier analysis, with more topics added over time. No installation needed.</p>
+  <p data-lang="en">Learn by doing. Each playground runs entirely in your browser — tweak the parameters, edit the data, draw your own inputs, and watch the idea come to life. From search and machine learning to differential equations and Fourier analysis, with more topics added over time. No installation needed.</p>
+  <p data-lang="id">Belajar sambil mencoba. Setiap playground berjalan sepenuhnya di browser-mu — ubah parameternya, sunting datanya, gambar sendiri input-nya, lalu lihat idenya jadi hidup. Dari search dan machine learning sampai persamaan diferensial dan analisis Fourier, dan akan terus bertambah. Tanpa instalasi apa pun.</p>
 </header>
 
 <div class="grid">
@@ -87,72 +98,75 @@
   <a class="card" href="evolutionary_swarm.html">
     <div class="ill">
       <svg viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg">
-        <path d="M8 10 L20 20 M14 27 L20 20 M26 11 L20 20 M30 30 L20 20" stroke="#CFCDBB" stroke-width="1"/>
-        <circle cx="8" cy="10" r="2.2" fill="#2F6F4E"/><circle cx="14" cy="27" r="2.2" fill="#2F6F4E"/>
-        <circle cx="26" cy="11" r="2.2" fill="#2F6F4E"/><circle cx="30" cy="30" r="2.2" fill="#A6472F"/>
-        <circle cx="20" cy="20" r="3.6" fill="#B8892B"/>
+        <path d="M8 10 L20 20 M14 27 L20 20 M26 11 L20 20 M30 30 L20 20" stroke="#E4DACB" stroke-width="1"/>
+        <circle cx="8" cy="10" r="2.2" fill="#C17A3E"/><circle cx="14" cy="27" r="2.2" fill="#C17A3E"/>
+        <circle cx="26" cy="11" r="2.2" fill="#C17A3E"/><circle cx="30" cy="30" r="2.2" fill="#A8392A"/>
+        <circle cx="20" cy="20" r="3.6" fill="#2F7069"/>
       </svg>
       <small>01</small>
     </div>
     <div>
-      <h2>Evolutionary &amp; swarm algorithms</h2>
-      <p>Search without knowing the answer: populations that breed, particles that swarm, solutions that cool, and ants that lay trails.</p>
+      <h2><span data-lang="en">Evolutionary &amp; swarm algorithms</span><span data-lang="id">Algoritma evolusioner &amp; swarm</span></h2>
+      <p data-lang="en">Search without knowing the answer: populations that breed, particles that swarm, solutions that cool, and ants that lay trails.</p>
+      <p data-lang="id">Mencari tanpa tahu jawabannya: populasi yang berkembang biak, partikel yang bergerombol, solusi yang mendingin, dan semut yang meninggalkan jejak.</p>
       <div class="tags">
         <span class="tag">genetic algorithm</span><span class="tag">knapsack</span><span class="tag">particle swarm</span><span class="tag">simulated annealing</span><span class="tag">ant colony · TSP</span>
       </div>
     </div>
-    <div class="go">open →</div>
+    <div class="go"><span data-lang="en">open →</span><span data-lang="id">buka →</span></div>
   </a>
 
   <a class="card" href="classical_ml.html">
     <div class="ill">
       <svg viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg">
-        <line x1="6" y1="34" x2="34" y2="6" stroke="#2F6F4E" stroke-width="2"/>
-        <circle cx="12" cy="12" r="2.2" fill="#A6472F"/><circle cx="18" cy="9" r="2.2" fill="#A6472F"/><circle cx="10" cy="20" r="2.2" fill="#A6472F"/>
-        <circle cx="29" cy="28" r="2.2" fill="#2F6F4E"/><circle cx="22" cy="31" r="2.2" fill="#2F6F4E"/><circle cx="31" cy="21" r="2.2" fill="#2F6F4E"/>
+        <line x1="6" y1="34" x2="34" y2="6" stroke="#C17A3E" stroke-width="2"/>
+        <circle cx="12" cy="12" r="2.2" fill="#A8392A"/><circle cx="18" cy="9" r="2.2" fill="#A8392A"/><circle cx="10" cy="20" r="2.2" fill="#A8392A"/>
+        <circle cx="29" cy="28" r="2.2" fill="#C17A3E"/><circle cx="22" cy="31" r="2.2" fill="#C17A3E"/><circle cx="31" cy="21" r="2.2" fill="#C17A3E"/>
       </svg>
       <small>02</small>
     </div>
     <div>
-      <h2>Classical machine learning</h2>
-      <p>Learning from labelled examples: fitting curves, letting neighbors vote, finding the widest margin, splitting the plane, and counting words.</p>
+      <h2><span data-lang="en">Classical machine learning</span><span data-lang="id">Machine learning klasik</span></h2>
+      <p data-lang="en">Learning from labelled examples: fitting curves, letting neighbors vote, finding the widest margin, splitting the plane, and counting words.</p>
+      <p data-lang="id">Belajar dari contoh berlabel: mencocokkan kurva, membiarkan tetangga ikut memilih, mencari margin terlebar, membelah bidang, dan menghitung kata.</p>
       <div class="tags">
         <span class="tag">regression</span><span class="tag">k-NN</span><span class="tag">SVM</span><span class="tag">decision tree</span><span class="tag">naive bayes</span>
       </div>
     </div>
-    <div class="go">open →</div>
+    <div class="go"><span data-lang="en">open →</span><span data-lang="id">buka →</span></div>
   </a>
 
   <a class="card" href="apps/optimizers/">
     <div class="ill">
       <svg viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg">
-        <path d="M6 9 Q 20 42 34 9" stroke="#4A5A4E" stroke-width="2"/>
-        <path d="M13 20 Q 17 30 19.5 31.5" stroke="#CFCDBB" stroke-width="1.2" stroke-dasharray="2 2"/>
-        <circle cx="13" cy="20" r="3" fill="#A6472F"/>
-        <circle cx="20" cy="31.5" r="2.4" fill="#B8892B"/>
+        <path d="M6 9 Q 20 42 34 9" stroke="#6E6259" stroke-width="2"/>
+        <path d="M13 20 Q 17 30 19.5 31.5" stroke="#E4DACB" stroke-width="1.2" stroke-dasharray="2 2"/>
+        <circle cx="13" cy="20" r="3" fill="#A8392A"/>
+        <circle cx="20" cy="31.5" r="2.4" fill="#2F7069"/>
       </svg>
       <small>03 · python</small>
     </div>
     <div>
-      <h2>Gradient descent &amp; the optimizer zoo</h2>
-      <p>Why the learning rate matters, and how momentum, RMSProp, and Adam behave on ravines, valleys, and saddle points — race them side by side, then inspect any single step's arithmetic (g, m, v̂, the update) in a table.</p>
+      <h2><span data-lang="en">Gradient descent &amp; the optimizer zoo</span><span data-lang="id">Gradient descent &amp; kebun binatang optimizer</span></h2>
+      <p data-lang="en">Why the learning rate matters, and how momentum, RMSProp, and Adam behave on ravines, valleys, and saddle points — race them side by side, then inspect any single step's arithmetic (g, m, v̂, the update) in a table.</p>
+      <p data-lang="id">Kenapa learning rate begitu menentukan, dan bagaimana momentum, RMSProp, serta Adam berperilaku di jurang, lembah, dan saddle point — adu mereka berdampingan, lalu bedah aritmetika satu langkah mana pun (g, m, v̂, update-nya) dalam tabel.</p>
       <div class="tags">
         <span class="tag">gradient descent</span><span class="tag">momentum</span><span class="tag">Adam</span><span class="tag">step-by-step math</span>
       </div>
     </div>
-    <div class="go">open →</div>
+    <div class="go"><span data-lang="en">open →</span><span data-lang="id">buka →</span></div>
   </a>
 
   <a class="card" href="apps/mlp/">
     <div class="ill">
       <svg viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg">
-        <g stroke="#CFCDBB" stroke-width="1">
+        <g stroke="#E4DACB" stroke-width="1">
           <line x1="9" y1="14" x2="20" y2="8"/><line x1="9" y1="14" x2="20" y2="20"/><line x1="9" y1="14" x2="20" y2="32"/>
           <line x1="9" y1="26" x2="20" y2="8"/><line x1="9" y1="26" x2="20" y2="20"/><line x1="9" y1="26" x2="20" y2="32"/>
           <line x1="20" y1="8" x2="31" y2="14"/><line x1="20" y1="20" x2="31" y2="14"/><line x1="20" y1="32" x2="31" y2="14"/>
           <line x1="20" y1="8" x2="31" y2="26"/><line x1="20" y1="20" x2="31" y2="26"/><line x1="20" y1="32" x2="31" y2="26"/>
         </g>
-        <g fill="#2F6F4E">
+        <g fill="#C17A3E">
           <circle cx="9" cy="14" r="2.4"/><circle cx="9" cy="26" r="2.4"/>
           <circle cx="20" cy="8" r="2.4"/><circle cx="20" cy="20" r="2.4"/><circle cx="20" cy="32" r="2.4"/>
           <circle cx="31" cy="14" r="2.4"/><circle cx="31" cy="26" r="2.4"/>
@@ -161,82 +175,104 @@
       <small>04 · python</small>
     </div>
     <div>
-      <h2>A neural network from scratch</h2>
-      <p>A multilayer perceptron in ~60 lines of NumPy: train once, then scrub through the epochs to watch the boundary form, see each hidden neuron's view of the plane, and watch gradients vanish layer by layer with sigmoid.</p>
+      <h2><span data-lang="en">A neural network from scratch</span><span data-lang="id">Neural network dari nol</span></h2>
+      <p data-lang="en">A multilayer perceptron in ~60 lines of NumPy: train once, then scrub through the epochs to watch the boundary form, see each hidden neuron's view of the plane, and watch gradients vanish layer by layer with sigmoid.</p>
+      <p data-lang="id">Multilayer perceptron dalam ~60 baris NumPy: latih sekali, lalu geser epoch-nya untuk melihat batas keputusan terbentuk, lihat cara tiap hidden neuron memandang bidang, dan saksikan gradient menghilang lapis demi lapis dengan sigmoid.</p>
       <div class="tags">
         <span class="tag">MLP</span><span class="tag">backprop</span><span class="tag">epoch scrubber</span><span class="tag">vanishing gradients</span><span class="tag">neuron views</span>
       </div>
     </div>
-    <div class="go">open →</div>
+    <div class="go"><span data-lang="en">open →</span><span data-lang="id">buka →</span></div>
   </a>
 
   <a class="card" href="differential_equations.html">
     <div class="ill">
       <svg viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg">
-        <g stroke="#4A5A4E" stroke-width="1.3" opacity="0.6">
+        <g stroke="#6E6259" stroke-width="1.3" opacity="0.6">
           <line x1="7" y1="13" x2="12" y2="10"/><line x1="16" y1="15" x2="21" y2="13"/><line x1="25" y1="17" x2="30" y2="16"/>
           <line x1="7" y1="25" x2="12" y2="21"/><line x1="16" y1="27" x2="21" y2="24"/><line x1="25" y1="29" x2="30" y2="27"/>
         </g>
-        <path d="M6 32 C 16 29, 24 15, 34 8" stroke="#2F6F4E" stroke-width="2"/>
-        <circle cx="6" cy="32" r="2.4" fill="#A6472F"/>
+        <path d="M6 32 C 16 29, 24 15, 34 8" stroke="#C17A3E" stroke-width="2"/>
+        <circle cx="6" cy="32" r="2.4" fill="#A8392A"/>
       </svg>
-      <small>05 · part 1</small>
+      <small>05 · <span data-lang="en">part 1</span><span data-lang="id">bagian 1</span></small>
     </div>
     <div>
-      <h2>Differential equations &amp; physical simulation</h2>
-      <p>The foundation for scientific ML, from scratch: slope fields and Euler, why solvers invent or lose energy, the Lorenz butterfly, and the wave and heat PDEs you can pluck and paint. Every simulation runs live; equations set in real LaTeX. Only basic calculus assumed.</p>
+      <h2><span data-lang="en">Differential equations &amp; physical simulation</span><span data-lang="id">Persamaan diferensial &amp; simulasi fisika</span></h2>
+      <p data-lang="en">The foundation for scientific ML, from scratch: slope fields and Euler, why solvers invent or lose energy, the Lorenz butterfly, and the wave and heat PDEs you can pluck and paint. Every simulation runs live; equations set in real LaTeX. Only basic calculus assumed.</p>
+      <p data-lang="id">Fondasi scientific ML, dari nol: slope field dan Euler, kenapa solver bisa menciptakan atau malah kehilangan energi, kupu-kupu Lorenz, serta PDE gelombang dan panas yang bisa kamu petik dan lukis sendiri. Semua simulasi berjalan langsung; persamaan ditulis dengan LaTeX asli. Cukup berbekal kalkulus dasar.</p>
       <div class="tags">
         <span class="tag">slope fields</span><span class="tag">Euler · RK4</span><span class="tag">Lorenz · chaos</span><span class="tag">wave equation</span><span class="tag">diffusion · heat</span>
       </div>
     </div>
-    <div class="go">open →</div>
+    <div class="go"><span data-lang="en">open →</span><span data-lang="id">buka →</span></div>
   </a>
 
   <a class="card" href="scientific_ml.html">
     <div class="ill">
       <svg viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg">
-        <path d="M4 20 q 4 -8 8 0 t 8 0" stroke="#A6472F" stroke-width="2"/>
-        <g stroke="#CFCDBB" stroke-width="1"><line x1="20" y1="20" x2="31" y2="12"/><line x1="20" y1="20" x2="31" y2="28"/></g>
-        <circle cx="20" cy="20" r="2.6" fill="#1E2A22"/>
-        <circle cx="31" cy="12" r="2.6" fill="#2F6F4E"/><circle cx="31" cy="28" r="2.6" fill="#2F6F4E"/>
+        <path d="M4 20 q 4 -8 8 0 t 8 0" stroke="#A8392A" stroke-width="2"/>
+        <g stroke="#E4DACB" stroke-width="1"><line x1="20" y1="20" x2="31" y2="12"/><line x1="20" y1="20" x2="31" y2="28"/></g>
+        <circle cx="20" cy="20" r="2.6" fill="#2D2D2D"/>
+        <circle cx="31" cy="12" r="2.6" fill="#C17A3E"/><circle cx="31" cy="28" r="2.6" fill="#C17A3E"/>
       </svg>
-      <small>06 · part 2</small>
+      <small>06 · <span data-lang="en">part 2</span><span data-lang="id">bagian 2</span></small>
     </div>
     <div>
       <h2>Scientific machine learning</h2>
-      <p>Five ways to mix known equations with measured data, each trained live in the page: PINNs that obey a law, SINDy that discovers one, Neural ODEs, and the DeepONet and FNO operators that replace the solver. Builds directly on part 1.</p>
+      <p data-lang="en">Five ways to mix known equations with measured data, each trained live in the page: PINNs that obey a law, SINDy that discovers one, Neural ODEs, and the DeepONet and FNO operators that replace the solver. Builds directly on part 1.</p>
+      <p data-lang="id">Lima cara memadukan persamaan yang sudah diketahui dengan data hasil pengukuran, semuanya dilatih langsung di halaman: PINN yang menaati hukum, SINDy yang justru menemukan hukumnya, Neural ODE, serta operator DeepONet dan FNO yang menggantikan solver. Lanjutan langsung dari bagian 1.</p>
       <div class="tags">
         <span class="tag">PINN</span><span class="tag">SINDy</span><span class="tag">Neural ODE</span><span class="tag">DeepONet</span><span class="tag">FNO</span>
       </div>
     </div>
-    <div class="go">open →</div>
+    <div class="go"><span data-lang="en">open →</span><span data-lang="id">buka →</span></div>
   </a>
 
   <a class="card" href="fourier.html">
     <div class="ill">
       <svg viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg">
-        <path d="M4 12 q 3 -5 6 0 t 6 0 t 6 0 t 6 0 t 6 0" stroke="#C7DBCB" stroke-width="1.5"/>
-        <path d="M4 20 C 9 9, 15 31, 21 20 S 33 9, 36 20" stroke="#2F6F4E" stroke-width="2"/>
-        <g fill="#B8892B"><rect x="7" y="30" width="3" height="6"/><rect x="13" y="26" width="3" height="10"/><rect x="19" y="32" width="3" height="4"/><rect x="25" y="34" width="3" height="2"/></g>
+        <path d="M4 12 q 3 -5 6 0 t 6 0 t 6 0 t 6 0 t 6 0" stroke="#F0DCC6" stroke-width="1.5"/>
+        <path d="M4 20 C 9 9, 15 31, 21 20 S 33 9, 36 20" stroke="#C17A3E" stroke-width="2"/>
+        <g fill="#2F7069"><rect x="7" y="30" width="3" height="6"/><rect x="13" y="26" width="3" height="10"/><rect x="19" y="32" width="3" height="4"/><rect x="25" y="34" width="3" height="2"/></g>
       </svg>
       <small>07 · primer</small>
     </div>
     <div>
-      <h2>Fourier — building &amp; breaking down waves</h2>
-      <p>The math behind the FNO, made visual: stack sine waves into any shape, read a signal's spectrum, and watch smoothing, differentiating, and integrating become one multiply per frequency. A short primer that also lights up the wave and diffusion tabs.</p>
+      <h2><span data-lang="en">Fourier — building &amp; breaking down waves</span><span data-lang="id">Fourier — menyusun &amp; mengurai gelombang</span></h2>
+      <p data-lang="en">The math behind the FNO, made visual: stack sine waves into any shape, read a signal's spectrum, and watch smoothing, differentiating, and integrating become one multiply per frequency. A short primer that also lights up the wave and diffusion tabs.</p>
+      <p data-lang="id">Matematika di balik FNO, dibuat visual: tumpuk gelombang sinus jadi bentuk apa pun, baca spektrum sebuah sinyal, dan lihat smoothing, turunan, serta integral berubah jadi satu perkalian per frekuensi. Primer singkat yang sekaligus menyalakan tab wave dan diffusion.</p>
       <div class="tags">
         <span class="tag">Fourier series</span><span class="tag">spectrum</span><span class="tag">Gibbs</span><span class="tag">compression</span><span class="tag">frequency space</span>
       </div>
     </div>
-    <div class="go">open →</div>
+    <div class="go"><span data-lang="en">open →</span><span data-lang="id">buka →</span></div>
   </a>
 
 </div>
 
 <footer>
-  Built for hands-on learning · runs in your browser, nothing to install · new topics added over time.
+  <span data-lang="en">Built for hands-on learning · runs in your browser, nothing to install · new topics added over time.</span>
+  <span data-lang="id">Dibuat untuk belajar langsung · berjalan di browser, tanpa instalasi · topik baru terus ditambah.</span>
 </footer>
 
 </div>
+<script>
+(function(){
+  var KEY='phxLang';
+  function apply(l){
+    document.documentElement.lang=l;
+    var b=document.querySelectorAll('[data-lang-btn]');
+    for(var i=0;i<b.length;i++) b[i].classList.toggle('on', b[i].getAttribute('data-lang-btn')===l);
+    if(window.__onLang){ try{ window.__onLang(l); }catch(e){} }
+  }
+  function set(l){ try{ localStorage.setItem(KEY,l); }catch(e){} apply(l); }
+  var saved=null; try{ saved=localStorage.getItem(KEY); }catch(e){}
+  apply(saved==='id'?'id':'en');
+  var btns=document.querySelectorAll('[data-lang-btn]');
+  for(var i=0;i<btns.length;i++) btns[i].addEventListener('click',function(e){ e.preventDefault(); set(this.getAttribute('data-lang-btn')); });
+  window.setLang=set;
+})();
+</script>
 </body>
 </html>

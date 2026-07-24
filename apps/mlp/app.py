@@ -12,9 +12,9 @@ for _n in ("Table", "RecordBatch", "ChunkedArray", "Array"):
 
 st.set_page_config(page_title="MLP from scratch", layout="wide")
 
-INK, MOSS, RUST, GOLD = "#1E2A22", "#2F6F4E", "#A6472F", "#B8892B"
+INK, MOSS, RUST, GOLD = "#2D2D2D", "#C17A3E", "#A8392A", "#2F7069"
 STRONG = [MOSS, RUST, GOLD]
-DIM = ListedColormap(["#C7DBCB", "#EDD6CD", "#EFE0BC"])
+DIM = ListedColormap(["#F0DCC6", "#F3DBD5", "#D3E5E2"])
 
 st.title("A multilayer perceptron, from scratch")
 st.caption("No framework — ~60 lines of NumPy. Forward pass, backprop, and the same "

@@ -5,7 +5,7 @@ import streamlit as st
 
 st.set_page_config(page_title="Gradient descent & optimizers", layout="wide")
 
-INK, MOSS, RUST, GOLD, SLATE = "#1E2A22", "#2F6F4E", "#A6472F", "#B8892B", "#4A6B8A"
+INK, MOSS, RUST, GOLD, SLATE = "#2D2D2D", "#C17A3E", "#A8392A", "#2F7069", "#4A6B8A"
 OPT_COLORS = {"GD": MOSS, "SGD (noisy)": SLATE, "Momentum": RUST, "RMSProp": GOLD, "Adam": INK}
 
 st.title("Gradient descent & the optimizer zoo")
@@ -41,7 +41,7 @@ with tab1:
     with c2:
         fig, ax = plt.subplots(figsize=(7, 3.6))
         g = np.linspace(-2.2, 2.2, 200)
-        ax.plot(g, g ** 2, c="#CFCDBB", lw=2)
+        ax.plot(g, g ** 2, c="#E4DACB", lw=2)
         ax.plot(xs, xs ** 2, c=RUST, marker="o", ms=4, lw=1.2)
         for i in range(min(len(xs) - 1, 12)):
             ax.annotate("", xy=(xs[i + 1], xs[i + 1] ** 2), xytext=(xs[i], xs[i] ** 2),

@@ -16,28 +16,31 @@ TPL = """<!DOCTYPE html>
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
 <title>{title}</title>
-<link rel="icon" type="image/svg+xml" href="../../logo.svg"/>
+<link rel="icon" type="image/png" href="../../logo.png"/>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=Lato:wght@300;400;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@stlite/browser@{v}/build/stlite.css"/>
 <style>
   #boot{{
-    font-family: -apple-system, "Segoe UI", Helvetica, Arial, sans-serif;
+    font-family: Lato, "Helvetica Neue", Helvetica, Arial, sans-serif;
     max-width: 560px; margin: 18vh auto 0; padding: 24px 28px; text-align: center;
-    color: #1E2A22; background: #FBFAF5; border: 1px solid #CFCDBB; border-radius: 6px;
+    color: #2D2D2D; background: #FFFDF9; border: 1px solid #E4DACB; border-radius: 6px;
   }}
-  #boot h2{{ font-family: Georgia, serif; font-weight: 400; margin: 0 0 8px; }}
-  #boot p{{ color: #4A5A4E; font-size: 14px; margin: 0 0 14px; }}
-  #boot .bar{{ height: 6px; background: #EAE8DA; border-radius: 3px; overflow: hidden; }}
-  #boot .bar i{{ display:block; height:100%; width: 30%; background:#2F6F4E; border-radius:3px;
+  #boot h2{{ font-family: "Playfair Display", Georgia, serif; font-weight: 400; margin: 0 0 8px; }}
+  #boot p{{ color: #6E6259; font-size: 14px; margin: 0 0 14px; }}
+  #boot .bar{{ height: 6px; background: #EFE7DB; border-radius: 3px; overflow: hidden; }}
+  #boot .bar i{{ display:block; height:100%; width: 30%; background:#C17A3E; border-radius:3px;
     animation: slide 1.2s ease-in-out infinite alternate; }}
   @keyframes slide{{ from{{ transform: translateX(-10%);}} to{{ transform: translateX(260%);}} }}
-  #boot small{{ color:#4A5A4E; }}
-  body{{ margin:0; background:#F2F1E9; }}
+  #boot small{{ color:#6E6259; }}
+  body{{ margin:0; background:#FAF7F2; }}
 </style>
 </head>
 <body>
 <div id="root">
   <div id="boot">
-    <img src="../../logo.svg" alt="" style="width:46px;height:46px;border-radius:10px;margin:0 auto 12px;display:block"/>
+    <img src="../../logo.png" alt="" style="width:46px;height:46px;border-radius:10px;margin:0 auto 12px;display:block"/>
     <h2>{title}</h2>
     <p>Starting the Python runtime in your browser (Pyodide + NumPy + scikit-learn + Matplotlib).</p>
     <div class="bar"><i></i></div>

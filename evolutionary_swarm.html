@@ -3,28 +3,32 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<link rel="icon" type="image/svg+xml" href="logo.svg">
+<link rel="icon" type="image/png" href="logo.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=Lato:wght@300;400;700&display=swap" rel="stylesheet">
 <title>Evolutionary &amp; swarm algorithms playground</title>
 <style>
   :root{
-    --paper: #F2F1E9; --paper-line: #DAD8C8; --ink: #1E2A22; --ink-soft: #4A5A4E;
-    --moss: #2F6F4E; --moss-dim: #C7DBCB; --rust: #A6472F; --rust-dim: #EDD6CD;
-    --gold: #B8892B; --card: #FBFAF5; --border: #CFCDBB;
+    --paper: #FAF7F2; --paper-line: #EDE4D8; --ink: #2D2D2D; --ink-soft: #6E6259;
+    --moss: #C17A3E; --moss-dim: #F0DCC6; --rust: #A8392A; --rust-dim: #F3DBD5;
+    --gold: #2F7069; --accent-deep: #8F5620; --card: #FFFDF9; --border: #E4DACB;
   }
   *{ box-sizing: border-box; }
   body{
     margin:0; background: var(--paper); color: var(--ink);
-    font-family: -apple-system, "Segoe UI", Helvetica, Arial, sans-serif; line-height: 1.5;
+    font-family: Lato, "Helvetica Neue", Helvetica, Arial, sans-serif; line-height: 1.5;
     background-image: linear-gradient(var(--paper-line) 1px, transparent 1px), linear-gradient(90deg, var(--paper-line) 1px, transparent 1px);
     background-size: 28px 28px; background-attachment: fixed;
   }
   .wrap{ max-width: 1100px; margin: 0 auto; padding: 36px 24px 80px; }
   header.top{ margin-bottom: 18px; border-bottom: 2px solid var(--ink); padding-bottom: 14px; }
   .eyebrow{ font-family: "SF Mono", SFMono-Regular, Consolas, monospace; font-size: 12px; letter-spacing: 0.12em; text-transform: uppercase; color: var(--moss); margin: 0 0 6px; }
-  h1{ font-family: Georgia, "Iowan Old Style", "Palatino Linotype", serif; font-weight: 400; font-size: 32px; margin: 0 0 8px; }
+  h1{ font-family: "Playfair Display", "Playfair Display", Georgia, serif; font-weight: 600; font-size: 32px; margin: 0 0 8px; }
   header.top p{ margin: 0; color: var(--ink-soft); max-width: 700px; font-size: 15px; }
+  header.top p.eyebrow{ color: var(--accent-deep); }
 
-  .tabs{ display: flex; gap: 8px; margin: 20px 0 22px; flex-wrap: wrap; }
+  .tabs{ display: flex; gap: 8px; margin: 0 0 22px; flex-wrap: wrap;  position: sticky; top: 0; z-index: 20; background: var(--paper); padding: 12px 0 10px; border-bottom: 1px solid var(--border); }
   .tab{ padding: 9px 16px; font-size: 13px; font-weight: 600; border: 1px solid var(--ink); border-radius: 3px; background: var(--card); cursor: pointer; }
   .tab.active{ background: var(--ink); color: #fff; }
 
@@ -34,7 +38,7 @@
   .intro{ display:grid; grid-template-columns: 200px 1fr; gap: 20px; align-items:center; background: var(--card); border: 1px solid var(--border); border-radius: 4px; padding: 14px 18px; margin-bottom: 20px; }
   @media (max-width: 700px){ .intro{ grid-template-columns: 1fr; } }
   .intro svg{ width: 100%; height: auto; display:block; }
-  .intro .txt h3{ margin: 0 0 6px; font-family: Georgia, serif; font-size: 17px; font-weight: 400; }
+  .intro .txt h3{ margin: 0 0 6px; font-family: "Playfair Display", Georgia, serif; font-size: 17px; font-weight: 400; }
   .intro .txt p{ margin: 0; font-size: 13.5px; color: var(--ink-soft); }
 
   .layout{ display: grid; grid-template-columns: 300px 1fr; gap: 24px; align-items: start; }
@@ -43,7 +47,7 @@
     .panel{ position: static !important; top: auto !important; }
   }
 
-  .panel{ background: var(--card); border: 1px solid var(--border); border-radius: 4px; padding: 18px; position: sticky; top: 20px; align-self: start; }
+  .panel{ background: var(--card); border: 1px solid var(--border); border-radius: 4px; padding: 18px; position: sticky; top: 84px; align-self: start; }
   .panel h2{ font-family: "SF Mono", SFMono-Regular, Consolas, monospace; font-size: 12px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--ink-soft); margin: 18px 0 12px; border-bottom: 1px solid var(--border); padding-bottom: 6px; }
   .panel h2:first-child{ margin-top: 0; }
   .field{ margin-bottom: 14px; }
@@ -56,7 +60,7 @@
   .btn{ display: inline-block; padding: 8px 14px; font-size: 13px; font-weight: 600; border: 1px solid var(--ink); border-radius: 3px; background: var(--card); color: var(--ink); cursor: pointer; }
   .btn:hover{ background: var(--paper-line); }
   .btn.primary{ background: var(--moss); color: #fff; border-color: var(--moss); }
-  .btn.primary:hover{ background: #275c40; }
+  .btn.primary:hover{ background: #A6642F; }
   .btn.toggle.active{ background: var(--ink); color: #fff; }
   .btn.block{ width: 100%; margin-bottom: 8px; }
   .btngroup{ display:flex; gap:8px; margin-bottom: 16px; }
@@ -67,7 +71,7 @@
   .stats{ display: flex; gap: 12px; margin-bottom: 20px; flex-wrap: wrap; }
   .stat{ flex: 1; min-width: 130px; background: var(--card); border: 1px solid var(--border); border-radius: 4px; padding: 10px 14px; overflow: hidden; }
   .stat .label{ font-size: 11px; letter-spacing: 0.08em; text-transform: uppercase; color: var(--ink-soft); font-family: "SF Mono", SFMono-Regular, Consolas, monospace; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-  .stat .value{ font-size: 20px; font-family: Georgia, serif; line-height: 1.2; word-break: break-word; overflow-wrap: break-word; }
+  .stat .value{ font-size: 20px; font-family: "Playfair Display", Georgia, serif; line-height: 1.2; word-break: break-word; overflow-wrap: break-word; }
   .stat.hi .value{ color: var(--moss); }
   .stat.warn .value{ color: var(--rust); }
 
@@ -114,11 +118,11 @@
 <div class="wrap">
 
 <nav style="display:flex;align-items:center;gap:16px;font-family:'SF Mono',SFMono-Regular,Consolas,monospace;font-size:13px;margin-bottom:24px;flex-wrap:wrap">
-<a href="https://phx.my.id" style="display:inline-flex;align-items:center;gap:9px;text-decoration:none;color:#1E2A22;font-weight:600"><img src="logo.svg" alt="" style="width:30px;height:30px;border-radius:7px;display:block">phx.my.id</a>
+<a href="https://phx.my.id" style="display:inline-flex;align-items:center;gap:9px;text-decoration:none;color:#2D2D2D;font-weight:600"><img src="logo.png" alt="" style="width:30px;height:30px;border-radius:7px;display:block">phx.my.id</a>
 <span style="flex:1;min-width:12px"></span>
-<a href="https://phx.my.id" style="text-decoration:none;color:#4A5A4E">Home</a>
-<a href="https://research.phx.my.id" style="text-decoration:none;color:#4A5A4E">Research</a>
-<a href="index.html" style="text-decoration:none;color:#2F6F4E;font-weight:600">Playgrounds</a>
+<a href="https://phx.my.id" style="text-decoration:none;color:#6E6259">Home</a>
+<a href="https://research.phx.my.id" style="text-decoration:none;color:#6E6259">Research</a>
+<a href="index.html" style="text-decoration:none;color:#8F5620;font-weight:600">Playgrounds</a>
 </nav>
 
 <header class="top">
@@ -140,31 +144,31 @@
   <div class="intro">
     <svg viewBox="0 0 200 120" xmlns="http://www.w3.org/2000/svg">
       <rect x="0" y="0" width="200" height="120" fill="none"/>
-      <g font-family="SF Mono, monospace" font-size="9" fill="#4A5A4E">
+      <g font-family="SF Mono, monospace" font-size="9" fill="#6E6259">
         <text x="10" y="18">generation 0</text>
       </g>
       <g>
-        <rect x="10" y="24" width="14" height="14" rx="2" fill="#FBFAF5" stroke="#CFCDBB"/>
-        <rect x="27" y="24" width="14" height="14" rx="2" fill="#EDD6CD" stroke="#A6472F"/>
-        <rect x="44" y="24" width="14" height="14" rx="2" fill="#FBFAF5" stroke="#CFCDBB"/>
-        <rect x="61" y="24" width="14" height="14" rx="2" fill="#C7DBCB" stroke="#2F6F4E"/>
-        <rect x="78" y="24" width="14" height="14" rx="2" fill="#FBFAF5" stroke="#CFCDBB"/>
-        <rect x="95" y="24" width="14" height="14" rx="2" fill="#EDD6CD" stroke="#A6472F"/>
-        <rect x="112" y="24" width="14" height="14" rx="2" fill="#FBFAF5" stroke="#CFCDBB"/>
+        <rect x="10" y="24" width="14" height="14" rx="2" fill="#FFFDF9" stroke="#E4DACB"/>
+        <rect x="27" y="24" width="14" height="14" rx="2" fill="#F3DBD5" stroke="#A8392A"/>
+        <rect x="44" y="24" width="14" height="14" rx="2" fill="#FFFDF9" stroke="#E4DACB"/>
+        <rect x="61" y="24" width="14" height="14" rx="2" fill="#F0DCC6" stroke="#C17A3E"/>
+        <rect x="78" y="24" width="14" height="14" rx="2" fill="#FFFDF9" stroke="#E4DACB"/>
+        <rect x="95" y="24" width="14" height="14" rx="2" fill="#F3DBD5" stroke="#A8392A"/>
+        <rect x="112" y="24" width="14" height="14" rx="2" fill="#FFFDF9" stroke="#E4DACB"/>
       </g>
-      <path d="M100 50 C 60 65, 140 65, 100 80" fill="none" stroke="#1E2A22" stroke-width="1.5" marker-end="url(#arrow1)"/>
-      <defs><marker id="arrow1" markerWidth="6" markerHeight="6" refX="3" refY="3" orient="auto"><path d="M0,0 L6,3 L0,6 z" fill="#1E2A22"/></marker></defs>
-      <g font-family="SF Mono, monospace" font-size="9" fill="#4A5A4E">
+      <path d="M100 50 C 60 65, 140 65, 100 80" fill="none" stroke="#2D2D2D" stroke-width="1.5" marker-end="url(#arrow1)"/>
+      <defs><marker id="arrow1" markerWidth="6" markerHeight="6" refX="3" refY="3" orient="auto"><path d="M0,0 L6,3 L0,6 z" fill="#2D2D2D"/></marker></defs>
+      <g font-family="SF Mono, monospace" font-size="9" fill="#6E6259">
         <text x="10" y="98">generation 40</text>
       </g>
       <g>
-        <rect x="10" y="86" width="14" height="14" rx="2" fill="#2F6F4E"/>
-        <rect x="27" y="86" width="14" height="14" rx="2" fill="#2F6F4E"/>
-        <rect x="44" y="86" width="14" height="14" rx="2" fill="#2F6F4E"/>
-        <rect x="61" y="86" width="14" height="14" rx="2" fill="#2F6F4E"/>
-        <rect x="78" y="86" width="14" height="14" rx="2" fill="#2F6F4E"/>
-        <rect x="95" y="86" width="14" height="14" rx="2" fill="#2F6F4E"/>
-        <rect x="112" y="86" width="14" height="14" rx="2" fill="#2F6F4E"/>
+        <rect x="10" y="86" width="14" height="14" rx="2" fill="#C17A3E"/>
+        <rect x="27" y="86" width="14" height="14" rx="2" fill="#C17A3E"/>
+        <rect x="44" y="86" width="14" height="14" rx="2" fill="#C17A3E"/>
+        <rect x="61" y="86" width="14" height="14" rx="2" fill="#C17A3E"/>
+        <rect x="78" y="86" width="14" height="14" rx="2" fill="#C17A3E"/>
+        <rect x="95" y="86" width="14" height="14" rx="2" fill="#C17A3E"/>
+        <rect x="112" y="86" width="14" height="14" rx="2" fill="#C17A3E"/>
       </g>
     </svg>
     <div class="txt">
@@ -231,16 +235,16 @@
 <div class="section" id="sec-gk">
   <div class="intro">
     <svg viewBox="0 0 200 120" xmlns="http://www.w3.org/2000/svg">
-      <path d="M65 45 q0 -18 20 -18 q20 0 20 18 v12 h-40 z" fill="none" stroke="#1E2A22" stroke-width="2"/>
-      <rect x="55" y="55" width="70" height="55" rx="8" fill="#FBFAF5" stroke="#1E2A22" stroke-width="2"/>
-      <rect x="80" y="55" width="20" height="14" fill="#FBFAF5" stroke="#1E2A22" stroke-width="1.5"/>
-      <rect x="65" y="70" width="16" height="16" rx="2" fill="#2F6F4E"/>
-      <rect x="85" y="72" width="14" height="14" rx="2" fill="#2F6F4E"/>
-      <rect x="102" y="68" width="16" height="18" rx="2" fill="#C7DBCB" stroke="#2F6F4E"/>
-      <rect x="130" y="66" width="15" height="15" rx="2" fill="#EDD6CD" stroke="#A6472F"/>
-      <rect x="150" y="80" width="13" height="13" rx="2" fill="#EDD6CD" stroke="#A6472F"/>
-      <text x="128" y="102" font-family="SF Mono, monospace" font-size="9" fill="#A6472F">left out</text>
-      <text x="65" y="102" font-family="SF Mono, monospace" font-size="9" fill="#2F6F4E">packed</text>
+      <path d="M65 45 q0 -18 20 -18 q20 0 20 18 v12 h-40 z" fill="none" stroke="#2D2D2D" stroke-width="2"/>
+      <rect x="55" y="55" width="70" height="55" rx="8" fill="#FFFDF9" stroke="#2D2D2D" stroke-width="2"/>
+      <rect x="80" y="55" width="20" height="14" fill="#FFFDF9" stroke="#2D2D2D" stroke-width="1.5"/>
+      <rect x="65" y="70" width="16" height="16" rx="2" fill="#C17A3E"/>
+      <rect x="85" y="72" width="14" height="14" rx="2" fill="#C17A3E"/>
+      <rect x="102" y="68" width="16" height="18" rx="2" fill="#F0DCC6" stroke="#C17A3E"/>
+      <rect x="130" y="66" width="15" height="15" rx="2" fill="#F3DBD5" stroke="#A8392A"/>
+      <rect x="150" y="80" width="13" height="13" rx="2" fill="#F3DBD5" stroke="#A8392A"/>
+      <text x="128" y="102" font-family="SF Mono, monospace" font-size="9" fill="#A8392A">left out</text>
+      <text x="65" y="102" font-family="SF Mono, monospace" font-size="9" fill="#C17A3E">packed</text>
     </svg>
     <div class="txt">
       <h3>Pack the most value under a weight limit</h3>
@@ -297,16 +301,16 @@
 <div class="section" id="sec-pso">
   <div class="intro">
     <svg viewBox="0 0 200 120" xmlns="http://www.w3.org/2000/svg">
-      <path d="M100 60 l-3 -6" stroke="#B8892B" stroke-width="0" fill="none"/>
-      <path d="M30 25 Q 60 45 92 58" fill="none" stroke="#4A5A4E" stroke-width="1" stroke-dasharray="2,2"/>
-      <path d="M170 30 Q 140 48 108 58" fill="none" stroke="#4A5A4E" stroke-width="1" stroke-dasharray="2,2"/>
-      <path d="M40 100 Q 65 75 96 62" fill="none" stroke="#4A5A4E" stroke-width="1" stroke-dasharray="2,2"/>
-      <path d="M160 95 Q 135 78 104 63" fill="none" stroke="#4A5A4E" stroke-width="1" stroke-dasharray="2,2"/>
-      <circle cx="30" cy="25" r="5" fill="#A6472F"/>
-      <circle cx="170" cy="30" r="5" fill="#A6472F"/>
-      <circle cx="40" cy="100" r="5" fill="#A6472F"/>
-      <circle cx="160" cy="95" r="5" fill="#A6472F"/>
-      <circle cx="100" cy="60" r="8" fill="#B8892B" stroke="#1E2A22" stroke-width="1.5"/>
+      <path d="M100 60 l-3 -6" stroke="#2F7069" stroke-width="0" fill="none"/>
+      <path d="M30 25 Q 60 45 92 58" fill="none" stroke="#6E6259" stroke-width="1" stroke-dasharray="2,2"/>
+      <path d="M170 30 Q 140 48 108 58" fill="none" stroke="#6E6259" stroke-width="1" stroke-dasharray="2,2"/>
+      <path d="M40 100 Q 65 75 96 62" fill="none" stroke="#6E6259" stroke-width="1" stroke-dasharray="2,2"/>
+      <path d="M160 95 Q 135 78 104 63" fill="none" stroke="#6E6259" stroke-width="1" stroke-dasharray="2,2"/>
+      <circle cx="30" cy="25" r="5" fill="#A8392A"/>
+      <circle cx="170" cy="30" r="5" fill="#A8392A"/>
+      <circle cx="40" cy="100" r="5" fill="#A8392A"/>
+      <circle cx="160" cy="95" r="5" fill="#A8392A"/>
+      <circle cx="100" cy="60" r="8" fill="#2F7069" stroke="#2D2D2D" stroke-width="1.5"/>
     </svg>
     <div class="txt">
       <h3>A swarm hunting for the lowest point</h3>
@@ -337,7 +341,7 @@
         <div class="stat hi"><div class="label">Best value found</div><div class="value" id="psoBestOut">–</div></div>
       </div>
       <div class="box"><h2>Search space</h2><canvas class="main" id="psoCanvas"></canvas>
-        <div class="legend"><span><i class="swatch" style="background:#A6472F"></i>particle</span><span><i class="swatch" style="background:#B8892B"></i>swarm best</span></div>
+        <div class="legend"><span><i class="swatch" style="background:#A8392A"></i>particle</span><span><i class="swatch" style="background:#2F7069"></i>swarm best</span></div>
       </div>
       <div class="box"><h2>Best value vs. iteration</h2><canvas class="chart" id="psoChart"></canvas></div>
     </div>
@@ -348,13 +352,13 @@
 <div class="section" id="sec-sa">
   <div class="intro">
     <svg viewBox="0 0 200 120" xmlns="http://www.w3.org/2000/svg">
-      <path d="M10 90 Q 40 40 70 75 T 130 60 T 190 85" fill="none" stroke="#1E2A22" stroke-width="2"/>
-      <circle cx="72" cy="72" r="6" fill="#A6472F"/>
-      <rect x="165" y="20" width="10" height="55" rx="5" fill="none" stroke="#1E2A22" stroke-width="1.5"/>
-      <circle cx="170" cy="82" r="8" fill="#A6472F"/>
-      <rect x="167" y="55" width="6" height="22" fill="#A6472F"/>
-      <rect x="167" y="26" width="6" height="24" fill="#C7DBCB"/>
-      <text x="150" y="18" font-family="SF Mono, monospace" font-size="8" fill="#4A5A4E">hot → cool</text>
+      <path d="M10 90 Q 40 40 70 75 T 130 60 T 190 85" fill="none" stroke="#2D2D2D" stroke-width="2"/>
+      <circle cx="72" cy="72" r="6" fill="#A8392A"/>
+      <rect x="165" y="20" width="10" height="55" rx="5" fill="none" stroke="#2D2D2D" stroke-width="1.5"/>
+      <circle cx="170" cy="82" r="8" fill="#A8392A"/>
+      <rect x="167" y="55" width="6" height="22" fill="#A8392A"/>
+      <rect x="167" y="26" width="6" height="24" fill="#F0DCC6"/>
+      <text x="150" y="18" font-family="SF Mono, monospace" font-size="8" fill="#6E6259">hot → cool</text>
     </svg>
     <div class="txt">
       <h3>One wanderer, gradually calming down</h3>
@@ -384,10 +388,10 @@
         <div class="stat hi"><div class="label">Best value found</div><div class="value" id="saBestOut">–</div></div>
       </div>
       <div class="box"><h2>Search space</h2><canvas class="main" id="saCanvas"></canvas>
-        <div class="legend"><span><i class="swatch" style="background:#A6472F"></i>current position</span><span><i class="swatch" style="background:#B8892B"></i>best found</span></div>
+        <div class="legend"><span><i class="swatch" style="background:#A8392A"></i>current position</span><span><i class="swatch" style="background:#2F7069"></i>best found</span></div>
       </div>
       <div class="box"><h2>Value &amp; temperature vs. iteration</h2><canvas class="chart" id="saChart"></canvas>
-        <div class="legend"><span><i class="swatch" style="background:#A6472F"></i>current value</span><span><i class="swatch" style="background:#2F6F4E"></i>best value</span></div>
+        <div class="legend"><span><i class="swatch" style="background:#A8392A"></i>current value</span><span><i class="swatch" style="background:#C17A3E"></i>best value</span></div>
       </div>
     </div>
   </div>
@@ -397,17 +401,17 @@
 <div class="section" id="sec-aco">
   <div class="intro">
     <svg viewBox="0 0 200 120" xmlns="http://www.w3.org/2000/svg">
-      <line x1="25" y1="90" x2="90" y2="25" stroke="#C7DBCB" stroke-width="5"/>
-      <line x1="90" y1="25" x2="160" y2="45" stroke="#2F6F4E" stroke-width="3"/>
-      <line x1="160" y1="45" x2="175" y2="95" stroke="#C7DBCB" stroke-width="4"/>
-      <line x1="175" y1="95" x2="25" y2="90" stroke="#2F6F4E" stroke-width="3"/>
-      <line x1="25" y1="90" x2="160" y2="45" stroke="#C7DBCB" stroke-width="2"/>
-      <circle cx="25" cy="90" r="6" fill="#1E2A22"/>
-      <circle cx="90" cy="25" r="6" fill="#1E2A22"/>
-      <circle cx="160" cy="45" r="6" fill="#1E2A22"/>
-      <circle cx="175" cy="95" r="6" fill="#1E2A22"/>
-      <ellipse cx="60" cy="58" rx="4" ry="2.5" fill="#A6472F"/>
-      <ellipse cx="130" cy="35" rx="4" ry="2.5" fill="#A6472F"/>
+      <line x1="25" y1="90" x2="90" y2="25" stroke="#F0DCC6" stroke-width="5"/>
+      <line x1="90" y1="25" x2="160" y2="45" stroke="#C17A3E" stroke-width="3"/>
+      <line x1="160" y1="45" x2="175" y2="95" stroke="#F0DCC6" stroke-width="4"/>
+      <line x1="175" y1="95" x2="25" y2="90" stroke="#C17A3E" stroke-width="3"/>
+      <line x1="25" y1="90" x2="160" y2="45" stroke="#F0DCC6" stroke-width="2"/>
+      <circle cx="25" cy="90" r="6" fill="#2D2D2D"/>
+      <circle cx="90" cy="25" r="6" fill="#2D2D2D"/>
+      <circle cx="160" cy="45" r="6" fill="#2D2D2D"/>
+      <circle cx="175" cy="95" r="6" fill="#2D2D2D"/>
+      <ellipse cx="60" cy="58" rx="4" ry="2.5" fill="#A8392A"/>
+      <ellipse cx="130" cy="35" rx="4" ry="2.5" fill="#A8392A"/>
     </svg>
     <div class="txt">
       <h3>A colony leaving trails for each other</h3>
@@ -437,7 +441,7 @@
         <div class="stat hi"><div class="label">Shortest tour found</div><div class="value" id="acoBestOut">–</div></div>
       </div>
       <div class="box"><h2>Cities &amp; pheromone trails</h2><canvas class="main" id="acoCanvas"></canvas>
-        <div class="legend"><span><i class="swatch" style="background:#1E2A22"></i>city</span><span><i class="swatch" style="background:#C7DBCB"></i>pheromone trail</span><span><i class="swatch" style="background:#2F6F4E"></i>best tour</span></div>
+        <div class="legend"><span><i class="swatch" style="background:#2D2D2D"></i>city</span><span><i class="swatch" style="background:#F0DCC6"></i>pheromone trail</span><span><i class="swatch" style="background:#C17A3E"></i>best tour</span></div>
       </div>
       <div class="box"><h2>Shortest tour length vs. iteration</h2><canvas class="chart" id="acoChart"></canvas></div>
     </div>
@@ -473,7 +477,7 @@
     if(!isFinite(minV)) minV=0;
     if(maxV===minV) maxV=minV+1;
     const range = maxV-minV;
-    ctx.strokeStyle = '#CFCDBB'; ctx.fillStyle='#4A5A4E'; ctx.font='10px monospace'; ctx.lineWidth=1;
+    ctx.strokeStyle = '#E4DACB'; ctx.fillStyle='#6E6259'; ctx.font='10px monospace'; ctx.lineWidth=1;
     for(let i=0;i<=4;i++){
       const v = minV + (range*i/4);
       const y = padT + plotH - (i/4)*plotH;
@@ -590,7 +594,7 @@
       }
       popDiv.appendChild(row);
     });
-    drawLineChart($('gsChart'), [{key:'avg',color:'#A6472F'},{key:'best',color:'#2F6F4E'}], gs.history, gs.target.length);
+    drawLineChart($('gsChart'), [{key:'avg',color:'#A8392A'},{key:'best',color:'#C17A3E'}], gs.history, gs.target.length);
     if(best === gs.target.length){ $('gsWinMsg').style.display='block'; gsStopPlay(); }
   }
 
@@ -713,10 +717,10 @@
     const padL=32, padB=16, padT=8, padR=8;
     const plotW=w-padL-padR, plotH=h-padT-padB;
     const maxV = Math.max(gk.optimalValue, ...gk.history.map(p=>p.best))*1.05 || 1;
-    ctx.strokeStyle='#CFCDBB'; ctx.fillStyle='#4A5A4E'; ctx.font='10px monospace'; ctx.lineWidth=1;
+    ctx.strokeStyle='#E4DACB'; ctx.fillStyle='#6E6259'; ctx.font='10px monospace'; ctx.lineWidth=1;
     for(let i=0;i<=4;i++){ const v=maxV*i/4; const y=padT+plotH-(i/4)*plotH; ctx.beginPath(); ctx.moveTo(padL,y); ctx.lineTo(w-padR,y); ctx.stroke(); ctx.fillText(v.toFixed(0),2,y+3); }
     const optY = padT+plotH-(gk.optimalValue/maxV)*plotH;
-    ctx.setLineDash([4,4]); ctx.strokeStyle='#B8892B'; ctx.lineWidth=1.5;
+    ctx.setLineDash([4,4]); ctx.strokeStyle='#2F7069'; ctx.lineWidth=1.5;
     ctx.beginPath(); ctx.moveTo(padL,optY); ctx.lineTo(w-padR,optY); ctx.stroke(); ctx.setLineDash([]);
     if(gk.history.length<2) return;
     const n = gk.history.length; const xStep = plotW/Math.max(1,n-1);
@@ -725,7 +729,7 @@
       gk.history.forEach((pt,i)=>{ const x=padL+i*xStep; const y=padT+plotH-(pt[key]/maxV)*plotH; if(i===0) ctx.moveTo(x,y); else ctx.lineTo(x,y); });
       ctx.stroke();
     }
-    plotLine('avg','#A6472F'); plotLine('best','#2F6F4E');
+    plotLine('avg','#A8392A'); plotLine('best','#C17A3E');
   }
   function gkRender(){
     $('gkGenOut').textContent = gk.generation;
@@ -844,14 +848,14 @@
     ctx.drawImage(buildHeatmap(psoLandscapeKey()), 0,0,w,h);
     pso.particles.forEach(particle=>{
       const [px,py] = toPx(particle.x, particle.y, w, h);
-      ctx.beginPath(); ctx.arc(px,py,4,0,7); ctx.fillStyle='#A6472F'; ctx.fill();
+      ctx.beginPath(); ctx.arc(px,py,4,0,7); ctx.fillStyle='#A8392A'; ctx.fill();
     });
     if(pso.gbest){
       const [gx,gy] = toPx(pso.gbest.x, pso.gbest.y, w, h);
-      ctx.beginPath(); ctx.arc(gx,gy,7,0,7); ctx.fillStyle='#B8892B'; ctx.fill();
-      ctx.lineWidth=2; ctx.strokeStyle='#1E2A22'; ctx.stroke();
+      ctx.beginPath(); ctx.arc(gx,gy,7,0,7); ctx.fillStyle='#2F7069'; ctx.fill();
+      ctx.lineWidth=2; ctx.strokeStyle='#2D2D2D'; ctx.stroke();
     }
-    drawLineChart($('psoChart'), [{key:'best',color:'#2F6F4E'}], pso.history);
+    drawLineChart($('psoChart'), [{key:'best',color:'#C17A3E'}], pso.history);
   }
 
   // ================= Simulated Annealing =================
@@ -888,14 +892,14 @@
     ctx.drawImage(buildHeatmap(saLandscapeKey()), 0,0,w,h);
     sa.trail.forEach((pt,i)=>{
       const [px,py] = toPx(pt.x,pt.y,w,h);
-      ctx.beginPath(); ctx.arc(px,py,3,0,7); ctx.fillStyle='rgba(166,71,47,'+(0.15+0.6*(i/sa.trail.length))+')'; ctx.fill();
+      ctx.beginPath(); ctx.arc(px,py,3,0,7); ctx.fillStyle='rgba(168,57,42,'+(0.15+0.6*(i/sa.trail.length))+')'; ctx.fill();
     });
     const [cx,cy] = toPx(sa.x,sa.y,w,h);
-    ctx.beginPath(); ctx.arc(cx,cy,5,0,7); ctx.fillStyle='#A6472F'; ctx.fill();
+    ctx.beginPath(); ctx.arc(cx,cy,5,0,7); ctx.fillStyle='#A8392A'; ctx.fill();
     const [bx,by] = toPx(sa.best.x, sa.best.y, w, h);
-    ctx.beginPath(); ctx.arc(bx,by,7,0,7); ctx.fillStyle='#B8892B'; ctx.fill();
-    ctx.lineWidth=2; ctx.strokeStyle='#1E2A22'; ctx.stroke();
-    drawLineChart($('saChart'), [{key:'current',color:'#A6472F'},{key:'best',color:'#2F6F4E'}], sa.history);
+    ctx.beginPath(); ctx.arc(bx,by,7,0,7); ctx.fillStyle='#2F7069'; ctx.fill();
+    ctx.lineWidth=2; ctx.strokeStyle='#2D2D2D'; ctx.stroke();
+    drawLineChart($('saChart'), [{key:'current',color:'#A8392A'},{key:'best',color:'#C17A3E'}], sa.history);
   }
 
   // ================= ACO (TSP) =================
@@ -946,7 +950,7 @@
     $('acoIterOut').textContent = aco.iter;
     $('acoBestOut').textContent = isFinite(aco.bestLen) ? aco.bestLen.toFixed(2) : '–';
     const canvas = $('acoCanvas'); const {ctx,w,h} = sizeCanvas(canvas);
-    ctx.fillStyle='#FBFAF5'; ctx.fillRect(0,0,w,h);
+    ctx.fillStyle='#FFFDF9'; ctx.fillRect(0,0,w,h);
     const n = aco.cities.length; const toXY = c => [c.x/10*w, h - c.y/10*h];
     let maxPher = 1;
     if(n>0){
@@ -956,18 +960,18 @@
           const strength = aco.pher[i][j]/maxPher; if(strength<0.04) continue;
           const [x1,y1] = toXY(aco.cities[i]); const [x2,y2] = toXY(aco.cities[j]);
           ctx.beginPath(); ctx.moveTo(x1,y1); ctx.lineTo(x2,y2);
-          ctx.strokeStyle = 'rgba(47,111,78,'+(0.06+0.5*strength)+')'; ctx.lineWidth = 1+3*strength; ctx.stroke();
+          ctx.strokeStyle = 'rgba(193,122,62,'+(0.06+0.5*strength)+')'; ctx.lineWidth = 1+3*strength; ctx.stroke();
         }
       }
       if(aco.best){
         ctx.beginPath();
         aco.best.forEach((ci,idx)=>{ const [x,y]=toXY(aco.cities[ci]); if(idx===0) ctx.moveTo(x,y); else ctx.lineTo(x,y); });
         const [x0,y0] = toXY(aco.cities[aco.best[0]]); ctx.lineTo(x0,y0);
-        ctx.strokeStyle='#2F6F4E'; ctx.lineWidth=2.5; ctx.stroke();
+        ctx.strokeStyle='#C17A3E'; ctx.lineWidth=2.5; ctx.stroke();
       }
-      aco.cities.forEach(c=>{ const [x,y]=toXY(c); ctx.beginPath(); ctx.arc(x,y,5,0,7); ctx.fillStyle='#1E2A22'; ctx.fill(); });
+      aco.cities.forEach(c=>{ const [x,y]=toXY(c); ctx.beginPath(); ctx.arc(x,y,5,0,7); ctx.fillStyle='#2D2D2D'; ctx.fill(); });
     }
-    drawLineChart($('acoChart'), [{key:'best',color:'#2F6F4E'}], aco.history);
+    drawLineChart($('acoChart'), [{key:'best',color:'#C17A3E'}], aco.history);
   }
 
   // ---------- wiring: PSO / SA / ACO ----------

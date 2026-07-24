@@ -3,33 +3,37 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<link rel="icon" type="image/svg+xml" href="logo.svg">
+<link rel="icon" type="image/png" href="logo.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=Lato:wght@300;400;700&display=swap" rel="stylesheet">
 <title>Scientific machine learning — PINN, SINDy, Neural ODE, DeepONet, FNO</title>
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css" crossorigin="anonymous">
 <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js" crossorigin="anonymous"></script>
 <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/contrib/auto-render.min.js" crossorigin="anonymous" onload="window.__mathReady&&window.__mathReady()"></script>
 <style>
   :root{
-    --paper: #F2F1E9; --paper-line: #DAD8C8; --ink: #1E2A22; --ink-soft: #4A5A4E;
-    --moss: #2F6F4E; --moss-dim: #C7DBCB; --rust: #A6472F; --rust-dim: #EDD6CD;
-    --gold: #B8892B; --gold-dim: #EFE0BC; --card: #FBFAF5; --border: #CFCDBB;
+    --paper: #FAF7F2; --paper-line: #EDE4D8; --ink: #2D2D2D; --ink-soft: #6E6259;
+    --moss: #C17A3E; --moss-dim: #F0DCC6; --rust: #A8392A; --rust-dim: #F3DBD5;
+    --gold: #2F7069; --accent-deep: #8F5620; --gold-dim: #D3E5E2; --card: #FFFDF9; --border: #E4DACB;
   }
   *{ box-sizing: border-box; }
   body{
     margin:0; background: var(--paper); color: var(--ink);
-    font-family: -apple-system, "Segoe UI", Helvetica, Arial, sans-serif; line-height: 1.5;
+    font-family: Lato, "Helvetica Neue", Helvetica, Arial, sans-serif; line-height: 1.5;
     background-image: linear-gradient(var(--paper-line) 1px, transparent 1px), linear-gradient(90deg, var(--paper-line) 1px, transparent 1px);
     background-size: 28px 28px; background-attachment: fixed;
   }
   .wrap{ max-width: 1100px; margin: 0 auto; padding: 36px 24px 80px; }
   header.top{ margin-bottom: 18px; border-bottom: 2px solid var(--ink); padding-bottom: 14px; }
   .eyebrow{ font-family: "SF Mono", SFMono-Regular, Consolas, monospace; font-size: 12px; letter-spacing: 0.12em; text-transform: uppercase; color: var(--moss); margin: 0 0 6px; }
-  h1{ font-family: Georgia, "Iowan Old Style", "Palatino Linotype", serif; font-weight: 400; font-size: 32px; margin: 0 0 8px; }
+  h1{ font-family: "Playfair Display", "Playfair Display", Georgia, serif; font-weight: 600; font-size: 32px; margin: 0 0 8px; }
   header.top p{ margin: 0; color: var(--ink-soft); max-width: 800px; font-size: 15px; }
+  header.top p.eyebrow{ color: var(--accent-deep); }
   .crumbs{ font-size: 12.5px; margin: 14px 0 0; }
   .crumbs a{ color: var(--moss); }
 
-  .tabs{ display: flex; gap: 8px; margin: 20px 0 22px; flex-wrap: wrap; }
+  .tabs{ display: flex; gap: 8px; margin: 0 0 22px; flex-wrap: wrap;  position: sticky; top: 0; z-index: 20; background: var(--paper); padding: 12px 0 10px; border-bottom: 1px solid var(--border); }
   .tab{ padding: 9px 14px; font-size: 13px; font-weight: 600; border: 1px solid var(--ink); border-radius: 3px; background: var(--card); cursor: pointer; }
   .tab.active{ background: var(--ink); color: #fff; }
 
@@ -39,7 +43,7 @@
   .intro{ display:grid; grid-template-columns: 200px 1fr; gap: 20px; align-items:center; background: var(--card); border: 1px solid var(--border); border-radius: 4px; padding: 14px 18px; margin-bottom: 20px; }
   @media (max-width: 700px){ .intro{ grid-template-columns: 1fr; } }
   .intro svg{ width: 100%; height: auto; display:block; }
-  .intro .txt h3{ margin: 0 0 6px; font-family: Georgia, serif; font-size: 17px; font-weight: 400; }
+  .intro .txt h3{ margin: 0 0 6px; font-family: "Playfair Display", Georgia, serif; font-size: 17px; font-weight: 400; }
   .intro .txt p{ margin: 0; font-size: 13.5px; color: var(--ink-soft); }
 
   .layout{ display: grid; grid-template-columns: 300px 1fr; gap: 24px; align-items: start; }
@@ -47,7 +51,7 @@
     .layout{ grid-template-columns: 1fr; }
     .panel{ position: static !important; top: auto !important; }
   }
-  .panel{ background: var(--card); border: 1px solid var(--border); border-radius: 4px; padding: 18px; position: sticky; top: 20px; align-self: start; }
+  .panel{ background: var(--card); border: 1px solid var(--border); border-radius: 4px; padding: 18px; position: sticky; top: 84px; align-self: start; }
   .panel h2{ font-family: "SF Mono", SFMono-Regular, Consolas, monospace; font-size: 12px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--ink-soft); margin: 18px 0 12px; border-bottom: 1px solid var(--border); padding-bottom: 6px; }
   .panel h2:first-child{ margin-top: 0; }
   .field{ margin-bottom: 14px; }
@@ -59,7 +63,7 @@
   .btn{ display: inline-block; padding: 8px 14px; font-size: 13px; font-weight: 600; border: 1px solid var(--ink); border-radius: 3px; background: var(--card); color: var(--ink); cursor: pointer; }
   .btn:hover{ background: var(--paper-line); }
   .btn.primary{ background: var(--moss); color: #fff; border-color: var(--moss); }
-  .btn.primary:hover{ background: #275c40; }
+  .btn.primary:hover{ background: #A6642F; }
   .btn.toggle.active{ background: var(--ink); color: #fff; }
   .btn.block{ width: 100%; margin-bottom: 8px; }
   .btngroup{ display:flex; gap:8px; margin-bottom: 14px; }
@@ -71,7 +75,7 @@
   .stats{ display: flex; gap: 12px; margin-bottom: 20px; flex-wrap: wrap; }
   .stat{ flex: 1; min-width: 120px; background: var(--card); border: 1px solid var(--border); border-radius: 4px; padding: 10px 14px; overflow: hidden; }
   .stat .label{ font-size: 11px; letter-spacing: 0.08em; text-transform: uppercase; color: var(--ink-soft); font-family: "SF Mono", SFMono-Regular, Consolas, monospace; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-  .stat .value{ font-size: 20px; font-family: Georgia, serif; line-height: 1.3; word-break: break-word; }
+  .stat .value{ font-size: 20px; font-family: "Playfair Display", Georgia, serif; line-height: 1.3; word-break: break-word; }
   .stat .value.eqv{ font-size: 15px; padding-top: 4px; }
   .stat.hi .value{ color: var(--moss); }
   .stat.warn .value{ color: var(--rust); }
@@ -97,7 +101,7 @@
   .swatch{ width:10px; height:10px; border-radius:50%; display:inline-block; }
 
   .try{ background: var(--gold-dim); border: 1px solid var(--gold); border-radius: 4px; padding: 10px 14px; font-size: 13px; margin-bottom: 20px; }
-  .try b{ text-transform: uppercase; font-size: 11px; letter-spacing: 0.08em; font-family: "SF Mono", SFMono-Regular, Consolas, monospace; color: #7a5a15; }
+  .try b{ text-transform: uppercase; font-size: 11px; letter-spacing: 0.08em; font-family: "SF Mono", SFMono-Regular, Consolas, monospace; color: #27585A; }
   .try ol{ margin: 6px 0 0; padding-left: 20px; }
   .try li{ margin-bottom: 3px; }
 
@@ -107,7 +111,7 @@
 
   table.cmp{ width:100%; border-collapse:collapse; font-size:13px; }
   table.cmp th, table.cmp td{ border:1px solid var(--border); padding:9px 12px; text-align:left; vertical-align:top; }
-  table.cmp th{ background:var(--paper); font-family:Georgia,serif; font-weight:400; font-size:15px; }
+  table.cmp th{ background:var(--paper); font-family:"Playfair Display", Georgia, serif; font-weight:400; font-size:15px; }
   table.cmp td:first-child, table.cmp th:first-child{ background:var(--paper); font-weight:600; font-size:12px; text-transform:uppercase; letter-spacing:0.06em; font-family:"SF Mono",SFMono-Regular,Consolas,monospace; color:var(--ink-soft); width:120px; }
   table.cmp td{ color: var(--ink); }
 
@@ -128,11 +132,11 @@
 <div class="wrap">
 
 <nav style="display:flex;align-items:center;gap:16px;font-family:'SF Mono',SFMono-Regular,Consolas,monospace;font-size:13px;margin-bottom:24px;flex-wrap:wrap">
-<a href="https://phx.my.id" style="display:inline-flex;align-items:center;gap:9px;text-decoration:none;color:#1E2A22;font-weight:600"><img src="logo.svg" alt="" style="width:30px;height:30px;border-radius:7px;display:block">phx.my.id</a>
+<a href="https://phx.my.id" style="display:inline-flex;align-items:center;gap:9px;text-decoration:none;color:#2D2D2D;font-weight:600"><img src="logo.png" alt="" style="width:30px;height:30px;border-radius:7px;display:block">phx.my.id</a>
 <span style="flex:1;min-width:12px"></span>
-<a href="https://phx.my.id" style="text-decoration:none;color:#4A5A4E">Home</a>
-<a href="https://research.phx.my.id" style="text-decoration:none;color:#4A5A4E">Research</a>
-<a href="index.html" style="text-decoration:none;color:#2F6F4E;font-weight:600">Playgrounds</a>
+<a href="https://phx.my.id" style="text-decoration:none;color:#6E6259">Home</a>
+<a href="https://research.phx.my.id" style="text-decoration:none;color:#6E6259">Research</a>
+<a href="index.html" style="text-decoration:none;color:#8F5620;font-weight:600">Playgrounds</a>
 </nav>
 
 <header class="top">
@@ -154,19 +158,19 @@
 <div class="section active" id="sec-pinn">
   <div class="intro">
     <svg viewBox="0 0 200 120" xmlns="http://www.w3.org/2000/svg">
-      <g fill="#FBFAF5" stroke="#4A5A4E">
+      <g fill="#FFFDF9" stroke="#6E6259">
         <circle cx="20" cy="40" r="7"/><circle cx="20" cy="80" r="7"/>
         <circle cx="70" cy="25" r="7"/><circle cx="70" cy="60" r="7"/><circle cx="70" cy="95" r="7"/>
-        <circle cx="120" cy="60" r="7" fill="#C7DBCB" stroke="#2F6F4E"/>
+        <circle cx="120" cy="60" r="7" fill="#F0DCC6" stroke="#C17A3E"/>
       </g>
-      <g stroke="#CFCDBB" stroke-width="1">
+      <g stroke="#E4DACB" stroke-width="1">
         <line x1="27" y1="40" x2="63" y2="27"/><line x1="27" y1="40" x2="63" y2="58"/><line x1="27" y1="40" x2="63" y2="92"/>
         <line x1="27" y1="80" x2="63" y2="28"/><line x1="27" y1="80" x2="63" y2="62"/><line x1="27" y1="80" x2="63" y2="96"/>
         <line x1="77" y1="25" x2="113" y2="57"/><line x1="77" y1="60" x2="113" y2="60"/><line x1="77" y1="95" x2="113" y2="63"/>
       </g>
-      <text x="138" y="50" font-family="Georgia,serif" font-size="13" fill="#1E2A22">u(t)</text>
-      <text x="132" y="78" font-family="SF Mono,monospace" font-size="9" fill="#A6472F">data ✓</text>
-      <text x="132" y="92" font-family="SF Mono,monospace" font-size="9" fill="#2F6F4E">physics ✓</text>
+      <text x="138" y="50" font-family=""Playfair Display", Georgia, serif" font-size="13" fill="#2D2D2D">u(t)</text>
+      <text x="132" y="78" font-family="SF Mono,monospace" font-size="9" fill="#A8392A">data ✓</text>
+      <text x="132" y="92" font-family="SF Mono,monospace" font-size="9" fill="#C17A3E">physics ✓</text>
     </svg>
     <div class="txt">
       <h3>PINN — a neural network graded by two teachers</h3>
@@ -214,10 +218,10 @@
         <h2>The network's guess u(t) — shaded region has no data at all</h2>
         <canvas id="pinnMain" class="big" style="cursor:default"></canvas>
         <div class="legend">
-          <span><i class="swatch" style="background:#2F6F4E"></i>network u(t)</span>
-          <span><i class="swatch" style="background:#1E2A22"></i>true solution</span>
-          <span><i class="swatch" style="background:#A6472F"></i>noisy measurements</span>
-          <span><i class="swatch" style="background:#B8892B"></i>collocation points (where physics is checked)</span>
+          <span><i class="swatch" style="background:#C17A3E"></i>network u(t)</span>
+          <span><i class="swatch" style="background:#2D2D2D"></i>true solution</span>
+          <span><i class="swatch" style="background:#A8392A"></i>noisy measurements</span>
+          <span><i class="swatch" style="background:#2F7069"></i>collocation points (where physics is checked)</span>
         </div>
       </div>
 
@@ -255,12 +259,12 @@
 <div class="section" id="sec-sindy">
   <div class="intro">
     <svg viewBox="0 0 200 120" xmlns="http://www.w3.org/2000/svg">
-      <g fill="#A6472F"><circle cx="16" cy="70" r="3"/><circle cx="26" cy="52" r="3"/><circle cx="38" cy="42" r="3"/><circle cx="50" cy="47" r="3"/><circle cx="60" cy="62" r="3"/><circle cx="66" cy="80" r="3"/><circle cx="58" cy="94" r="3"/><circle cx="42" cy="99" r="3"/><circle cx="28" cy="92" r="3"/></g>
-      <path d="M88 70 h 24" stroke="#1E2A22" stroke-width="1.5" marker-end="url(#arrsi)"/>
-      <defs><marker id="arrsi" markerWidth="6" markerHeight="6" refX="3" refY="3" orient="auto"><path d="M0,0 L6,3 L0,6 z" fill="#1E2A22"/></marker></defs>
-      <text x="122" y="58" font-family="SF Mono,monospace" font-size="11" fill="#2F6F4E">ẋ = y</text>
-      <text x="122" y="76" font-family="SF Mono,monospace" font-size="11" fill="#2F6F4E">ẏ = −2x−0.3y</text>
-      <text x="122" y="96" font-family="SF Mono,monospace" font-size="9" fill="#4A5A4E">the law, recovered</text>
+      <g fill="#A8392A"><circle cx="16" cy="70" r="3"/><circle cx="26" cy="52" r="3"/><circle cx="38" cy="42" r="3"/><circle cx="50" cy="47" r="3"/><circle cx="60" cy="62" r="3"/><circle cx="66" cy="80" r="3"/><circle cx="58" cy="94" r="3"/><circle cx="42" cy="99" r="3"/><circle cx="28" cy="92" r="3"/></g>
+      <path d="M88 70 h 24" stroke="#2D2D2D" stroke-width="1.5" marker-end="url(#arrsi)"/>
+      <defs><marker id="arrsi" markerWidth="6" markerHeight="6" refX="3" refY="3" orient="auto"><path d="M0,0 L6,3 L0,6 z" fill="#2D2D2D"/></marker></defs>
+      <text x="122" y="58" font-family="SF Mono,monospace" font-size="11" fill="#C17A3E">ẋ = y</text>
+      <text x="122" y="76" font-family="SF Mono,monospace" font-size="11" fill="#C17A3E">ẏ = −2x−0.3y</text>
+      <text x="122" y="96" font-family="SF Mono,monospace" font-size="9" fill="#6E6259">the law, recovered</text>
     </svg>
     <div class="txt">
       <h3>SINDy — let the data write the equation</h3>
@@ -299,9 +303,9 @@
           <h2>Phase plane — truth, measurements, rediscovery</h2>
           <canvas id="siPhase" class="sq"></canvas>
           <div class="legend">
-            <span><i class="swatch" style="background:#1E2A22"></i>hidden true trajectory</span>
-            <span><i class="swatch" style="background:#A6472F"></i>noisy samples</span>
-            <span><i class="swatch" style="background:#2F6F4E"></i>simulated from the discovered equation</span>
+            <span><i class="swatch" style="background:#2D2D2D"></i>hidden true trajectory</span>
+            <span><i class="swatch" style="background:#A8392A"></i>noisy samples</span>
+            <span><i class="swatch" style="background:#C17A3E"></i>simulated from the discovered equation</span>
           </div>
         </div>
         <div>
@@ -338,14 +342,14 @@
 <div class="section" id="sec-node">
   <div class="intro">
     <svg viewBox="0 0 200 120" xmlns="http://www.w3.org/2000/svg">
-      <g stroke="#4A5A4E" stroke-width="1.2" opacity="0.5">
+      <g stroke="#6E6259" stroke-width="1.2" opacity="0.5">
         <line x1="30" y1="30" x2="42" y2="24"/><line x1="70" y1="26" x2="82" y2="26"/><line x1="110" y1="30" x2="120" y2="38"/><line x1="150" y1="40" x2="158" y2="52"/>
         <line x1="30" y1="70" x2="40" y2="62"/><line x1="70" y1="60" x2="82" y2="58"/><line x1="110" y1="64" x2="120" y2="72"/><line x1="150" y1="78" x2="156" y2="90"/>
       </g>
-      <path d="M28 92 C 70 40, 120 44, 168 84" fill="none" stroke="#2F6F4E" stroke-width="2.4"/>
-      <circle cx="28" cy="92" r="3.5" fill="#A6472F"/>
-      <rect x="78" y="6" width="44" height="16" rx="3" fill="#C7DBCB" stroke="#2F6F4E"/>
-      <text x="100" y="18" text-anchor="middle" font-family="SF Mono,monospace" font-size="9" fill="#1E2A22">f θ (y)</text>
+      <path d="M28 92 C 70 40, 120 44, 168 84" fill="none" stroke="#C17A3E" stroke-width="2.4"/>
+      <circle cx="28" cy="92" r="3.5" fill="#A8392A"/>
+      <rect x="78" y="6" width="44" height="16" rx="3" fill="#F0DCC6" stroke="#C17A3E"/>
+      <text x="100" y="18" text-anchor="middle" font-family="SF Mono,monospace" font-size="9" fill="#2D2D2D">f θ (y)</text>
     </svg>
     <div class="txt">
       <h3>Neural ODE — a neural network <i>is</i> the derivative</h3>
@@ -387,10 +391,10 @@
         <h2>Phase plane — learned vector field, true path, and the network's own rollout</h2>
         <canvas id="ndMain" class="big" style="cursor:default"></canvas>
         <div class="legend">
-          <span><i class="swatch" style="background:#4A5A4E"></i>learned field f<sub>θ</sub></span>
-          <span><i class="swatch" style="background:#1E2A22"></i>true trajectory</span>
-          <span><i class="swatch" style="background:#A6472F"></i>measured points</span>
-          <span><i class="swatch" style="background:#2F6F4E"></i>integrated from f<sub>θ</sub></span>
+          <span><i class="swatch" style="background:#6E6259"></i>learned field f<sub>θ</sub></span>
+          <span><i class="swatch" style="background:#2D2D2D"></i>true trajectory</span>
+          <span><i class="swatch" style="background:#A8392A"></i>measured points</span>
+          <span><i class="swatch" style="background:#C17A3E"></i>integrated from f<sub>θ</sub></span>
         </div>
       </div>
 
@@ -421,14 +425,14 @@
 <div class="section" id="sec-don">
   <div class="intro">
     <svg viewBox="0 0 200 120" xmlns="http://www.w3.org/2000/svg">
-      <path d="M8 40 q 12 -24 24 0 t 24 0" fill="none" stroke="#A6472F" stroke-width="2"/>
-      <path d="M8 90 q 16 20 32 4 t 24 -6" fill="none" stroke="#A6472F" stroke-width="2" opacity="0.55"/>
-      <rect x="76" y="34" width="48" height="52" rx="4" fill="#FBFAF5" stroke="#1E2A22"/>
-      <text x="100" y="57" text-anchor="middle" font-family="SF Mono,monospace" font-size="9" fill="#1E2A22">operator</text>
-      <text x="100" y="70" text-anchor="middle" font-family="SF Mono,monospace" font-size="9" fill="#1E2A22">G: f ↦ u</text>
-      <path d="M132 60 h 12" stroke="#1E2A22" stroke-width="1.5"/>
-      <path d="M150 52 q 14 -18 28 0 t 14 8" fill="none" stroke="#2F6F4E" stroke-width="2.5"/>
-      <path d="M150 96 q 16 10 44 -10" fill="none" stroke="#2F6F4E" stroke-width="2.5" opacity="0.55"/>
+      <path d="M8 40 q 12 -24 24 0 t 24 0" fill="none" stroke="#A8392A" stroke-width="2"/>
+      <path d="M8 90 q 16 20 32 4 t 24 -6" fill="none" stroke="#A8392A" stroke-width="2" opacity="0.55"/>
+      <rect x="76" y="34" width="48" height="52" rx="4" fill="#FFFDF9" stroke="#2D2D2D"/>
+      <text x="100" y="57" text-anchor="middle" font-family="SF Mono,monospace" font-size="9" fill="#2D2D2D">operator</text>
+      <text x="100" y="70" text-anchor="middle" font-family="SF Mono,monospace" font-size="9" fill="#2D2D2D">G: f ↦ u</text>
+      <path d="M132 60 h 12" stroke="#2D2D2D" stroke-width="1.5"/>
+      <path d="M150 52 q 14 -18 28 0 t 14 8" fill="none" stroke="#C17A3E" stroke-width="2.5"/>
+      <path d="M150 96 q 16 10 44 -10" fill="none" stroke="#C17A3E" stroke-width="2.5" opacity="0.55"/>
     </svg>
     <div class="txt">
       <h3>DeepONet — learn the solver itself</h3>
@@ -474,12 +478,12 @@
         <div class="box">
           <h2>Input function f — drag to draw</h2>
           <canvas id="donIn" class="sq" style="cursor:crosshair"></canvas>
-          <div class="legend"><span><i class="swatch" style="background:#A6472F"></i>your f</span><span><i class="swatch" style="background:#B8892B"></i>the 16 sensor values the branch net sees</span></div>
+          <div class="legend"><span><i class="swatch" style="background:#A8392A"></i>your f</span><span><i class="swatch" style="background:#2F7069"></i>the 16 sensor values the branch net sees</span></div>
         </div>
         <div class="box">
           <h2>Output u = G(f) — network vs truth</h2>
           <canvas id="donOut" class="sq"></canvas>
-          <div class="legend"><span><i class="swatch" style="background:#2F6F4E"></i>DeepONet prediction</span><span><i class="swatch" style="background:#1E2A22"></i>true answer (computed numerically)</span></div>
+          <div class="legend"><span><i class="swatch" style="background:#C17A3E"></i>DeepONet prediction</span><span><i class="swatch" style="background:#2D2D2D"></i>true answer (computed numerically)</span></div>
         </div>
       </div>
 
@@ -488,7 +492,7 @@
       <div class="box">
         <h2>How the two little networks share the work</h2>
         <div class="eqk" id="donFormula"></div>
-        <p>The <span style="color:#A6472F;font-weight:700">branch net</span> reads f only through 16 sampled sensor values and compresses it into a few numbers bₖ — "which situation am I in?". The <span style="color:#2F6F4E;font-weight:700">trunk net</span> turns the query location x into basis functions τₖ(x) — "what shapes can answers have?". Their dot product is the answer. It's a learned, problem-aware Fourier series.</p>
+        <p>The <span style="color:#A8392A;font-weight:700">branch net</span> reads f only through 16 sampled sensor values and compresses it into a few numbers bₖ — "which situation am I in?". The <span style="color:#C17A3E;font-weight:700">trunk net</span> turns the query location x into basis functions τₖ(x) — "what shapes can answers have?". Their dot product is the answer. It's a learned, problem-aware Fourier series.</p>
       </div>
 
       <div class="try"><b>Try this</b>
@@ -513,12 +517,12 @@
 <div class="section" id="sec-fno">
   <div class="intro">
     <svg viewBox="0 0 200 120" xmlns="http://www.w3.org/2000/svg">
-      <path d="M6 40 q 12 -22 24 0 t 24 0 t 24 0" fill="none" stroke="#A6472F" stroke-width="2"/>
-      <g fill="#B8892B"><rect x="70" y="66" width="6" height="30"/><rect x="80" y="52" width="6" height="44"/><rect x="90" y="74" width="6" height="22"/><rect x="100" y="84" width="6" height="12"/><rect x="110" y="88" width="6" height="8"/></g>
-      <text x="72" y="112" font-family="SF Mono,monospace" font-size="8" fill="#4A5A4E">Fourier modes</text>
-      <path d="M150 40 q 12 -14 24 0 t 24 0" fill="none" stroke="#2F6F4E" stroke-width="2.4"/>
-      <path d="M132 68 h 12" stroke="#1E2A22" stroke-width="1.4" marker-end="url(#afno)"/>
-      <defs><marker id="afno" markerWidth="6" markerHeight="6" refX="3" refY="3" orient="auto"><path d="M0,0 L6,3 L0,6 z" fill="#1E2A22"/></marker></defs>
+      <path d="M6 40 q 12 -22 24 0 t 24 0 t 24 0" fill="none" stroke="#A8392A" stroke-width="2"/>
+      <g fill="#2F7069"><rect x="70" y="66" width="6" height="30"/><rect x="80" y="52" width="6" height="44"/><rect x="90" y="74" width="6" height="22"/><rect x="100" y="84" width="6" height="12"/><rect x="110" y="88" width="6" height="8"/></g>
+      <text x="72" y="112" font-family="SF Mono,monospace" font-size="8" fill="#6E6259">Fourier modes</text>
+      <path d="M150 40 q 12 -14 24 0 t 24 0" fill="none" stroke="#C17A3E" stroke-width="2.4"/>
+      <path d="M132 68 h 12" stroke="#2D2D2D" stroke-width="1.4" marker-end="url(#afno)"/>
+      <defs><marker id="afno" markerWidth="6" markerHeight="6" refX="3" refY="3" orient="auto"><path d="M0,0 L6,3 L0,6 z" fill="#2D2D2D"/></marker></defs>
     </svg>
     <div class="txt">
       <h3>FNO — learn the operator in frequency space</h3>
@@ -568,19 +572,19 @@
         <div class="box">
           <h2>Input f — drag to draw</h2>
           <canvas id="fnIn" class="sq" style="cursor:crosshair"></canvas>
-          <div class="legend"><span><i class="swatch" style="background:#A6472F"></i>your f</span></div>
+          <div class="legend"><span><i class="swatch" style="background:#A8392A"></i>your f</span></div>
         </div>
         <div class="box">
           <h2>Output u = G(f) — network vs truth</h2>
           <canvas id="fnOut" class="sq"></canvas>
-          <div class="legend"><span><i class="swatch" style="background:#2F6F4E"></i>FNO prediction</span><span><i class="swatch" style="background:#1E2A22"></i>true answer</span></div>
+          <div class="legend"><span><i class="swatch" style="background:#C17A3E"></i>FNO prediction</span><span><i class="swatch" style="background:#2D2D2D"></i>true answer</span></div>
         </div>
       </div>
 
       <div class="box">
         <h2>The learned per-mode weights — what FNO actually stores</h2>
         <canvas id="fnSpec" class="small"></canvas>
-        <div class="legend"><span><i class="swatch" style="background:#2F6F4E"></i>learned gain |R<sub>k</sub>|</span><span><i class="swatch" style="background:#1E2A22"></i>the analytic multiplier</span></div>
+        <div class="legend"><span><i class="swatch" style="background:#C17A3E"></i>learned gain |R<sub>k</sub>|</span><span><i class="swatch" style="background:#2D2D2D"></i>the analytic multiplier</span></div>
         <p>Each bar is how much the network multiplies one frequency. As training proceeds they lock onto the <b>exact</b> analytic curve — for integration that is $1/(2\pi k)$ (low frequencies boosted); for diffusion it is $e^{-\alpha k^2}$ (high frequencies crushed). The operator was hiding in these few numbers all along.</p>
       </div>
 
@@ -614,40 +618,40 @@
   <div class="box">
     <h2>Where each idea lives — knowledge vs data</h2>
     <svg viewBox="0 0 760 300" xmlns="http://www.w3.org/2000/svg" style="width:100%;height:auto;display:block">
-      <defs><marker id="arrmap" markerWidth="7" markerHeight="7" refX="5" refY="3.5" orient="auto"><path d="M0,0 L7,3.5 L0,7 z" fill="#4A5A4E"/></marker></defs>
-      <line x1="70" y1="250" x2="710" y2="250" stroke="#4A5A4E" stroke-width="1.5" marker-end="url(#arrmap)"/>
-      <line x1="70" y1="250" x2="70" y2="30" stroke="#4A5A4E" stroke-width="1.5" marker-end="url(#arrmap)"/>
-      <text x="700" y="272" text-anchor="end" font-size="12" fill="#4A5A4E" font-family="SF Mono,monospace">how much DATA you have →</text>
-      <text x="30" y="150" text-anchor="middle" font-size="12" fill="#4A5A4E" font-family="SF Mono,monospace" transform="rotate(-90 30 150)">how much PHYSICS you know →</text>
+      <defs><marker id="arrmap" markerWidth="7" markerHeight="7" refX="5" refY="3.5" orient="auto"><path d="M0,0 L7,3.5 L0,7 z" fill="#6E6259"/></marker></defs>
+      <line x1="70" y1="250" x2="710" y2="250" stroke="#6E6259" stroke-width="1.5" marker-end="url(#arrmap)"/>
+      <line x1="70" y1="250" x2="70" y2="30" stroke="#6E6259" stroke-width="1.5" marker-end="url(#arrmap)"/>
+      <text x="700" y="272" text-anchor="end" font-size="12" fill="#6E6259" font-family="SF Mono,monospace">how much DATA you have →</text>
+      <text x="30" y="150" text-anchor="middle" font-size="12" fill="#6E6259" font-family="SF Mono,monospace" transform="rotate(-90 30 150)">how much PHYSICS you know →</text>
       <g>
-        <rect x="95" y="45" width="180" height="66" rx="5" fill="#C7DBCB" stroke="#2F6F4E"/>
-        <text x="185" y="70" text-anchor="middle" font-family="Georgia,serif" font-size="15" fill="#1E2A22">Classical solvers</text>
-        <text x="185" y="89" text-anchor="middle" font-size="11" fill="#4A5A4E">know all, measure nothing</text>
-        <text x="185" y="103" text-anchor="middle" font-size="10" fill="#2F6F4E" font-family="SF Mono,monospace">Euler · RK4 · PDEs</text>
+        <rect x="95" y="45" width="180" height="66" rx="5" fill="#F0DCC6" stroke="#C17A3E"/>
+        <text x="185" y="70" text-anchor="middle" font-family=""Playfair Display", Georgia, serif" font-size="15" fill="#2D2D2D">Classical solvers</text>
+        <text x="185" y="89" text-anchor="middle" font-size="11" fill="#6E6259">know all, measure nothing</text>
+        <text x="185" y="103" text-anchor="middle" font-size="10" fill="#C17A3E" font-family="SF Mono,monospace">Euler · RK4 · PDEs</text>
       </g>
       <g>
-        <rect x="300" y="45" width="170" height="66" rx="5" fill="#FBFAF5" stroke="#2F6F4E" stroke-width="1.5"/>
-        <text x="385" y="72" text-anchor="middle" font-family="Georgia,serif" font-size="16" fill="#1E2A22">PINN</text>
-        <text x="385" y="91" text-anchor="middle" font-size="11" fill="#4A5A4E">known law + few points</text>
-        <text x="385" y="104" text-anchor="middle" font-size="10" fill="#2F6F4E" font-family="SF Mono,monospace">tab 1</text>
+        <rect x="300" y="45" width="170" height="66" rx="5" fill="#FFFDF9" stroke="#C17A3E" stroke-width="1.5"/>
+        <text x="385" y="72" text-anchor="middle" font-family=""Playfair Display", Georgia, serif" font-size="16" fill="#2D2D2D">PINN</text>
+        <text x="385" y="91" text-anchor="middle" font-size="11" fill="#6E6259">known law + few points</text>
+        <text x="385" y="104" text-anchor="middle" font-size="10" fill="#C17A3E" font-family="SF Mono,monospace">tab 1</text>
       </g>
       <g>
-        <rect x="495" y="45" width="200" height="66" rx="5" fill="#FBFAF5" stroke="#B8892B" stroke-width="1.5"/>
-        <text x="595" y="72" text-anchor="middle" font-family="Georgia,serif" font-size="15" fill="#1E2A22">DeepONet · FNO</text>
-        <text x="595" y="91" text-anchor="middle" font-size="11" fill="#4A5A4E">many simulated examples</text>
-        <text x="595" y="104" text-anchor="middle" font-size="10" fill="#B8892B" font-family="SF Mono,monospace">tabs 4 · 5</text>
+        <rect x="495" y="45" width="200" height="66" rx="5" fill="#FFFDF9" stroke="#2F7069" stroke-width="1.5"/>
+        <text x="595" y="72" text-anchor="middle" font-family=""Playfair Display", Georgia, serif" font-size="15" fill="#2D2D2D">DeepONet · FNO</text>
+        <text x="595" y="91" text-anchor="middle" font-size="11" fill="#6E6259">many simulated examples</text>
+        <text x="595" y="104" text-anchor="middle" font-size="10" fill="#2F7069" font-family="SF Mono,monospace">tabs 4 · 5</text>
       </g>
       <g>
-        <rect x="300" y="150" width="170" height="66" rx="5" fill="#FBFAF5" stroke="#A6472F" stroke-width="1.5"/>
-        <text x="385" y="177" text-anchor="middle" font-family="Georgia,serif" font-size="15" fill="#1E2A22">SINDy · Neural ODE</text>
-        <text x="385" y="196" text-anchor="middle" font-size="11" fill="#4A5A4E">unknown law, measured motion</text>
-        <text x="385" y="209" text-anchor="middle" font-size="10" fill="#A6472F" font-family="SF Mono,monospace">tabs 2 · 3</text>
+        <rect x="300" y="150" width="170" height="66" rx="5" fill="#FFFDF9" stroke="#A8392A" stroke-width="1.5"/>
+        <text x="385" y="177" text-anchor="middle" font-family=""Playfair Display", Georgia, serif" font-size="15" fill="#2D2D2D">SINDy · Neural ODE</text>
+        <text x="385" y="196" text-anchor="middle" font-size="11" fill="#6E6259">unknown law, measured motion</text>
+        <text x="385" y="209" text-anchor="middle" font-size="10" fill="#A8392A" font-family="SF Mono,monospace">tabs 2 · 3</text>
       </g>
       <g>
-        <rect x="495" y="150" width="200" height="66" rx="5" fill="#EDD6CD" stroke="#A6472F"/>
-        <text x="595" y="177" text-anchor="middle" font-family="Georgia,serif" font-size="15" fill="#1E2A22">Pure ML</text>
-        <text x="595" y="196" text-anchor="middle" font-size="11" fill="#4A5A4E">no physics, just fit data</text>
-        <text x="595" y="209" text-anchor="middle" font-size="10" fill="#A6472F" font-family="SF Mono,monospace">your other ML courses</text>
+        <rect x="495" y="150" width="200" height="66" rx="5" fill="#F3DBD5" stroke="#A8392A"/>
+        <text x="595" y="177" text-anchor="middle" font-family=""Playfair Display", Georgia, serif" font-size="15" fill="#2D2D2D">Pure ML</text>
+        <text x="595" y="196" text-anchor="middle" font-size="11" fill="#6E6259">no physics, just fit data</text>
+        <text x="595" y="209" text-anchor="middle" font-size="10" fill="#A8392A" font-family="SF Mono,monospace">your other ML courses</text>
       </g>
     </svg>
     <p>Scientific ML is the middle of this map: every method is a different answer to <b>"how do I combine what I know with what I measured?"</b> The <a href="differential_equations.html">first playground</a> lived in the green corner — pure equations. These five methods each let go of some knowledge and lean on data instead.</p>
@@ -682,8 +686,8 @@
 <script>
 "use strict";
 const $ = id => document.getElementById(id);
-const COL = { ink:'#1E2A22', soft:'#4A5A4E', moss:'#2F6F4E', mossDim:'#C7DBCB', rust:'#A6472F',
-              rustDim:'#EDD6CD', gold:'#B8892B', goldDim:'#EFE0BC', border:'#CFCDBB', line:'#DAD8C8' };
+const COL = { ink:'#2D2D2D', soft:'#6E6259', moss:'#C17A3E', mossDim:'#F0DCC6', rust:'#A8392A',
+              rustDim:'#F3DBD5', gold:'#2F7069', goldDim:'#D3E5E2', border:'#E4DACB', line:'#EDE4D8' };
 function fmt(v,d=2){ if(!isFinite(v)) return '–'; return v.toFixed(d).replace(/-/g,'−'); }
 function lerp(a,b,t){ return Math.round(a+(b-a)*t); }
 function randn(){ let u=0,v=0; while(u===0)u=Math.random(); while(v===0)v=Math.random(); return Math.sqrt(-2*Math.log(u))*Math.cos(2*Math.PI*v); }
@@ -798,13 +802,13 @@ const H = 32;
 const PROB = {
   decay: { T:4, pr:[0.5,2,0.05,1], plab:'λ — decay rate', u0:1, order:1, ylo:-0.4, yhi:1.4,
     exact:(t,p)=>Math.exp(-p*t),
-    resEq:p=>'\\textcolor{#2F6F4E}{\\mathcal{L}_{\\text{physics}} = \\tfrac1M\\textstyle\\sum\\bigl(u\' + \\lambda u\\bigr)^2}' },
+    resEq:p=>'\\textcolor{#C17A3E}{\\mathcal{L}_{\\text{physics}} = \\tfrac1M\\textstyle\\sum\\bigl(u\' + \\lambda u\\bigr)^2}' },
   logistic: { T:10, pr:[0.5,1.5,0.05,1], plab:'ρ — growth rate', u0:0.1, order:1, ylo:-0.2, yhi:1.3,
     exact:(t,p)=>1/(1+9*Math.exp(-p*t)),
-    resEq:p=>'\\textcolor{#2F6F4E}{\\mathcal{L}_{\\text{physics}} = \\tfrac1M\\textstyle\\sum\\bigl(u\' - \\rho u(1-u)\\bigr)^2}' },
+    resEq:p=>'\\textcolor{#C17A3E}{\\mathcal{L}_{\\text{physics}} = \\tfrac1M\\textstyle\\sum\\bigl(u\' - \\rho u(1-u)\\bigr)^2}' },
   osc: { T:6.3, pr:[1,2,0.05,1.5], plab:'ω — frequency', u0:1, order:2, ylo:-1.6, yhi:1.6,
     exact:(t,p)=>Math.cos(p*t),
-    resEq:p=>'\\textcolor{#2F6F4E}{\\mathcal{L}_{\\text{physics}} = \\tfrac1M\\textstyle\\sum\\bigl(u\'\' + \\omega^2 u\\bigr)^2}' },
+    resEq:p=>'\\textcolor{#C17A3E}{\\mathcal{L}_{\\text{physics}} = \\tfrac1M\\textstyle\\sum\\bigl(u\'\' + \\omega^2 u\\bigr)^2}' },
 };
 let prob='decay', pp=1, nD=4, noise=0.05, wP=1, nC=30;
 let training=false, stepCount=0;
@@ -927,9 +931,9 @@ function draw(){
   if(cv){
     const pl=Plot(cv,0,c.T,c.ylo,c.yhi,{xlab:'t',ylab:'u(t)'});
     // shade the no-data half
-    pl.g.fillStyle='rgba(184,137,43,0.09)';
+    pl.g.fillStyle='rgba(47,112,105,0.09)';
     pl.g.fillRect(pl.px(c.T/2),pl.p.t,pl.px(c.T)-pl.px(c.T/2),pl.H-pl.p.t-pl.p.b);
-    pl.g.fillStyle='rgba(122,90,21,0.65)'; pl.g.font='10px Consolas,monospace'; pl.g.textAlign='center';
+    pl.g.fillStyle='rgba(39,88,90,0.65)'; pl.g.font='10px Consolas,monospace'; pl.g.textAlign='center';
     pl.g.fillText('no data here — physics only', (pl.px(c.T/2)+pl.px(c.T))/2, pl.p.t+14);
     pl.clip();
     // collocation ticks
@@ -1013,7 +1017,7 @@ $('pinnStep').addEventListener('click',()=>{
 });
 $('pinnReset').addEventListener('click',()=>{ initNet(); });
 REDRAW.pinn = ()=>{ dirty=true; };
-renderEq($('pinnLossEq'),'\\mathcal{L} = \\textcolor{#A6472F}{\\mathcal{L}_{\\text{data}}} + \\textcolor{#B8892B}{\\mathcal{L}_{\\text{start}}} + w_{\\text{phys}}\\cdot\\textcolor{#2F6F4E}{\\mathcal{L}_{\\text{physics}}}',true);
+renderEq($('pinnLossEq'),'\\mathcal{L} = \\textcolor{#A8392A}{\\mathcal{L}_{\\text{data}}} + \\textcolor{#2F7069}{\\mathcal{L}_{\\text{start}}} + w_{\\text{phys}}\\cdot\\textcolor{#C17A3E}{\\mathcal{L}_{\\text{physics}}}',true);
 initNet(); regenData(); regenCol();
 })();
 
@@ -1169,7 +1173,7 @@ function recompute(){
     const pl=Plot(cv,x0-mx,x1+mx,y0-my,y1+my,{xlab:'x',ylab:'y',nx:5});
     pl.clip();
     pl.line(fine.map(q=>q[1]), fine.map(q=>q[2]), COL.ink, 1.4);
-    for(let i=0;i<N;i++) pl.dot(xs[i],ys[i],1.8,'rgba(166,71,47,0.75)');
+    for(let i=0;i<N;i++) pl.dot(xs[i],ys[i],1.8,'rgba(168,57,42,0.75)');
     pl.line(disc.map(q=>q[1]), disc.map(q=>q[2]), COL.moss, 2, [7,4]);
     pl.unclip();
   }
@@ -1278,10 +1282,10 @@ function draw(){
       const o=fwd(x,y); let vx=o[0],vy=o[1]; const L=Math.hypot(vx,vy)||1;
       const len=13; vx=vx/L*len; vy=vy/L*len;
       const X=pl.px(x),Y=pl.py(y);
-      arrowSeg(pl.g,X-vx/2,Y+vy/2,X+vx/2,Y-vy/2,'rgba(74,90,78,0.42)',1.1);
+      arrowSeg(pl.g,X-vx/2,Y+vy/2,X+vx/2,Y-vy/2,'rgba(110,98,89,0.42)',1.1);
     }
     pl.line(trueTraj.map(p=>p[0]),trueTraj.map(p=>p[1]),COL.ink,2);
-    for(const d of data) pl.dot(d.x,d.y,2,'rgba(166,71,47,0.75)');
+    for(const d of data) pl.dot(d.x,d.y,2,'rgba(168,57,42,0.75)');
     const net=rk4((x,y)=>fwd(x,y),c.ic,c.T,c.dt);
     pl.line(net.map(p=>p[0]),net.map(p=>p[1]),COL.moss,2.2,[7,4]);
     pl.dot(c.ic[0],c.ic[1],4,COL.gold,'#fff');
@@ -1564,7 +1568,7 @@ window.addEventListener('pointerup',()=>{
   dirty=true;
 });
 REDRAW.don=()=>{ dirty=true; };
-renderEq($('donFormula'),'u(x)\\approx\\underbrace{\\textcolor{#A6472F}{\\mathbf b(f)}}_{\\text{branch net}}\\cdot\\underbrace{\\textcolor{#2F6F4E}{\\boldsymbol\\tau(x)}}_{\\text{trunk net}}=\\sum_k b_k\\,\\tau_k(x)',true);
+renderEq($('donFormula'),'u(x)\\approx\\underbrace{\\textcolor{#A8392A}{\\mathbf b(f)}}_{\\text{branch net}}\\cdot\\underbrace{\\textcolor{#C17A3E}{\\boldsymbol\\tau(x)}}_{\\text{trunk net}}=\\sum_k b_k\\,\\tau_k(x)',true);
 initNet();
 setPreset(x=>1.2*Math.sin(2*Math.PI*x));
 })();
@@ -1682,7 +1686,7 @@ inEl.addEventListener('pointermove',e=>{ if(!drawing) return; const pt=pen(e); i
 window.addEventListener('pointerup',()=>{ if(!drawing) return; drawing=false;
   const sm=Float64Array.from(fGrid); for(let i=0;i<N;i++) fGrid[i]=0.25*sm[(i-1+N)%N]+0.5*sm[i]+0.25*sm[(i+1)%N]; dirty=true; });
 REDRAW.fno=()=>{ dirty=true; };
-renderEq($('fnEqBig'),'u=\\underbrace{\\mathcal F^{-1}\\!\\bigl(\\textcolor{#2F6F4E}{R}\\cdot\\mathcal F f\\bigr)}_{\\text{spectral}}+\\underbrace{\\textcolor{#A6472F}{W}\\,f}_{\\text{local}}',true);
+renderEq($('fnEqBig'),'u=\\underbrace{\\mathcal F^{-1}\\!\\bigl(\\textcolor{#C17A3E}{R}\\cdot\\mathcal F f\\bigr)}_{\\text{spectral}}+\\underbrace{\\textcolor{#A8392A}{W}\\,f}_{\\text{local}}',true);
 buildT(); initNet(); setPreset(x=>1.2*Math.sin(2*Math.PI*x));
 })();
 
