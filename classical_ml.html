@@ -4,6 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <link rel="icon" type="image/png" href="logo.png">
+<script>try{var _l=localStorage.getItem('phxLang');if(_l==='id'||_l==='en')document.documentElement.lang=_l;}catch(e){}</script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=Lato:wght@300;400;700&display=swap" rel="stylesheet">
@@ -15,6 +16,10 @@
     --gold: #2F7069; --accent-deep: #8F5620; --gold-dim: #D3E5E2; --card: #FFFDF9; --border: #E4DACB;
   }
   *{ box-sizing: border-box; }
+  html[lang="en"] [data-lang="id"], html[lang="id"] [data-lang="en"]{ display: none !important; }
+  .langtog{ display:inline-flex; border:1px solid var(--border); border-radius:20px; overflow:hidden; }
+  .langtog button{ font-family:inherit; font-size:11.5px; letter-spacing:0.06em; padding:4px 11px; border:0; background:#fff; color:var(--ink-soft); cursor:pointer; }
+  .langtog button.on{ background:var(--accent-deep); color:#fff; font-weight:700; }
   body{
     margin:0; background: var(--paper); color: var(--ink);
     font-family: Lato, "Helvetica Neue", Helvetica, Arial, sans-serif; line-height: 1.5;
@@ -114,24 +119,25 @@
 <nav style="display:flex;align-items:center;gap:16px;font-family:'SF Mono',SFMono-Regular,Consolas,monospace;font-size:13px;margin-bottom:24px;flex-wrap:wrap">
 <a href="https://phx.my.id" style="display:inline-flex;align-items:center;gap:9px;text-decoration:none;color:#2D2D2D;font-weight:600"><img src="logo.png" alt="" style="width:30px;height:30px;border-radius:7px;display:block">phx.my.id</a>
 <span style="flex:1;min-width:12px"></span>
-<a href="https://phx.my.id" style="text-decoration:none;color:#6E6259">Home</a>
-<a href="https://research.phx.my.id" style="text-decoration:none;color:#6E6259">Research</a>
-<a href="index.html" style="text-decoration:none;color:#8F5620;font-weight:600">Playgrounds</a>
+<a href="https://phx.my.id" style="text-decoration:none;color:#6E6259"><span data-lang="en">Home</span><span data-lang="id">Beranda</span></a>
+<a href="https://research.phx.my.id" style="text-decoration:none;color:#6E6259"><span data-lang="en">Research</span><span data-lang="id">Riset</span></a>
+<a href="index.html" style="text-decoration:none;color:#8F5620;font-weight:600"><span data-lang="en">Playgrounds</span><span data-lang="id">Playground</span></a>
+<span class="langtog"><button data-lang-btn="en">EN</button><button data-lang-btn="id">ID</button></span>
 </nav>
 
 <header class="top">
-  <p class="eyebrow">Data-driven AI · classical models</p>
-  <h1>Five classic ways a machine learns from examples</h1>
-  <p>Instead of searching for a solution, these models are shown labelled data and must generalise from it. Each tab is one classic learner — fitting, voting, separating, splitting, or counting. Edit the data by clicking on the canvas and watch the model's belief change.</p>
+  <p class="eyebrow"><span data-lang="en">Data-driven AI · classical models</span><span data-lang="id">AI berbasis data · model klasik</span></p>
+  <h1><span data-lang="en">Five classic ways a machine learns from examples</span><span data-lang="id">Lima cara klasik mesin belajar dari contoh</span></h1>
+  <p data-lang="en">Instead of searching for a solution, these models are shown labelled data and must generalise from it. Each tab is one classic learner — fitting, voting, separating, splitting, or counting. Edit the data by clicking on the canvas and watch the model's belief change.</p><p data-lang="id">Alih-alih mencari solusi, model-model ini diperlihatkan data berlabel dan harus menggeneralisasi darinya. Tiap tab adalah satu learner klasik — mencocokkan, memungut suara, memisahkan, membelah, atau menghitung. Sunting datanya dengan mengeklik kanvas dan lihat keyakinan model berubah.</p>
 </header>
 
 <div class="tabs">
-  <button class="tab active" data-tab="rg">Regression · Fit a curve</button>
-  <button class="tab" data-tab="kn">k-NN · Neighbors vote</button>
-  <button class="tab" data-tab="sv">SVM · Widest margin</button>
-  <button class="tab" data-tab="dt">Decision tree · Split the plane</button>
-  <button class="tab" data-tab="nb">Naive Bayes · Gaussian</button>
-  <button class="tab" data-tab="nt">Naive Bayes · Spam filter</button>
+  <button class="tab active" data-tab="rg"><span data-lang="en">Regression · Fit a curve</span><span data-lang="id">Regresi · Cocokkan kurva</span></button>
+  <button class="tab" data-tab="kn"><span data-lang="en">k-NN · Neighbors vote</span><span data-lang="id">k-NN · Tetangga memilih</span></button>
+  <button class="tab" data-tab="sv"><span data-lang="en">SVM · Widest margin</span><span data-lang="id">SVM · Margin terlebar</span></button>
+  <button class="tab" data-tab="dt"><span data-lang="en">Decision tree · Split the plane</span><span data-lang="id">Pohon keputusan · Belah bidang</span></button>
+  <button class="tab" data-tab="nb"><span data-lang="en">Naive Bayes · Gaussian</span><span data-lang="id">Naive Bayes · Gaussian</span></button>
+  <button class="tab" data-tab="nt"><span data-lang="en">Naive Bayes · Spam filter</span><span data-lang="id">Naive Bayes · Filter spam</span></button>
 </div>
 
 <!-- ============ REGRESSION ============ -->
@@ -150,32 +156,32 @@
       <line x1="115" y1="88" x2="115" y2="78" stroke="#2F7069" stroke-width="1.5"/>
     </svg>
     <div class="txt">
-      <h3>Fit a curve to noisy points</h3>
-      <p>Regression finds the polynomial that minimises squared error on training points — solved in one shot from the normal equations, no search needed. Raise the degree and the curve hugs the training data ever more tightly, while error on <em>held-out</em> test points starts to climb: overfitting, live.</p>
+      <h3><span data-lang="en">Fit a curve to noisy points</span><span data-lang="id">Cocokkan kurva ke titik berderau</span></h3>
+      <p data-lang="en">Regression finds the polynomial that minimises squared error on training points — solved in one shot from the normal equations, no search needed. Raise the degree and the curve hugs the training data ever more tightly, while error on <em>held-out</em> test points starts to climb: overfitting, live.</p><p data-lang="id">Regresi mencari polinomial yang meminimalkan galat kuadrat pada titik latih — diselesaikan sekali jalan dari persamaan normal, tanpa pencarian. Naikkan derajatnya dan kurva memeluk data latih makin erat, sementara galat pada titik uji yang <em>disisihkan</em> mulai menanjak: overfitting, langsung.</p>
     </div>
   </div>
 
   <div class="layout">
     <div class="panel">
-      <h2>Data</h2>
+      <h2><span data-lang="en">Data</span><span data-lang="id">Data</span></h2>
       <div class="field"><label>True pattern</label>
-        <select id="rgDataset"><option value="linear">Linear trend</option><option value="quad">Quadratic bowl</option><option value="sine">Sine wave</option></select>
+        <select id="rgDataset"><option value="linear" data-lang="en">Linear trend</option><option value="linear" data-lang="id">Tren linear</option><option value="quad" data-lang="en">Quadratic bowl</option><option value="quad" data-lang="id">Mangkuk kuadratik</option><option value="sine" data-lang="en">Sine wave</option><option value="sine" data-lang="id">Gelombang sinus</option></select>
       </div>
-      <div class="field"><label>Points <span class="val" id="rgNOut">24</span></label><input id="rgN" type="range" min="8" max="60" value="24" step="2"></div>
-      <div class="field"><label>Noise <span class="val" id="rgNoiseOut">0.06</span></label><input id="rgNoise" type="range" min="0" max="20" value="6" step="1"></div>
-      <button class="btn block" id="rgRegen">Regenerate data</button>
-      <button class="btn block" id="rgClear">Clear all points</button>
+      <div class="field"><label><span data-lang="en">Points</span><span data-lang="id">Titik</span> <span class="val" id="rgNOut">24</span></label><input id="rgN" type="range" min="8" max="60" value="24" step="2"></div>
+      <div class="field"><label><span data-lang="en">Noise</span><span data-lang="id">Derau</span> <span class="val" id="rgNoiseOut">0.06</span></label><input id="rgNoise" type="range" min="0" max="20" value="6" step="1"></div>
+      <button class="btn block" id="rgRegen"><span data-lang="en">Regenerate data</span><span data-lang="id">Bangkitkan ulang data</span></button>
+      <button class="btn block" id="rgClear"><span data-lang="en">Clear all points</span><span data-lang="id">Bersihkan semua titik</span></button>
 
       <h2>Click to add point as</h2>
       <div class="btngroup">
-        <button class="btn toggle active" id="rgAddTrain">Train</button>
-        <button class="btn toggle" id="rgAddTest">Test</button>
+        <button class="btn toggle active" id="rgAddTrain"><span data-lang="en">Train</span><span data-lang="id">Latih</span></button>
+        <button class="btn toggle" id="rgAddTest"><span data-lang="en">Test</span><span data-lang="id">Uji</span></button>
       </div>
 
-      <h2>Model</h2>
-      <div class="field"><label>Polynomial degree <span class="val" id="rgDegOut">1</span></label><input id="rgDeg" type="range" min="1" max="9" value="1" step="1"></div>
-      <div class="field"><label>Show residuals</label>
-        <select id="rgResid"><option value="off">Hidden</option><option value="on">Shown</option></select>
+      <h2><span data-lang="en">Model</span><span data-lang="id">Model</span></h2>
+      <div class="field"><label><span data-lang="en">Polynomial degree</span><span data-lang="id">Derajat polinomial</span> <span class="val" id="rgDegOut">1</span></label><input id="rgDeg" type="range" min="1" max="9" value="1" step="1"></div>
+      <div class="field"><label><span data-lang="en">Show residuals</span><span data-lang="id">Tampilkan residu</span></label>
+        <select id="rgResid"><option value="off" data-lang="en">Hidden</option><option value="off" data-lang="id">Sembunyi</option><option value="on" data-lang="en">Shown</option><option value="on" data-lang="id">Tampil</option></select>
       </div>
     </div>
 
@@ -186,17 +192,17 @@
         <div class="stat"><div class="label">R² (train)</div><div class="value" id="rgR2Out">–</div></div>
       </div>
       <div class="box">
-        <h2>Data &amp; fitted curve</h2>
+        <h2><span data-lang="en">Data &amp; fitted curve</span><span data-lang="id">Data &amp; kurva terfit</span></h2>
         <canvas class="main" id="rgCanvas"></canvas>
         <div class="legend">
-          <span><span class="swatch" style="background:#A8392A"></span>train point</span>
-          <span><span class="swatch" style="background:#fff;border:2px solid #A8392A"></span>test point (never seen in fitting)</span>
-          <span><span class="swatch sq" style="background:#C17A3E"></span>fitted polynomial</span>
-          <span><span class="swatch sq" style="background:#2F7069"></span>residual</span>
+          <span><span class="swatch" style="background:#A8392A"></span><span data-lang="en">train point</span><span data-lang="id">titik latih</span></span>
+          <span><span class="swatch" style="background:#fff;border:2px solid #A8392A"></span><span data-lang="en">test point (never seen in fitting)</span><span data-lang="id">titik uji (tak dilihat saat fit)</span></span>
+          <span><span class="swatch sq" style="background:#C17A3E"></span><span data-lang="en">fitted polynomial</span><span data-lang="id">polinomial terfit</span></span>
+          <span><span class="swatch sq" style="background:#2F7069"></span><span data-lang="en">residual</span><span data-lang="id">residu</span></span>
         </div>
       </div>
-      <div class="box"><h2>log₁₀ MSE vs polynomial degree — the overfitting picture</h2><canvas class="chart" id="rgChart"></canvas>
-        <div class="legend"><span><span class="swatch sq" style="background:#C17A3E"></span>train error</span><span><span class="swatch sq" style="background:#A8392A"></span>test error</span><span><span class="swatch sq" style="background:#2F7069"></span>current degree</span></div>
+      <div class="box"><h2><span data-lang="en">log₁₀ MSE vs polynomial degree — the overfitting picture</span><span data-lang="id">log₁₀ MSE vs derajat polinomial — gambar overfitting</span></h2><canvas class="chart" id="rgChart"></canvas>
+        <div class="legend"><span><span class="swatch sq" style="background:#C17A3E"></span><span data-lang="en">train error</span><span data-lang="id">galat latih</span></span><span><span class="swatch sq" style="background:#A8392A"></span><span data-lang="en">test error</span><span data-lang="id">galat uji</span></span><span><span class="swatch sq" style="background:#2F7069"></span><span data-lang="en">current degree</span><span data-lang="id">derajat saat ini</span></span></div>
       </div>
     </div>
   </div>
@@ -216,52 +222,52 @@
       <line x1="100" y1="60" x2="75" y2="78" stroke="#6E6259" stroke-width="1" stroke-dasharray="2 2"/>
     </svg>
     <div class="txt">
-      <h3>Let the nearest neighbors vote</h3>
-      <p>k-NN never really "trains" — it memorises every example and, at query time, lets the k closest ones vote. Small k gives a jagged, noise-chasing boundary; large k smooths it out. Move your mouse over the canvas to interrogate any point.</p>
+      <h3><span data-lang="en">Let the nearest neighbors vote</span><span data-lang="id">Biarkan tetangga terdekat memilih</span></h3>
+      <p data-lang="en">k-NN never really "trains" — it memorises every example and, at query time, lets the k closest ones vote. Small k gives a jagged, noise-chasing boundary; large k smooths it out. Move your mouse over the canvas to interrogate any point.</p><p data-lang="id">k-NN tak benar-benar "berlatih" — ia menghafal tiap contoh dan, saat kueri, membiarkan k terdekat memilih. k kecil memberi batas bergerigi yang mengejar derau; k besar menghaluskannya. Gerakkan mouse di atas kanvas untuk menyelidiki titik mana pun.</p>
     </div>
   </div>
 
   <div class="layout">
     <div class="panel">
-      <h2>Data</h2>
-      <div class="field"><label>Preset</label>
-        <select id="knDataset"><option value="blobs3">Three blobs</option><option value="overlap">Two overlapping blobs</option><option value="spiral">Two spirals</option></select>
+      <h2><span data-lang="en">Data</span><span data-lang="id">Data</span></h2>
+      <div class="field"><label><span data-lang="en">Preset</span><span data-lang="id">Praatur</span></label>
+        <select id="knDataset"><option value="blobs3" data-lang="en">Three blobs</option><option value="blobs3" data-lang="id">Tiga gumpalan</option><option value="overlap" data-lang="en">Two overlapping blobs</option><option value="overlap" data-lang="id">Dua gumpalan tumpang-tindih</option><option value="spiral" data-lang="en">Two spirals</option><option value="spiral" data-lang="id">Dua spiral</option></select>
       </div>
-      <button class="btn block" id="knRegen">Regenerate data</button>
-      <button class="btn block" id="knClear">Clear all points</button>
+      <button class="btn block" id="knRegen"><span data-lang="en">Regenerate data</span><span data-lang="id">Bangkitkan ulang data</span></button>
+      <button class="btn block" id="knClear"><span data-lang="en">Clear all points</span><span data-lang="id">Bersihkan semua titik</span></button>
 
-      <h2>Click to add point of class</h2>
+      <h2><span data-lang="en">Click to add point of class</span><span data-lang="id">Klik untuk menambah titik kelas</span></h2>
       <div class="brush">
         <button class="btn toggle active" id="knBrushA"><span class="dot" style="background:#C17A3E"></span>A</button>
         <button class="btn toggle" id="knBrushB"><span class="dot" style="background:#A8392A"></span>B</button>
         <button class="btn toggle" id="knBrushC"><span class="dot" style="background:#2F7069"></span>C</button>
       </div>
 
-      <h2>Model</h2>
-      <div class="field"><label>k (neighbors) <span class="val" id="knKOut">3</span></label><input id="knK" type="range" min="1" max="15" value="3" step="1"></div>
-      <div class="field"><label>Distance metric</label>
-        <select id="knMetric"><option value="euclid">Euclidean</option><option value="manhattan">Manhattan</option></select>
+      <h2><span data-lang="en">Model</span><span data-lang="id">Model</span></h2>
+      <div class="field"><label><span data-lang="en">k (neighbors)</span><span data-lang="id">k (tetangga)</span> <span class="val" id="knKOut">3</span></label><input id="knK" type="range" min="1" max="15" value="3" step="1"></div>
+      <div class="field"><label><span data-lang="en">Distance metric</span><span data-lang="id">Metrik jarak</span></label>
+        <select id="knMetric"><option value="euclid" data-lang="en">Euclidean</option><option value="euclid" data-lang="id">Euclidean</option><option value="manhattan" data-lang="en">Manhattan</option><option value="manhattan" data-lang="id">Manhattan</option></select>
       </div>
-      <div class="field"><label>Vote weighting</label>
-        <select id="knWeight"><option value="uniform">Uniform (one point, one vote)</option><option value="distance">By inverse distance</option></select>
+      <div class="field"><label><span data-lang="en">Vote weighting</span><span data-lang="id">Pembobotan suara</span></label>
+        <select id="knWeight"><option value="uniform" data-lang="en">Uniform (one point, one vote)</option><option value="uniform" data-lang="id">Seragam (satu titik, satu suara)</option><option value="distance" data-lang="en">By inverse distance</option><option value="distance" data-lang="id">Berbanding terbalik jarak</option></select>
       </div>
     </div>
 
     <div>
       <div class="stats">
-        <div class="stat"><div class="label">Stored examples</div><div class="value" id="knNOut">0</div></div>
-        <div class="stat hi"><div class="label">Leave-one-out accuracy</div><div class="value" id="knLooOut">–</div></div>
-        <div class="stat"><div class="label">Hovered point → class</div><div class="value" id="knHoverOut">–</div></div>
+        <div class="stat"><div class="label"><span data-lang="en">Stored examples</span><span data-lang="id">Contoh tersimpan</span></div><div class="value" id="knNOut">0</div></div>
+        <div class="stat hi"><div class="label"><span data-lang="en">Leave-one-out accuracy</span><span data-lang="id">Akurasi leave-one-out</span></div><div class="value" id="knLooOut">–</div></div>
+        <div class="stat"><div class="label"><span data-lang="en">Hovered point → class</span><span data-lang="id">Titik tersorot → kelas</span></div><div class="value" id="knHoverOut">–</div></div>
       </div>
-      <div class="hint">Hover the canvas: the k neighbors of your cursor are wired up and their vote decides the colour under it. Click to drop a new training point of the selected class.</div>
+      <div class="hint" data-lang="en">Hover the canvas: the k neighbors of your cursor are wired up and their vote decides the colour under it. Click to drop a new training point of the selected class.</div><div class="hint" data-lang="id">Arahkan mouse ke kanvas: k tetangga kursormu terhubung dan suara mereka menentukan warna di bawahnya. Klik untuk menaruh titik latih baru dari kelas terpilih.</div>
       <div class="box">
-        <h2>Decision map</h2>
+        <h2><span data-lang="en">Decision map</span><span data-lang="id">Peta keputusan</span></h2>
         <canvas class="main" id="knCanvas"></canvas>
         <div class="legend">
-          <span><span class="swatch" style="background:#C17A3E"></span>class A</span>
-          <span><span class="swatch" style="background:#A8392A"></span>class B</span>
-          <span><span class="swatch" style="background:#2F7069"></span>class C</span>
-          <span><span class="swatch sq" style="background:#F0DCC6"></span>region a query would be classified into</span>
+          <span><span class="swatch" style="background:#C17A3E"></span><span data-lang="en">class A</span><span data-lang="id">kelas A</span></span>
+          <span><span class="swatch" style="background:#A8392A"></span><span data-lang="en">class B</span><span data-lang="id">kelas B</span></span>
+          <span><span class="swatch" style="background:#2F7069"></span><span data-lang="en">class C</span><span data-lang="id">kelas C</span></span>
+          <span><span class="swatch sq" style="background:#F0DCC6"></span><span data-lang="en">region a query would be classified into</span><span data-lang="id">wilayah tempat kueri akan diklasifikasikan</span></span>
         </div>
       </div>
     </div>
@@ -281,50 +287,50 @@
       <circle cx="128" cy="72" r="4" fill="#A8392A"/><circle cx="128" cy="72" r="7.5" fill="none" stroke="#2D2D2D" stroke-width="1.5"/>
     </svg>
     <div class="txt">
-      <h3>Find the widest street between two classes</h3>
-      <p>A support vector machine places the boundary that keeps the biggest possible margin to both classes. Only the ringed points — the <em>support vectors</em> — hold the boundary up; every other point could vanish and nothing would move. Kernels bend the margin around non-linear data.</p>
+      <h3><span data-lang="en">Find the widest street between two classes</span><span data-lang="id">Cari jalan terlebar antara dua kelas</span></h3>
+      <p data-lang="en">A support vector machine places the boundary that keeps the biggest possible margin to both classes. Only the ringed points — the <em>support vectors</em> — hold the boundary up; every other point could vanish and nothing would move. Kernels bend the margin around non-linear data.</p><p data-lang="id">Support vector machine menempatkan batas yang menjaga margin sebesar mungkin ke kedua kelas. Hanya titik bercincin — para <em>support vector</em> — yang menopang batas itu; titik lain boleh lenyap dan tak ada yang bergeser. Kernel melengkungkan margin di sekitar data non-linear.</p>
     </div>
   </div>
 
   <div class="layout">
     <div class="panel">
-      <h2>Data</h2>
-      <div class="field"><label>Preset</label>
-        <select id="svDataset"><option value="sep">Cleanly separable</option><option value="overlap">Overlapping blobs</option><option value="circle">Circle in a ring</option><option value="moons">Two moons</option></select>
+      <h2><span data-lang="en">Data</span><span data-lang="id">Data</span></h2>
+      <div class="field"><label><span data-lang="en">Preset</span><span data-lang="id">Praatur</span></label>
+        <select id="svDataset"><option value="sep" data-lang="en">Cleanly separable</option><option value="sep" data-lang="id">Terpisah bersih</option><option value="overlap" data-lang="en">Overlapping blobs</option><option value="overlap" data-lang="id">Gumpalan tumpang-tindih</option><option value="circle" data-lang="en">Circle in a ring</option><option value="circle" data-lang="id">Lingkaran dalam cincin</option><option value="moons" data-lang="en">Two moons</option><option value="moons" data-lang="id">Dua bulan sabit</option></select>
       </div>
-      <button class="btn block" id="svRegen">Regenerate data</button>
+      <button class="btn block" id="svRegen"><span data-lang="en">Regenerate data</span><span data-lang="id">Bangkitkan ulang data</span></button>
 
-      <h2>Click to add point of class</h2>
+      <h2><span data-lang="en">Click to add point of class</span><span data-lang="id">Klik untuk menambah titik kelas</span></h2>
       <div class="brush">
         <button class="btn toggle active" id="svBrushA"><span class="dot" style="background:#C17A3E"></span>+1</button>
         <button class="btn toggle" id="svBrushB"><span class="dot" style="background:#A8392A"></span>−1</button>
       </div>
 
-      <h2>Model</h2>
-      <div class="field"><label>Kernel</label>
-        <select id="svKernel"><option value="linear">Linear</option><option value="rbf" selected>RBF (Gaussian)</option><option value="poly">Polynomial</option></select>
+      <h2><span data-lang="en">Model</span><span data-lang="id">Model</span></h2>
+      <div class="field"><label><span data-lang="en">Kernel</span><span data-lang="id">Kernel</span></label>
+        <select id="svKernel"><option value="linear" data-lang="en">Linear</option><option value="linear" data-lang="id">Linear</option><option value="rbf" selected data-lang="en">RBF (Gaussian)</option><option value="rbf" data-lang="id">RBF (Gaussian)</option><option value="poly" data-lang="en">Polynomial</option><option value="poly" data-lang="id">Polinomial</option></select>
       </div>
-      <div class="field"><label>C — margin softness <span class="val" id="svCOut">1.0</span></label><input id="svC" type="range" min="-1" max="2" value="0" step="0.1"></div>
-      <div class="field" id="svGammaField"><label>γ — RBF width <span class="val" id="svGammaOut">10</span></label><input id="svGamma" type="range" min="1" max="80" value="10" step="1"></div>
-      <div class="field" id="svDegreeField" style="display:none;"><label>Degree <span class="val" id="svDegOut">3</span></label><input id="svDeg" type="range" min="2" max="5" value="3" step="1"></div>
-      <button class="btn primary block" id="svTrainBtn">Retrain</button>
+      <div class="field"><label><span data-lang="en">C — margin softness</span><span data-lang="id">C — kelunakan margin</span> <span class="val" id="svCOut">1.0</span></label><input id="svC" type="range" min="-1" max="2" value="0" step="0.1"></div>
+      <div class="field" id="svGammaField"><label><span data-lang="en">γ — RBF width</span><span data-lang="id">γ — lebar RBF</span> <span class="val" id="svGammaOut">10</span></label><input id="svGamma" type="range" min="1" max="80" value="10" step="1"></div>
+      <div class="field" id="svDegreeField" style="display:none;"><label><span data-lang="en">Degree</span><span data-lang="id">Derajat</span> <span class="val" id="svDegOut">3</span></label><input id="svDeg" type="range" min="2" max="5" value="3" step="1"></div>
+      <button class="btn primary block" id="svTrainBtn"><span data-lang="en">Retrain</span><span data-lang="id">Latih ulang</span></button>
     </div>
 
     <div>
       <div class="stats">
-        <div class="stat hi"><div class="label">Train accuracy</div><div class="value" id="svAccOut">–</div></div>
-        <div class="stat"><div class="label">Support vectors</div><div class="value" id="svSVOut">–</div></div>
-        <div class="stat"><div class="label">SMO iterations</div><div class="value" id="svIterOut">–</div></div>
+        <div class="stat hi"><div class="label"><span data-lang="en">Train accuracy</span><span data-lang="id">Akurasi latih</span></div><div class="value" id="svAccOut">–</div></div>
+        <div class="stat"><div class="label"><span data-lang="en">Support vectors</span><span data-lang="id">Support vector</span></div><div class="value" id="svSVOut">–</div></div>
+        <div class="stat"><div class="label"><span data-lang="en">SMO iterations</span><span data-lang="id">Iterasi SMO</span></div><div class="value" id="svIterOut">–</div></div>
       </div>
-      <div class="hint">Low C = a wide, forgiving street that tolerates points inside the margin. High C = a strict street that bends to classify everything. With the RBF kernel, γ controls how local each support vector's influence is.</div>
+      <div class="hint" data-lang="en">Low C = a wide, forgiving street that tolerates points inside the margin. High C = a strict street that bends to classify everything. With the RBF kernel, γ controls how local each support vector's influence is.</div><div class="hint" data-lang="id">C rendah = jalan lebar dan pemaaf yang menoleransi titik di dalam margin. C tinggi = jalan ketat yang melengkung demi mengklasifikasi semuanya. Dengan kernel RBF, γ mengatur seberapa lokal pengaruh tiap support vector.</div>
       <div class="box">
-        <h2>Decision boundary &amp; margin</h2>
+        <h2><span data-lang="en">Decision boundary &amp; margin</span><span data-lang="id">Batas keputusan &amp; margin</span></h2>
         <canvas class="main" id="svCanvas"></canvas>
         <div class="legend">
-          <span><span class="swatch" style="background:#C17A3E"></span>class +1</span>
-          <span><span class="swatch" style="background:#A8392A"></span>class −1</span>
-          <span><span class="swatch" style="background:#fff;border:2px solid #2D2D2D"></span>support vector</span>
-          <span><span class="swatch sq" style="background:#FAF7F2;border:1px solid #E4DACB"></span>inside the margin (|f| &lt; 1)</span>
+          <span><span class="swatch" style="background:#C17A3E"></span><span data-lang="en">class +1</span><span data-lang="id">kelas +1</span></span>
+          <span><span class="swatch" style="background:#A8392A"></span><span data-lang="en">class −1</span><span data-lang="id">kelas −1</span></span>
+          <span><span class="swatch" style="background:#fff;border:2px solid #2D2D2D"></span><span data-lang="en">support vector</span><span data-lang="id">support vector</span></span>
+          <span><span class="swatch sq" style="background:#FAF7F2;border:1px solid #E4DACB"></span><span data-lang="en">inside the margin (|f| &lt; 1)</span><span data-lang="id">di dalam margin (|f| &lt; 1)</span></span>
         </div>
       </div>
     </div>
@@ -345,53 +351,53 @@
       <g fill="#2F7069"><circle cx="125" cy="85" r="3.5"/><circle cx="165" cy="75" r="3.5"/></g>
     </svg>
     <div class="txt">
-      <h3>Ask yes/no questions until the classes separate</h3>
-      <p>A decision tree carves the plane with axis-aligned cuts, each chosen to reduce impurity as much as possible. Grow it one split at a time and watch the map and the tree diagram evolve together — and notice how it struggles with diagonal boundaries it can only approximate with staircases.</p>
+      <h3><span data-lang="en">Ask yes/no questions until the classes separate</span><span data-lang="id">Ajukan pertanyaan ya/tidak sampai kelasnya terpisah</span></h3>
+      <p data-lang="en">A decision tree carves the plane with axis-aligned cuts, each chosen to reduce impurity as much as possible. Grow it one split at a time and watch the map and the tree diagram evolve together — and notice how it struggles with diagonal boundaries it can only approximate with staircases.</p><p data-lang="id">Pohon keputusan mengukir bidang dengan potongan sejajar sumbu, masing-masing dipilih untuk mengurangi ketakmurnian sebanyak mungkin. Tumbuhkan satu pembelahan setiap kali dan lihat peta serta diagram pohon berevolusi bersama — dan perhatikan betapa ia kesulitan dengan batas diagonal yang hanya bisa didekati dengan tangga.</p>
     </div>
   </div>
 
   <div class="layout">
     <div class="panel">
-      <h2>Data</h2>
-      <div class="field"><label>Preset</label>
-        <select id="dtDataset"><option value="quad">XOR quadrants</option><option value="blobs3">Three blobs</option><option value="diag">Diagonal split (hard case)</option><option value="ring">Ring vs core</option></select>
+      <h2><span data-lang="en">Data</span><span data-lang="id">Data</span></h2>
+      <div class="field"><label><span data-lang="en">Preset</span><span data-lang="id">Praatur</span></label>
+        <select id="dtDataset"><option value="quad" data-lang="en">XOR quadrants</option><option value="quad" data-lang="id">Kuadran XOR</option><option value="blobs3" data-lang="en">Three blobs</option><option value="blobs3" data-lang="id">Tiga gumpalan</option><option value="diag" data-lang="en">Diagonal split (hard case)</option><option value="diag" data-lang="id">Belah diagonal (kasus sulit)</option><option value="ring" data-lang="en">Ring vs core</option><option value="ring" data-lang="id">Cincin vs inti</option></select>
       </div>
-      <button class="btn block" id="dtRegen">Regenerate data</button>
+      <button class="btn block" id="dtRegen"><span data-lang="en">Regenerate data</span><span data-lang="id">Bangkitkan ulang data</span></button>
 
-      <h2>Click to add point of class</h2>
+      <h2><span data-lang="en">Click to add point of class</span><span data-lang="id">Klik untuk menambah titik kelas</span></h2>
       <div class="brush">
         <button class="btn toggle active" id="dtBrushA"><span class="dot" style="background:#C17A3E"></span>A</button>
         <button class="btn toggle" id="dtBrushB"><span class="dot" style="background:#A8392A"></span>B</button>
         <button class="btn toggle" id="dtBrushC"><span class="dot" style="background:#2F7069"></span>C</button>
       </div>
 
-      <h2>Model</h2>
-      <div class="field"><label>Impurity criterion</label>
-        <select id="dtCrit"><option value="gini">Gini</option><option value="entropy">Entropy</option></select>
+      <h2><span data-lang="en">Model</span><span data-lang="id">Model</span></h2>
+      <div class="field"><label><span data-lang="en">Impurity criterion</span><span data-lang="id">Kriteria ketakmurnian</span></label>
+        <select id="dtCrit"><option value="gini" data-lang="en">Gini</option><option value="gini" data-lang="id">Gini</option><option value="entropy" data-lang="en">Entropy</option><option value="entropy" data-lang="id">Entropi</option></select>
       </div>
-      <div class="field"><label>Max depth <span class="val" id="dtDepthOut">4</span></label><input id="dtMaxDepth" type="range" min="1" max="9" value="4" step="1"></div>
-      <div class="field"><label>Min samples to split <span class="val" id="dtMinOut">4</span></label><input id="dtMinSplit" type="range" min="2" max="12" value="4" step="1"></div>
+      <div class="field"><label><span data-lang="en">Max depth</span><span data-lang="id">Kedalaman maks</span> <span class="val" id="dtDepthOut">4</span></label><input id="dtMaxDepth" type="range" min="1" max="9" value="4" step="1"></div>
+      <div class="field"><label><span data-lang="en">Min samples to split</span><span data-lang="id">Min sampel untuk belah</span> <span class="val" id="dtMinOut">4</span></label><input id="dtMinSplit" type="range" min="2" max="12" value="4" step="1"></div>
 
-      <h2>Growing</h2>
+      <h2><span data-lang="en">Growing</span><span data-lang="id">Menumbuhkan</span></h2>
       <div class="row2" style="margin-bottom:8px;">
-        <button class="btn" id="dtStepBtn">Grow one split</button>
-        <button class="btn primary" id="dtFullBtn">Grow full tree</button>
+        <button class="btn" id="dtStepBtn"><span data-lang="en">Grow one split</span><span data-lang="id">Tumbuhkan satu belahan</span></button>
+        <button class="btn primary" id="dtFullBtn"><span data-lang="en">Grow full tree</span><span data-lang="id">Tumbuhkan pohon penuh</span></button>
       </div>
-      <button class="btn block" id="dtResetBtn">Reset to stump</button>
+      <button class="btn block" id="dtResetBtn"><span data-lang="en">Reset to stump</span><span data-lang="id">Atur ulang ke tunggul</span></button>
     </div>
 
     <div>
       <div class="stats">
-        <div class="stat"><div class="label">Depth</div><div class="value" id="dtDOut">0</div></div>
-        <div class="stat"><div class="label">Leaves</div><div class="value" id="dtLOut">1</div></div>
-        <div class="stat hi"><div class="label">Train accuracy</div><div class="value" id="dtAccOut">–</div></div>
+        <div class="stat"><div class="label"><span data-lang="en">Depth</span><span data-lang="id">Kedalaman</span></div><div class="value" id="dtDOut">0</div></div>
+        <div class="stat"><div class="label"><span data-lang="en">Leaves</span><span data-lang="id">Daun</span></div><div class="value" id="dtLOut">1</div></div>
+        <div class="stat hi"><div class="label"><span data-lang="en">Train accuracy</span><span data-lang="id">Akurasi latih</span></div><div class="value" id="dtAccOut">–</div></div>
       </div>
       <div class="box">
-        <h2>Partitioned plane</h2>
+        <h2><span data-lang="en">Partitioned plane</span><span data-lang="id">Bidang terpartisi</span></h2>
         <canvas class="main" id="dtCanvas"></canvas>
       </div>
       <div class="box">
-        <h2>The tree itself</h2>
+        <h2><span data-lang="en">The tree itself</span><span data-lang="id">Pohonnya sendiri</span></h2>
         <canvas class="tree" id="dtTree"></canvas>
       </div>
     </div>
@@ -411,49 +417,49 @@
       <g fill="#A8392A"><circle cx="135" cy="60" r="3"/><circle cx="148" cy="85" r="3"/><circle cx="132" cy="92" r="3"/></g>
     </svg>
     <div class="txt">
-      <h3>Model each class as a bell curve, then apply Bayes</h3>
-      <p>Gaussian Naive Bayes fits an independent normal distribution to every feature of every class — the "naive" assumption. Classifying a point is just Bayes' rule: prior × likelihood, class with highest posterior wins. The whole model is a handful of means and variances.</p>
+      <h3><span data-lang="en">Model each class as a bell curve, then apply Bayes</span><span data-lang="id">Modelkan tiap kelas sebagai kurva lonceng, lalu terapkan Bayes</span></h3>
+      <p data-lang="en">Gaussian Naive Bayes fits an independent normal distribution to every feature of every class — the "naive" assumption. Classifying a point is just Bayes' rule: prior × likelihood, class with highest posterior wins. The whole model is a handful of means and variances.</p><p data-lang="id">Gaussian Naive Bayes mencocokkan distribusi normal independen ke tiap fitur tiap kelas — asumsi "naif" itu. Mengklasifikasi sebuah titik hanyalah aturan Bayes: prior × likelihood, kelas dengan posterior tertinggi menang. Seluruh modelnya hanya segenggam rerata dan ragam.</p>
     </div>
   </div>
 
   <div class="layout">
     <div class="panel">
-      <h2>Data</h2>
-      <div class="field"><label>Preset</label>
-        <select id="nbDataset"><option value="blobs2">Two blobs</option><option value="blobs3">Three blobs</option><option value="elong">Different shapes/variances</option><option value="overlap">Heavy overlap</option></select>
+      <h2><span data-lang="en">Data</span><span data-lang="id">Data</span></h2>
+      <div class="field"><label><span data-lang="en">Preset</span><span data-lang="id">Praatur</span></label>
+        <select id="nbDataset"><option value="blobs2" data-lang="en">Two blobs</option><option value="blobs2" data-lang="id">Dua gumpalan</option><option value="blobs3" data-lang="en">Three blobs</option><option value="blobs3" data-lang="id">Tiga gumpalan</option><option value="elong" data-lang="en">Different shapes/variances</option><option value="elong" data-lang="id">Bentuk/ragam berbeda</option><option value="overlap" data-lang="en">Heavy overlap</option><option value="overlap" data-lang="id">Tumpang-tindih berat</option></select>
       </div>
-      <button class="btn block" id="nbRegen">Regenerate data</button>
+      <button class="btn block" id="nbRegen"><span data-lang="en">Regenerate data</span><span data-lang="id">Bangkitkan ulang data</span></button>
 
-      <h2>Click to add point of class</h2>
+      <h2><span data-lang="en">Click to add point of class</span><span data-lang="id">Klik untuk menambah titik kelas</span></h2>
       <div class="brush">
         <button class="btn toggle active" id="nbBrushA"><span class="dot" style="background:#C17A3E"></span>A</button>
         <button class="btn toggle" id="nbBrushB"><span class="dot" style="background:#A8392A"></span>B</button>
         <button class="btn toggle" id="nbBrushC"><span class="dot" style="background:#2F7069"></span>C</button>
       </div>
 
-      <h2>Model</h2>
-      <div class="field"><label>Class priors</label>
-        <select id="nbPrior"><option value="data">Estimated from data counts</option><option value="equal">Forced equal</option></select>
+      <h2><span data-lang="en">Model</span><span data-lang="id">Model</span></h2>
+      <div class="field"><label><span data-lang="en">Class priors</span><span data-lang="id">Prior kelas</span></label>
+        <select id="nbPrior"><option value="data" data-lang="en">Estimated from data counts</option><option value="data" data-lang="id">Ditaksir dari cacah data</option><option value="equal" data-lang="en">Forced equal</option><option value="equal" data-lang="id">Dipaksa sama</option></select>
       </div>
-      <div class="field"><label>Shade by confidence</label>
-        <select id="nbShade"><option value="hard">Hard regions</option><option value="soft" selected>Posterior probability</option></select>
+      <div class="field"><label><span data-lang="en">Shade by confidence</span><span data-lang="id">Arsir menurut keyakinan</span></label>
+        <select id="nbShade"><option value="hard" data-lang="en">Hard regions</option><option value="hard" data-lang="id">Wilayah tegas</option><option value="soft" selected data-lang="en">Posterior probability</option><option value="soft" data-lang="id">Probabilitas posterior</option></select>
       </div>
     </div>
 
     <div>
       <div class="stats">
-        <div class="stat hi"><div class="label">Train accuracy</div><div class="value" id="nbAccOut">–</div></div>
-        <div class="stat"><div class="label">Priors P(class)</div><div class="value" id="nbPriorOut">–</div></div>
-        <div class="stat"><div class="label">Parameters learned</div><div class="value" id="nbParamOut">–</div></div>
+        <div class="stat hi"><div class="label"><span data-lang="en">Train accuracy</span><span data-lang="id">Akurasi latih</span></div><div class="value" id="nbAccOut">–</div></div>
+        <div class="stat"><div class="label"><span data-lang="en">Priors P(class)</span><span data-lang="id">Prior P(kelas)</span></div><div class="value" id="nbPriorOut">–</div></div>
+        <div class="stat"><div class="label"><span data-lang="en">Parameters learned</span><span data-lang="id">Parameter dipelajari</span></div><div class="value" id="nbParamOut">–</div></div>
       </div>
-      <div class="hint">Solid ellipse = 1σ of the fitted Gaussian, dashed = 2σ, cross = mean. Because features are assumed independent, ellipses are always axis-aligned — try the "different shapes" preset to see what that assumption buys and costs.</div>
+      <div class="hint" data-lang="en">Solid ellipse = 1σ of the fitted Gaussian, dashed = 2σ, cross = mean. Because features are assumed independent, ellipses are always axis-aligned — try the "different shapes" preset to see what that assumption buys and costs.</div><div class="hint" data-lang="id">Elips penuh = 1σ dari Gaussian terfit, putus-putus = 2σ, silang = rerata. Karena fitur diasumsikan independen, elips selalu sejajar sumbu — coba praatur "bentuk berbeda" untuk melihat apa untung-ruginya asumsi itu.</div>
       <div class="box">
-        <h2>Fitted Gaussians &amp; posterior map</h2>
+        <h2><span data-lang="en">Fitted Gaussians &amp; posterior map</span><span data-lang="id">Gaussian terfit &amp; peta posterior</span></h2>
         <canvas class="main" id="nbCanvas"></canvas>
         <div class="legend">
-          <span><span class="swatch" style="background:#C17A3E"></span>class A</span>
-          <span><span class="swatch" style="background:#A8392A"></span>class B</span>
-          <span><span class="swatch" style="background:#2F7069"></span>class C</span>
+          <span><span class="swatch" style="background:#C17A3E"></span><span data-lang="en">class A</span><span data-lang="id">kelas A</span></span>
+          <span><span class="swatch" style="background:#A8392A"></span><span data-lang="en">class B</span><span data-lang="id">kelas B</span></span>
+          <span><span class="swatch" style="background:#2F7069"></span><span data-lang="en">class C</span><span data-lang="id">kelas C</span></span>
         </div>
       </div>
     </div>
@@ -475,44 +481,44 @@
       <text x="15" y="102" font-family=""Playfair Display", Georgia, serif" font-size="12" fill="#6E6259">P(spam | words) ∝ P(spam) · Π P(wᵢ | spam)</text>
     </svg>
     <div class="txt">
-      <h3>Classify email by counting words</h3>
-      <p>The classic spam filter: count how often each word appears in spam vs. legitimate mail, then multiply those likelihoods together with Bayes' rule. Type a message and watch each word push the verdict one way or the other. Laplace smoothing keeps one unseen word from zeroing everything out.</p>
+      <h3><span data-lang="en">Classify email by counting words</span><span data-lang="id">Klasifikasi email dengan menghitung kata</span></h3>
+      <p data-lang="en">The classic spam filter: count how often each word appears in spam vs. legitimate mail, then multiply those likelihoods together with Bayes' rule. Type a message and watch each word push the verdict one way or the other. Laplace smoothing keeps one unseen word from zeroing everything out.</p><p data-lang="id">Filter spam klasik: hitung seberapa sering tiap kata muncul di spam vs. surat sah, lalu kalikan likelihood-nya dengan aturan Bayes. Ketik sebuah pesan dan lihat tiap kata mendorong vonis ke satu arah atau lainnya. Laplace smoothing menjaga satu kata yang tak pernah dilihat agar tak menolkan semuanya.</p>
     </div>
   </div>
 
   <div class="layout">
     <div class="panel">
-      <h2>Your message</h2>
-      <div class="field"><textarea id="ntInput" placeholder="e.g. claim your free prize now">win a free prize, claim now</textarea></div>
-      <button class="btn primary block" id="ntClassify">Classify</button>
+      <h2><span data-lang="en">Your message</span><span data-lang="id">Pesanmu</span></h2>
+      <div class="field"><textarea id="ntInput" placeholder="mis. klaim hadiah gratismu sekarang">win a free prize, claim now</textarea></div>
+      <button class="btn primary block" id="ntClassify"><span data-lang="en">Classify</span><span data-lang="id">Klasifikasi</span></button>
 
-      <h2>Teach the filter</h2>
+      <h2><span data-lang="en">Teach the filter</span><span data-lang="id">Ajari filternya</span></h2>
       <div class="row2" style="margin-bottom:8px;">
-        <button class="btn" id="ntAddSpam">Add as spam</button>
-        <button class="btn" id="ntAddHam">Add as ham</button>
+        <button class="btn" id="ntAddSpam"><span data-lang="en">Add as spam</span><span data-lang="id">Tambah sebagai spam</span></button>
+        <button class="btn" id="ntAddHam"><span data-lang="en">Add as ham</span><span data-lang="id">Tambah sebagai ham</span></button>
       </div>
-      <button class="btn block" id="ntResetCorpus">Reset training corpus</button>
+      <button class="btn block" id="ntResetCorpus"><span data-lang="en">Reset training corpus</span><span data-lang="id">Atur ulang korpus latih</span></button>
 
-      <h2>Model</h2>
-      <div class="field"><label>Laplace smoothing α <span class="val" id="ntAlphaOut">1.0</span></label><input id="ntAlpha" type="range" min="1" max="30" value="10" step="1"></div>
+      <h2><span data-lang="en">Model</span><span data-lang="id">Model</span></h2>
+      <div class="field"><label><span data-lang="en">Laplace smoothing α</span><span data-lang="id">Laplace smoothing α</span> <span class="val" id="ntAlphaOut">1.0</span></label><input id="ntAlpha" type="range" min="1" max="30" value="10" step="1"></div>
     </div>
 
     <div>
       <div class="stats">
-        <div class="stat"><div class="label">Training messages</div><div class="value" id="ntNOut">–</div></div>
-        <div class="stat"><div class="label">Vocabulary size</div><div class="value" id="ntVOut">–</div></div>
+        <div class="stat"><div class="label"><span data-lang="en">Training messages</span><span data-lang="id">Pesan latih</span></div><div class="value" id="ntNOut">–</div></div>
+        <div class="stat"><div class="label"><span data-lang="en">Vocabulary size</span><span data-lang="id">Ukuran kosakata</span></div><div class="value" id="ntVOut">–</div></div>
         <div class="stat hi"><div class="label">P(spam | message)</div><div class="value" id="ntPOut">–</div></div>
       </div>
       <div class="verdict" id="ntVerdict"></div>
       <div class="box">
-        <h2>Word-by-word evidence for your message</h2>
-        <table class="words" id="ntBreakdown"><thead><tr><th>word</th><th>seen in spam</th><th>seen in ham</th><th>pulls toward … (log-likelihood ratio)</th></tr></thead><tbody></tbody></table>
+        <h2><span data-lang="en">Word-by-word evidence for your message</span><span data-lang="id">Bukti kata-demi-kata untuk pesanmu</span></h2>
+        <table class="words" id="ntBreakdown"><thead><tr><th><span data-lang="en">word</span><span data-lang="id">kata</span></th><th><span data-lang="en">seen in spam</span><span data-lang="id">muncul di spam</span></th><th><span data-lang="en">seen in ham</span><span data-lang="id">muncul di ham</span></th><th><span data-lang="en">pulls toward … (log-likelihood ratio)</span><span data-lang="id">condong ke … (rasio log-likelihood)</span></th></tr></thead><tbody></tbody></table>
       </div>
       <div class="box">
-        <h2>Most telling words in the corpus</h2>
+        <h2><span data-lang="en">Most telling words in the corpus</span><span data-lang="id">Kata paling menentukan di korpus</span></h2>
         <div class="cols2">
-          <div><p class="eyebrow" style="color:var(--rust)">Spammy</p><div class="toplist" id="ntTopSpam"></div></div>
-          <div><p class="eyebrow">Hammy</p><div class="toplist" id="ntTopHam"></div></div>
+          <div><p class="eyebrow" style="color:var(--rust)"><span data-lang="en">Spammy</span><span data-lang="id">Nge-spam</span></p><div class="toplist" id="ntTopSpam"></div></div>
+          <div><p class="eyebrow"><span data-lang="en">Hammy</span><span data-lang="id">Ham</span></p><div class="toplist" id="ntTopHam"></div></div>
         </div>
       </div>
     </div>
@@ -524,6 +530,13 @@
 <script>
 (function(){
   const $ = id => document.getElementById(id);
+  function LANG(){ return document.documentElement.lang==='id'?'id':'en'; }
+  const TRMAP={
+    'Verdict: SPAM — the word evidence, multiplied together, favours the spam class.':'Vonis: SPAM — bukti kata, dikalikan bersama, condong ke kelas spam.',
+    'Verdict: HAM — the word evidence, multiplied together, favours the legitimate class.':'Vonis: HAM — bukti kata, dikalikan bersama, condong ke kelas sah.',
+    ' numbers':' angka'
+  };
+  function TR(s){ return LANG()==='id'?(TRMAP[s]||s):s; }
   const CLS = [
     {name:'A', strong:'#C17A3E', dim:[199,219,203]},
     {name:'B', strong:'#A8392A', dim:[237,214,205]},
@@ -1123,7 +1136,7 @@
     let ok=0; nb.pts.forEach(p=>{ if(nb.model.post(p.x,p.y).c===p.c) ok++; });
     $('nbAccOut').textContent=(100*ok/nb.pts.length).toFixed(0)+'%';
     $('nbPriorOut').textContent = nb.model.classes.map(k=>CLS[k.c].name+' '+k.prior.toFixed(2)).join(' · ');
-    $('nbParamOut').textContent = (nb.model.classes.length*5)+' numbers';
+    $('nbParamOut').textContent = (nb.model.classes.length*5)+TR(' numbers');
   }
   function nbRender(){
     const {ctx,w,h}=sizeCanvas($('nbCanvas'));
@@ -1242,8 +1255,8 @@
     $('ntPOut').textContent = (100*p).toFixed(1)+'%';
     const v=$('ntVerdict');
     v.style.display='block';
-    if(p>=0.5){ v.classList.add('spam'); v.textContent='Verdict: SPAM — the word evidence, multiplied together, favours the spam class.'; }
-    else { v.classList.remove('spam'); v.textContent='Verdict: HAM — the word evidence, multiplied together, favours the legitimate class.'; }
+    if(p>=0.5){ v.classList.add('spam'); v.textContent=TR('Verdict: SPAM — the word evidence, multiplied together, favours the spam class.'); }
+    else { v.classList.remove('spam'); v.textContent=TR('Verdict: HAM — the word evidence, multiplied together, favours the legitimate class.'); }
   }
   $('ntAlpha').addEventListener('input', e=>{ $('ntAlphaOut').textContent=(parseInt(e.target.value,10)/10).toFixed(1); ntClassify(); });
   $('ntClassify').addEventListener('click', ntClassify);
@@ -1274,6 +1287,19 @@
   dtGen(); dtResetTree();
   nbGen(); nbFit();
   ntRender(); ntClassify();
+})();
+</script>
+<script>
+(function(){ var KEY='phxLang';
+  function apply(l,init){ document.documentElement.lang=l;
+    var b=document.querySelectorAll('[data-lang-btn]'); for(var i=0;i<b.length;i++) b[i].classList.toggle('on', b[i].getAttribute('data-lang-btn')===l);
+    if(!init){ try{ var at=document.querySelector('.tab.active'); if(at) at.click(); }catch(e){} }
+  }
+  function set(l){ try{ localStorage.setItem(KEY,l); }catch(e){} apply(l,false); }
+  var s=null; try{ s=localStorage.getItem(KEY); }catch(e){}
+  apply(s==='id'?'id':'en', true);
+  var btns=document.querySelectorAll('[data-lang-btn]');
+  for(var i=0;i<btns.length;i++) btns[i].addEventListener('click',function(e){ e.preventDefault(); set(this.getAttribute('data-lang-btn')); });
 })();
 </script>
 </body>
