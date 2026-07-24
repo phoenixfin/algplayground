@@ -4,6 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <link rel="icon" type="image/png" href="logo.png">
+<script>try{var _l=localStorage.getItem('phxLang');if(_l==='id'||_l==='en')document.documentElement.lang=_l;}catch(e){}</script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=Lato:wght@300;400;700&display=swap" rel="stylesheet">
@@ -18,6 +19,7 @@
     --gold: #2F7069; --accent-deep: #8F5620; --gold-dim: #D3E5E2; --card: #FFFDF9; --border: #E4DACB;
   }
   *{ box-sizing: border-box; }
+  html[lang="en"] [data-lang="id"], html[lang="id"] [data-lang="en"]{ display: none !important; }
   body{
     margin:0; background: var(--paper); color: var(--ink);
     font-family: Lato, "Helvetica Neue", Helvetica, Arial, sans-serif; line-height: 1.5;
@@ -32,6 +34,9 @@
   header.top p.eyebrow{ color: var(--accent-deep); }
   .crumbs{ font-size: 12.5px; margin: 14px 0 0; }
   .crumbs a{ color: var(--moss); }
+  .langtog{ display:inline-flex; border:1px solid var(--border); border-radius:20px; overflow:hidden; }
+  .langtog button{ font-family:inherit; font-size:11.5px; letter-spacing:0.06em; padding:4px 11px; border:0; background:#fff; color:var(--ink-soft); cursor:pointer; }
+  .langtog button.on{ background:var(--accent-deep); color:#fff; font-weight:700; }
 
   .tabs{ display: flex; gap: 8px; margin: 0 0 22px; flex-wrap: wrap;  position: sticky; top: 0; z-index: 20; background: var(--paper); padding: 12px 0 10px; border-bottom: 1px solid var(--border); }
   .tab{ padding: 9px 14px; font-size: 13px; font-weight: 600; border: 1px solid var(--ink); border-radius: 3px; background: var(--card); cursor: pointer; }
@@ -134,23 +139,24 @@
 <nav style="display:flex;align-items:center;gap:16px;font-family:'SF Mono',SFMono-Regular,Consolas,monospace;font-size:13px;margin-bottom:24px;flex-wrap:wrap">
 <a href="https://phx.my.id" style="display:inline-flex;align-items:center;gap:9px;text-decoration:none;color:#2D2D2D;font-weight:600"><img src="logo.png" alt="" style="width:30px;height:30px;border-radius:7px;display:block">phx.my.id</a>
 <span style="flex:1;min-width:12px"></span>
-<a href="https://phx.my.id" style="text-decoration:none;color:#6E6259">Home</a>
-<a href="https://research.phx.my.id" style="text-decoration:none;color:#6E6259">Research</a>
-<a href="index.html" style="text-decoration:none;color:#8F5620;font-weight:600">Playgrounds</a>
+<a href="https://phx.my.id" style="text-decoration:none;color:#6E6259"><span data-lang="en">Home</span><span data-lang="id">Beranda</span></a>
+<a href="https://research.phx.my.id" style="text-decoration:none;color:#6E6259"><span data-lang="en">Research</span><span data-lang="id">Riset</span></a>
+<a href="index.html" style="text-decoration:none;color:#8F5620;font-weight:600"><span data-lang="en">Playgrounds</span><span data-lang="id">Playground</span></a>
+<span class="langtog"><button data-lang-btn="en">EN</button><button data-lang-btn="id">ID</button></span>
 </nav>
 
 <header class="top">
-  <p class="eyebrow">Fourier — a math primer</p>
-  <h1>Every signal is a chord of pure waves</h1>
-  <p>The one idea behind spectrograms, JPEG, MP3, MRI — and the Fourier Neural Operator. Any repeating shape, however jagged, is a sum of smooth sine waves. Once you can move a signal between its everyday form and its list of frequencies, calculus turns into simple multiplication and the FNO stops looking like magic. Only basic trig assumed.</p>
-  <p class="crumbs">Companion primer · pairs with <a href="differential_equations.html">Differential equations</a> and the FNO tab of <a href="scientific_ml.html">Scientific ML</a>.</p>
+  <p class="eyebrow"><span data-lang="en">Fourier — a math primer</span><span data-lang="id">Fourier — primer matematika</span></p>
+  <h1><span data-lang="en">Every signal is a chord of pure waves</span><span data-lang="id">Setiap sinyal adalah akor dari gelombang murni</span></h1>
+  <p data-lang="en">The one idea behind spectrograms, JPEG, MP3, MRI — and the Fourier Neural Operator. Any repeating shape, however jagged, is a sum of smooth sine waves. Once you can move a signal between its everyday form and its list of frequencies, calculus turns into simple multiplication and the FNO stops looking like magic. Only basic trig assumed.</p><p data-lang="id">Satu ide yang mendasari spektrogram, JPEG, MP3, MRI — dan Fourier Neural Operator. Bentuk berulang apa pun, sebergerigi apa pun, adalah jumlahan gelombang sinus yang mulus. Begitu kamu bisa memindahkan sinyal antara bentuk sehari-harinya dan daftar frekuensinya, kalkulus berubah jadi perkalian sederhana dan FNO tak lagi tampak seperti sihir. Cukup berbekal trigonometri dasar.</p>
+  <p class="crumbs"><span data-lang="en">Companion primer · pairs with</span><span data-lang="id">Primer pendamping · cocok dengan</span> <a href="differential_equations.html"><span data-lang="en">Differential equations</span><span data-lang="id">Persamaan diferensial</span></a> <span data-lang="en">and the FNO tab of</span><span data-lang="id">dan tab FNO di</span> <a href="scientific_ml.html">Scientific ML</a>.</p>
 </header>
 
 <div class="tabs">
-  <button class="tab active" data-tab="syn">1 · Build from sines</button>
-  <button class="tab" data-tab="ana">2 · Find the frequencies</button>
-  <button class="tab" data-tab="ops">3 · Calculus = multiply</button>
-  <button class="tab" data-tab="map">4 · Where it's used</button>
+  <button class="tab active" data-tab="syn"><span data-lang="en">1 · Build from sines</span><span data-lang="id">1 · Susun dari sinus</span></button>
+  <button class="tab" data-tab="ana"><span data-lang="en">2 · Find the frequencies</span><span data-lang="id">2 · Cari frekuensinya</span></button>
+  <button class="tab" data-tab="ops"><span data-lang="en">3 · Calculus = multiply</span><span data-lang="id">3 · Kalkulus = perkalian</span></button>
+  <button class="tab" data-tab="map"><span data-lang="en">4 · Where it's used</span><span data-lang="id">4 · Di mana dipakai</span></button>
 </div>
 
 <!-- ==================== 1 · SYNTHESIS ==================== -->
@@ -163,54 +169,60 @@
       <path d="M6 82 C 30 40, 30 40, 54 60 S 78 82, 102 40 S 150 82, 198 40" fill="none" stroke="#C17A3E" stroke-width="2"/>
     </svg>
     <div class="txt">
-      <h3>Stack sine waves, get any shape</h3>
-      <p>Pick a low, smooth sine. Add a faster one, a faster one still, each a bit weaker. Keep going and the gentle ripples conspire into <b>sharp corners and flat plateaus</b> — a square wave. Nothing here is a curve-fitting trick: it is an exact fact of mathematics that <i>every</i> repeating signal is a sum of pure sine tones. This is Fourier's whole idea, and it runs in reverse too (next tab).</p>
+      <h3><span data-lang="en">Stack sine waves, get any shape</span><span data-lang="id">Tumpuk sinus, dapatkan bentuk apa pun</span></h3>
+      <p data-lang="en">Pick a low, smooth sine. Add a faster one, a faster one still, each a bit weaker. Keep going and the gentle ripples conspire into <b>sharp corners and flat plateaus</b> — a square wave. Nothing here is a curve-fitting trick: it is an exact fact of mathematics that <i>every</i> repeating signal is a sum of pure sine tones. This is Fourier's whole idea, and it runs in reverse too (next tab).</p><p data-lang="id">Ambil satu sinus rendah yang mulus. Tambahkan yang lebih cepat, lalu yang lebih cepat lagi, masing-masing sedikit lebih lemah. Teruskan, dan riak-riak lembut itu bersekongkol menjadi <b>sudut tajam dan dataran rata</b> — sebuah gelombang kotak. Ini bukan trik cocok-kurva: sudah menjadi fakta matematis yang pasti bahwa <i>setiap</i> sinyal berulang adalah jumlahan nada sinus murni. Inilah inti gagasan Fourier, dan ia juga berjalan mundur (tab berikutnya).</p>
     </div>
   </div>
 
   <div class="layout">
     <div class="panel">
-      <h2>Target shape</h2>
+      <h2><span data-lang="en">Target shape</span><span data-lang="id">Bentuk target</span></h2>
       <div class="field"><select id="synPreset">
-        <option value="square">Square wave</option>
-        <option value="saw">Sawtooth</option>
-        <option value="triangle">Triangle</option>
+        <option value="square" data-lang="en">Square wave</option><option value="square" data-lang="id">Gelombang kotak</option>
+        <option value="saw" data-lang="en">Sawtooth</option><option value="saw" data-lang="id">Gigi gergaji</option>
+        <option value="triangle" data-lang="en">Triangle</option><option value="triangle" data-lang="id">Segitiga</option>
       </select></div>
 
-      <h2>How many sine waves</h2>
-      <div class="field"><label>Terms in the sum <span class="val" id="synNOut">5</span></label><input id="synN" type="range" min="1" max="30" step="1" value="5"></div>
+      <h2><span data-lang="en">How many sine waves</span><span data-lang="id">Berapa banyak sinus</span></h2>
+      <div class="field"><label><span data-lang="en">Terms in the sum</span><span data-lang="id">Suku dalam jumlahan</span> <span class="val" id="synNOut">5</span></label><input id="synN" type="range" min="1" max="30" step="1" value="5"></div>
       <button class="btn toggle block active" id="synComp">Show each sine: ON</button>
-      <p class="hint">Each term is one pure tone. More terms sharpen the corners — but a jump can never be caught perfectly, leaving a little overshoot (the <b>Gibbs</b> ear).</p>
+      <p class="hint" data-lang="en">Each term is one pure tone. More terms sharpen the corners — but a jump can never be caught perfectly, leaving a little overshoot (the <b>Gibbs</b> ear).</p><p class="hint" data-lang="id">Tiap suku adalah satu nada murni. Makin banyak suku, makin tajam sudutnya — tapi sebuah lompatan tak pernah bisa ditangkap sempurna, menyisakan sedikit lonjakan (kuping <b>Gibbs</b>).</p>
     </div>
 
     <div>
       <div class="stats">
-        <div class="stat"><div class="label">terms used</div><div class="value" id="synNStat">5</div></div>
-        <div class="stat warn"><div class="label">Gibbs overshoot</div><div class="value" id="synGibbs">–</div></div>
+        <div class="stat"><div class="label"><span data-lang="en">terms used</span><span data-lang="id">suku dipakai</span></div><div class="value" id="synNStat">5</div></div>
+        <div class="stat warn"><div class="label"><span data-lang="en">Gibbs overshoot</span><span data-lang="id">lonjakan Gibbs</span></div><div class="value" id="synGibbs">–</div></div>
       </div>
 
       <div class="box">
-        <h2>The target vs the running sum</h2>
+        <h2><span data-lang="en">The target vs the running sum</span><span data-lang="id">Target vs jumlahan berjalan</span></h2>
         <canvas id="synMain" class="big" style="cursor:default"></canvas>
         <div class="legend">
-          <span><i class="swatch" style="background:#2D2D2D"></i>target shape</span>
-          <span><i class="swatch" style="background:#C17A3E"></i>sum of the sines so far</span>
-          <span><i class="swatch" style="background:#F3DBD5"></i>individual sine terms</span>
+          <span><i class="swatch" style="background:#2D2D2D"></i><span data-lang="en">target shape</span><span data-lang="id">bentuk target</span></span>
+          <span><i class="swatch" style="background:#C17A3E"></i><span data-lang="en">sum of the sines so far</span><span data-lang="id">jumlahan sinus sejauh ini</span></span>
+          <span><i class="swatch" style="background:#F3DBD5"></i><span data-lang="en">individual sine terms</span><span data-lang="id">tiap suku sinus</span></span>
         </div>
       </div>
 
       <div class="cols2">
-        <div class="box"><h2>The recipe — amplitude of each frequency</h2><canvas id="synSpec" class="mid"></canvas>
-          <p style="margin-top:8px">This bar chart <i>is</i> the shape, written as a list of ingredients. It is what the next tab will recover from a raw signal.</p></div>
-        <div class="box"><h2>The formula</h2><div class="eqk" id="synEq"></div>
-          <p style="margin-top:10px">A square wave uses only <b>odd</b> harmonics, each fading like $1/k$. A triangle fades faster ($1/k^2$) — which is exactly why it looks smoother.</p></div>
+        <div class="box"><h2><span data-lang="en">The recipe — amplitude of each frequency</span><span data-lang="id">Resepnya — amplitudo tiap frekuensi</span></h2><canvas id="synSpec" class="mid"></canvas>
+          <p style="margin-top:8px" data-lang="en">This bar chart <i>is</i> the shape, written as a list of ingredients. It is what the next tab will recover from a raw signal.</p><p style="margin-top:8px" data-lang="id">Diagram batang ini <i>adalah</i> bentuk itu sendiri, ditulis sebagai daftar bahan. Inilah yang akan dipulihkan tab berikutnya dari sinyal mentah.</p></div>
+        <div class="box"><h2><span data-lang="en">The formula</span><span data-lang="id">Rumusnya</span></h2><div class="eqk" id="synEq"></div>
+          <p style="margin-top:10px" data-lang="en">A square wave uses only <b>odd</b> harmonics, each fading like $1/k$. A triangle fades faster ($1/k^2$) — which is exactly why it looks smoother.</p><p style="margin-top:10px" data-lang="id">Gelombang kotak hanya memakai harmonik <b>ganjil</b>, masing-masing meluruh seperti $1/k$. Segitiga meluruh lebih cepat ($1/k^2$) — itulah persis kenapa ia tampak lebih mulus.</p></div>
       </div>
 
-      <div class="try"><b>Try this</b>
+      <div class="try" data-lang="en"><b>Try this</b>
         <ol>
           <li>Start at 1 term: a single lonely sine. Drag terms up and watch the corners of the square sharpen one harmonic at a time.</li>
           <li>Zoom your eyes to the jump: the little overshoot never disappears, it just gets thinner. That stubborn ear is the <b>Gibbs phenomenon</b> — real, and why sharp edges are hard for the FNO too.</li>
           <li>Switch to <i>triangle</i>: it needs far fewer terms to look right, because its recipe drops off as $1/k^2$. Smooth shapes are cheap in frequencies; sharp ones are expensive.</li>
+        </ol>
+      </div><div class="try" data-lang="id"><b>Coba ini</b>
+        <ol>
+          <li>Mulai dari 1 suku: satu sinus yang kesepian. Geser sukunya naik dan lihat sudut-sudut kotak menajam satu harmonik demi satu.</li>
+          <li>Perhatikan lompatannya: lonjakan kecil itu tak pernah hilang, hanya makin tipis. Kuping bandel itu adalah <b>fenomena Gibbs</b> — nyata, dan itu pula alasan tepi tajam sulit bagi FNO.</li>
+          <li>Ganti ke <i>segitiga</i>: ia butuh jauh lebih sedikit suku untuk tampak benar, karena resepnya turun seperti $1/k^2$. Bentuk mulus murah dalam frekuensi; bentuk tajam mahal.</li>
         </ol>
       </div>
     </div>
@@ -227,61 +239,67 @@
       <g fill="#C17A3E"><rect x="128" y="92" width="7" height="24"/><rect x="140" y="78" width="7" height="38"/><rect x="152" y="98" width="7" height="18"/><rect x="164" y="104" width="7" height="12"/><rect x="176" y="100" width="7" height="16"/></g>
     </svg>
     <div class="txt">
-      <h3>Run the machine backwards</h3>
-      <p>Synthesis built a signal from known ingredients. <b>Analysis</b> is the reverse and the useful direction: hand the computer any signal — even one you scribble — and it returns the recipe, the amplitude of every frequency inside it. Then keep only the strongest few and you have compressed it. This exact move is the front end of the Fourier Neural Operator.</p>
+      <h3><span data-lang="en">Run the machine backwards</span><span data-lang="id">Jalankan mesinnya mundur</span></h3>
+      <p data-lang="en">Synthesis built a signal from known ingredients. <b>Analysis</b> is the reverse and the useful direction: hand the computer any signal — even one you scribble — and it returns the recipe, the amplitude of every frequency inside it. Then keep only the strongest few and you have compressed it. This exact move is the front end of the Fourier Neural Operator.</p><p data-lang="id">Sintesis membangun sinyal dari bahan yang diketahui. <b>Analisis</b> adalah kebalikannya dan arah yang berguna: berikan sinyal apa pun ke komputer — bahkan yang kamu corat-coret — dan ia mengembalikan resepnya, amplitudo tiap frekuensi di dalamnya. Lalu simpan hanya beberapa yang terkuat dan kamu sudah mengompresnya. Langkah inilah yang jadi gerbang depan Fourier Neural Operator.</p>
     </div>
   </div>
 
   <div class="layout">
     <div class="panel">
-      <h2>A signal to analyse</h2>
+      <h2><span data-lang="en">A signal to analyse</span><span data-lang="id">Sinyal untuk dianalisis</span></h2>
       <div class="row2" style="margin-bottom:8px">
-        <button class="btn" id="anaSquare">square</button>
-        <button class="btn" id="anaSaw">sawtooth</button>
+        <button class="btn" id="anaSquare"><span data-lang="en">square</span><span data-lang="id">kotak</span></button>
+        <button class="btn" id="anaSaw"><span data-lang="en">sawtooth</span><span data-lang="id">gigi gergaji</span></button>
       </div>
       <div class="row2" style="margin-bottom:8px">
-        <button class="btn" id="anaTwo">two tones</button>
-        <button class="btn" id="anaPulse">pulse</button>
+        <button class="btn" id="anaTwo"><span data-lang="en">two tones</span><span data-lang="id">dua nada</span></button>
+        <button class="btn" id="anaPulse"><span data-lang="en">pulse</span><span data-lang="id">pulsa</span></button>
       </div>
-      <button class="btn block" id="anaNoisy">noisy sine</button>
-      <p class="hint"><b>Or draw your own</b> on the red chart, then watch its spectrum appear.</p>
+      <button class="btn block" id="anaNoisy"><span data-lang="en">noisy sine</span><span data-lang="id">sinus berderau</span></button>
+      <p class="hint" data-lang="en"><b>Or draw your own</b> on the red chart, then watch its spectrum appear.</p><p class="hint" data-lang="id"><b>Atau gambar sendiri</b> pada grafik merah, lalu lihat spektrumnya muncul.</p>
 
-      <h2>Compression</h2>
-      <div class="field"><label>Keep strongest modes <span class="val" id="anaKOut">6</span></label><input id="anaK" type="range" min="1" max="40" step="1" value="6"></div>
-      <p class="hint">Rebuild the signal from only its biggest frequencies. A handful is often plenty — the idea behind JPEG and MP3.</p>
+      <h2><span data-lang="en">Compression</span><span data-lang="id">Kompresi</span></h2>
+      <div class="field"><label><span data-lang="en">Keep strongest modes</span><span data-lang="id">Simpan mode terkuat</span> <span class="val" id="anaKOut">6</span></label><input id="anaK" type="range" min="1" max="40" step="1" value="6"></div>
+      <p class="hint" data-lang="en">Rebuild the signal from only its biggest frequencies. A handful is often plenty — the idea behind JPEG and MP3.</p><p class="hint" data-lang="id">Bangun ulang sinyal hanya dari frekuensi-frekuensi terbesarnya. Segenggam saja sering sudah cukup — ide di balik JPEG dan MP3.</p>
     </div>
 
     <div>
       <div class="stats">
-        <div class="stat"><div class="label">modes kept</div><div class="value" id="anaKStat">6</div></div>
-        <div class="stat hi"><div class="label">rebuilt accuracy</div><div class="value" id="anaAcc">–</div></div>
-        <div class="stat"><div class="label">compression</div><div class="value" id="anaComp">–</div></div>
+        <div class="stat"><div class="label"><span data-lang="en">modes kept</span><span data-lang="id">mode disimpan</span></div><div class="value" id="anaKStat">6</div></div>
+        <div class="stat hi"><div class="label"><span data-lang="en">rebuilt accuracy</span><span data-lang="id">akurasi rekonstruksi</span></div><div class="value" id="anaAcc">–</div></div>
+        <div class="stat"><div class="label"><span data-lang="en">compression</span><span data-lang="id">kompresi</span></div><div class="value" id="anaComp">–</div></div>
       </div>
 
       <div class="cols2">
         <div class="box">
-          <h2>Signal — draw here — with the rebuilt version on top</h2>
+          <h2><span data-lang="en">Signal — draw here — with the rebuilt version on top</span><span data-lang="id">Sinyal — gambar di sini — dengan versi rekonstruksi di atasnya</span></h2>
           <canvas id="anaMain" class="sq" style="cursor:crosshair"></canvas>
-          <div class="legend"><span><i class="swatch" style="background:#A8392A"></i>your signal</span><span><i class="swatch" style="background:#C17A3E"></i>rebuilt from kept modes</span></div>
+          <div class="legend"><span><i class="swatch" style="background:#A8392A"></i><span data-lang="en">your signal</span><span data-lang="id">sinyalmu</span></span><span><i class="swatch" style="background:#C17A3E"></i><span data-lang="en">rebuilt from kept modes</span><span data-lang="id">direkonstruksi dari mode tersimpan</span></span></div>
         </div>
         <div class="box">
-          <h2>Its spectrum — the frequencies inside</h2>
+          <h2><span data-lang="en">Its spectrum — the frequencies inside</span><span data-lang="id">Spektrumnya — frekuensi di dalamnya</span></h2>
           <canvas id="anaSpec" class="sq"></canvas>
-          <div class="legend"><span><i class="swatch" style="background:#C17A3E"></i>kept</span><span><i class="swatch" style="background:rgba(193,122,62,0.28)"></i>discarded</span></div>
+          <div class="legend"><span><i class="swatch" style="background:#C17A3E"></i><span data-lang="en">kept</span><span data-lang="id">disimpan</span></span><span><i class="swatch" style="background:rgba(193,122,62,0.28)"></i><span data-lang="en">discarded</span><span data-lang="id">dibuang</span></span></div>
         </div>
       </div>
 
-      <div class="try"><b>Try this</b>
+      <div class="try" data-lang="en"><b>Try this</b>
         <ol>
           <li>Click <i>two tones</i>: the spectrum shows exactly <b>two</b> tall bars. The wiggly signal was hiding two clean frequencies all along — that is what "analysis" reveals.</li>
           <li>Draw a slow, smooth curve: nearly all the bars are near the left (low frequencies). Now draw something jagged: tall bars appear on the right. <b>Rough = high frequencies.</b></li>
           <li>Click <i>noisy sine</i> and set keep-modes to 2: the reconstruction throws the noise away and recovers the clean sine. Keeping few modes is a <b>low-pass filter</b> — denoising for free.</li>
         </ol>
+      </div><div class="try" data-lang="id"><b>Coba ini</b>
+        <ol>
+          <li>Klik <i>dua nada</i>: spektrumnya menampilkan tepat <b>dua</b> batang tinggi. Sinyal yang meliuk-liuk itu ternyata menyembunyikan dua frekuensi bersih sejak awal — itulah yang diungkap "analisis".</li>
+          <li>Gambar kurva pelan yang mulus: hampir semua batang ada di kiri (frekuensi rendah). Sekarang gambar sesuatu yang bergerigi: batang tinggi muncul di kanan. <b>Kasar = frekuensi tinggi.</b></li>
+          <li>Klik <i>sinus berderau</i> dan atur mode-disimpan ke 2: rekonstruksinya membuang derau dan memulihkan sinus bersih. Menyimpan sedikit mode itu sama dengan <b>low-pass filter</b> — denoising gratis.</li>
+        </ol>
       </div>
 
       <div class="box">
-        <h2>What just happened</h2>
-        <p>The computer projected your signal onto every frequency — for each $k$ it asked "how much sine-of-$k$ and cosine-of-$k$ is in here?" — giving one amplitude per frequency. That list is the <b>Fourier transform</b>. Keeping only the largest entries and rebuilding is lossy compression, denoising, and — in the FNO — the compact form the network actually operates on.</p>
+        <h2><span data-lang="en">What just happened</span><span data-lang="id">Apa yang barusan terjadi</span></h2>
+        <p data-lang="en">The computer projected your signal onto every frequency — for each $k$ it asked "how much sine-of-$k$ and cosine-of-$k$ is in here?" — giving one amplitude per frequency. That list is the <b>Fourier transform</b>. Keeping only the largest entries and rebuilding is lossy compression, denoising, and — in the FNO — the compact form the network actually operates on.</p><p data-lang="id">Komputer memproyeksikan sinyalmu ke tiap frekuensi — untuk tiap $k$ ia bertanya "seberapa banyak sinus-$k$ dan kosinus-$k$ di dalam sini?" — menghasilkan satu amplitudo per frekuensi. Daftar itulah <b>transformasi Fourier</b>. Menyimpan hanya entri terbesar lalu membangun ulang adalah kompresi lossy, denoising, dan — pada FNO — bentuk ringkas yang benar-benar dioperasikan jaringan.</p>
       </div>
     </div>
   </div>
@@ -298,66 +316,72 @@
       <g fill="#C17A3E"><rect x="150" y="60" width="7" height="40"/><rect x="162" y="66" width="7" height="34"/><rect x="174" y="88" width="7" height="12"/><rect x="186" y="96" width="7" height="4"/></g>
     </svg>
     <div class="txt">
-      <h3>In frequency space, hard calculus is just scaling</h3>
-      <p>Here is the payoff. Smoothing a signal, differentiating it, integrating it — messy operations in the everyday view — each become a single <b>multiply each frequency by a number</b> in Fourier space. Blur = shrink the high notes. Differentiate = boost them. That is why heat-flow is easy in frequency space, and it is <i>exactly</i> what the FNO learns: one weight per frequency.</p>
+      <h3><span data-lang="en">In frequency space, hard calculus is just scaling</span><span data-lang="id">Di ruang frekuensi, kalkulus sulit cuma penskalaan</span></h3>
+      <p data-lang="en">Here is the payoff. Smoothing a signal, differentiating it, integrating it — messy operations in the everyday view — each become a single <b>multiply each frequency by a number</b> in Fourier space. Blur = shrink the high notes. Differentiate = boost them. That is why heat-flow is easy in frequency space, and it is <i>exactly</i> what the FNO learns: one weight per frequency.</p><p data-lang="id">Inilah bayarannya. Menghaluskan sinyal, menurunkannya, mengintegralkannya — operasi yang berantakan dalam pandangan sehari-hari — masing-masing jadi sekadar <b>mengalikan tiap frekuensi dengan sebuah angka</b> di ruang Fourier. Blur = kecilkan nada tinggi. Turunkan = besarkan. Itu sebabnya aliran panas mudah di ruang frekuensi, dan itu <i>persis</i> yang dipelajari FNO: satu bobot per frekuensi.</p>
     </div>
   </div>
 
   <div class="layout">
     <div class="panel">
-      <h2>Input signal</h2>
+      <h2><span data-lang="en">Input signal</span><span data-lang="id">Sinyal masukan</span></h2>
       <div class="row2" style="margin-bottom:8px">
-        <button class="btn" id="opsSine">sine</button>
-        <button class="btn" id="opsSquare">square</button>
+        <button class="btn" id="opsSine"><span data-lang="en">sine</span><span data-lang="id">sinus</span></button>
+        <button class="btn" id="opsSquare"><span data-lang="en">square</span><span data-lang="id">kotak</span></button>
       </div>
       <div class="row2" style="margin-bottom:8px">
-        <button class="btn" id="opsPulse">pulse</button>
-        <button class="btn" id="opsNoisy">noisy</button>
+        <button class="btn" id="opsPulse"><span data-lang="en">pulse</span><span data-lang="id">pulsa</span></button>
+        <button class="btn" id="opsNoisy"><span data-lang="en">noisy</span><span data-lang="id">berderau</span></button>
       </div>
-      <p class="hint"><b>Or draw your own</b> on the red chart.</p>
+      <p class="hint" data-lang="en"><b>Or draw your own</b> on the red chart.</p><p class="hint" data-lang="id"><b>Atau gambar sendiri</b> pada grafik merah.</p>
 
-      <h2>Operation</h2>
+      <h2><span data-lang="en">Operation</span><span data-lang="id">Operasi</span></h2>
       <div class="field"><select id="opsOp">
-        <option value="smooth">Smooth / blur (like diffusion)</option>
-        <option value="deriv">Differentiate (slope)</option>
-        <option value="integ">Integrate (area)</option>
-        <option value="lowpass">Low-pass (keep low modes)</option>
+        <option value="smooth" data-lang="en">Smooth / blur (like diffusion)</option><option value="smooth" data-lang="id">Haluskan / blur (seperti difusi)</option>
+        <option value="deriv" data-lang="en">Differentiate (slope)</option><option value="deriv" data-lang="id">Turunkan (kemiringan)</option>
+        <option value="integ" data-lang="en">Integrate (area)</option><option value="integ" data-lang="id">Integralkan (luas)</option>
+        <option value="lowpass" data-lang="en">Low-pass (keep low modes)</option><option value="lowpass" data-lang="id">Low-pass (simpan mode rendah)</option>
       </select></div>
       <div class="field"><label><span id="opsStrLab">Strength α</span> <span class="val" id="opsStrOut">0.04</span></label><input id="opsStr" type="range" min="0.005" max="0.2" step="0.005" value="0.04"></div>
     </div>
 
     <div>
       <div class="stats">
-        <div class="stat" style="flex:2.4"><div class="label">the multiplier applied to mode k</div><div class="value eqv" id="opsEq">…</div></div>
+        <div class="stat" style="flex:2.4"><div class="label"><span data-lang="en">the multiplier applied to mode k</span><span data-lang="id">pengali untuk mode k</span></div><div class="value eqv" id="opsEq">…</div></div>
       </div>
 
       <div class="cols2">
-        <div class="box"><h2>Input f</h2><canvas id="opsIn" class="sq" style="cursor:crosshair"></canvas></div>
-        <div class="box"><h2>Output — the operation, done in frequency space</h2><canvas id="opsOut" class="sq"></canvas></div>
+        <div class="box"><h2><span data-lang="en">Input f</span><span data-lang="id">Masukan f</span></h2><canvas id="opsIn" class="sq" style="cursor:crosshair"></canvas></div>
+        <div class="box"><h2><span data-lang="en">Output — the operation, done in frequency space</span><span data-lang="id">Keluaran — operasinya, dikerjakan di ruang frekuensi</span></h2><canvas id="opsOut" class="sq"></canvas></div>
       </div>
 
       <div class="box">
-        <h2>What the operation does to each frequency</h2>
+        <h2><span data-lang="en">What the operation does to each frequency</span><span data-lang="id">Apa yang operasi lakukan ke tiap frekuensi</span></h2>
         <canvas id="opsSpec" class="mid"></canvas>
         <div class="legend">
-          <span><i class="swatch" style="background:rgba(168,57,42,0.5)"></i>input spectrum</span>
-          <span><i class="swatch" style="background:#2D2D2D"></i>multiplier per mode</span>
-          <span><i class="swatch" style="background:#C17A3E"></i>output spectrum</span>
+          <span><i class="swatch" style="background:rgba(168,57,42,0.5)"></i><span data-lang="en">input spectrum</span><span data-lang="id">spektrum masukan</span></span>
+          <span><i class="swatch" style="background:#2D2D2D"></i><span data-lang="en">multiplier per mode</span><span data-lang="id">pengali per mode</span></span>
+          <span><i class="swatch" style="background:#C17A3E"></i><span data-lang="en">output spectrum</span><span data-lang="id">spektrum keluaran</span></span>
         </div>
       </div>
 
-      <div class="try"><b>Try this</b>
+      <div class="try" data-lang="en"><b>Try this</b>
         <ol>
           <li><i>Smooth</i> a noisy signal: the multiplier curve dives toward zero at high $k$, the tall right-hand bars vanish, and the output comes out clean. That black curve is $e^{-\alpha k^2}$ — the very same one the diffusion tab used, and the one the FNO learned for its "smooth" operator.</li>
           <li><i>Differentiate</i>: now the multiplier <b>grows</b> with $k$, so high-frequency wiggles get amplified — which is why differentiating noisy data is dangerous (recall SINDy's struggle).</li>
           <li><i>Integrate</i>: the opposite, high frequencies are crushed by $1/k$, so the output is always smoother than the input.</li>
         </ol>
+      </div><div class="try" data-lang="id"><b>Coba ini</b>
+        <ol>
+          <li><i>Haluskan</i> sinyal berderau: kurva pengali menukik ke nol pada $k$ tinggi, batang-batang tinggi di kanan lenyap, dan keluarannya jadi bersih. Kurva hitam itu adalah $e^{-\alpha k^2}$ — persis yang dipakai tab difusi, dan yang dipelajari FNO untuk operator "haluskan"-nya.</li>
+          <li><i>Turunkan</i>: kini pengalinya <b>membesar</b> seiring $k$, jadi liukan frekuensi-tinggi diperkuat — itulah kenapa menurunkan data berderau itu berbahaya (ingat perjuangan SINDy).</li>
+          <li><i>Integralkan</i>: kebalikannya, frekuensi tinggi dihancurkan oleh $1/k$, jadi keluarannya selalu lebih mulus daripada masukannya.</li>
+        </ol>
       </div>
 
       <div class="box">
-        <h2>What just happened — and the bridge to the FNO</h2>
-        <p>Differentiation multiplies mode $k$ by $2\pi k$; integration divides by it; diffusion multiplies by $e^{-\alpha k^2}$; a low-pass keeps modes below a cutoff. In every case an entire calculus operation collapses to <b>one number per frequency</b>.</p>
-        <p>That is the secret of the <b>Fourier Neural Operator</b>: instead of being told these multipliers, it <i>learns</i> them from examples — a handful of weights, one per mode. Go back to the FNO tab now and its bar chart of learned weights will read as exactly this: a calculus operation, discovered.</p>
+        <h2><span data-lang="en">What just happened — and the bridge to the FNO</span><span data-lang="id">Apa yang barusan terjadi — dan jembatan ke FNO</span></h2>
+        <p data-lang="en">Differentiation multiplies mode $k$ by $2\pi k$; integration divides by it; diffusion multiplies by $e^{-\alpha k^2}$; a low-pass keeps modes below a cutoff. In every case an entire calculus operation collapses to <b>one number per frequency</b>.</p><p data-lang="id">Turunan mengalikan mode $k$ dengan $2\pi k$; integral membaginya; difusi mengalikan dengan $e^{-\alpha k^2}$; low-pass menyimpan mode di bawah ambang. Dalam tiap kasus, satu operasi kalkulus utuh mengerut jadi <b>satu angka per frekuensi</b>.</p>
+        <p data-lang="en">That is the secret of the <b>Fourier Neural Operator</b>: instead of being told these multipliers, it <i>learns</i> them from examples — a handful of weights, one per mode. Go back to the FNO tab now and its bar chart of learned weights will read as exactly this: a calculus operation, discovered.</p><p data-lang="id">Itulah rahasia <b>Fourier Neural Operator</b>: alih-alih diberi tahu pengali-pengali ini, ia <i>mempelajarinya</i> dari contoh — segenggam bobot, satu per mode. Kembalilah ke tab FNO sekarang dan diagram batang bobot yang dipelajarinya akan terbaca persis seperti ini: sebuah operasi kalkulus, yang ditemukan.</p>
       </div>
     </div>
   </div>
@@ -366,28 +390,28 @@
 <!-- ==================== 4 · MAP ==================== -->
 <div class="section" id="sec-map">
   <div class="box">
-    <h2>The same idea, everywhere</h2>
+    <h2><span data-lang="en">The same idea, everywhere</span><span data-lang="id">Ide yang sama, di mana-mana</span></h2>
     <div style="overflow-x:auto">
     <table class="cmp">
-      <tr><th>You see it as</th><th>What Fourier does</th><th>In this collection</th></tr>
-      <tr><td>MP3 / JPEG</td><td>Keep only the frequencies your ears/eyes notice, drop the rest</td><td>Analysis tab — keep strongest modes</td></tr>
-      <tr><td>A guitar string / organ pipe</td><td>Its pure tones are the frequency modes; resonances pick them out</td><td>Wave tab — standing waves are modes</td></tr>
-      <tr><td>Heat spreading in a bar</td><td>Each frequency decays at its own rate, high ones fastest</td><td>Diffusion tab — smoothing = $e^{-\alpha k^2}$</td></tr>
-      <tr><td>An MRI scanner</td><td>Measures frequencies directly, then transforms back to an image</td><td>Analysis ↔ synthesis, both directions</td></tr>
-      <tr><td>A Fourier Neural Operator</td><td>Learns one weight per frequency to imitate a physics solver</td><td>FNO tab — learned multipliers</td></tr>
+      <tr><th><span data-lang="en">You see it as</span><span data-lang="id">Kamu mengenalnya sebagai</span></th><th><span data-lang="en">What Fourier does</span><span data-lang="id">Apa yang Fourier lakukan</span></th><th><span data-lang="en">In this collection</span><span data-lang="id">Di koleksi ini</span></th></tr>
+      <tr><td>MP3 / JPEG</td><td><span data-lang="en">Keep only the frequencies your ears/eyes notice, drop the rest</span><span data-lang="id">Simpan hanya frekuensi yang disadari telinga/mata, buang sisanya</span></td><td><span data-lang="en">Analysis tab — keep strongest modes</span><span data-lang="id">Tab analisis — simpan mode terkuat</span></td></tr>
+      <tr><td><span data-lang="en">A guitar string / organ pipe</span><span data-lang="id">Senar gitar / pipa organ</span></td><td><span data-lang="en">Its pure tones are the frequency modes; resonances pick them out</span><span data-lang="id">Nada murninya adalah mode frekuensi; resonansi memilihnya</span></td><td><span data-lang="en">Wave tab — standing waves are modes</span><span data-lang="id">Tab wave — gelombang berdiri adalah mode</span></td></tr>
+      <tr><td><span data-lang="en">Heat spreading in a bar</span><span data-lang="id">Panas menyebar di batang</span></td><td><span data-lang="en">Each frequency decays at its own rate, high ones fastest</span><span data-lang="id">Tiap frekuensi meluruh dengan lajunya sendiri, yang tinggi tercepat</span></td><td><span data-lang="en">Diffusion tab — smoothing =</span><span data-lang="id">Tab diffusion — smoothing =</span> $e^{-\alpha k^2}$</td></tr>
+      <tr><td><span data-lang="en">An MRI scanner</span><span data-lang="id">Pemindai MRI</span></td><td><span data-lang="en">Measures frequencies directly, then transforms back to an image</span><span data-lang="id">Mengukur frekuensi langsung, lalu mentransformasikannya kembali jadi citra</span></td><td><span data-lang="en">Analysis ↔ synthesis, both directions</span><span data-lang="id">Analisis ↔ sintesis, dua arah</span></td></tr>
+      <tr><td><span data-lang="en">A Fourier Neural Operator</span><span data-lang="id">Fourier Neural Operator</span></td><td><span data-lang="en">Learns one weight per frequency to imitate a physics solver</span><span data-lang="id">Mempelajari satu bobot per frekuensi untuk meniru solver fisika</span></td><td><span data-lang="en">FNO tab — learned multipliers</span><span data-lang="id">Tab FNO — pengali yang dipelajari</span></td></tr>
     </table>
     </div>
-    <p>Fourier is the hinge between the two big playgrounds: it is why the wave and heat equations have clean solutions, and it is the machinery the FNO runs on. Learn it once and three other tabs light up.</p>
+    <p data-lang="en">Fourier is the hinge between the two big playgrounds: it is why the wave and heat equations have clean solutions, and it is the machinery the FNO runs on. Learn it once and three other tabs light up.</p><p data-lang="id">Fourier adalah engsel antara dua playground besar: ia sebabnya persamaan gelombang dan panas punya solusi yang rapi, sekaligus mesin yang dijalankan FNO. Pelajari sekali, dan tiga tab lain ikut menyala.</p>
   </div>
 
   <div class="box">
-    <h2>Check yourself</h2>
+    <h2><span data-lang="en">Check yourself</span><span data-lang="id">Uji dirimu</span></h2>
     <div id="quizBox"></div>
   </div>
 </div>
 
 <footer>
-  Built for classroom use · every transform runs live in this page — no server · a primer for the <a href="scientific_ml.html">Scientific ML</a> playground's FNO tab.
+  <span data-lang="en">Built for classroom use · every transform runs live in this page — no server · a primer for the <a href="scientific_ml.html">Scientific ML</a> playground's FNO tab.</span><span data-lang="id">Dibuat untuk kelas · setiap transformasi berjalan langsung di halaman ini — tanpa server · primer untuk tab FNO di playground <a href="scientific_ml.html">Scientific ML</a>.</span>
 </footer>
 
 </div>
@@ -398,6 +422,16 @@ const COL = { ink:'#2D2D2D', soft:'#6E6259', moss:'#C17A3E', mossDim:'#F0DCC6', 
               rustDim:'#F3DBD5', gold:'#2F7069', goldDim:'#D3E5E2', border:'#E4DACB', line:'#EDE4D8' };
 function fmt(v,d=2){ if(!isFinite(v)) return '–'; return v.toFixed(d).replace(/-/g,'−'); }
 function lerp(a,b,t){ return Math.round(a+(b-a)*t); }
+function LANG(){ return document.documentElement.lang==='id'?'id':'en'; }
+const I18N={
+  en:{ freq:'frequency k', amp:'amplitude', signal:'signal', result:'result',
+       showOn:'Show each sine: ON', showOff:'Show each sine: OFF',
+       blur:'Blur strength α', cutoff:'Cutoff frequency Kc', notused:'(not used)' },
+  id:{ freq:'frekuensi k', amp:'amplitudo', signal:'sinyal', result:'hasil',
+       showOn:'Tampilkan tiap sinus: ON', showOff:'Tampilkan tiap sinus: OFF',
+       blur:'Kekuatan blur α', cutoff:'Frekuensi ambang Kc', notused:'(tak dipakai)' },
+};
+function T(k){ return (I18N[LANG()]||I18N.en)[k]||k; }
 
 /* ---- KaTeX ---- */
 let KATEX_READY=false;
@@ -513,7 +547,7 @@ function reconSet(a,b,N,keptSet){ const f=new Float64Array(N);
   for(let n=0;n<N;n++){ let s=keptSet.has(0)?a[0]:0; keptSet.forEach(k=>{ if(k===0) return; const t=2*Math.PI*k*n/N; s+=a[k]*Math.cos(t)+b[k]*Math.sin(t); }); f[n]=s; } return f; }
 function specBars(cv, amps, keptSet, opt){
   const K=amps.length-1; let mx=1e-6; for(let k=0;k<=K;k++) mx=Math.max(mx,amps[k]);
-  const pl=Plot(cv,-0.7,K+0.7,0,mx*1.12,Object.assign({xlab:'frequency k',ylab:'amplitude',nx:Math.min(K,10)},opt||{}));
+  const pl=Plot(cv,-0.7,K+0.7,0,mx*1.12,Object.assign({xlab:T('freq'),ylab:T('amp'),nx:Math.min(K,10)},opt||{}));
   pl.clip(); const bw=Math.max(2,(pl.px(1)-pl.px(0))*0.62);
   for(let k=0;k<=K;k++){ const on=keptSet?keptSet.has(k):true; const X=pl.px(k),Y0=pl.py(0),Y=pl.py(amps[k]);
     pl.g.fillStyle=on?COL.moss:'rgba(193,122,62,0.28)'; pl.g.fillRect(X-bw/2,Y,bw,Y0-Y); }
@@ -552,7 +586,7 @@ function draw(){
 }
 $('synPreset').addEventListener('change',e=>{ preset=e.target.value; draw(); });
 $('synN').addEventListener('input',e=>{ n=+e.target.value; $('synNOut').textContent=n; draw(); });
-$('synComp').addEventListener('click',e=>{ showComp=!showComp; e.target.classList.toggle('active',showComp); e.target.textContent='Show each sine: '+(showComp?'ON':'OFF'); draw(); });
+$('synComp').addEventListener('click',e=>{ showComp=!showComp; e.target.classList.toggle('active',showComp); e.target.textContent=(showComp?T('showOn'):T('showOff')); draw(); });
 REDRAW.syn=draw;
 draw();
 })();
@@ -575,7 +609,7 @@ function draw(){
   const cv=getCv('anaMain');
   if(cv){ let lo=1e9,hi=-1e9; for(let i=0;i<NF;i++){ lo=Math.min(lo,sig[i],recon[i]); hi=Math.max(hi,sig[i],recon[i]); }
     const mid=(lo+hi)/2, half=Math.max((hi-lo)/2*1.15,0.3);
-    const pl=Plot(cv,0,1,mid-half,mid+half,{xlab:'x',ylab:'signal',nx:5}); LP=pl;
+    const pl=Plot(cv,0,1,mid-half,mid+half,{xlab:'x',ylab:T('signal'),nx:5}); LP=pl;
     pl.clip(); pl.g.strokeStyle=COL.line; pl.g.beginPath(); pl.g.moveTo(pl.px(0),pl.py(0)); pl.g.lineTo(pl.px(1),pl.py(0)); pl.g.stroke();
     const xs=Array.from({length:NF},(_,i)=>i/NF);
     pl.line(xs,Array.from(sig),COL.rust,2);
@@ -648,12 +682,12 @@ function draw(){
   const cvo=getCv('opsOut');
   if(cvo){ let lo=1e9,hi=-1e9; for(let i=0;i<NF;i++){ lo=Math.min(lo,out[i]); hi=Math.max(hi,out[i]); }
     if(!isFinite(lo)){ lo=-1; hi=1; } const mid=(lo+hi)/2, half=Math.max((hi-lo)/2*1.15,1e-4);
-    const pl=Plot(cvo,0,1,mid-half,mid+half,{xlab:'x',ylab:'result',nx:5});
+    const pl=Plot(cvo,0,1,mid-half,mid+half,{xlab:'x',ylab:T('result'),nx:5});
     pl.clip(); pl.g.strokeStyle=COL.line; pl.g.beginPath(); pl.g.moveTo(pl.px(0),pl.py(0)); pl.g.lineTo(pl.px(1),pl.py(0)); pl.g.stroke();
     pl.line(Array.from({length:NF},(_,i)=>i/NF),Array.from(out),COL.moss,2.4); pl.unclip(); }
   const cvs=getCv('opsSpec');
   if(cvs){ let mx=1e-6; for(let k=0;k<=KF;k++) mx=Math.max(mx,inAmp[k],outAmp[k]);
-    const pl=Plot(cvs,-0.7,KF+0.7,0,mx*1.12,{xlab:'frequency k',ylab:'amplitude',nx:10});
+    const pl=Plot(cvs,-0.7,KF+0.7,0,mx*1.12,{xlab:T('freq'),ylab:T('amp'),nx:10});
     pl.clip(); const bw=Math.max(2,(pl.px(1)-pl.px(0))*0.6);
     for(let k=0;k<=KF;k++){ pl.g.fillStyle='rgba(168,57,42,0.45)'; const Y=pl.py(inAmp[k]); pl.g.fillRect(pl.px(k)-bw/2,Y,bw*0.5,pl.py(0)-Y); }
     for(let k=0;k<=KF;k++){ pl.g.fillStyle=COL.moss; const Y=pl.py(outAmp[k]); pl.g.fillRect(pl.px(k),Y,bw*0.5,pl.py(0)-Y); }
@@ -668,9 +702,9 @@ $('opsSquare').addEventListener('click',pSquare);
 $('opsPulse').addEventListener('click',pPulse);
 $('opsNoisy').addEventListener('click',pNoisy);
 $('opsOp').addEventListener('change',e=>{ op=e.target.value; const s=$('opsStr');
-  if(op==='smooth'){ s.min=0.005; s.max=0.2; s.step=0.005; s.value=0.04; strength=0.04; $('opsStrLab').textContent='Blur strength α'; s.disabled=false; $('opsStrOut').textContent=fmt(strength,3); }
-  else if(op==='lowpass'){ s.min=1; s.max=30; s.step=1; s.value=8; strength=8; $('opsStrLab').textContent='Cutoff frequency Kc'; s.disabled=false; $('opsStrOut').textContent=String(strength); }
-  else { $('opsStrLab').textContent='(not used)'; s.disabled=true; }
+  if(op==='smooth'){ s.min=0.005; s.max=0.2; s.step=0.005; s.value=0.04; strength=0.04; $('opsStrLab').textContent=T('blur'); s.disabled=false; $('opsStrOut').textContent=fmt(strength,3); }
+  else if(op==='lowpass'){ s.min=1; s.max=30; s.step=1; s.value=8; strength=8; $('opsStrLab').textContent=T('cutoff'); s.disabled=false; $('opsStrOut').textContent=String(strength); }
+  else { $('opsStrLab').textContent=T('notused'); s.disabled=true; }
   draw(); });
 $('opsStr').addEventListener('input',e=>{ strength=+e.target.value; $('opsStrOut').textContent = op==='lowpass'?String(Math.round(strength)):fmt(strength,3); draw(); });
 let drawing=false; const el=$('opsIn');
@@ -690,7 +724,7 @@ pNoisy();
 
 /* ==================== QUIZ ==================== */
 (() => {
-const QS=[
+const QS_EN=[
   { q:'A perfect square wave is exactly equal to…',
     o:['one fast sine wave','an infinite sum of sine waves (its odd harmonics)','a straight line','random noise'],
     a:1, e:'Every repeating shape, however sharp, is a sum of pure sines. The square uses only odd harmonics, each fading like 1/k.' },
@@ -710,18 +744,60 @@ const QS=[
     o:['to save memory','because many physics operations ARE per-frequency multiplications, so it just learns those multipliers','to encrypt the data','for no reason'],
     a:1, e:'Smoothing, integrating, differentiating — each is one number per frequency. The FNO learns those numbers from examples instead of being told them.' },
 ];
-const box=$('quizBox');
-QS.forEach((Q,qi)=>{ const d=document.createElement('div'); d.className='q';
-  d.innerHTML=`<div class="qt">${qi+1}. ${Q.q}</div>`;
-  const opts=document.createElement('div'); opts.className='opts';
-  Q.o.forEach((o,oi)=>{ const b=document.createElement('button'); b.className='opt'; b.textContent=o;
-    b.addEventListener('click',()=>{ if(oi===Q.a){ opts.querySelectorAll('.opt').forEach(x=>x.classList.remove('wrong')); b.classList.add('correct'); exp.style.display='block'; } else b.classList.add('wrong'); });
-    opts.appendChild(b); });
-  const exp=document.createElement('div'); exp.className='exp'; exp.textContent=Q.e;
-  d.appendChild(opts); d.appendChild(exp); box.appendChild(d);
-});
+const QS_ID=[
+  { q:'Sebuah gelombang kotak sempurna persis sama dengan…',
+    o:['satu gelombang sinus cepat','jumlahan takhingga gelombang sinus (harmonik ganjilnya)','sebuah garis lurus','derau acak'],
+    a:1, e:'Setiap bentuk berulang, setajam apa pun, adalah jumlahan sinus murni. Kotak hanya memakai harmonik ganjil, masing-masing meluruh seperti 1/k.' },
+  { q:'Kamu menggambar sinyal bergerigi dan berduri. Spektrumnya akan…',
+    o:['hanya punya batang frekuensi rendah','punya batang tinggi di frekuensi tinggi juga','tak punya batang','punya satu batang'],
+    a:1, e:'Perubahan tajam dan cepat butuh frekuensi tinggi untuk membangunnya. Sinyal mulus tinggal di frekuensi rendah; yang kasar menjangkau tinggi.' },
+  { q:'Menyimpan hanya beberapa frekuensi terkuat lalu membangun ulang sinyal adalah inti ide di balik…',
+    o:['kompresi JPEG dan MP3','algoritma pengurutan','enkripsi','pembangkitan bilangan acak'],
+    a:0, e:'Buang frekuensi yang nyaris tak disadari mata atau telinga, dan ukuran berkas menyusut. Itulah persis slider di tab analisis.' },
+  { q:'Di ruang frekuensi, menurunkan sinyal berarti mengalikan tiap frekuensi k dengan…',
+    o:['nol','angka yang membesar seiring k (≈2πk) — menguatkan frekuensi tinggi','1/k selalu','angka acak'],
+    a:1, e:'Turunan memperkuat frekuensi tinggi, itulah kenapa menurunkan data berderau meledak — jebakan yang sama yang menimpa SINDy.' },
+  { q:'Smoothing/difusi mengalikan tiap frekuensi dengan e^(−αk²). Ini…',
+    o:['menguatkan frekuensi tinggi','menghancurkan frekuensi tinggi, menyisakan yang rendah dan mulus','membuat semuanya sama','menghapus frekuensi rendah'],
+    a:1, e:'Frekuensi tinggi (liukan halus) mati paling cepat, jadi sinyal menghalus — persamaan panas, dilihat di ruang frekuensi.' },
+  { q:'Kenapa Fourier Neural Operator menyimpan satu bobot terpelajar per frekuensi?',
+    o:['untuk menghemat memori','karena banyak operasi fisika MEMANG perkalian per-frekuensi, jadi ia tinggal mempelajari pengali-pengali itu','untuk mengenkripsi data','tanpa alasan'],
+    a:1, e:'Smoothing, integral, turunan — masing-masing satu angka per frekuensi. FNO mempelajari angka-angka itu dari contoh, bukan diberi tahu.' },
+];
+function buildQuiz(){
+  const box=$('quizBox'); if(!box) return; box.innerHTML='';
+  const QS = LANG()==='id'?QS_ID:QS_EN;
+  QS.forEach((Q,qi)=>{ const d=document.createElement('div'); d.className='q';
+    d.innerHTML=`<div class="qt">${qi+1}. ${Q.q}</div>`;
+    const opts=document.createElement('div'); opts.className='opts';
+    Q.o.forEach((o,oi)=>{ const b=document.createElement('button'); b.className='opt'; b.textContent=o;
+      b.addEventListener('click',()=>{ if(oi===Q.a){ opts.querySelectorAll('.opt').forEach(x=>x.classList.remove('wrong')); b.classList.add('correct'); exp.style.display='block'; } else b.classList.add('wrong'); });
+      opts.appendChild(b); });
+    const exp=document.createElement('div'); exp.className='exp'; exp.textContent=Q.e;
+    d.appendChild(opts); d.appendChild(exp); box.appendChild(d);
+  });
+}
+window.__buildQuiz=buildQuiz; buildQuiz();
 })();
 
+/* ---- language switch ---- */
+window.__onLang=function(){
+  try{ if(typeof REDRAW!=='undefined' && REDRAW[ACTIVE]) REDRAW[ACTIVE](); }catch(e){}
+  try{ var sc=$('synComp'); if(sc) sc.textContent = sc.classList.contains('active')?T('showOn'):T('showOff'); }catch(e){}
+  try{ var op=$('opsOp'), lab=$('opsStrLab'); if(op&&lab) lab.textContent = op.value==='smooth'?T('blur'):op.value==='lowpass'?T('cutoff'):T('notused'); }catch(e){}
+  try{ if(window.__buildQuiz) window.__buildQuiz(); }catch(e){}
+};
+(function(){ var KEY='phxLang';
+  function apply(l){ document.documentElement.lang=l;
+    var b=document.querySelectorAll('[data-lang-btn]'); for(var i=0;i<b.length;i++) b[i].classList.toggle('on', b[i].getAttribute('data-lang-btn')===l);
+    if(window.__onLang){ try{ window.__onLang(l); }catch(e){} } }
+  function set(l){ try{ localStorage.setItem(KEY,l); }catch(e){} apply(l); }
+  var s=null; try{ s=localStorage.getItem(KEY); }catch(e){}
+  apply(s==='id'?'id':'en');
+  var btns=document.querySelectorAll('[data-lang-btn]');
+  for(var i=0;i<btns.length;i++) btns[i].addEventListener('click',function(e){ e.preventDefault(); set(this.getAttribute('data-lang-btn')); });
+  window.setLang=set;
+})();
 </script>
 </body>
 </html>
