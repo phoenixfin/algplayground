@@ -4,6 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <link rel="icon" type="image/png" href="logo.png">
+<script>try{var _l=localStorage.getItem('phxLang');if(_l==='id'||_l==='en')document.documentElement.lang=_l;}catch(e){}</script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=Lato:wght@300;400;700&display=swap" rel="stylesheet">
@@ -18,6 +19,7 @@
     --gold: #2F7069; --accent-deep: #8F5620; --gold-dim: #D3E5E2; --card: #FFFDF9; --border: #E4DACB;
   }
   *{ box-sizing: border-box; }
+  html[lang="en"] [data-lang="id"], html[lang="id"] [data-lang="en"]{ display: none !important; }
   body{
     margin:0; background: var(--paper); color: var(--ink);
     font-family: Lato, "Helvetica Neue", Helvetica, Arial, sans-serif; line-height: 1.5;
@@ -32,6 +34,9 @@
   header.top p.eyebrow{ color: var(--accent-deep); }
   .crumbs{ font-size: 12.5px; margin: 14px 0 0; }
   .crumbs a{ color: var(--moss); }
+  .langtog{ display:inline-flex; border:1px solid var(--border); border-radius:20px; overflow:hidden; }
+  .langtog button{ font-family:inherit; font-size:11.5px; letter-spacing:0.06em; padding:4px 11px; border:0; background:#fff; color:var(--ink-soft); cursor:pointer; }
+  .langtog button.on{ background:var(--accent-deep); color:#fff; font-weight:700; }
 
   .tabs{ display: flex; gap: 8px; margin: 0 0 22px; flex-wrap: wrap;  position: sticky; top: 0; z-index: 20; background: var(--paper); padding: 12px 0 10px; border-bottom: 1px solid var(--border); }
   .tab{ padding: 9px 14px; font-size: 13px; font-weight: 600; border: 1px solid var(--ink); border-radius: 3px; background: var(--card); cursor: pointer; }
@@ -134,25 +139,26 @@
 <nav style="display:flex;align-items:center;gap:16px;font-family:'SF Mono',SFMono-Regular,Consolas,monospace;font-size:13px;margin-bottom:24px;flex-wrap:wrap">
 <a href="https://phx.my.id" style="display:inline-flex;align-items:center;gap:9px;text-decoration:none;color:#2D2D2D;font-weight:600"><img src="logo.png" alt="" style="width:30px;height:30px;border-radius:7px;display:block">phx.my.id</a>
 <span style="flex:1;min-width:12px"></span>
-<a href="https://phx.my.id" style="text-decoration:none;color:#6E6259">Home</a>
-<a href="https://research.phx.my.id" style="text-decoration:none;color:#6E6259">Research</a>
-<a href="index.html" style="text-decoration:none;color:#8F5620;font-weight:600">Playgrounds</a>
+<a href="https://phx.my.id" style="text-decoration:none;color:#6E6259"><span data-lang="en">Home</span><span data-lang="id">Beranda</span></a>
+<a href="https://research.phx.my.id" style="text-decoration:none;color:#6E6259"><span data-lang="en">Research</span><span data-lang="id">Riset</span></a>
+<a href="index.html" style="text-decoration:none;color:#8F5620;font-weight:600"><span data-lang="en">Playgrounds</span><span data-lang="id">Playground</span></a>
+<span class="langtog"><button data-lang-btn="en">EN</button><button data-lang-btn="id">ID</button></span>
 </nav>
 
 <header class="top">
-  <p class="eyebrow">Differential equations &amp; physical simulation</p>
-  <h1>How the world changes — and how a computer follows along</h1>
-  <p>Almost every law of physics is written as a <b>differential equation</b>: a rule that ties a quantity to its own rate of change. This playground starts from the very idea of a slope and builds up to chaos and to the equations behind heat and sound — the same equations that scientific machine learning later tries to learn. You only need one idea from calculus: <b>a derivative is a rate of change.</b></p>
-  <p class="crumbs">Part 1 of 2 · once these feel natural, continue to <a href="scientific_ml.html">Scientific machine learning →</a></p>
+  <p class="eyebrow"><span data-lang="en">Differential equations &amp; physical simulation</span><span data-lang="id">Persamaan diferensial &amp; simulasi fisika</span></p>
+  <h1><span data-lang="en">How the world changes — and how a computer follows along</span><span data-lang="id">Bagaimana dunia berubah — dan bagaimana komputer mengikutinya</span></h1>
+  <p data-lang="en">Almost every law of physics is written as a <b>differential equation</b>: a rule that ties a quantity to its own rate of change. This playground starts from the very idea of a slope and builds up to chaos and to the equations behind heat and sound — the same equations that scientific machine learning later tries to learn. You only need one idea from calculus: <b>a derivative is a rate of change.</b></p><p data-lang="id">Hampir setiap hukum fisika ditulis sebagai <b>persamaan diferensial</b>: aturan yang mengikat suatu besaran dengan laju perubahannya sendiri. Playground ini bermula dari ide paling dasar tentang kemiringan lalu naik ke chaos dan ke persamaan di balik panas dan bunyi — persamaan yang sama yang kelak coba dipelajari scientific machine learning. Kamu hanya perlu satu ide dari kalkulus: <b>turunan adalah laju perubahan.</b></p>
+  <p class="crumbs"><span data-lang="en">Part 1 of 2 · once these feel natural, continue to</span><span data-lang="id">Bagian 1 dari 2 · setelah ini terasa alami, lanjut ke</span> <a href="scientific_ml.html">Scientific machine learning →</a></p>
 </header>
 
 <div class="tabs">
-  <button class="tab active" data-tab="sf">1 · What is an ODE?</button>
-  <button class="tab" data-tab="ph">2 · Mechanics</button>
-  <button class="tab" data-tab="lz">3 · Chaos · Lorenz</button>
-  <button class="tab" data-tab="wv">4 · Waves (PDE)</button>
-  <button class="tab" data-tab="df">5 · Diffusion (PDE)</button>
-  <button class="tab" data-tab="map">6 · The zoo</button>
+  <button class="tab active" data-tab="sf"><span data-lang="en">1 · What is an ODE?</span><span data-lang="id">1 · Apa itu ODE?</span></button>
+  <button class="tab" data-tab="ph"><span data-lang="en">2 · Mechanics</span><span data-lang="id">2 · Mekanika</span></button>
+  <button class="tab" data-tab="lz"><span data-lang="en">3 · Chaos · Lorenz</span><span data-lang="id">3 · Chaos · Lorenz</span></button>
+  <button class="tab" data-tab="wv"><span data-lang="en">4 · Waves (PDE)</span><span data-lang="id">4 · Gelombang (PDE)</span></button>
+  <button class="tab" data-tab="df"><span data-lang="en">5 · Diffusion (PDE)</span><span data-lang="id">5 · Difusi (PDE)</span></button>
+  <button class="tab" data-tab="map"><span data-lang="en">6 · The zoo</span><span data-lang="id">6 · Kebun binatangnya</span></button>
 </div>
 
 <!-- ==================== 1 · SLOPE FIELDS ==================== -->
@@ -168,59 +174,65 @@
       <circle cx="14" cy="104" r="4" fill="#A8392A"/>
     </svg>
     <div class="txt">
-      <h3>A differential equation is a rule about slopes</h3>
-      <p>It never hands you the answer. It says: <i>"wherever you are, here is the direction you must move next."</i> Draw that direction as a tiny arrow at every point and you get a <b>slope field</b>. Solving means following the arrows from a starting point — that is the whole idea the rest of the playground builds on.</p>
+      <h3><span data-lang="en">A differential equation is a rule about slopes</span><span data-lang="id">Persamaan diferensial adalah aturan tentang kemiringan</span></h3>
+      <p data-lang="en">It never hands you the answer. It says: <i>"wherever you are, here is the direction you must move next."</i> Draw that direction as a tiny arrow at every point and you get a <b>slope field</b>. Solving means following the arrows from a starting point — that is the whole idea the rest of the playground builds on.</p><p data-lang="id">Ia tak pernah memberimu jawaban. Ia berkata: <i>"di mana pun kamu berada, inilah arah yang harus kamu tempuh berikutnya."</i> Gambar arah itu sebagai panah kecil di setiap titik dan kamu memperoleh <b>slope field</b> (medan kemiringan). Menyelesaikannya berarti mengikuti panah dari sebuah titik awal — itulah keseluruhan ide yang dibangun sisa playground ini.</p>
     </div>
   </div>
 
   <div class="layout">
     <div class="panel">
-      <h2>Physical story</h2>
+      <h2><span data-lang="en">Physical story</span><span data-lang="id">Cerita fisis</span></h2>
       <div class="field"><select id="sfPreset">
-        <option value="cooling">Coffee cooling — Newton's law</option>
-        <option value="growth">Population growth / decay</option>
-        <option value="logistic">Logistic growth — limited food</option>
+        <option value="cooling" data-lang="en">Coffee cooling — Newton's law</option><option value="cooling" data-lang="id">Kopi mendingin — hukum Newton</option>
+        <option value="growth" data-lang="en">Population growth / decay</option><option value="growth" data-lang="id">Pertumbuhan / peluruhan populasi</option>
+        <option value="logistic" data-lang="en">Logistic growth — limited food</option><option value="logistic" data-lang="id">Pertumbuhan logistik — makanan terbatas</option>
       </select></div>
       <div class="field"><label><span id="sfKLab">k — cooling rate</span> <span class="val" id="sfKOut">0.35</span></label><input id="sfK" type="range" min="0.05" max="1.2" step="0.01" value="0.35"></div>
 
-      <h2>Euler's method</h2>
-      <div class="field"><label>Step size h <span class="val" id="sfHOut">0.50</span></label><input id="sfH" type="range" min="0.05" max="2" step="0.05" value="0.5"></div>
+      <h2><span data-lang="en">Euler's method</span><span data-lang="id">Metode Euler</span></h2>
+      <div class="field"><label><span data-lang="en">Step size h</span><span data-lang="id">Ukuran langkah h</span> <span class="val" id="sfHOut">0.50</span></label><input id="sfH" type="range" min="0.05" max="2" step="0.05" value="0.5"></div>
       <div class="row2" style="margin-bottom:8px">
         <button class="btn toggle active" id="sfExact">Exact ✓</button>
-        <button class="btn" id="sfClear">Clear</button>
+        <button class="btn" id="sfClear"><span data-lang="en">Clear</span><span data-lang="id">Bersihkan</span></button>
       </div>
-      <button class="btn primary block" id="sfAnim">▶ Animate last path</button>
-      <p class="hint"><b>Click anywhere on the chart</b> to drop a starting point (an <i>initial condition</i>) and watch Euler's method follow the arrows from there.</p>
+      <button class="btn primary block" id="sfAnim"><span data-lang="en">▶ Animate last path</span><span data-lang="id">▶ Animasikan lintasan terakhir</span></button>
+      <p class="hint" data-lang="en"><b>Click anywhere on the chart</b> to drop a starting point (an <i>initial condition</i>) and watch Euler's method follow the arrows from there.</p><p class="hint" data-lang="id"><b>Klik di mana saja pada grafik</b> untuk menaruh titik awal (sebuah <i>kondisi awal</i>) dan lihat metode Euler mengikuti panah dari situ.</p>
     </div>
 
     <div>
       <div class="stats">
-        <div class="stat" style="flex:2.2"><div class="label">the equation</div><div class="value eqv" id="sfEq">…</div></div>
-        <div class="stat"><div class="label">euler steps</div><div class="value" id="sfSteps">–</div></div>
-        <div class="stat warn"><div class="label">error at end</div><div class="value" id="sfErr">–</div></div>
+        <div class="stat" style="flex:2.2"><div class="label"><span data-lang="en">the equation</span><span data-lang="id">persamaannya</span></div><div class="value eqv" id="sfEq">…</div></div>
+        <div class="stat"><div class="label"><span data-lang="en">euler steps</span><span data-lang="id">langkah euler</span></div><div class="value" id="sfSteps">–</div></div>
+        <div class="stat warn"><div class="label"><span data-lang="en">error at end</span><span data-lang="id">galat di akhir</span></div><div class="value" id="sfErr">–</div></div>
       </div>
 
       <div class="box">
-        <h2>Slope field — the equation drawn as arrows</h2>
+        <h2><span data-lang="en">Slope field — the equation drawn as arrows</span><span data-lang="id">Slope field — persamaan digambar sebagai panah</span></h2>
         <canvas id="sfMain" class="big"></canvas>
         <div class="legend">
-          <span><i class="swatch" style="background:#C17A3E"></i>Euler's method (steps of size h)</span>
-          <span><i class="swatch" style="background:#2D2D2D"></i>exact solution</span>
-          <span><i class="swatch" style="background:#A8392A"></i>current slope</span>
+          <span><i class="swatch" style="background:#C17A3E"></i><span data-lang="en">Euler's method (steps of size h)</span><span data-lang="id">metode Euler (langkah sebesar h)</span></span>
+          <span><i class="swatch" style="background:#2D2D2D"></i><span data-lang="en">exact solution</span><span data-lang="id">solusi eksak</span></span>
+          <span><i class="swatch" style="background:#A8392A"></i><span data-lang="en">current slope</span><span data-lang="id">kemiringan saat ini</span></span>
         </div>
       </div>
 
       <div class="box">
-        <h2>The rule, and the simplest solver</h2>
+        <h2><span data-lang="en">The rule, and the simplest solver</span><span data-lang="id">Aturannya, dan solver paling sederhana</span></h2>
         <div class="eqk" id="sfEqBig"></div>
-        <p><b>Euler's method</b> stands at a point, reads the local slope $f(t,y)$, walks straight in that direction for a small time $h$, and repeats. That single line of code is the ancestor of every physics engine and weather model. Notice what the equation gives you: not the answer, only the <i>rule the answer must obey</i> — remember that when you meet PINNs next door.</p>
+        <p data-lang="en"><b>Euler's method</b> stands at a point, reads the local slope $f(t,y)$, walks straight in that direction for a small time $h$, and repeats. That single line of code is the ancestor of every physics engine and weather model. Notice what the equation gives you: not the answer, only the <i>rule the answer must obey</i> — remember that when you meet PINNs next door.</p><p data-lang="id"><b>Metode Euler</b> berdiri di sebuah titik, membaca kemiringan lokal $f(t,y)$, melangkah lurus ke arah itu selama waktu kecil $h$, lalu mengulang. Satu baris kode itu adalah leluhur setiap physics engine dan model cuaca. Perhatikan apa yang diberikan persamaan: bukan jawabannya, hanya <i>aturan yang harus dipatuhi jawaban</i> — ingat itu saat kamu bertemu PINN di seberang.</p>
       </div>
 
-      <div class="try"><b>Try this</b>
+      <div class="try" data-lang="en"><b>Try this</b>
         <ol>
           <li>Drop a hot coffee at 90&nbsp;°C. Arrows point down steeply — hot things cool fast; near 20&nbsp;°C they flatten out.</li>
           <li>Set <span class="mono">h = 2</span>: Euler's straight jumps visibly miss the curve. Now <span class="mono">h = 0.05</span>: the error nearly vanishes. <b>Smaller steps = more accurate = more work.</b></li>
           <li>Switch to <i>logistic growth</i> and start near $y=0.5$ and near $y=12$. Every history ends at the same place ($y=10$, the food limit). The field decides everyone's fate at once.</li>
+        </ol>
+      </div><div class="try" data-lang="id"><b>Coba ini</b>
+        <ol>
+          <li>Taruh kopi panas di 90&nbsp;°C. Panah menukik tajam ke bawah — benda panas mendingin cepat; dekat 20&nbsp;°C panahnya mendatar.</li>
+          <li>Atur <span class="mono">h = 2</span>: lompatan lurus Euler jelas meleset dari kurva. Kini <span class="mono">h = 0.05</span>: galatnya nyaris lenyap. <b>Langkah lebih kecil = lebih akurat = lebih banyak kerja.</b></li>
+          <li>Ganti ke <i>pertumbuhan logistik</i> dan mulai dekat $y=0.5$ dan dekat $y=12$. Semua riwayat berakhir di tempat yang sama ($y=10$, batas makanan). Medannya menentukan nasib semua orang sekaligus.</li>
         </ol>
       </div>
     </div>
@@ -239,69 +251,75 @@
       <circle cx="176" cy="74" r="10" fill="#A8392A"/>
     </svg>
     <div class="txt">
-      <h3>Newton's F = ma is a differential equation</h3>
-      <p>Acceleration is the <i>second</i> derivative of position, so "force sets acceleration" is a rule about derivatives — and simulating motion means solving it step by step. Feel the two systems every physics course starts with, and discover why serious engines don't use plain Euler.</p>
+      <h3><span data-lang="en">Newton's F = ma is a differential equation</span><span data-lang="id">Hukum Newton F = ma adalah persamaan diferensial</span></h3>
+      <p data-lang="en">Acceleration is the <i>second</i> derivative of position, so "force sets acceleration" is a rule about derivatives — and simulating motion means solving it step by step. Feel the two systems every physics course starts with, and discover why serious engines don't use plain Euler.</p><p data-lang="id">Percepatan adalah turunan <i>kedua</i> dari posisi, jadi "gaya menentukan percepatan" adalah aturan tentang turunan — dan mensimulasikan gerak berarti menyelesaikannya langkah demi langkah. Rasakan dua sistem yang selalu jadi pembuka setiap kuliah fisika, dan temukan kenapa engine serius tak memakai Euler biasa.</p>
     </div>
   </div>
 
   <div class="layout">
     <div class="panel">
-      <h2>System</h2>
+      <h2><span data-lang="en">System</span><span data-lang="id">Sistem</span></h2>
       <div class="btngroup">
-        <button class="btn toggle active" id="phSpring">Spring</button>
-        <button class="btn toggle" id="phPend">Pendulum</button>
+        <button class="btn toggle active" id="phSpring"><span data-lang="en">Spring</span><span data-lang="id">Pegas</span></button>
+        <button class="btn toggle" id="phPend"><span data-lang="en">Pendulum</span><span data-lang="id">Bandul</span></button>
       </div>
       <div id="phSpringCtl">
-        <div class="field"><label>Mass m <span class="val" id="phMOut">1.0</span></label><input id="phM" type="range" min="0.5" max="3" step="0.1" value="1"></div>
-        <div class="field"><label>Stiffness k <span class="val" id="phKOut">8.0</span></label><input id="phK" type="range" min="1" max="25" step="0.5" value="8"></div>
+        <div class="field"><label><span data-lang="en">Mass m</span><span data-lang="id">Massa m</span> <span class="val" id="phMOut">1.0</span></label><input id="phM" type="range" min="0.5" max="3" step="0.1" value="1"></div>
+        <div class="field"><label><span data-lang="en">Stiffness k</span><span data-lang="id">Kekakuan k</span> <span class="val" id="phKOut">8.0</span></label><input id="phK" type="range" min="1" max="25" step="0.5" value="8"></div>
       </div>
       <div id="phPendCtl" style="display:none">
-        <div class="field"><label>Length L <span class="val" id="phLOut">1.0</span></label><input id="phL" type="range" min="0.5" max="2" step="0.05" value="1"></div>
-        <div class="field"><label>Start angle θ₀ <span class="val" id="phThOut">60°</span></label><input id="phTh" type="range" min="5" max="175" step="5" value="60"></div>
+        <div class="field"><label><span data-lang="en">Length L</span><span data-lang="id">Panjang L</span> <span class="val" id="phLOut">1.0</span></label><input id="phL" type="range" min="0.5" max="2" step="0.05" value="1"></div>
+        <div class="field"><label><span data-lang="en">Start angle θ₀</span><span data-lang="id">Sudut awal θ₀</span> <span class="val" id="phThOut">60°</span></label><input id="phTh" type="range" min="5" max="175" step="5" value="60"></div>
       </div>
-      <div class="field"><label>Damping (friction) c <span class="val" id="phCOut">0.20</span></label><input id="phC" type="range" min="0" max="2" step="0.05" value="0.2"></div>
+      <div class="field"><label><span data-lang="en">Damping (friction) c</span><span data-lang="id">Redaman (gesekan) c</span> <span class="val" id="phCOut">0.20</span></label><input id="phC" type="range" min="0" max="2" step="0.05" value="0.2"></div>
 
-      <h2>Numerical solver</h2>
+      <h2><span data-lang="en">Numerical solver</span><span data-lang="id">Solver numerik</span></h2>
       <div class="btngroup">
         <button class="btn toggle" id="phEuler">Euler</button>
         <button class="btn toggle active" id="phRK4">RK4</button>
       </div>
-      <div class="field"><label>Time step dt <span class="val" id="phDtOut">0.020</span></label><input id="phDt" type="range" min="0.002" max="0.09" step="0.002" value="0.02"></div>
+      <div class="field"><label><span data-lang="en">Time step dt</span><span data-lang="id">Langkah waktu dt</span> <span class="val" id="phDtOut">0.020</span></label><input id="phDt" type="range" min="0.002" max="0.09" step="0.002" value="0.02"></div>
 
-      <h2>Playback</h2>
+      <h2><span data-lang="en">Playback</span><span data-lang="id">Pemutaran</span></h2>
       <div class="row2">
         <button class="btn primary" id="phPlay">▶ Play</button>
-        <button class="btn" id="phReset">Reset</button>
+        <button class="btn" id="phReset"><span data-lang="en">Reset</span><span data-lang="id">Atur ulang</span></button>
       </div>
     </div>
 
     <div>
       <div class="stats">
-        <div class="stat" style="flex:2.2"><div class="label">newton's law here</div><div class="value eqv" id="phEq">…</div></div>
-        <div class="stat"><div class="label">sim time</div><div class="value" id="phT">0.0 s</div></div>
-        <div class="stat" id="phDriftBox"><div class="label">energy drift</div><div class="value" id="phDrift">0%</div></div>
+        <div class="stat" style="flex:2.2"><div class="label"><span data-lang="en">newton's law here</span><span data-lang="id">hukum newton di sini</span></div><div class="value eqv" id="phEq">…</div></div>
+        <div class="stat"><div class="label"><span data-lang="en">sim time</span><span data-lang="id">waktu sim</span></div><div class="value" id="phT">0.0 s</div></div>
+        <div class="stat" id="phDriftBox"><div class="label"><span data-lang="en">energy drift</span><span data-lang="id">penyimpangan energi</span></div><div class="value" id="phDrift">0%</div></div>
       </div>
 
       <div class="cols2">
-        <div class="box"><h2>The system, live</h2><canvas id="phAnim" class="anim"></canvas></div>
-        <div class="box"><h2>Phase portrait — position vs velocity</h2><canvas id="phPhase" class="sq"></canvas></div>
+        <div class="box"><h2><span data-lang="en">The system, live</span><span data-lang="id">Sistemnya, langsung</span></h2><canvas id="phAnim" class="anim"></canvas></div>
+        <div class="box"><h2><span data-lang="en">Phase portrait — position vs velocity</span><span data-lang="id">Potret fase — posisi vs kecepatan</span></h2><canvas id="phPhase" class="sq"></canvas></div>
       </div>
-      <div class="box"><h2>Position over time</h2><canvas id="phSeries" class="mid"></canvas></div>
-      <div class="box"><h2>Total energy over time — the honesty meter</h2><canvas id="phEnergy" class="small"></canvas>
-        <div class="legend"><span><i class="swatch" style="background:#A8392A"></i>energy of the simulation</span><span><i class="swatch" style="background:#2F7069"></i>true starting energy</span></div>
+      <div class="box"><h2><span data-lang="en">Position over time</span><span data-lang="id">Posisi terhadap waktu</span></h2><canvas id="phSeries" class="mid"></canvas></div>
+      <div class="box"><h2><span data-lang="en">Total energy over time — the honesty meter</span><span data-lang="id">Energi total terhadap waktu — meteran kejujuran</span></h2><canvas id="phEnergy" class="small"></canvas>
+        <div class="legend"><span><i class="swatch" style="background:#A8392A"></i><span data-lang="en">energy of the simulation</span><span data-lang="id">energi simulasi</span></span><span><i class="swatch" style="background:#2F7069"></i><span data-lang="en">true starting energy</span><span data-lang="id">energi awal sejati</span></span></div>
       </div>
 
       <div class="box">
-        <h2>The trick that makes F = ma solvable</h2>
+        <h2><span data-lang="en">The trick that makes F = ma solvable</span><span data-lang="id">Trik yang membuat F = ma bisa diselesaikan</span></h2>
         <div class="eqk" id="phEqBig"></div>
-        <p>A second derivative is scary, so we split it into two first-order rules — position changes at the rate <i>velocity</i>, and velocity changes at the rate <i>force ÷ mass</i>. Now it is tab 1 twice at once. <b>RK4</b> (Runge–Kutta) probes the slope four times inside each step and blends them, like checking the road ahead before committing to a turn.</p>
+        <p data-lang="en">A second derivative is scary, so we split it into two first-order rules — position changes at the rate <i>velocity</i>, and velocity changes at the rate <i>force ÷ mass</i>. Now it is tab 1 twice at once. <b>RK4</b> (Runge–Kutta) probes the slope four times inside each step and blends them, like checking the road ahead before committing to a turn.</p><p data-lang="id">Turunan kedua itu menakutkan, jadi kita pecah menjadi dua aturan orde-satu — posisi berubah dengan laju <i>kecepatan</i>, dan kecepatan berubah dengan laju <i>gaya ÷ massa</i>. Kini ini tab 1 dua kali sekaligus. <b>RK4</b> (Runge–Kutta) menjajaki kemiringan empat kali dalam tiap langkah lalu memadukannya, seperti mengintip jalan di depan sebelum benar-benar berbelok.</p>
       </div>
 
-      <div class="try"><b>Try this</b>
+      <div class="try" data-lang="en"><b>Try this</b>
         <ol>
           <li>Damping <span class="mono">c = 0</span>, <b>Euler</b>, dt = 0.05, play. With no friction the energy <i>must</i> stay flat — but the chart climbs and the phase portrait spirals <b>outward</b>. Euler quietly invents energy.</li>
           <li>Same settings, switch to <b>RK4</b>: flat energy, closed loop. Same physics, same dt, a smarter solver.</li>
           <li>Pendulum at θ₀ = 170°: it hesitates at the top, then whips around. No tidy formula predicts that shape — which is exactly why we simulate.</li>
+        </ol>
+      </div><div class="try" data-lang="id"><b>Coba ini</b>
+        <ol>
+          <li>Redaman <span class="mono">c = 0</span>, <b>Euler</b>, dt = 0.05, putar. Tanpa gesekan energi <i>seharusnya</i> tetap datar — tapi grafiknya menanjak dan potret fase memilin ke <b>luar</b>. Euler diam-diam menciptakan energi.</li>
+          <li>Setelan sama, ganti ke <b>RK4</b>: energi datar, lintasan tertutup. Fisika sama, dt sama, solver lebih pintar.</li>
+          <li>Bandul di θ₀ = 170°: ia ragu di puncak, lalu berputar kencang. Tak ada rumus rapi yang meramalkan bentuk itu — justru itulah kenapa kita simulasikan.</li>
         </ol>
       </div>
     </div>
@@ -316,72 +334,78 @@
       <circle cx="40" cy="80" r="3" fill="#A8392A"/>
     </svg>
     <div class="txt">
-      <h3>Deterministic, yet unpredictable</h3>
-      <p>The Lorenz system is three simple ODEs with no randomness at all. Yet two starts a millionth apart end up in totally different places — the <b>butterfly effect</b>. And the trajectory never repeats or settles: it traces a strange, winged shape called an <b>attractor</b>. This is where "we know the equation exactly" and "we can't predict the future" stop being opposites.</p>
+      <h3><span data-lang="en">Deterministic, yet unpredictable</span><span data-lang="id">Deterministik, tapi tak terramalkan</span></h3>
+      <p data-lang="en">The Lorenz system is three simple ODEs with no randomness at all. Yet two starts a millionth apart end up in totally different places — the <b>butterfly effect</b>. And the trajectory never repeats or settles: it traces a strange, winged shape called an <b>attractor</b>. This is where "we know the equation exactly" and "we can't predict the future" stop being opposites.</p><p data-lang="id">Sistem Lorenz adalah tiga ODE sederhana tanpa keacakan sama sekali. Namun dua awal yang berselisih sepersejuta berakhir di tempat yang sama sekali berbeda — <b>efek kupu-kupu</b>. Dan lintasannya tak pernah berulang atau mengendap: ia menggambar bentuk aneh bersayap yang disebut <b>attractor</b>. Di sinilah "kita tahu persamaannya persis" dan "kita tak bisa meramal masa depan" berhenti jadi dua hal yang bertentangan.</p>
     </div>
   </div>
 
   <div class="layout">
     <div class="panel">
-      <h2>Parameters</h2>
-      <div class="field"><label>σ — Prandtl <span class="val" id="lzSigOut">10.0</span></label><input id="lzSig" type="range" min="1" max="20" step="0.5" value="10"></div>
-      <div class="field"><label>ρ — Rayleigh <span class="val" id="lzRhoOut">28.0</span></label><input id="lzRho" type="range" min="1" max="60" step="0.5" value="28"></div>
+      <h2><span data-lang="en">Parameters</span><span data-lang="id">Parameter</span></h2>
+      <div class="field"><label><span data-lang="en">σ — Prandtl</span><span data-lang="id">σ — Prandtl</span> <span class="val" id="lzSigOut">10.0</span></label><input id="lzSig" type="range" min="1" max="20" step="0.5" value="10"></div>
+      <div class="field"><label><span data-lang="en">ρ — Rayleigh</span><span data-lang="id">ρ — Rayleigh</span> <span class="val" id="lzRhoOut">28.0</span></label><input id="lzRho" type="range" min="1" max="60" step="0.5" value="28"></div>
       <div class="field"><label>β <span class="val" id="lzBetaOut">2.67</span></label><input id="lzBeta" type="range" min="0.5" max="5" step="0.05" value="2.67"></div>
-      <div class="field"><label>Time step dt <span class="val" id="lzDtOut">0.008</span></label><input id="lzDt" type="range" min="0.002" max="0.02" step="0.001" value="0.008"></div>
+      <div class="field"><label><span data-lang="en">Time step dt</span><span data-lang="id">Langkah waktu dt</span> <span class="val" id="lzDtOut">0.008</span></label><input id="lzDt" type="range" min="0.002" max="0.02" step="0.001" value="0.008"></div>
 
-      <h2>The butterfly test</h2>
+      <h2><span data-lang="en">The butterfly test</span><span data-lang="id">Uji kupu-kupu</span></h2>
       <button class="btn toggle block active" id="lzTwin">Two nearby starts: ON</button>
-      <div class="field" style="margin-top:12px"><label>Gap between the twins <span class="val" id="lzGapOut">10⁻⁵</span></label><input id="lzGap" type="range" min="-9" max="-1" step="0.5" value="-5"></div>
-      <p class="hint">Twin B starts this far from twin A. Shrinking the gap 1000× buys only a little extra forecast time — that is the whole tragedy of chaos.</p>
+      <div class="field" style="margin-top:12px"><label><span data-lang="en">Gap between the twins</span><span data-lang="id">Selisih antar-kembar</span> <span class="val" id="lzGapOut">10⁻⁵</span></label><input id="lzGap" type="range" min="-9" max="-1" step="0.5" value="-5"></div>
+      <p class="hint" data-lang="en">Twin B starts this far from twin A. Shrinking the gap 1000× buys only a little extra forecast time — that is the whole tragedy of chaos.</p><p class="hint" data-lang="id">Kembar B mulai sejauh ini dari kembar A. Memperkecil selisih 1000× hanya menambah sedikit waktu ramalan — itulah tragedi chaos sepenuhnya.</p>
 
-      <h2>Playback</h2>
+      <h2><span data-lang="en">Playback</span><span data-lang="id">Pemutaran</span></h2>
       <div class="row2">
         <button class="btn primary" id="lzPlay">▶ Play</button>
-        <button class="btn" id="lzReset">Reset</button>
+        <button class="btn" id="lzReset"><span data-lang="en">Reset</span><span data-lang="id">Atur ulang</span></button>
       </div>
     </div>
 
     <div>
       <div class="stats">
-        <div class="stat" style="flex:2.6"><div class="label">the lorenz system</div><div class="value eqv" id="lzEq">…</div></div>
-        <div class="stat"><div class="label">sim time</div><div class="value" id="lzT">0.0</div></div>
-        <div class="stat warn"><div class="label">twin separation</div><div class="value" id="lzSep">–</div></div>
-        <div class="stat" id="lzHorBox"><div class="label">forecast horizon</div><div class="value" id="lzHor">–</div></div>
+        <div class="stat" style="flex:2.6"><div class="label"><span data-lang="en">the lorenz system</span><span data-lang="id">sistem lorenz</span></div><div class="value eqv" id="lzEq">…</div></div>
+        <div class="stat"><div class="label"><span data-lang="en">sim time</span><span data-lang="id">waktu sim</span></div><div class="value" id="lzT">0.0</div></div>
+        <div class="stat warn"><div class="label"><span data-lang="en">twin separation</span><span data-lang="id">jarak kembar</span></div><div class="value" id="lzSep">–</div></div>
+        <div class="stat" id="lzHorBox"><div class="label"><span data-lang="en">forecast horizon</span><span data-lang="id">horizon ramalan</span></div><div class="value" id="lzHor">–</div></div>
       </div>
 
       <div class="box">
-        <h2>The attractor — the x–z plane, trajectory painting itself</h2>
+        <h2><span data-lang="en">The attractor — the x–z plane, trajectory painting itself</span><span data-lang="id">Attractor — bidang x–z, lintasan melukis dirinya</span></h2>
         <canvas id="lzMain" class="big" style="cursor:default"></canvas>
         <div class="legend">
-          <span><i class="swatch" style="background:#C17A3E"></i>trajectory A</span>
-          <span><i class="swatch" style="background:#A8392A"></i>twin B (nearby start)</span>
-          <span><i class="swatch" style="background:#2F7069"></i>current position</span>
+          <span><i class="swatch" style="background:#C17A3E"></i><span data-lang="en">trajectory A</span><span data-lang="id">lintasan A</span></span>
+          <span><i class="swatch" style="background:#A8392A"></i><span data-lang="en">twin B (nearby start)</span><span data-lang="id">kembar B (awal berdekatan)</span></span>
+          <span><i class="swatch" style="background:#2F7069"></i><span data-lang="en">current position</span><span data-lang="id">posisi saat ini</span></span>
         </div>
       </div>
 
       <div class="box">
-        <h2>Distance between the twins (log scale) — the butterfly effect, measured</h2>
+        <h2><span data-lang="en">Distance between the twins (log scale) — the butterfly effect, measured</span><span data-lang="id">Jarak antar-kembar (skala log) — efek kupu-kupu, terukur</span></h2>
         <canvas id="lzSepCv" class="small"></canvas>
-        <p>A straight line on this log plot means the gap grows by a <i>constant factor</i> every second — exponential divergence. Its slope is the <b>Lyapunov exponent</b>; positive slope = chaos. The line flattens only when the twins are as far apart as the attractor is wide (they can't diverge further).</p>
+        <p data-lang="en">A straight line on this log plot means the gap grows by a <i>constant factor</i> every second — exponential divergence. Its slope is the <b>Lyapunov exponent</b>; positive slope = chaos. The line flattens only when the twins are as far apart as the attractor is wide (they can't diverge further).</p><p data-lang="id">Garis lurus pada plot log ini berarti selisih tumbuh dengan <i>faktor konstan</i> tiap detik — divergensi eksponensial. Kemiringannya adalah <b>eksponen Lyapunov</b>; kemiringan positif = chaos. Garisnya mendatar hanya ketika kedua kembar sudah sejauh lebar attractor (tak bisa lebih menyimpang lagi).</p>
       </div>
 
       <div class="box">
-        <h2>The equations</h2>
+        <h2><span data-lang="en">The equations</span><span data-lang="id">Persamaannya</span></h2>
         <div class="eqk" id="lzEqBig"></div>
-        <p>Three variables feeding back on each other — that is all. The nonlinear terms $xz$ and $xy$ are what make it chaotic; drop them and the system becomes a boring damped spiral.</p>
+        <p data-lang="en">Three variables feeding back on each other — that is all. The nonlinear terms $xz$ and $xy$ are what make it chaotic; drop them and the system becomes a boring damped spiral.</p><p data-lang="id">Tiga variabel yang saling mengumpan balik — itu saja. Suku nonlinear $xz$ dan $xy$-lah yang membuatnya chaotic; hilangkan keduanya dan sistem jadi spiral teredam yang membosankan.</p>
       </div>
 
       <div class="box">
-        <h2>What the letters mean — this is a weather toy</h2>
-        <p>Lorenz did not invent these equations for fun: he boiled the physics of <b>air heated from below</b> (a room, the atmosphere, a pot of water) down to three numbers. <b>x</b> = how fast the air is rolling over, <b>y</b> = the temperature gap between the rising and sinking streams, <b>z</b> = how far the vertical temperature profile has bent from a straight line. Warm air rises, cools, sinks, and shoves the roll — that feedback is the $xz$ and $xy$ terms.</p>
-        <p>So the butterfly you see is a stripped-down <b>atmosphere</b>, and the twin experiment is two weather forecasts started from almost-identical measurements. They agree, then abruptly don't — which is exactly why real forecasts fade out after a week or two. <b>Nothing here is random.</b> It is three lines of arithmetic, run forward. Unpredictable and deterministic at the same time.</p>
+        <h2><span data-lang="en">What the letters mean — this is a weather toy</span><span data-lang="id">Apa arti huruf-hurufnya — ini mainan cuaca</span></h2>
+        <p data-lang="en">Lorenz did not invent these equations for fun: he boiled the physics of <b>air heated from below</b> (a room, the atmosphere, a pot of water) down to three numbers. <b>x</b> = how fast the air is rolling over, <b>y</b> = the temperature gap between the rising and sinking streams, <b>z</b> = how far the vertical temperature profile has bent from a straight line. Warm air rises, cools, sinks, and shoves the roll — that feedback is the $xz$ and $xy$ terms.</p><p data-lang="id">Lorenz tak menyusun persamaan ini untuk main-main: ia memampatkan fisika <b>udara yang dipanaskan dari bawah</b> (sebuah ruangan, atmosfer, panci air) menjadi tiga angka. <b>x</b> = seberapa cepat udara berguling, <b>y</b> = selisih suhu antara aliran yang naik dan turun, <b>z</b> = seberapa jauh profil suhu vertikal membengkok dari garis lurus. Udara hangat naik, mendingin, turun, lalu mendorong gulungan — umpan balik itulah suku $xz$ dan $xy$.</p>
+        <p data-lang="en">So the butterfly you see is a stripped-down <b>atmosphere</b>, and the twin experiment is two weather forecasts started from almost-identical measurements. They agree, then abruptly don't — which is exactly why real forecasts fade out after a week or two. <b>Nothing here is random.</b> It is three lines of arithmetic, run forward. Unpredictable and deterministic at the same time.</p><p data-lang="id">Jadi kupu-kupu yang kamu lihat adalah <b>atmosfer</b> yang disederhanakan, dan eksperimen kembar itu adalah dua ramalan cuaca yang dimulai dari pengukuran yang nyaris identik. Keduanya sepakat, lalu tiba-tiba tidak — itulah persis kenapa ramalan sungguhan memudar setelah seminggu-dua minggu. <b>Tak ada yang acak di sini.</b> Ini tiga baris aritmetika, dijalankan maju. Tak terramalkan dan deterministik sekaligus.</p>
       </div>
 
-      <div class="try"><b>Try this</b>
+      <div class="try" data-lang="en"><b>Try this</b>
         <ol>
           <li>Play with twins ON. For a while the red and green curves are indistinguishable — then they split and wander onto opposite wings. Nothing changed but rounding at the 5th decimal.</li>
           <li>Turn ρ down to about 14: the two wings collapse into one quiet spiral toward a fixed point. Raise ρ past ~24: the famous butterfly returns. A single knob flips order into chaos.</li>
           <li>Increase dt toward 0.02: the attractor gets ragged. Even a "known" system is only as trustworthy as the step size — same lesson as tab 2.</li>
+        </ol>
+      </div><div class="try" data-lang="id"><b>Coba ini</b>
+        <ol>
+          <li>Putar dengan kembar ON. Sesaat kurva merah dan hijau tak terbedakan — lalu keduanya berpisah dan mengembara ke sayap yang berlawanan. Tak ada yang berubah selain pembulatan di desimal ke-5.</li>
+          <li>Turunkan ρ ke sekitar 14: kedua sayap runtuh jadi satu spiral tenang menuju titik tetap. Naikkan ρ melewati ~24: kupu-kupu terkenal itu kembali. Satu tombol membalik keteraturan jadi chaos.</li>
+          <li>Naikkan dt menuju 0.02: attractor jadi kasar. Bahkan sistem yang "diketahui" hanya sepercaya ukuran langkahnya — pelajaran yang sama seperti tab 2.</li>
         </ol>
       </div>
     </div>
@@ -397,77 +421,84 @@
       <circle cx="6" cy="60" r="3" fill="#2D2D2D"/><circle cx="198" cy="60" r="3" fill="#2D2D2D"/>
     </svg>
     <div class="txt">
-      <h3>The wave equation — a rule at every point in space</h3>
-      <p>So far the unknown depended on time alone. A <b>partial differential equation (PDE)</b> lets it depend on space too: $u(x,t)$, the height of a string at position $x$ and time $t$. The wave equation says each little piece accelerates toward the average of its neighbours — pluck it and the shape travels. Same derivative-rule idea, now spread across a whole line.</p>
+      <h3><span data-lang="en">The wave equation — a rule at every point in space</span><span data-lang="id">Persamaan gelombang — aturan di tiap titik ruang</span></h3>
+      <p data-lang="en">So far the unknown depended on time alone. A <b>partial differential equation (PDE)</b> lets it depend on space too: $u(x,t)$, the height of a string at position $x$ and time $t$. The wave equation says each little piece accelerates toward the average of its neighbours — pluck it and the shape travels. Same derivative-rule idea, now spread across a whole line.</p><p data-lang="id">Sejauh ini yang dicari hanya bergantung pada waktu. Sebuah <b>persamaan diferensial parsial (PDE)</b> membuatnya bergantung pada ruang juga: $u(x,t)$, tinggi senar di posisi $x$ dan waktu $t$. Persamaan gelombang bilang tiap potongan kecil dipercepat menuju rata-rata tetangganya — petik ia dan bentuknya merambat. Ide aturan-turunan yang sama, kini tersebar di sepanjang garis.</p>
     </div>
   </div>
 
   <div class="layout">
     <div class="panel">
-      <h2>Physics</h2>
-      <div class="field"><label>Wave speed c <span class="val" id="wvCOut">1.00</span></label><input id="wvC" type="range" min="0.3" max="2.5" step="0.05" value="1"></div>
-      <div class="field"><label>Damping <span class="val" id="wvDampOut">0.00</span></label><input id="wvDamp" type="range" min="0" max="1.5" step="0.05" value="0"></div>
-      <div class="field"><label>Boundaries</label><select id="wvBC">
-        <option value="fixed">Fixed ends (tied down)</option>
-        <option value="free">Free ends (loose)</option>
+      <h2><span data-lang="en">Physics</span><span data-lang="id">Fisika</span></h2>
+      <div class="field"><label><span data-lang="en">Wave speed c</span><span data-lang="id">Cepat gelombang c</span> <span class="val" id="wvCOut">1.00</span></label><input id="wvC" type="range" min="0.3" max="2.5" step="0.05" value="1"></div>
+      <div class="field"><label><span data-lang="en">Damping</span><span data-lang="id">Redaman</span> <span class="val" id="wvDampOut">0.00</span></label><input id="wvDamp" type="range" min="0" max="1.5" step="0.05" value="0"></div>
+      <div class="field"><label><span data-lang="en">Boundaries</span><span data-lang="id">Batas</span></label><select id="wvBC">
+        <option value="fixed" data-lang="en">Fixed ends (tied down)</option><option value="fixed" data-lang="id">Ujung terikat (terpaku)</option>
+        <option value="free" data-lang="en">Free ends (loose)</option><option value="free" data-lang="id">Ujung bebas (longgar)</option>
       </select></div>
 
-      <h2>Numerics</h2>
-      <div class="field"><label>Grid points N <span class="val" id="wvNOut">120</span></label><input id="wvN" type="range" min="40" max="200" step="10" value="120"></div>
-      <div class="field"><label>Time step dt <span class="val" id="wvDtOut">0.60</span></label><input id="wvDt" type="range" min="0.1" max="1.4" step="0.05" value="0.6"></div>
+      <h2><span data-lang="en">Numerics</span><span data-lang="id">Numerik</span></h2>
+      <div class="field"><label><span data-lang="en">Grid points N</span><span data-lang="id">Titik grid N</span> <span class="val" id="wvNOut">120</span></label><input id="wvN" type="range" min="40" max="200" step="10" value="120"></div>
+      <div class="field"><label><span data-lang="en">Time step dt</span><span data-lang="id">Langkah waktu dt</span> <span class="val" id="wvDtOut">0.60</span></label><input id="wvDt" type="range" min="0.1" max="1.4" step="0.05" value="0.6"></div>
 
-      <h2>Start shape</h2>
+      <h2><span data-lang="en">Start shape</span><span data-lang="id">Bentuk awal</span></h2>
       <div class="row2" style="margin-bottom:8px">
-        <button class="btn" id="wvPluck">Pluck</button>
-        <button class="btn" id="wvTwo">Two pulses</button>
+        <button class="btn" id="wvPluck"><span data-lang="en">Pluck</span><span data-lang="id">Petik</span></button>
+        <button class="btn" id="wvTwo"><span data-lang="en">Two pulses</span><span data-lang="id">Dua pulsa</span></button>
       </div>
-      <p class="hint"><b>Or drag on the string</b> to shape it, then press play.</p>
+      <p class="hint" data-lang="en"><b>Or drag on the string</b> to shape it, then press play.</p><p class="hint" data-lang="id"><b>Atau seret pada senar</b> untuk membentuknya, lalu tekan putar.</p>
 
-      <h2>Driver — shake one end</h2>
+      <h2><span data-lang="en">Driver — shake one end</span><span data-lang="id">Penggerak — goyang satu ujung</span></h2>
       <button class="btn toggle block" id="wvDrive">Wiggle the left end: OFF</button>
-      <div class="field"><label>Drive shape (humps) <span class="val" id="wvModeOut">3.0</span></label><input id="wvMode" type="range" min="0.5" max="6" step="0.1" value="3"></div>
-      <p class="hint">Like pushing a child on a swing: at whole-number humps the whole string locks into a clean <b>standing wave</b> — resonance. Between them it stays choppy.</p>
+      <div class="field"><label><span data-lang="en">Drive shape (humps)</span><span data-lang="id">Bentuk gerak (punuk)</span> <span class="val" id="wvModeOut">3.0</span></label><input id="wvMode" type="range" min="0.5" max="6" step="0.1" value="3"></div>
+      <p class="hint" data-lang="en">Like pushing a child on a swing: at whole-number humps the whole string locks into a clean <b>standing wave</b> — resonance. Between them it stays choppy.</p><p class="hint" data-lang="id">Seperti mendorong anak di ayunan: pada punuk bilangan bulat seluruh senar mengunci jadi <b>gelombang berdiri</b> yang rapi — resonansi. Di antaranya ia tetap kacau.</p>
 
-      <h2>Playback</h2>
+      <h2><span data-lang="en">Playback</span><span data-lang="id">Pemutaran</span></h2>
       <div class="row2">
         <button class="btn primary" id="wvPlay">▶ Play</button>
-        <button class="btn" id="wvReset">Reset</button>
+        <button class="btn" id="wvReset"><span data-lang="en">Reset</span><span data-lang="id">Atur ulang</span></button>
       </div>
     </div>
 
     <div>
       <div class="stats">
-        <div class="stat" style="flex:2.4"><div class="label">wave equation</div><div class="value eqv" id="wvEq">…</div></div>
-        <div class="stat" id="wvCflBox"><div class="label">CFL number</div><div class="value" id="wvCfl">–</div></div>
+        <div class="stat" style="flex:2.4"><div class="label"><span data-lang="en">wave equation</span><span data-lang="id">persamaan gelombang</span></div><div class="value eqv" id="wvEq">…</div></div>
+        <div class="stat" id="wvCflBox"><div class="label"><span data-lang="en">CFL number</span><span data-lang="id">bilangan CFL</span></div><div class="value" id="wvCfl">–</div></div>
       </div>
 
       <div class="box">
-        <h2>The string, live</h2>
+        <h2><span data-lang="en">The string, live</span><span data-lang="id">Senarnya, langsung</span></h2>
         <canvas id="wvMain" class="mid" style="cursor:crosshair"></canvas>
         <div class="legend">
-          <span><i class="swatch" style="background:#C17A3E"></i>the string u(x)</span>
-          <span><i class="swatch" style="background:#2F7069"></i>markers that ride it — notice they only move <b>up and down</b>, never sideways</span>
+          <span><i class="swatch" style="background:#C17A3E"></i><span data-lang="en">the string u(x)</span><span data-lang="id">senar u(x)</span></span>
+          <span><i class="swatch" style="background:#2F7069"></i><span data-lang="en">markers that ride it — notice they only move <b>up and down</b>, never sideways</span><span data-lang="id">penanda yang menumpanginya — perhatikan mereka hanya bergerak <b>naik-turun</b>, tak pernah menyamping</span></span>
         </div>
-        <p style="font-size:12.5px;color:var(--ink-soft);margin:8px 0 0">The <i>shape</i> races along the string, but no bit of string travels — each point just bobs in place. That is the deep surprise of a wave: motion of a <b>pattern</b>, not of stuff. And all of it is the one equation below, applied at every point.</p>
+        <p data-lang="en" style="font-size:12.5px;color:var(--ink-soft);margin:8px 0 0">The <i>shape</i> races along the string, but no bit of string travels — each point just bobs in place. That is the deep surprise of a wave: motion of a <b>pattern</b>, not of stuff. And all of it is the one equation below, applied at every point.</p><p data-lang="id" style="font-size:12.5px;color:var(--ink-soft);margin:8px 0 0"><i>Bentuknya</i> melesat di sepanjang senar, tapi tak ada bagian senar yang berpindah — tiap titik hanya mengangguk di tempat. Itulah kejutan mendalam sebuah gelombang: gerak sebuah <b>pola</b>, bukan gerak materi. Dan semuanya adalah satu persamaan di bawah, diterapkan di tiap titik.</p>
       </div>
       <div class="box">
-        <h2>Space–time diagram — position across, time downward</h2>
+        <h2><span data-lang="en">Space–time diagram — position across, time downward</span><span data-lang="id">Diagram ruang–waktu — posisi mendatar, waktu ke bawah</span></h2>
         <canvas id="wvHeat" class="heat"></canvas>
-        <p>Each row is one snapshot of the string; time runs downward. Travelling waves show up as <b>diagonal stripes</b> (a bump moving), reflecting off the walls. This "X" pattern is the signature of the wave equation.</p>
+        <p data-lang="en">Each row is one snapshot of the string; time runs downward. Travelling waves show up as <b>diagonal stripes</b> (a bump moving), reflecting off the walls. This "X" pattern is the signature of the wave equation.</p><p data-lang="id">Tiap baris adalah satu potret senar; waktu mengalir ke bawah. Gelombang berjalan muncul sebagai <b>garis-garis diagonal</b> (sebuah punuk yang bergerak), memantul dari dinding. Pola "X" inilah tanda tangan persamaan gelombang.</p>
       </div>
 
       <div class="box">
-        <h2>The equation, and the stability rule</h2>
+        <h2><span data-lang="en">The equation, and the stability rule</span><span data-lang="id">Persamaannya, dan aturan kestabilan</span></h2>
         <div class="eqk" id="wvEqBig"></div>
-        <p>The explicit scheme is only stable when the <b>CFL number</b> $C = c\,\Delta t/\Delta x \le 1$: within one time step, information must not skip past a grid cell. Break it and the numbers explode — not because the physics is wrong, but because the solver outran the wave.</p>
+        <p data-lang="en">The explicit scheme is only stable when the <b>CFL number</b> $C = c\,\Delta t/\Delta x \le 1$: within one time step, information must not skip past a grid cell. Break it and the numbers explode — not because the physics is wrong, but because the solver outran the wave.</p><p data-lang="id">Skema eksplisit hanya stabil ketika <b>bilangan CFL</b> $C = c\,\Delta t/\Delta x \le 1$: dalam satu langkah waktu, informasi tak boleh melompati satu sel grid. Langgar itu dan angkanya meledak — bukan karena fisikanya salah, tapi karena solver-nya mendahului gelombang.</p>
       </div>
 
-      <div class="try"><b>Try this</b>
+      <div class="try" data-lang="en"><b>Try this</b>
         <ol>
           <li>Pluck and play with fixed ends: the bump splits into two halves that race apart, bounce off the walls <b>flipped upside-down</b>, and re-cross. Switch to free ends — now they bounce back <b>upright</b>.</li>
           <li>Push dt up until the CFL badge turns red (C &gt; 1) and play: the string erupts into jagged infinity within a few steps. Nudge dt back below and it's calm again.</li>
           <li>Add damping and watch the space–time stripes fade downward — energy leaking away, exactly like friction in the mechanics tab.</li>
           <li>Turn on the <b>driver</b> and set humps to <b>3</b>: the string settles into three clean stationary loops — a <i>standing wave</i>. Slide humps to 3.5 and it turns choppy; back to 4 and four clean loops appear. Those magic integers are resonances, the same physics as a guitar string or an organ pipe.</li>
+        </ol>
+      </div><div class="try" data-lang="id"><b>Coba ini</b>
+        <ol>
+          <li>Petik dan putar dengan ujung terikat: punuknya membelah jadi dua yang berlari saling menjauh, memantul dari dinding <b>terbalik ke bawah</b>, lalu bersilangan lagi. Ganti ke ujung bebas — kini keduanya memantul <b>tegak</b>.</li>
+          <li>Naikkan dt sampai lencana CFL memerah (C &gt; 1) lalu putar: senar meledak jadi tak hingga bergerigi dalam beberapa langkah. Turunkan dt lagi dan ia kembali tenang.</li>
+          <li>Tambahkan redaman dan lihat garis-garis ruang–waktu memudar ke bawah — energi merembes keluar, persis seperti gesekan di tab mekanika.</li>
+          <li>Nyalakan <b>penggerak</b> dan atur punuk ke <b>3</b>: senar mengendap jadi tiga simpul diam yang rapi — <i>gelombang berdiri</i>. Geser punuk ke 3.5 dan ia jadi kacau; kembali ke 4 dan empat simpul rapi muncul. Bilangan bulat ajaib itu adalah resonansi, fisika yang sama dengan senar gitar atau pipa organ.</li>
         </ol>
       </div>
     </div>
@@ -483,73 +514,80 @@
       <path d="M6 96 C 50 94, 78 72, 100 72 C 122 72, 150 94, 194 96" fill="none" stroke="#C17A3E" stroke-width="2"/>
     </svg>
     <div class="txt">
-      <h3>The heat equation — smoothing, forgetting, spreading</h3>
-      <p>Change one sign from the wave equation (a first time-derivative instead of a second) and the character flips completely. Instead of travelling and bouncing forever, a hot spot <b>spreads out and fades</b>. Heat in a rod, ink in water, a rumour in a crowd — all obey $u_t = \alpha\,u_{xx}$. It is the arrow of time made into an equation.</p>
+      <h3><span data-lang="en">The heat equation — smoothing, forgetting, spreading</span><span data-lang="id">Persamaan panas — menghaluskan, melupakan, menyebar</span></h3>
+      <p data-lang="en">Change one sign from the wave equation (a first time-derivative instead of a second) and the character flips completely. Instead of travelling and bouncing forever, a hot spot <b>spreads out and fades</b>. Heat in a rod, ink in water, a rumour in a crowd — all obey $u_t = \alpha\,u_{xx}$. It is the arrow of time made into an equation.</p><p data-lang="id">Ubah satu tanda dari persamaan gelombang (turunan-waktu pertama, bukan kedua) dan karakternya berbalik total. Alih-alih merambat dan memantul selamanya, sebuah titik panas <b>menyebar dan memudar</b>. Panas di batang, tinta di air, rumor di kerumunan — semua mematuhi $u_t = \alpha\,u_{xx}$. Inilah panah waktu yang dijadikan persamaan.</p>
     </div>
   </div>
 
   <div class="layout">
     <div class="panel">
-      <h2>Physics</h2>
-      <div class="field"><label>Diffusivity α <span class="val" id="dfAOut">1.0</span></label><input id="dfA" type="range" min="0.2" max="3" step="0.1" value="1"></div>
-      <div class="field"><label>Boundaries</label><select id="dfBC">
-        <option value="fixed">Ends held cold (u = 0)</option>
-        <option value="insul">Insulated ends (no leak)</option>
-        <option value="hot">Left end on a stove (u = 1)</option>
+      <h2><span data-lang="en">Physics</span><span data-lang="id">Fisika</span></h2>
+      <div class="field"><label><span data-lang="en">Diffusivity α</span><span data-lang="id">Difusivitas α</span> <span class="val" id="dfAOut">1.0</span></label><input id="dfA" type="range" min="0.2" max="3" step="0.1" value="1"></div>
+      <div class="field"><label><span data-lang="en">Boundaries</span><span data-lang="id">Batas</span></label><select id="dfBC">
+        <option value="fixed" data-lang="en">Ends held cold (u = 0)</option><option value="fixed" data-lang="id">Ujung ditahan dingin (u = 0)</option>
+        <option value="insul" data-lang="en">Insulated ends (no leak)</option><option value="insul" data-lang="id">Ujung terisolasi (tak bocor)</option>
+        <option value="hot" data-lang="en">Left end on a stove (u = 1)</option><option value="hot" data-lang="id">Ujung kiri di atas kompor (u = 1)</option>
       </select></div>
 
-      <h2>Numerics</h2>
-      <div class="field"><label>Grid points N <span class="val" id="dfNOut">80</span></label><input id="dfN" type="range" min="30" max="160" step="10" value="80"></div>
-      <div class="field"><label>Time step dt <span class="val" id="dfDtOut">0.30</span></label><input id="dfDt" type="range" min="0.05" max="0.9" step="0.05" value="0.3"></div>
+      <h2><span data-lang="en">Numerics</span><span data-lang="id">Numerik</span></h2>
+      <div class="field"><label><span data-lang="en">Grid points N</span><span data-lang="id">Titik grid N</span> <span class="val" id="dfNOut">80</span></label><input id="dfN" type="range" min="30" max="160" step="10" value="80"></div>
+      <div class="field"><label><span data-lang="en">Time step dt</span><span data-lang="id">Langkah waktu dt</span> <span class="val" id="dfDtOut">0.30</span></label><input id="dfDt" type="range" min="0.05" max="0.9" step="0.05" value="0.3"></div>
 
-      <h2>Start heat</h2>
+      <h2><span data-lang="en">Start heat</span><span data-lang="id">Panas awal</span></h2>
       <div class="row2" style="margin-bottom:8px">
-        <button class="btn" id="dfSpot">Hot spot</button>
-        <button class="btn" id="dfTwo">Two spots</button>
+        <button class="btn" id="dfSpot"><span data-lang="en">Hot spot</span><span data-lang="id">Titik panas</span></button>
+        <button class="btn" id="dfTwo"><span data-lang="en">Two spots</span><span data-lang="id">Dua titik</span></button>
       </div>
-      <p class="hint"><b>Or drag to paint</b> a temperature profile, then play.</p>
+      <p class="hint" data-lang="en"><b>Or drag to paint</b> a temperature profile, then play.</p><p class="hint" data-lang="id"><b>Atau seret untuk melukis</b> profil suhu, lalu putar.</p>
 
-      <h2>Playback</h2>
+      <h2><span data-lang="en">Playback</span><span data-lang="id">Pemutaran</span></h2>
       <div class="row2">
         <button class="btn primary" id="dfPlay">▶ Play</button>
-        <button class="btn" id="dfReset">Reset</button>
+        <button class="btn" id="dfReset"><span data-lang="en">Reset</span><span data-lang="id">Atur ulang</span></button>
       </div>
     </div>
 
     <div>
       <div class="stats">
-        <div class="stat" style="flex:2.2"><div class="label">heat equation</div><div class="value eqv" id="dfEq">…</div></div>
-        <div class="stat" id="dfStabBox"><div class="label">stability r</div><div class="value" id="dfStab">–</div></div>
-        <div class="stat"><div class="label">avg temperature</div><div class="value" id="dfHeat">–</div></div>
+        <div class="stat" style="flex:2.2"><div class="label"><span data-lang="en">heat equation</span><span data-lang="id">persamaan panas</span></div><div class="value eqv" id="dfEq">…</div></div>
+        <div class="stat" id="dfStabBox"><div class="label"><span data-lang="en">stability r</span><span data-lang="id">kestabilan r</span></div><div class="value" id="dfStab">–</div></div>
+        <div class="stat"><div class="label"><span data-lang="en">avg temperature</span><span data-lang="id">suhu rata-rata</span></div><div class="value" id="dfHeat">–</div></div>
       </div>
 
       <div class="box">
-        <h2>The rod itself — temperature as colour</h2>
+        <h2><span data-lang="en">The rod itself — temperature as colour</span><span data-lang="id">Batangnya sendiri — suhu sebagai warna</span></h2>
         <canvas id="dfRod" style="height:46px;border-radius:3px"></canvas>
-        <p style="font-size:12.5px;color:var(--ink-soft);margin:8px 0 0">This is the physical object: a metal bar, hot spots glowing, cool spots dark. The curve below is the same thing plotted as height. Watch the colours smear together — heat flowing from hot to cold — which is nothing but the equation moving each point toward the average of its neighbours.</p>
+        <p data-lang="en" style="font-size:12.5px;color:var(--ink-soft);margin:8px 0 0">This is the physical object: a metal bar, hot spots glowing, cool spots dark. The curve below is the same thing plotted as height. Watch the colours smear together — heat flowing from hot to cold — which is nothing but the equation moving each point toward the average of its neighbours.</p><p data-lang="id" style="font-size:12.5px;color:var(--ink-soft);margin:8px 0 0">Inilah objek fisiknya: sebatang logam, titik panas berpendar, titik dingin gelap. Kurva di bawah adalah hal yang sama diplot sebagai tinggi. Lihat warnanya melebur — panas mengalir dari panas ke dingin — yang tak lain adalah persamaan menggeser tiap titik menuju rata-rata tetangganya.</p>
       </div>
       <div class="box">
-        <h2>Temperature profile, live</h2>
+        <h2><span data-lang="en">Temperature profile, live</span><span data-lang="id">Profil suhu, langsung</span></h2>
         <canvas id="dfMain" class="mid" style="cursor:crosshair"></canvas>
       </div>
       <div class="box">
-        <h2>Space–time diagram — watch the colours blur</h2>
+        <h2><span data-lang="en">Space–time diagram — watch the colours blur</span><span data-lang="id">Diagram ruang–waktu — lihat warnanya mengabur</span></h2>
         <canvas id="dfHeat2" class="heat"></canvas>
-        <p>No diagonal stripes here — just a warm blob that <b>softens and bleeds outward</b> as time runs down. Diffusion has no memory of the exact starting shape; wave motion never forgets it. Two signs of a derivative, two opposite worlds.</p>
+        <p data-lang="en">No diagonal stripes here — just a warm blob that <b>softens and bleeds outward</b> as time runs down. Diffusion has no memory of the exact starting shape; wave motion never forgets it. Two signs of a derivative, two opposite worlds.</p><p data-lang="id">Tak ada garis diagonal di sini — hanya gumpalan hangat yang <b>melunak dan merembes keluar</b> seiring waktu turun. Difusi tak punya ingatan akan bentuk awal yang persis; gerak gelombang tak pernah melupakannya. Dua tanda sebuah turunan, dua dunia yang berlawanan.</p>
       </div>
 
       <div class="box">
         <h2>The equation, and its stability rule</h2>
         <div class="eqk" id="dfEqBig"></div>
-        <p>The explicit scheme is stable only when $r = \alpha\,\Delta t/\Delta x^2 \le \tfrac{1}{2}$. Because $\Delta x^2$ sits in the denominator, doubling the grid resolution forces a <b>4×</b> smaller time step — the reason fine simulations are so expensive, and a big motivation for the ML surrogates next door.</p>
+        <p data-lang="en">The explicit scheme is stable only when $r = \alpha\,\Delta t/\Delta x^2 \le \tfrac{1}{2}$. Because $\Delta x^2$ sits in the denominator, doubling the grid resolution forces a <b>4×</b> smaller time step — the reason fine simulations are so expensive, and a big motivation for the ML surrogates next door.</p><p data-lang="id">Skema eksplisit stabil hanya ketika $r = \alpha\,\Delta t/\Delta x^2 \le \tfrac{1}{2}$. Karena $\Delta x^2$ ada di penyebut, menggandakan resolusi grid memaksa langkah waktu <b>4×</b> lebih kecil — alasan simulasi halus begitu mahal, dan motivasi besar bagi surrogate ML di seberang.</p>
       </div>
 
-      <div class="try"><b>Try this</b>
+      <div class="try" data-lang="en"><b>Try this</b>
         <ol>
           <li>Hot spot, held-cold ends, play: the peak melts down and drains out the sides — the average temperature falls toward zero.</li>
           <li>Switch to <b>insulated ends</b>: now the average temperature stays <b>constant</b> while the profile flattens to a uniform lukewarm line. Conserved but forgotten.</li>
           <li>Switch to <b>left end on a stove</b>: the rod starts cold, then heat creeps in from the left and settles into a steady <b>straight-line</b> slope from hot to cold — a fridge door left ajar, a soldering iron on a bar. The equation reaches a balance where inflow equals outflow.</li>
           <li>Raise dt until the stability badge turns red ($r &gt; 0.5$): the smooth blob erupts into a jagged sawtooth. Same explicit-scheme trap as the wave, different threshold.</li>
+        </ol>
+      </div><div class="try" data-lang="id"><b>Coba ini</b>
+        <ol>
+          <li>Titik panas, ujung ditahan dingin, putar: puncaknya meleleh dan tiris keluar dari sisi — suhu rata-rata jatuh menuju nol.</li>
+          <li>Ganti ke <b>ujung terisolasi</b>: kini suhu rata-rata tetap <b>konstan</b> sementara profilnya mendatar jadi garis suam-suam seragam. Kekal tapi terlupakan.</li>
+          <li>Ganti ke <b>ujung kiri di atas kompor</b>: batang mulai dingin, lalu panas merayap masuk dari kiri dan mengendap jadi kemiringan <b>garis lurus</b> yang mantap dari panas ke dingin — pintu kulkas dibiarkan terbuka, solder di atas batang. Persamaan mencapai keseimbangan ketika aliran masuk sama dengan aliran keluar.</li>
+          <li>Naikkan dt sampai lencana kestabilan memerah ($r &gt; 0.5$): gumpalan mulus meledak jadi gigi gergaji bergerigi. Jebakan skema-eksplisit yang sama seperti gelombang, ambang berbeda.</li>
         </ol>
       </div>
     </div>
@@ -559,35 +597,35 @@
 <!-- ==================== 6 · ZOO ==================== -->
 <div class="section" id="sec-map">
   <div class="box">
-    <h2>One idea, many equations</h2>
-    <p style="margin-top:2px">Everything in this playground is a <b>rule about derivatives</b>. What changes is how many variables the rule touches, and how the time-derivative appears.</p>
+    <h2><span data-lang="en">One idea, many equations</span><span data-lang="id">Satu ide, banyak persamaan</span></h2>
+    <p data-lang="en" style="margin-top:2px">Everything in this playground is a <b>rule about derivatives</b>. What changes is how many variables the rule touches, and how the time-derivative appears.</p><p data-lang="id" style="margin-top:2px">Semua di playground ini adalah <b>aturan tentang turunan</b>. Yang berubah hanyalah berapa variabel yang disentuh aturan, dan bagaimana turunan-waktu muncul.</p>
     <div style="overflow-x:auto; margin-top:12px">
     <table class="cmp">
-      <tr><th></th><th>Depends on</th><th>Type</th><th>Character</th><th>Seen in</th></tr>
-      <tr><td>Cooling / logistic</td><td>time only</td><td>ODE, 1st order</td><td>settles to an equilibrium</td><td>tab 1</td></tr>
-      <tr><td>Spring / pendulum</td><td>time only</td><td>ODE, 2nd order</td><td>oscillates, conserves energy</td><td>tab 2</td></tr>
-      <tr><td>Lorenz</td><td>time only</td><td>ODE, nonlinear</td><td>chaotic, unpredictable</td><td>tab 3</td></tr>
-      <tr><td>Wave</td><td>space + time</td><td>PDE, hyperbolic</td><td>travels &amp; reflects, remembers</td><td>tab 4</td></tr>
-      <tr><td>Diffusion</td><td>space + time</td><td>PDE, parabolic</td><td>spreads &amp; smooths, forgets</td><td>tab 5</td></tr>
+      <tr><th></th><th><span data-lang="en">Depends on</span><span data-lang="id">Bergantung pada</span></th><th><span data-lang="en">Type</span><span data-lang="id">Jenis</span></th><th><span data-lang="en">Character</span><span data-lang="id">Karakter</span></th><th><span data-lang="en">Seen in</span><span data-lang="id">Terlihat di</span></th></tr>
+      <tr><td><span data-lang="en">Cooling / logistic</span><span data-lang="id">Pendinginan / logistik</span></td><td><span data-lang="en">time only</span><span data-lang="id">waktu saja</span></td><td><span data-lang="en">ODE, 1st order</span><span data-lang="id">ODE, orde 1</span></td><td><span data-lang="en">settles to an equilibrium</span><span data-lang="id">mengendap ke kesetimbangan</span></td><td>tab 1</td></tr>
+      <tr><td><span data-lang="en">Spring / pendulum</span><span data-lang="id">Pegas / bandul</span></td><td><span data-lang="en">time only</span><span data-lang="id">waktu saja</span></td><td><span data-lang="en">ODE, 2nd order</span><span data-lang="id">ODE, orde 2</span></td><td><span data-lang="en">oscillates, conserves energy</span><span data-lang="id">berosilasi, kekal energi</span></td><td>tab 2</td></tr>
+      <tr><td>Lorenz</td><td><span data-lang="en">time only</span><span data-lang="id">waktu saja</span></td><td><span data-lang="en">ODE, nonlinear</span><span data-lang="id">ODE, nonlinear</span></td><td><span data-lang="en">chaotic, unpredictable</span><span data-lang="id">chaotic, tak terramalkan</span></td><td>tab 3</td></tr>
+      <tr><td><span data-lang="en">Wave</span><span data-lang="id">Gelombang</span></td><td><span data-lang="en">space + time</span><span data-lang="id">ruang + waktu</span></td><td><span data-lang="en">PDE, hyperbolic</span><span data-lang="id">PDE, hiperbolik</span></td><td><span data-lang="en">travels &amp; reflects, remembers</span><span data-lang="id">merambat &amp; memantul, mengingat</span></td><td>tab 4</td></tr>
+      <tr><td><span data-lang="en">Diffusion</span><span data-lang="id">Difusi</span></td><td><span data-lang="en">space + time</span><span data-lang="id">ruang + waktu</span></td><td><span data-lang="en">PDE, parabolic</span><span data-lang="id">PDE, parabolik</span></td><td><span data-lang="en">spreads &amp; smooths, forgets</span><span data-lang="id">menyebar &amp; menghaluskan, melupakan</span></td><td>tab 5</td></tr>
     </table>
     </div>
   </div>
 
   <div class="box">
-    <h2>Two lessons that carry into scientific ML</h2>
-    <p><b>1 · A model is only as good as its solver.</b> Euler invented energy; a too-big time step blew up the wave and the heat. Every classical simulation trades accuracy for compute, step by tiny step — and must re-run from scratch for every new setup. That cost is exactly what neural operators try to buy back.</p>
-    <p><b>2 · Knowing the equation is not the same as knowing the answer.</b> Lorenz is fully known and still unpredictable; the wave and heat equations need a whole grid marched through time. Scientific ML asks the mirror-image questions: can a network obey a known equation with almost no data (PINN)? recover an <i>unknown</i> equation from data (SINDy)? or learn the solver itself (DeepONet, FNO)?</p>
-    <p style="margin-top:12px"><b><a href="scientific_ml.html">Continue to Scientific machine learning →</a></b></p>
+    <h2><span data-lang="en">Two lessons that carry into scientific ML</span><span data-lang="id">Dua pelajaran yang terbawa ke scientific ML</span></h2>
+    <p data-lang="en"><b>1 · A model is only as good as its solver.</b> Euler invented energy; a too-big time step blew up the wave and the heat. Every classical simulation trades accuracy for compute, step by tiny step — and must re-run from scratch for every new setup. That cost is exactly what neural operators try to buy back.</p><p data-lang="id"><b>1 · Sebuah model hanya sebaik solver-nya.</b> Euler menciptakan energi; langkah waktu yang terlalu besar meledakkan gelombang dan panas. Setiap simulasi klasik menukar akurasi dengan komputasi, langkah demi langkah kecil — dan harus dijalankan ulang dari nol untuk tiap setelan baru. Ongkos itulah yang coba ditebus kembali oleh neural operator.</p>
+    <p data-lang="en"><b>2 · Knowing the equation is not the same as knowing the answer.</b> Lorenz is fully known and still unpredictable; the wave and heat equations need a whole grid marched through time. Scientific ML asks the mirror-image questions: can a network obey a known equation with almost no data (PINN)? recover an <i>unknown</i> equation from data (SINDy)? or learn the solver itself (DeepONet, FNO)?</p><p data-lang="id"><b>2 · Mengetahui persamaan tak sama dengan mengetahui jawaban.</b> Lorenz sepenuhnya diketahui namun tetap tak terramalkan; persamaan gelombang dan panas butuh seluruh grid dijalankan melintasi waktu. Scientific ML menanyakan pertanyaan cerminannya: bisakah jaringan menaati persamaan yang diketahui dengan nyaris tanpa data (PINN)? memulihkan persamaan yang <i>tak diketahui</i> dari data (SINDy)? atau mempelajari solver-nya sendiri (DeepONet, FNO)?</p>
+    <p style="margin-top:12px"><b><a href="scientific_ml.html"><span data-lang="en">Continue to Scientific machine learning →</span><span data-lang="id">Lanjut ke Scientific machine learning →</span></a></b></p>
   </div>
 
   <div class="box">
-    <h2>Check yourself</h2>
+    <h2><span data-lang="en">Check yourself</span><span data-lang="id">Uji dirimu</span></h2>
     <div id="quizBox"></div>
   </div>
 </div>
 
 <footer>
-  Built for classroom use · every simulation runs live in this page — no server · companion to the <a href="scientific_ml.html">Scientific ML</a> playground and the other AI playgrounds.
+  <span data-lang="en">Built for classroom use · every simulation runs live in this page — no server · companion to the <a href="scientific_ml.html">Scientific ML</a> playground and the other AI playgrounds.</span><span data-lang="id">Dibuat untuk kelas · setiap simulasi berjalan langsung di halaman ini — tanpa server · pendamping playground <a href="scientific_ml.html">Scientific ML</a> dan playground lainnya.</span>
 </footer>
 
 </div>
@@ -598,6 +636,16 @@ const COL = { ink:'#2D2D2D', soft:'#6E6259', moss:'#C17A3E', mossDim:'#F0DCC6', 
               rustDim:'#F3DBD5', gold:'#2F7069', goldDim:'#D3E5E2', border:'#E4DACB', line:'#EDE4D8' };
 function fmt(v,d=2){ if(!isFinite(v)) return '–'; return v.toFixed(d).replace(/-/g,'−'); }
 function lerp(a,b,t){ return Math.round(a+(b-a)*t); }
+function LANG(){ return document.documentElement.lang==='id'?'id':'en'; }
+const TRMAP={
+ 'time (min)':'waktu (mnt)','temp °C':'suhu °C','time':'waktu','population y':'populasi y',
+ 't (s)':'t (dtk)','position x':'posisi x','height u':'tinggi u','temp u':'suhu u','log₁₀ gap':'log₁₀ selisih',
+ '▶ Play':'▶ Putar','⏸ Pause':'⏸ Jeda','Exact ✓':'Eksak ✓','Exact ✗':'Eksak ✗',
+ 'Two nearby starts: ':'Dua awal berdekatan: ','Wiggle the left end: ':'Goyang ujung kiri: ',
+ 'k — cooling rate':'k — laju pendinginan','r — growth rate':'r — laju pertumbuhan',
+ 'holding…':'menahan…','off':'mati'
+};
+function TR(s){ return LANG()==='id' ? (TRMAP[s]||s) : s; }
 
 /* ---- KaTeX ---- */
 let KATEX_READY=false;
@@ -642,8 +690,8 @@ function Plot(cv,x0,x1,y0,y1,opt={}){
     g.fillStyle=COL.soft; g.textAlign='right'; g.fillText((+v.toFixed(6)).toString(), p.l-5, py(v)+3.5);
   }
   g.strokeStyle=COL.border; g.strokeRect(p.l,p.t,W-p.l-p.r,H-p.t-p.b);
-  if(opt.xlab){ g.fillStyle=COL.soft; g.textAlign='right'; g.font='11px Consolas,monospace'; g.fillText(opt.xlab,W-p.r-4,H-p.b-6); }
-  if(opt.ylab){ g.fillStyle=COL.soft; g.textAlign='left'; g.font='11px Consolas,monospace'; g.fillText(opt.ylab,p.l+6,p.t+13); }
+  if(opt.xlab){ g.fillStyle=COL.soft; g.textAlign='right'; g.font='11px Consolas,monospace'; g.fillText(TR(opt.xlab),W-p.r-4,H-p.b-6); }
+  if(opt.ylab){ g.fillStyle=COL.soft; g.textAlign='left'; g.font='11px Consolas,monospace'; g.fillText(TR(opt.ylab),p.l+6,p.t+13); }
   return { g,px,py,x0,x1,y0,y1,p,W,H,
     clip(){ g.save(); g.beginPath(); g.rect(p.l,p.t,W-p.l-p.r,H-p.t-p.b); g.clip(); },
     unclip(){ g.restore(); },
@@ -756,11 +804,11 @@ $('sfMain').addEventListener('click',e=>{ if(!LP) return;
   paths.push({t0:t,y0:y,pts:eulerPath(t,y)}); if(paths.length>4) paths.shift(); anim=null; draw(); });
 $('sfPreset').addEventListener('change',e=>{ cur=e.target.value; const kk=P[cur].k;
   const s=$('sfK'); s.min=kk[0]; s.max=kk[1]; s.step=kk[2]; s.value=kk[3]; k=kk[3];
-  $('sfKLab').textContent=P[cur].klab; $('sfKOut').textContent=fmt(k); paths=[]; anim=null; draw(); });
+  $('sfKLab').textContent=TR(P[cur].klab); $('sfKOut').textContent=fmt(k); paths=[]; anim=null; draw(); });
 $('sfK').addEventListener('input',e=>{ k=+e.target.value; $('sfKOut').textContent=fmt(k); rebuild(); });
 $('sfH').addEventListener('input',e=>{ h=+e.target.value; $('sfHOut').textContent=fmt(h); rebuild(); });
 $('sfExact').addEventListener('click',e=>{ showExact=!showExact; e.target.classList.toggle('active',showExact);
-  e.target.textContent=showExact?'Exact ✓':'Exact ✗'; draw(); });
+  e.target.textContent=TR(showExact?'Exact ✓':'Exact ✗'); draw(); });
 $('sfClear').addEventListener('click',()=>{ paths=[]; anim=null; draw(); });
 $('sfAnim').addEventListener('click',()=>{ if(!paths.length) return; anim={k:0,timer:0}; draw(); });
 TICKS.push(dt=>{ if(ACTIVE!=='sf'||!anim) return; anim.timer+=dt;
@@ -833,7 +881,7 @@ function draw(){ drawAnim();
 }
 TICKS.push(dtR=>{ if(ACTIVE!=='ph') return;
   if(playing){ let n=Math.min(Math.round(dtR/dt)||1,600); for(let i=0;i<n;i++){ stepOnce(); push(); }
-    if(!isFinite(s[0])||Math.abs(s[0])>1e8){ playing=false; $('phPlay').textContent='▶ Play'; reset(); } draw(); }
+    if(!isFinite(s[0])||Math.abs(s[0])>1e8){ playing=false; $('phPlay').textContent=TR('▶ Play'); reset(); } draw(); }
   else if(dirty){ draw(); dirty=false; } });
 function bindRange(id,out,key,fm){ $(id).addEventListener('input',e=>{ prm[key]=+e.target.value; $(out).textContent=fm(prm[key]); reset(); }); }
 bindRange('phM','phMOut','m',v=>fmt(v,1)); bindRange('phK','phKOut','k',v=>fmt(v,1)); bindRange('phC','phCOut','c',v=>fmt(v));
@@ -845,7 +893,7 @@ $('phPend').addEventListener('click',()=>{ sys='pend'; $('phPend').classList.add
 $('phEuler').addEventListener('click',()=>{ solver='euler'; $('phEuler').classList.add('active'); $('phRK4').classList.remove('active'); reset(); });
 $('phRK4').addEventListener('click',()=>{ solver='rk4'; $('phRK4').classList.add('active'); $('phEuler').classList.remove('active'); reset(); });
 $('phDt').addEventListener('input',e=>{ dt=+e.target.value; $('phDtOut').textContent=fmt(dt,3); reset(); });
-$('phPlay').addEventListener('click',()=>{ playing=!playing; $('phPlay').textContent=playing?'⏸ Pause':'▶ Play'; });
+$('phPlay').addEventListener('click',()=>{ playing=!playing; $('phPlay').textContent=playing?TR('⏸ Pause'):TR('▶ Play'); });
 $('phReset').addEventListener('click',()=>{ reset(); });
 REDRAW.ph=()=>{ dirty=true; };
 renderEq($('phEqBig'),'\\ddot{x}=\\frac{F}{m}\\quad\\Longrightarrow\\quad \\dot{x}=v,\\qquad \\dot{v}=\\frac{F}{m}',true);
@@ -883,10 +931,10 @@ function draw(){
   renderEq($('lzEqBig'),eqTex(),true);
   $('lzT').textContent=fmt(t,1);
   if(twin){ const sep=Math.hypot(A[0]-B[0],A[1]-B[1],A[2]-B[2]); $('lzSep').textContent=sep<0.001?sep.toExponential(1).replace(/-/g,'−'):fmt(sep,2); }
-  else $('lzSep').textContent='off';
-  if(!twin) $('lzHor').textContent='off';
+  else $('lzSep').textContent=TR('off');
+  if(!twin) $('lzHor').textContent=TR('off');
   else if(horizon!==null) $('lzHor').textContent='t ≈ '+fmt(horizon,1);
-  else $('lzHor').textContent='holding…';
+  else $('lzHor').textContent=TR('holding…');
   $('lzHorBox').className='stat '+(horizon!==null?'hi':'');
 }
 TICKS.push(dtR=>{ if(ACTIVE!=='lz') return;
@@ -897,7 +945,7 @@ TICKS.push(dtR=>{ if(ACTIVE!=='lz') return;
         if(sepH.length===0 || t-sepH[sepH.length-1][0]>0.03) sepH.push([t,sep]);
         if(horizon===null && sep>HOR_THRESH) horizon=t; }
       if(sepH.length>1200) sepH.shift(); }
-    if(!isFinite(A[0])||Math.abs(A[0])>1e4){ playing=false; $('lzPlay').textContent='▶ Play'; reset(); } draw(); }
+    if(!isFinite(A[0])||Math.abs(A[0])>1e4){ playing=false; $('lzPlay').textContent=TR('▶ Play'); reset(); } draw(); }
   else if(dirty){ draw(); dirty=false; } });
 $('lzSig').addEventListener('input',e=>{ sig=+e.target.value; $('lzSigOut').textContent=fmt(sig,1); reset(); });
 $('lzRho').addEventListener('input',e=>{ rho=+e.target.value; $('lzRhoOut').textContent=fmt(rho,1); reset(); });
@@ -908,8 +956,8 @@ const supNum=n=>String(n).split('').map(c=>_sup[c]||c).join('');
 function gapLabel(){ const exp=Math.floor(Math.log10(gap)+1e-9), mant=gap/Math.pow(10,exp);
   const m=Math.abs(mant-1)<0.06?'':(Math.round(mant)+'×'); return m+'10'+supNum(exp); }
 $('lzGap').addEventListener('input',e=>{ gap=Math.pow(10,+e.target.value); $('lzGapOut').textContent=gapLabel(); reset(); });
-$('lzTwin').addEventListener('click',e=>{ twin=!twin; e.target.classList.toggle('active',twin); e.target.textContent='Two nearby starts: '+(twin?'ON':'OFF'); reset(); });
-$('lzPlay').addEventListener('click',()=>{ playing=!playing; $('lzPlay').textContent=playing?'⏸ Pause':'▶ Play'; });
+$('lzTwin').addEventListener('click',e=>{ twin=!twin; e.target.classList.toggle('active',twin); e.target.textContent=TR('Two nearby starts: ')+(twin?'ON':'OFF'); reset(); });
+$('lzPlay').addEventListener('click',()=>{ playing=!playing; $('lzPlay').textContent=playing?TR('⏸ Pause'):TR('▶ Play'); });
 $('lzReset').addEventListener('click',()=>{ reset(); });
 REDRAW.lz=()=>{ dirty=true; };
 reset();
@@ -945,7 +993,7 @@ function draw(){
 }
 TICKS.push(dtR=>{ if(ACTIVE!=='wv') return;
   if(playing){ for(let i=0;i<3;i++){ step(); } record();
-    if(!isFinite(u[(N/2)|0])||Math.abs(u[(N/2)|0])>1e3){ playing=false; $('wvPlay').textContent='▶ Play'; } draw(); }
+    if(!isFinite(u[(N/2)|0])||Math.abs(u[(N/2)|0])>1e3){ playing=false; $('wvPlay').textContent=TR('▶ Play'); } draw(); }
   else if(dirty){ draw(); dirty=false; } });
 // drag to shape
 let drawing=false; const wvEl=$('wvMain');
@@ -960,14 +1008,14 @@ $('wvC').addEventListener('input',e=>{ c=+e.target.value; $('wvCOut').textConten
 $('wvDamp').addEventListener('input',e=>{ damp=+e.target.value; $('wvDampOut').textContent=fmt(damp); dirty=true; });
 $('wvBC').addEventListener('change',e=>{ bc=e.target.value; dirty=true; });
 $('wvDrive').addEventListener('click',e=>{ drive=!drive; e.target.classList.toggle('active',drive);
-  e.target.textContent='Wiggle the left end: '+(drive?'ON':'OFF'); if(drive) flat(); else pluck(); });
+  e.target.textContent=TR('Wiggle the left end: ')+(drive?'ON':'OFF'); if(drive) flat(); else pluck(); });
 $('wvMode').addEventListener('input',e=>{ mode=+e.target.value; $('wvModeOut').textContent=fmt(mode,1); dirty=true; });
 $('wvN').addEventListener('input',e=>{ N=+e.target.value; $('wvNOut').textContent=N; if(drive) flat(); else pluck(); });
 $('wvDt').addEventListener('input',e=>{ dt=+e.target.value; $('wvDtOut').textContent=fmt(dt); dirty=true; });
 $('wvPluck').addEventListener('click',()=>{ pluck(); });
 $('wvTwo').addEventListener('click',()=>{ twoPulse(); });
-$('wvPlay').addEventListener('click',()=>{ playing=!playing; $('wvPlay').textContent=playing?'⏸ Pause':'▶ Play'; });
-$('wvReset').addEventListener('click',()=>{ if(drive) flat(); else pluck(); playing=false; $('wvPlay').textContent='▶ Play'; });
+$('wvPlay').addEventListener('click',()=>{ playing=!playing; $('wvPlay').textContent=playing?TR('⏸ Pause'):TR('▶ Play'); });
+$('wvReset').addEventListener('click',()=>{ if(drive) flat(); else pluck(); playing=false; $('wvPlay').textContent=TR('▶ Play'); });
 REDRAW.wv=()=>{ dirty=true; };
 renderEq($('wvEqBig'),'\\underbrace{\\frac{\\partial^2 u}{\\partial t^2}}_{\\text{acceleration}} = c^2\\,\\underbrace{\\frac{\\partial^2 u}{\\partial x^2}}_{\\text{curvature}}\\qquad C=\\frac{c\\,\\Delta t}{\\Delta x}\\le 1',true);
 pluck();
@@ -1003,7 +1051,7 @@ function draw(){
 }
 TICKS.push(dtR=>{ if(ACTIVE!=='df') return;
   if(playing){ for(let i=0;i<2;i++){ step(); } record();
-    if(!isFinite(u[(N/2)|0])||Math.abs(u[(N/2)|0])>1e4){ playing=false; $('dfPlay').textContent='▶ Play'; } draw(); }
+    if(!isFinite(u[(N/2)|0])||Math.abs(u[(N/2)|0])>1e4){ playing=false; $('dfPlay').textContent=TR('▶ Play'); } draw(); }
   else if(dirty){ draw(); dirty=false; } });
 let drawing=false; const dfEl=$('dfMain');
 function pen(e){ if(!LP) return null; const r=dfEl.getBoundingClientRect();
@@ -1019,8 +1067,8 @@ $('dfN').addEventListener('input',e=>{ N=+e.target.value; $('dfNOut').textConten
 $('dfDt').addEventListener('input',e=>{ dt=+e.target.value; $('dfDtOut').textContent=fmt(dt); dirty=true; });
 $('dfSpot').addEventListener('click',()=>{ spot(); });
 $('dfTwo').addEventListener('click',()=>{ twoSpot(); });
-$('dfPlay').addEventListener('click',()=>{ playing=!playing; $('dfPlay').textContent=playing?'⏸ Pause':'▶ Play'; });
-$('dfReset').addEventListener('click',()=>{ spot(); playing=false; $('dfPlay').textContent='▶ Play'; });
+$('dfPlay').addEventListener('click',()=>{ playing=!playing; $('dfPlay').textContent=playing?TR('⏸ Pause'):TR('▶ Play'); });
+$('dfReset').addEventListener('click',()=>{ spot(); playing=false; $('dfPlay').textContent=TR('▶ Play'); });
 REDRAW.df=()=>{ dirty=true; };
 renderEq($('dfEqBig'),'\\frac{\\partial u}{\\partial t} = \\alpha\\,\\frac{\\partial^2 u}{\\partial x^2}\\qquad r=\\frac{\\alpha\\,\\Delta t}{\\Delta x^2}\\le \\frac{1}{2}',true);
 spot();
@@ -1028,7 +1076,7 @@ spot();
 
 /* ==================== QUIZ ==================== */
 (() => {
-const QS=[
+const QS_EN=[
   { q:'A differential equation gives you…',
     o:['the answer as a formula','the slope/rate of change at every point — you build the answer by following it','the average value','a random guess'],
     a:1, e:'It is a local rule. Euler and RK4 turn that rule into an actual trajectory, one step at a time.' },
@@ -1048,16 +1096,61 @@ const QS=[
     o:['the physics is wrong','the stability limit r = αΔt/Δx² > 0.5 was crossed','too few colours','the CFL number is fine'],
     a:1, e:'Explicit schemes have a stability ceiling. Cross it and rounding errors amplify each step. Smaller dt (or coarser grid) restores stability.' },
 ];
-const box=$('quizBox');
-QS.forEach((Q,qi)=>{ const d=document.createElement('div'); d.className='q';
-  d.innerHTML=`<div class="qt">${qi+1}. ${Q.q}</div>`;
-  const opts=document.createElement('div'); opts.className='opts';
-  Q.o.forEach((o,oi)=>{ const b=document.createElement('button'); b.className='opt'; b.textContent=o;
-    b.addEventListener('click',()=>{ if(oi===Q.a){ opts.querySelectorAll('.opt').forEach(x=>x.classList.remove('wrong')); b.classList.add('correct'); exp.style.display='block'; } else b.classList.add('wrong'); });
-    opts.appendChild(b); });
-  const exp=document.createElement('div'); exp.className='exp'; exp.textContent=Q.e;
-  d.appendChild(opts); d.appendChild(exp); box.appendChild(d);
-});
+const QS_ID=[
+  { q:'Sebuah persamaan diferensial memberimu…',
+    o:['jawaban dalam bentuk rumus','kemiringan/laju perubahan di tiap titik — kamu menyusun jawabannya dengan mengikutinya','nilai rata-rata','tebakan acak'],
+    a:1, e:'Ia aturan lokal. Euler dan RK4 mengubah aturan itu jadi lintasan nyata, satu langkah demi satu langkah.' },
+  { q:'Kamu mensimulasikan pegas tanpa gesekan dengan Euler biasa. Grafik energinya…',
+    o:['tetap datar','meluruh ke nol','menanjak — solver menciptakan energi','berosilasi acak'],
+    a:2, e:'Euler melangkah di sepanjang garis singgung dan menyimpang keluar dari orbit sejati, menambah energi tiap langkah. RK4 memperbaikinya pada dt yang sama.' },
+  { q:'Dua lintasan Lorenz mulai berselisih 0,00001. Seiring waktu keduanya…',
+    o:['tetap berselisih 0,00001 selamanya','menyimpang eksponensial sampai benar-benar berbeda','selalu menyatu','membuat simulasi macet'],
+    a:1, e:'Divergensi eksponensial itu — eksponen Lyapunov positif — adalah chaos. Sistemnya sepenuhnya deterministik namun tak terramalkan.' },
+  { q:'Apa yang membuat persamaan gelombang jadi PDE, bukan ODE?',
+    o:['ia nonlinear','yang dicari bergantung pada ruang sekaligus waktu, jadi ada turunan parsial','ia tak punya solusi','ia memakai RK4'],
+    a:1, e:'u(x,t) bervariasi dalam ruang dan waktu, jadi aturannya melibatkan ∂/∂x dan ∂/∂t — turunan parsial.' },
+  { q:'Persamaan gelombang mengingat bentuk awalnya; persamaan difusi melupakannya. Perbedaan utamanya…',
+    o:['jumlah titik grid','gelombang punya turunan-waktu ke-2 (berosilasi), difusi ke-1 (mengendur/menghaluskan)','warna batasnya','difusi selalu tak stabil'],
+    a:1, e:'Turunan-waktu kedua → berosilasi, kekal energi, merambat. Turunan-waktu pertama → disipatif, menghaluskan, tak dapat dibalik.' },
+  { q:'Simulasi panas eksplisitmu tiba-tiba meledak jadi gigi gergaji. Penyebab paling mungkin?',
+    o:['fisikanya salah','batas kestabilan r = αΔt/Δx² > 0,5 terlampaui','warnanya terlalu sedikit','bilangan CFL-nya baik-baik saja'],
+    a:1, e:'Skema eksplisit punya langit-langit kestabilan. Lampaui itu dan galat pembulatan menguat tiap langkah. dt lebih kecil (atau grid lebih kasar) memulihkan kestabilan.' },
+];
+function buildQuiz(){
+  const box=$('quizBox'); if(!box) return; box.innerHTML='';
+  const QS = LANG()==='id'?QS_ID:QS_EN;
+  QS.forEach((Q,qi)=>{ const d=document.createElement('div'); d.className='q';
+    d.innerHTML=`<div class="qt">${qi+1}. ${Q.q}</div>`;
+    const opts=document.createElement('div'); opts.className='opts';
+    Q.o.forEach((o,oi)=>{ const b=document.createElement('button'); b.className='opt'; b.textContent=o;
+      b.addEventListener('click',()=>{ if(oi===Q.a){ opts.querySelectorAll('.opt').forEach(x=>x.classList.remove('wrong')); b.classList.add('correct'); exp.style.display='block'; } else b.classList.add('wrong'); });
+      opts.appendChild(b); });
+    const exp=document.createElement('div'); exp.className='exp'; exp.textContent=Q.e;
+    d.appendChild(opts); d.appendChild(exp); box.appendChild(d);
+  });
+}
+window.__buildQuiz=buildQuiz; buildQuiz();
+})();
+/* ---- language switch ---- */
+window.__onLang=function(){
+  try{ if(typeof REDRAW!=='undefined' && REDRAW[ACTIVE]) REDRAW[ACTIVE](); }catch(e){}
+  try{ ['phPlay','lzPlay','wvPlay','dfPlay'].forEach(function(id){ var b=$(id); if(b) b.textContent=/⏸/.test(b.textContent)?TR('⏸ Pause'):TR('▶ Play'); }); }catch(e){}
+  try{ var ex=$('sfExact'); if(ex) ex.textContent=TR(ex.classList.contains('active')?'Exact ✓':'Exact ✗'); }catch(e){}
+  try{ var tw=$('lzTwin'); if(tw) tw.textContent=TR('Two nearby starts: ')+(tw.classList.contains('active')?'ON':'OFF'); }catch(e){}
+  try{ var dr=$('wvDrive'); if(dr) dr.textContent=TR('Wiggle the left end: ')+(dr.classList.contains('active')?'ON':'OFF'); }catch(e){}
+  try{ var pr=$('sfPreset'); if(pr&&$('sfKLab')) $('sfKLab').textContent=TR(pr.value==='cooling'?'k — cooling rate':'r — growth rate'); }catch(e){}
+  try{ if(window.__buildQuiz) window.__buildQuiz(); }catch(e){}
+};
+(function(){ var KEY='phxLang';
+  function apply(l){ document.documentElement.lang=l;
+    var b=document.querySelectorAll('[data-lang-btn]'); for(var i=0;i<b.length;i++) b[i].classList.toggle('on', b[i].getAttribute('data-lang-btn')===l);
+    if(window.__onLang){ try{ window.__onLang(l); }catch(e){} } }
+  function set(l){ try{ localStorage.setItem(KEY,l); }catch(e){} apply(l); }
+  var s=null; try{ s=localStorage.getItem(KEY); }catch(e){}
+  apply(s==='id'?'id':'en');
+  var btns=document.querySelectorAll('[data-lang-btn]');
+  for(var i=0;i<btns.length;i++) btns[i].addEventListener('click',function(e){ e.preventDefault(); set(this.getAttribute('data-lang-btn')); });
+  window.setLang=set;
 })();
 </script>
 </body>
