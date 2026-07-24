@@ -4,6 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <link rel="icon" type="image/png" href="logo.png">
+<script>try{var _l=localStorage.getItem('phxLang');if(_l==='id'||_l==='en')document.documentElement.lang=_l;}catch(e){}</script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=Lato:wght@300;400;700&display=swap" rel="stylesheet">
@@ -15,6 +16,10 @@
     --gold: #2F7069; --accent-deep: #8F5620; --card: #FFFDF9; --border: #E4DACB;
   }
   *{ box-sizing: border-box; }
+  html[lang="en"] [data-lang="id"], html[lang="id"] [data-lang="en"]{ display: none !important; }
+  .langtog{ display:inline-flex; border:1px solid var(--border); border-radius:20px; overflow:hidden; }
+  .langtog button{ font-family:inherit; font-size:11.5px; letter-spacing:0.06em; padding:4px 11px; border:0; background:#fff; color:var(--ink-soft); cursor:pointer; }
+  .langtog button.on{ background:var(--accent-deep); color:#fff; font-weight:700; }
   body{
     margin:0; background: var(--paper); color: var(--ink);
     font-family: Lato, "Helvetica Neue", Helvetica, Arial, sans-serif; line-height: 1.5;
@@ -120,23 +125,24 @@
 <nav style="display:flex;align-items:center;gap:16px;font-family:'SF Mono',SFMono-Regular,Consolas,monospace;font-size:13px;margin-bottom:24px;flex-wrap:wrap">
 <a href="https://phx.my.id" style="display:inline-flex;align-items:center;gap:9px;text-decoration:none;color:#2D2D2D;font-weight:600"><img src="logo.png" alt="" style="width:30px;height:30px;border-radius:7px;display:block">phx.my.id</a>
 <span style="flex:1;min-width:12px"></span>
-<a href="https://phx.my.id" style="text-decoration:none;color:#6E6259">Home</a>
-<a href="https://research.phx.my.id" style="text-decoration:none;color:#6E6259">Research</a>
-<a href="index.html" style="text-decoration:none;color:#8F5620;font-weight:600">Playgrounds</a>
+<a href="https://phx.my.id" style="text-decoration:none;color:#6E6259"><span data-lang="en">Home</span><span data-lang="id">Beranda</span></a>
+<a href="https://research.phx.my.id" style="text-decoration:none;color:#6E6259"><span data-lang="en">Research</span><span data-lang="id">Riset</span></a>
+<a href="index.html" style="text-decoration:none;color:#8F5620;font-weight:600"><span data-lang="en">Playgrounds</span><span data-lang="id">Playground</span></a>
+<span class="langtog"><button data-lang-btn="en">EN</button><button data-lang-btn="id">ID</button></span>
 </nav>
 
 <header class="top">
-  <p class="eyebrow">Evolutionary &amp; swarm algorithms</p>
-  <h1>Five ways a computer can search without knowing the answer</h1>
-  <p>Each tab is a different mechanism — breeding, cooling, swarming, or trail-laying — applied to a concrete problem. Tune the parameters on the left of each and watch the population, particle, walker, or colony behave differently.</p>
+  <p class="eyebrow"><span data-lang="en">Evolutionary &amp; swarm algorithms</span><span data-lang="id">Algoritma evolusioner &amp; swarm</span></p>
+  <h1><span data-lang="en">Five ways a computer can search without knowing the answer</span><span data-lang="id">Lima cara komputer mencari tanpa tahu jawabannya</span></h1>
+  <p data-lang="en">Each tab is a different mechanism — breeding, cooling, swarming, or trail-laying — applied to a concrete problem. Tune the parameters on the left of each and watch the population, particle, walker, or colony behave differently.</p><p data-lang="id">Tiap tab adalah mekanisme berbeda — berkembang biak, mendingin, bergerombol, atau meninggalkan jejak — diterapkan pada masalah konkret. Setel parameter di kiri masing-masing dan lihat populasi, partikel, pengembara, atau koloni berperilaku berbeda.</p>
 </header>
 
 <div class="tabs">
-  <button class="tab active" data-tab="gs">GA · Match a phrase</button>
-  <button class="tab" data-tab="gk">GA · Knapsack</button>
-  <button class="tab" data-tab="pso">Particle Swarm</button>
-  <button class="tab" data-tab="sa">Simulated Annealing</button>
-  <button class="tab" data-tab="aco">Ant Colony · TSP</button>
+  <button class="tab active" data-tab="gs"><span data-lang="en">GA · Match a phrase</span><span data-lang="id">GA · Cocokkan frasa</span></button>
+  <button class="tab" data-tab="gk"><span data-lang="en">GA · Knapsack</span><span data-lang="id">GA · Knapsack</span></button>
+  <button class="tab" data-tab="pso"><span data-lang="en">Particle Swarm</span><span data-lang="id">Particle Swarm</span></button>
+  <button class="tab" data-tab="sa"><span data-lang="en">Simulated Annealing</span><span data-lang="id">Simulated Annealing</span></button>
+  <button class="tab" data-tab="aco"><span data-lang="en">Ant Colony · TSP</span><span data-lang="id">Ant Colony · TSP</span></button>
 </div>
 
 <!-- ============ GA STRING ============ -->
@@ -172,60 +178,60 @@
       </g>
     </svg>
     <div class="txt">
-      <h3>Match a target phrase</h3>
-      <p>A population of random letter-strings breeds and mutates toward a target phrase. Fitness is simply how many letters are already in the right place — no one is "trying" to spell the word, improvement just falls out of selection plus random variation.</p>
+      <h3><span data-lang="en">Match a target phrase</span><span data-lang="id">Cocokkan sebuah frasa target</span></h3>
+      <p data-lang="en">A population of random letter-strings breeds and mutates toward a target phrase. Fitness is simply how many letters are already in the right place — no one is "trying" to spell the word, improvement just falls out of selection plus random variation.</p><p data-lang="id">Populasi string huruf acak berkembang biak dan bermutasi menuju frasa target. Fitness sekadar berapa huruf yang sudah berada di tempat benar — tak ada yang "berusaha" mengeja katanya, perbaikan hanya muncul dari seleksi plus variasi acak.</p>
     </div>
   </div>
 
   <div class="layout">
     <div class="panel">
-      <h2>Setup</h2>
-      <div class="field"><label>Target phrase</label><input id="gsTarget" type="text" value="EVOLVE ME" maxlength="18"></div>
-      <button class="btn block" id="gsApplyTarget">Set target &amp; reset</button>
+      <h2><span data-lang="en">Setup</span><span data-lang="id">Penyiapan</span></h2>
+      <div class="field"><label><span data-lang="en">Target phrase</span><span data-lang="id">Frasa target</span></label><input id="gsTarget" type="text" value="EVOLVE ME" maxlength="18"></div>
+      <button class="btn block" id="gsApplyTarget"><span data-lang="en">Set target &amp; reset</span><span data-lang="id">Set target &amp; atur ulang</span></button>
 
-      <h2>Selection mode</h2>
+      <h2><span data-lang="en">Selection mode</span><span data-lang="id">Mode seleksi</span></h2>
       <div class="btngroup">
-        <button class="btn toggle active" id="gsModeAuto">Automatic</button>
-        <button class="btn toggle" id="gsModeManual">Manual</button>
+        <button class="btn toggle active" id="gsModeAuto"><span data-lang="en">Automatic</span><span data-lang="id">Otomatis</span></button>
+        <button class="btn toggle" id="gsModeManual"><span data-lang="en">Manual</span><span data-lang="id">Manual</span></button>
       </div>
 
-      <h2>Population parameters</h2>
-      <div class="field"><label>Population size <span class="val" id="gsPopSizeOut">10</span></label><input id="gsPopSize" type="range" min="4" max="24" value="10" step="1"></div>
-      <div class="field"><label>Mutation rate <span class="val" id="gsMutOut">5%</span></label><input id="gsMutRate" type="range" min="0" max="50" value="5" step="1"></div>
-      <div class="field"><label>Elitism <span class="val" id="gsEliteOut">1</span></label><input id="gsEliteCount" type="range" min="0" max="5" value="1" step="1"></div>
+      <h2><span data-lang="en">Population parameters</span><span data-lang="id">Parameter populasi</span></h2>
+      <div class="field"><label><span data-lang="en">Population size</span><span data-lang="id">Ukuran populasi</span> <span class="val" id="gsPopSizeOut">10</span></label><input id="gsPopSize" type="range" min="4" max="24" value="10" step="1"></div>
+      <div class="field"><label><span data-lang="en">Mutation rate</span><span data-lang="id">Laju mutasi</span> <span class="val" id="gsMutOut">5%</span></label><input id="gsMutRate" type="range" min="0" max="50" value="5" step="1"></div>
+      <div class="field"><label><span data-lang="en">Elitism</span><span data-lang="id">Elitisme</span> <span class="val" id="gsEliteOut">1</span></label><input id="gsEliteCount" type="range" min="0" max="5" value="1" step="1"></div>
 
-      <h2>Genetic operators</h2>
-      <div class="field"><label>Crossover method</label>
-        <select id="gsCrossType"><option value="single">Single-point</option><option value="two">Two-point</option><option value="uniform">Uniform</option></select>
+      <h2><span data-lang="en">Genetic operators</span><span data-lang="id">Operator genetik</span></h2>
+      <div class="field"><label><span data-lang="en">Crossover method</span><span data-lang="id">Metode crossover</span></label>
+        <select id="gsCrossType"><option value="single" data-lang="en">Single-point</option><option value="single" data-lang="id">Satu-titik</option><option value="two" data-lang="en">Two-point</option><option value="two" data-lang="id">Dua-titik</option><option value="uniform" data-lang="en">Uniform</option><option value="uniform" data-lang="id">Seragam</option></select>
       </div>
-      <div class="field" id="gsAutoOnlyParams"><label>Parent selection</label>
-        <select id="gsSelectType"><option value="top">Top half only</option><option value="tournament">Tournament</option><option value="roulette">Roulette wheel</option></select>
+      <div class="field" id="gsAutoOnlyParams"><label><span data-lang="en">Parent selection</span><span data-lang="id">Seleksi induk</span></label>
+        <select id="gsSelectType"><option value="top" data-lang="en">Top half only</option><option value="top" data-lang="id">Hanya separuh teratas</option><option value="tournament" data-lang="en">Tournament</option><option value="tournament" data-lang="id">Turnamen</option><option value="roulette" data-lang="en">Roulette wheel</option><option value="roulette" data-lang="id">Roda roulette</option></select>
       </div>
-      <div class="field" id="gsTournamentField"><label>Tournament size <span class="val" id="gsTourOut">3</span></label><input id="gsTourSize" type="range" min="2" max="8" value="3" step="1"></div>
+      <div class="field" id="gsTournamentField"><label><span data-lang="en">Tournament size</span><span data-lang="id">Ukuran turnamen</span> <span class="val" id="gsTourOut">3</span></label><input id="gsTourSize" type="range" min="2" max="8" value="3" step="1"></div>
 
-      <h2>Playback</h2>
-      <div class="field" id="gsSpeedField"><label>Speed <span class="val" id="gsSpeedOut">400ms</span></label><input id="gsSpeed" type="range" min="80" max="1000" value="400" step="20"></div>
+      <h2><span data-lang="en">Playback</span><span data-lang="id">Pemutaran</span></h2>
+      <div class="field" id="gsSpeedField"><label><span data-lang="en">Speed</span><span data-lang="id">Kecepatan</span> <span class="val" id="gsSpeedOut">400ms</span></label><input id="gsSpeed" type="range" min="80" max="1000" value="400" step="20"></div>
       <div id="gsAutoControls">
         <div class="row2" style="margin-bottom:8px;">
-          <button class="btn" id="gsStepBtn">Step</button>
+          <button class="btn" id="gsStepBtn"><span data-lang="en">Step</span><span data-lang="id">Langkah</span></button>
           <button class="btn primary" id="gsPlayBtn">Play</button>
         </div>
       </div>
       <div id="gsManualControls" style="display:none;">
-        <button class="btn primary block" id="gsBreedBtn">Breed selected pair</button>
+        <button class="btn primary block" id="gsBreedBtn"><span data-lang="en">Breed selected pair</span><span data-lang="id">Kawinkan pasangan terpilih</span></button>
       </div>
-      <button class="btn block" id="gsResetBtn">Reset population</button>
+      <button class="btn block" id="gsResetBtn"><span data-lang="en">Reset population</span><span data-lang="id">Atur ulang populasi</span></button>
     </div>
 
     <div>
-      <div class="winMsg" id="gsWinMsg">Target reached — this population converged.</div>
+      <div class="winMsg" id="gsWinMsg"><span data-lang="en">Target reached — this population converged.</span><span data-lang="id">Target tercapai — populasi ini konvergen.</span></div>
       <div class="stats">
-        <div class="stat"><div class="label">Generation</div><div class="value" id="gsGenOut">0</div></div>
-        <div class="stat hi"><div class="label">Best fitness</div><div class="value" id="gsFitOut">0/0</div></div>
-        <div class="stat"><div class="label">Average fitness</div><div class="value" id="gsAvgOut">0.0</div></div>
+        <div class="stat"><div class="label"><span data-lang="en">Generation</span><span data-lang="id">Generasi</span></div><div class="value" id="gsGenOut">0</div></div>
+        <div class="stat hi"><div class="label"><span data-lang="en">Best fitness</span><span data-lang="id">Fitness terbaik</span></div><div class="value" id="gsFitOut">0/0</div></div>
+        <div class="stat"><div class="label"><span data-lang="en">Average fitness</span><span data-lang="id">Fitness rata-rata</span></div><div class="value" id="gsAvgOut">0.0</div></div>
       </div>
-      <div class="box"><h2>Fitness over generations</h2><canvas class="chart" id="gsChart"></canvas></div>
-      <div id="gsManualHint">Click two individuals below to select them as parents, then press "Breed selected pair." Their children replace the two weakest individuals.</div>
+      <div class="box"><h2><span data-lang="en">Fitness over generations</span><span data-lang="id">Fitness sepanjang generasi</span></h2><canvas class="chart" id="gsChart"></canvas></div>
+      <div id="gsManualHint"><span data-lang="en">Click two individuals below to select them as parents, then press "Breed selected pair." Their children replace the two weakest individuals.</span><span data-lang="id">Klik dua individu di bawah untuk memilihnya sebagai induk, lalu tekan "Kawinkan pasangan terpilih." Anak mereka menggantikan dua individu terlemah.</span></div>
       <div id="gsPop"></div>
     </div>
   </div>
@@ -247,52 +253,52 @@
       <text x="65" y="102" font-family="SF Mono, monospace" font-size="9" fill="#C17A3E">packed</text>
     </svg>
     <div class="txt">
-      <h3>Pack the most value under a weight limit</h3>
-      <p>Each individual is a bitstring — one bit per item, 1 meaning "pack it." Total weight over capacity scores zero, so the population first has to find valid packings before it can improve them. An exact solver checks how close the GA gets to the true optimum.</p>
+      <h3><span data-lang="en">Pack the most value under a weight limit</span><span data-lang="id">Kemas nilai terbesar di bawah batas berat</span></h3>
+      <p data-lang="en">Each individual is a bitstring — one bit per item, 1 meaning "pack it." Total weight over capacity scores zero, so the population first has to find valid packings before it can improve them. An exact solver checks how close the GA gets to the true optimum.</p><p data-lang="id">Tiap individu adalah bitstring — satu bit per barang, 1 berarti "kemas." Berat total melebihi kapasitas bernilai nol, jadi populasi harus menemukan kemasan valid dulu sebelum bisa memperbaikinya. Solver eksak memeriksa seberapa dekat GA ke optimum sejati.</p>
     </div>
   </div>
 
   <div class="layout">
     <div class="panel">
-      <h2>Problem</h2>
-      <div class="field"><label>Number of items <span class="val" id="gkNumItemsOut">12</span></label><input id="gkNumItems" type="range" min="6" max="20" value="12" step="1"></div>
-      <div class="field"><label>Capacity (% of total weight) <span class="val" id="gkCapOut">50%</span></label><input id="gkCapPct" type="range" min="20" max="80" value="50" step="5"></div>
-      <button class="btn block" id="gkNewItems">New random items</button>
+      <h2><span data-lang="en">Problem</span><span data-lang="id">Masalah</span></h2>
+      <div class="field"><label><span data-lang="en">Number of items</span><span data-lang="id">Jumlah barang</span> <span class="val" id="gkNumItemsOut">12</span></label><input id="gkNumItems" type="range" min="6" max="20" value="12" step="1"></div>
+      <div class="field"><label><span data-lang="en">Capacity (% of total weight)</span><span data-lang="id">Kapasitas (% berat total)</span> <span class="val" id="gkCapOut">50%</span></label><input id="gkCapPct" type="range" min="20" max="80" value="50" step="5"></div>
+      <button class="btn block" id="gkNewItems"><span data-lang="en">New random items</span><span data-lang="id">Barang acak baru</span></button>
 
-      <h2>Population</h2>
-      <div class="field"><label>Population size <span class="val" id="gkPopSizeOut">16</span></label><input id="gkPopSize" type="range" min="6" max="40" value="16" step="1"></div>
-      <div class="field"><label>Mutation rate <span class="val" id="gkMutOut">5%</span></label><input id="gkMutRate" type="range" min="0" max="40" value="5" step="1"></div>
-      <div class="field"><label>Elitism <span class="val" id="gkEliteOut">1</span></label><input id="gkEliteCount" type="range" min="0" max="5" value="1" step="1"></div>
+      <h2><span data-lang="en">Population</span><span data-lang="id">Populasi</span></h2>
+      <div class="field"><label><span data-lang="en">Population size</span><span data-lang="id">Ukuran populasi</span> <span class="val" id="gkPopSizeOut">16</span></label><input id="gkPopSize" type="range" min="6" max="40" value="16" step="1"></div>
+      <div class="field"><label><span data-lang="en">Mutation rate</span><span data-lang="id">Laju mutasi</span> <span class="val" id="gkMutOut">5%</span></label><input id="gkMutRate" type="range" min="0" max="40" value="5" step="1"></div>
+      <div class="field"><label><span data-lang="en">Elitism</span><span data-lang="id">Elitisme</span> <span class="val" id="gkEliteOut">1</span></label><input id="gkEliteCount" type="range" min="0" max="5" value="1" step="1"></div>
 
-      <h2>Genetic operators</h2>
-      <div class="field"><label>Crossover method</label>
-        <select id="gkCrossType"><option value="single">Single-point</option><option value="two">Two-point</option><option value="uniform">Uniform</option></select>
+      <h2><span data-lang="en">Genetic operators</span><span data-lang="id">Operator genetik</span></h2>
+      <div class="field"><label><span data-lang="en">Crossover method</span><span data-lang="id">Metode crossover</span></label>
+        <select id="gkCrossType"><option value="single" data-lang="en">Single-point</option><option value="single" data-lang="id">Satu-titik</option><option value="two" data-lang="en">Two-point</option><option value="two" data-lang="id">Dua-titik</option><option value="uniform" data-lang="en">Uniform</option><option value="uniform" data-lang="id">Seragam</option></select>
       </div>
-      <div class="field"><label>Parent selection</label>
-        <select id="gkSelectType"><option value="top">Top half only</option><option value="tournament">Tournament</option><option value="roulette">Roulette wheel</option></select>
+      <div class="field"><label><span data-lang="en">Parent selection</span><span data-lang="id">Seleksi induk</span></label>
+        <select id="gkSelectType"><option value="top" data-lang="en">Top half only</option><option value="top" data-lang="id">Hanya separuh teratas</option><option value="tournament" data-lang="en">Tournament</option><option value="tournament" data-lang="id">Turnamen</option><option value="roulette" data-lang="en">Roulette wheel</option><option value="roulette" data-lang="id">Roda roulette</option></select>
       </div>
-      <div class="field" id="gkTournamentField"><label>Tournament size <span class="val" id="gkTourOut">3</span></label><input id="gkTourSize" type="range" min="2" max="8" value="3" step="1"></div>
+      <div class="field" id="gkTournamentField"><label><span data-lang="en">Tournament size</span><span data-lang="id">Ukuran turnamen</span> <span class="val" id="gkTourOut">3</span></label><input id="gkTourSize" type="range" min="2" max="8" value="3" step="1"></div>
 
-      <h2>Playback</h2>
-      <div class="field"><label>Speed <span class="val" id="gkSpeedOut">300ms</span></label><input id="gkSpeed" type="range" min="60" max="1000" value="300" step="20"></div>
+      <h2><span data-lang="en">Playback</span><span data-lang="id">Pemutaran</span></h2>
+      <div class="field"><label><span data-lang="en">Speed</span><span data-lang="id">Kecepatan</span> <span class="val" id="gkSpeedOut">300ms</span></label><input id="gkSpeed" type="range" min="60" max="1000" value="300" step="20"></div>
       <div class="row2" style="margin-bottom:8px;">
-        <button class="btn" id="gkStepBtn">Step</button>
+        <button class="btn" id="gkStepBtn"><span data-lang="en">Step</span><span data-lang="id">Langkah</span></button>
         <button class="btn primary" id="gkPlayBtn">Play</button>
       </div>
-      <button class="btn block" id="gkResetBtn">Reset population</button>
+      <button class="btn block" id="gkResetBtn"><span data-lang="en">Reset population</span><span data-lang="id">Atur ulang populasi</span></button>
     </div>
 
     <div>
-      <div class="winMsg" id="gkWinMsg">The population found a provably optimal packing.</div>
+      <div class="winMsg" id="gkWinMsg"><span data-lang="en">The population found a provably optimal packing.</span><span data-lang="id">Populasi menemukan kemasan yang terbukti optimal.</span></div>
       <div class="stats">
-        <div class="stat"><div class="label">Generation</div><div class="value" id="gkGenOut">0</div></div>
-        <div class="stat hi"><div class="label">Best value found</div><div class="value" id="gkBestOut">0</div></div>
-        <div class="stat"><div class="label">Optimal (exact)</div><div class="value" id="gkOptOut">–</div></div>
-        <div class="stat warn"><div class="label">Gap to optimal</div><div class="value" id="gkGapOut">–</div></div>
+        <div class="stat"><div class="label"><span data-lang="en">Generation</span><span data-lang="id">Generasi</span></div><div class="value" id="gkGenOut">0</div></div>
+        <div class="stat hi"><div class="label"><span data-lang="en">Best value found</span><span data-lang="id">Nilai terbaik ditemukan</span></div><div class="value" id="gkBestOut">0</div></div>
+        <div class="stat"><div class="label"><span data-lang="en">Optimal (exact)</span><span data-lang="id">Optimal (eksak)</span></div><div class="value" id="gkOptOut">–</div></div>
+        <div class="stat warn"><div class="label"><span data-lang="en">Gap to optimal</span><span data-lang="id">Jarak ke optimal</span></div><div class="value" id="gkGapOut">–</div></div>
       </div>
-      <div class="box"><h2>Items in this problem (weight / value)</h2><div class="items" id="gkItemsDisplay"></div></div>
-      <div class="box"><h2>Best value vs. optimal, over generations</h2><canvas class="chart" id="gkChart"></canvas></div>
-      <div class="box"><h2>Population (green = valid packing, red = over capacity)</h2><div id="gkPop"></div></div>
+      <div class="box"><h2><span data-lang="en">Items in this problem (weight / value)</span><span data-lang="id">Barang di masalah ini (berat / nilai)</span></h2><div class="items" id="gkItemsDisplay"></div></div>
+      <div class="box"><h2><span data-lang="en">Best value vs. optimal, over generations</span><span data-lang="id">Nilai terbaik vs. optimal, sepanjang generasi</span></h2><canvas class="chart" id="gkChart"></canvas></div>
+      <div class="box"><h2><span data-lang="en">Population (green = valid packing, red = over capacity)</span><span data-lang="id">Populasi (hijau = kemasan valid, merah = melebihi kapasitas)</span></h2><div id="gkPop"></div></div>
     </div>
   </div>
 </div>
@@ -313,37 +319,37 @@
       <circle cx="100" cy="60" r="8" fill="#2F7069" stroke="#2D2D2D" stroke-width="1.5"/>
     </svg>
     <div class="txt">
-      <h3>A swarm hunting for the lowest point</h3>
-      <p>Particles fly over a 2D landscape, each pulled toward its own best-ever spot and the swarm's best-ever spot. No individual particle is smart — the pull toward shared information is what makes the group converge.</p>
+      <h3><span data-lang="en">A swarm hunting for the lowest point</span><span data-lang="id">Gerombolan memburu titik terendah</span></h3>
+      <p data-lang="en">Particles fly over a 2D landscape, each pulled toward its own best-ever spot and the swarm's best-ever spot. No individual particle is smart — the pull toward shared information is what makes the group converge.</p><p data-lang="id">Partikel terbang di atas lanskap 2D, masing-masing ditarik ke titik terbaiknya sendiri dan titik terbaik seantero gerombolan. Tak ada partikel yang pintar sendiri — tarikan menuju informasi bersama itulah yang membuat kelompok konvergen.</p>
     </div>
   </div>
 
   <div class="layout">
     <div class="panel">
-      <h2>Landscape</h2>
-      <div class="field"><label>Function to minimize</label>
-        <select id="psoLandscape"><option value="sphere">Single valley (sphere)</option><option value="himmelblau" selected>Four valleys (Himmelblau)</option><option value="rastrigin">Many ripples (Rastrigin)</option></select>
+      <h2><span data-lang="en">Landscape</span><span data-lang="id">Lanskap</span></h2>
+      <div class="field"><label><span data-lang="en">Function to minimize</span><span data-lang="id">Fungsi yang diminimalkan</span></label>
+        <select id="psoLandscape"><option value="sphere" data-lang="en">Single valley (sphere)</option><option value="sphere" data-lang="id">Satu lembah (sphere)</option><option value="himmelblau" selected data-lang="en">Four valleys (Himmelblau)</option><option value="himmelblau" data-lang="id">Empat lembah (Himmelblau)</option><option value="rastrigin" data-lang="en">Many ripples (Rastrigin)</option><option value="rastrigin" data-lang="id">Banyak riak (Rastrigin)</option></select>
       </div>
-      <h2>Swarm parameters</h2>
-      <div class="field"><label>Swarm size <span class="val" id="psoSizeOut">24</span></label><input id="psoSize" type="range" min="4" max="60" value="24" step="1"></div>
-      <div class="field"><label>Inertia (w) <span class="val" id="psoWOut">0.70</span></label><input id="psoW" type="range" min="0" max="120" value="70" step="1"></div>
-      <div class="field"><label>Cognitive pull (c1) <span class="val" id="psoC1Out">1.5</span></label><input id="psoC1" type="range" min="0" max="300" value="150" step="5"></div>
-      <div class="field"><label>Social pull (c2) <span class="val" id="psoC2Out">1.5</span></label><input id="psoC2" type="range" min="0" max="300" value="150" step="5"></div>
-      <div class="field"><label>Max speed <span class="val" id="psoVMaxOut">1.0</span></label><input id="psoVMax" type="range" min="10" max="400" value="100" step="5"></div>
-      <h2>Playback</h2>
-      <div class="field"><label>Speed <span class="val" id="psoSpeedOut">150ms</span></label><input id="psoSpeed" type="range" min="30" max="600" value="150" step="10"></div>
-      <div class="row2" style="margin-bottom:8px;"><button class="btn" id="psoStep">Step</button><button class="btn primary" id="psoPlay">Play</button></div>
-      <button class="btn block" id="psoReset">Reset swarm</button>
+      <h2><span data-lang="en">Swarm parameters</span><span data-lang="id">Parameter gerombolan</span></h2>
+      <div class="field"><label><span data-lang="en">Swarm size</span><span data-lang="id">Ukuran gerombolan</span> <span class="val" id="psoSizeOut">24</span></label><input id="psoSize" type="range" min="4" max="60" value="24" step="1"></div>
+      <div class="field"><label><span data-lang="en">Inertia (w)</span><span data-lang="id">Inersia (w)</span> <span class="val" id="psoWOut">0.70</span></label><input id="psoW" type="range" min="0" max="120" value="70" step="1"></div>
+      <div class="field"><label><span data-lang="en">Cognitive pull (c1)</span><span data-lang="id">Tarikan kognitif (c1)</span> <span class="val" id="psoC1Out">1.5</span></label><input id="psoC1" type="range" min="0" max="300" value="150" step="5"></div>
+      <div class="field"><label><span data-lang="en">Social pull (c2)</span><span data-lang="id">Tarikan sosial (c2)</span> <span class="val" id="psoC2Out">1.5</span></label><input id="psoC2" type="range" min="0" max="300" value="150" step="5"></div>
+      <div class="field"><label><span data-lang="en">Max speed</span><span data-lang="id">Kecepatan maks</span> <span class="val" id="psoVMaxOut">1.0</span></label><input id="psoVMax" type="range" min="10" max="400" value="100" step="5"></div>
+      <h2><span data-lang="en">Playback</span><span data-lang="id">Pemutaran</span></h2>
+      <div class="field"><label><span data-lang="en">Speed</span><span data-lang="id">Kecepatan</span> <span class="val" id="psoSpeedOut">150ms</span></label><input id="psoSpeed" type="range" min="30" max="600" value="150" step="10"></div>
+      <div class="row2" style="margin-bottom:8px;"><button class="btn" id="psoStep"><span data-lang="en">Step</span><span data-lang="id">Langkah</span></button><button class="btn primary" id="psoPlay">Play</button></div>
+      <button class="btn block" id="psoReset"><span data-lang="en">Reset swarm</span><span data-lang="id">Atur ulang gerombolan</span></button>
     </div>
     <div>
       <div class="stats">
-        <div class="stat"><div class="label">Iteration</div><div class="value" id="psoIterOut">0</div></div>
-        <div class="stat hi"><div class="label">Best value found</div><div class="value" id="psoBestOut">–</div></div>
+        <div class="stat"><div class="label"><span data-lang="en">Iteration</span><span data-lang="id">Iterasi</span></div><div class="value" id="psoIterOut">0</div></div>
+        <div class="stat hi"><div class="label"><span data-lang="en">Best value found</span><span data-lang="id">Nilai terbaik ditemukan</span></div><div class="value" id="psoBestOut">–</div></div>
       </div>
-      <div class="box"><h2>Search space</h2><canvas class="main" id="psoCanvas"></canvas>
-        <div class="legend"><span><i class="swatch" style="background:#A8392A"></i>particle</span><span><i class="swatch" style="background:#2F7069"></i>swarm best</span></div>
+      <div class="box"><h2><span data-lang="en">Search space</span><span data-lang="id">Ruang pencarian</span></h2><canvas class="main" id="psoCanvas"></canvas>
+        <div class="legend"><span><i class="swatch" style="background:#A8392A"></i><span data-lang="en">particle</span><span data-lang="id">partikel</span></span><span><i class="swatch" style="background:#2F7069"></i><span data-lang="en">swarm best</span><span data-lang="id">terbaik gerombolan</span></span></div>
       </div>
-      <div class="box"><h2>Best value vs. iteration</h2><canvas class="chart" id="psoChart"></canvas></div>
+      <div class="box"><h2><span data-lang="en">Best value vs. iteration</span><span data-lang="id">Nilai terbaik vs. iterasi</span></h2><canvas class="chart" id="psoChart"></canvas></div>
     </div>
   </div>
 </div>
@@ -361,37 +367,37 @@
       <text x="150" y="18" font-family="SF Mono, monospace" font-size="8" fill="#6E6259">hot → cool</text>
     </svg>
     <div class="txt">
-      <h3>One wanderer, gradually calming down</h3>
-      <p>A single solution takes random steps. Early on, with a high "temperature," it will accept moves that make things worse, letting it escape bad valleys. As it cools, it only accepts improvements — settling wherever it happens to be.</p>
+      <h3><span data-lang="en">One wanderer, gradually calming down</span><span data-lang="id">Satu pengembara, perlahan menenang</span></h3>
+      <p data-lang="en">A single solution takes random steps. Early on, with a high "temperature," it will accept moves that make things worse, letting it escape bad valleys. As it cools, it only accepts improvements — settling wherever it happens to be.</p><p data-lang="id">Satu solusi mengambil langkah acak. Di awal, dengan "suhu" tinggi, ia mau menerima langkah yang memperburuk keadaan, membuatnya bisa kabur dari lembah buruk. Saat mendingin, ia hanya menerima perbaikan — mengendap di mana pun ia kebetulan berada.</p>
     </div>
   </div>
 
   <div class="layout">
     <div class="panel">
-      <h2>Landscape</h2>
-      <div class="field"><label>Function to minimize</label>
-        <select id="saLandscape"><option value="sphere">Single valley (sphere)</option><option value="himmelblau" selected>Four valleys (Himmelblau)</option><option value="rastrigin">Many ripples (Rastrigin)</option></select>
+      <h2><span data-lang="en">Landscape</span><span data-lang="id">Lanskap</span></h2>
+      <div class="field"><label><span data-lang="en">Function to minimize</span><span data-lang="id">Fungsi yang diminimalkan</span></label>
+        <select id="saLandscape"><option value="sphere" data-lang="en">Single valley (sphere)</option><option value="sphere" data-lang="id">Satu lembah (sphere)</option><option value="himmelblau" selected data-lang="en">Four valleys (Himmelblau)</option><option value="himmelblau" data-lang="id">Empat lembah (Himmelblau)</option><option value="rastrigin" data-lang="en">Many ripples (Rastrigin)</option><option value="rastrigin" data-lang="id">Banyak riak (Rastrigin)</option></select>
       </div>
-      <h2>Annealing schedule</h2>
-      <div class="field"><label>Initial temperature <span class="val" id="saTempOut">50.0</span></label><input id="saTemp" type="range" min="1" max="200" value="50" step="1"></div>
-      <div class="field"><label>Cooling rate <span class="val" id="saCoolOut">0.970</span></label><input id="saCool" type="range" min="850" max="999" value="970" step="1"></div>
-      <div class="field"><label>Step size <span class="val" id="saStepOut">0.8</span></label><input id="saStep" type="range" min="5" max="300" value="80" step="5"></div>
-      <h2>Playback</h2>
-      <div class="field"><label>Speed <span class="val" id="saSpeedOut">100ms</span></label><input id="saSpeed" type="range" min="20" max="500" value="100" step="10"></div>
-      <div class="row2" style="margin-bottom:8px;"><button class="btn" id="saStepBtn">Step</button><button class="btn primary" id="saPlay">Play</button></div>
-      <button class="btn block" id="saReset">Reset walker</button>
+      <h2><span data-lang="en">Annealing schedule</span><span data-lang="id">Jadwal annealing</span></h2>
+      <div class="field"><label><span data-lang="en">Initial temperature</span><span data-lang="id">Suhu awal</span> <span class="val" id="saTempOut">50.0</span></label><input id="saTemp" type="range" min="1" max="200" value="50" step="1"></div>
+      <div class="field"><label><span data-lang="en">Cooling rate</span><span data-lang="id">Laju pendinginan</span> <span class="val" id="saCoolOut">0.970</span></label><input id="saCool" type="range" min="850" max="999" value="970" step="1"></div>
+      <div class="field"><label><span data-lang="en">Step size</span><span data-lang="id">Ukuran langkah</span> <span class="val" id="saStepOut">0.8</span></label><input id="saStep" type="range" min="5" max="300" value="80" step="5"></div>
+      <h2><span data-lang="en">Playback</span><span data-lang="id">Pemutaran</span></h2>
+      <div class="field"><label><span data-lang="en">Speed</span><span data-lang="id">Kecepatan</span> <span class="val" id="saSpeedOut">100ms</span></label><input id="saSpeed" type="range" min="20" max="500" value="100" step="10"></div>
+      <div class="row2" style="margin-bottom:8px;"><button class="btn" id="saStepBtn"><span data-lang="en">Step</span><span data-lang="id">Langkah</span></button><button class="btn primary" id="saPlay">Play</button></div>
+      <button class="btn block" id="saReset"><span data-lang="en">Reset walker</span><span data-lang="id">Atur ulang pengembara</span></button>
     </div>
     <div>
       <div class="stats">
-        <div class="stat"><div class="label">Iteration</div><div class="value" id="saIterOut">0</div></div>
-        <div class="stat"><div class="label">Temperature</div><div class="value" id="saTOut">–</div></div>
-        <div class="stat hi"><div class="label">Best value found</div><div class="value" id="saBestOut">–</div></div>
+        <div class="stat"><div class="label"><span data-lang="en">Iteration</span><span data-lang="id">Iterasi</span></div><div class="value" id="saIterOut">0</div></div>
+        <div class="stat"><div class="label"><span data-lang="en">Temperature</span><span data-lang="id">Suhu</span></div><div class="value" id="saTOut">–</div></div>
+        <div class="stat hi"><div class="label"><span data-lang="en">Best value found</span><span data-lang="id">Nilai terbaik ditemukan</span></div><div class="value" id="saBestOut">–</div></div>
       </div>
-      <div class="box"><h2>Search space</h2><canvas class="main" id="saCanvas"></canvas>
-        <div class="legend"><span><i class="swatch" style="background:#A8392A"></i>current position</span><span><i class="swatch" style="background:#2F7069"></i>best found</span></div>
+      <div class="box"><h2><span data-lang="en">Search space</span><span data-lang="id">Ruang pencarian</span></h2><canvas class="main" id="saCanvas"></canvas>
+        <div class="legend"><span><i class="swatch" style="background:#A8392A"></i><span data-lang="en">current position</span><span data-lang="id">posisi saat ini</span></span><span><i class="swatch" style="background:#2F7069"></i><span data-lang="en">best found</span><span data-lang="id">terbaik ditemukan</span></span></div>
       </div>
-      <div class="box"><h2>Value &amp; temperature vs. iteration</h2><canvas class="chart" id="saChart"></canvas>
-        <div class="legend"><span><i class="swatch" style="background:#A8392A"></i>current value</span><span><i class="swatch" style="background:#C17A3E"></i>best value</span></div>
+      <div class="box"><h2><span data-lang="en">Value &amp; temperature vs. iteration</span><span data-lang="id">Nilai &amp; suhu vs. iterasi</span></h2><canvas class="chart" id="saChart"></canvas>
+        <div class="legend"><span><i class="swatch" style="background:#A8392A"></i><span data-lang="en">current value</span><span data-lang="id">nilai saat ini</span></span><span><i class="swatch" style="background:#C17A3E"></i><span data-lang="en">best value</span><span data-lang="id">nilai terbaik</span></span></div>
       </div>
     </div>
   </div>
@@ -414,47 +420,51 @@
       <ellipse cx="130" cy="35" rx="4" ry="2.5" fill="#A8392A"/>
     </svg>
     <div class="txt">
-      <h3>A colony leaving trails for each other</h3>
-      <p>Ants build tours between cities, preferring paths with more pheromone. Every ant deposits pheromone along its route; trails evaporate over time, so busy, well-used shortcuts get reinforced while rarely-used ones fade.</p>
+      <h3><span data-lang="en">A colony leaving trails for each other</span><span data-lang="id">Koloni meninggalkan jejak untuk sesama</span></h3>
+      <p data-lang="en">Ants build tours between cities, preferring paths with more pheromone. Every ant deposits pheromone along its route; trails evaporate over time, so busy, well-used shortcuts get reinforced while rarely-used ones fade.</p><p data-lang="id">Semut membangun tur antar-kota, lebih memilih jalur dengan feromon lebih banyak. Tiap semut menaruh feromon di sepanjang rutenya; jejak menguap seiring waktu, jadi jalan pintas yang ramai dipakai makin dikuatkan sementara yang jarang dipakai memudar.</p>
     </div>
   </div>
 
   <div class="layout">
     <div class="panel">
-      <h2>Cities</h2>
-      <div class="field"><label>Number of cities <span class="val" id="acoCitiesOut">16</span></label><input id="acoCities" type="range" min="6" max="30" value="16" step="1"></div>
-      <button class="btn block" id="acoNewCities">New random cities</button>
-      <h2>Colony parameters</h2>
-      <div class="field"><label>Number of ants <span class="val" id="acoAntsOut">20</span></label><input id="acoAnts" type="range" min="4" max="60" value="20" step="1"></div>
-      <div class="field"><label>Pheromone weight (α) <span class="val" id="acoAlphaOut">1.0</span></label><input id="acoAlpha" type="range" min="0" max="500" value="100" step="10"></div>
-      <div class="field"><label>Distance weight (β) <span class="val" id="acoBetaOut">3.0</span></label><input id="acoBeta" type="range" min="0" max="800" value="300" step="10"></div>
-      <div class="field"><label>Evaporation rate <span class="val" id="acoEvapOut">0.30</span></label><input id="acoEvap" type="range" min="1" max="90" value="30" step="1"></div>
-      <div class="field"><label>Deposit amount (Q) <span class="val" id="acoQOut">100</span></label><input id="acoQ" type="range" min="10" max="500" value="100" step="10"></div>
-      <h2>Playback</h2>
-      <div class="field"><label>Speed <span class="val" id="acoSpeedOut">200ms</span></label><input id="acoSpeed" type="range" min="30" max="800" value="200" step="10"></div>
-      <div class="row2" style="margin-bottom:8px;"><button class="btn" id="acoStepBtn">Step</button><button class="btn primary" id="acoPlay">Play</button></div>
-      <button class="btn block" id="acoReset">Reset pheromones</button>
+      <h2><span data-lang="en">Cities</span><span data-lang="id">Kota</span></h2>
+      <div class="field"><label><span data-lang="en">Number of cities</span><span data-lang="id">Jumlah kota</span> <span class="val" id="acoCitiesOut">16</span></label><input id="acoCities" type="range" min="6" max="30" value="16" step="1"></div>
+      <button class="btn block" id="acoNewCities"><span data-lang="en">New random cities</span><span data-lang="id">Kota acak baru</span></button>
+      <h2><span data-lang="en">Colony parameters</span><span data-lang="id">Parameter koloni</span></h2>
+      <div class="field"><label><span data-lang="en">Number of ants</span><span data-lang="id">Jumlah semut</span> <span class="val" id="acoAntsOut">20</span></label><input id="acoAnts" type="range" min="4" max="60" value="20" step="1"></div>
+      <div class="field"><label><span data-lang="en">Pheromone weight (α)</span><span data-lang="id">Bobot feromon (α)</span> <span class="val" id="acoAlphaOut">1.0</span></label><input id="acoAlpha" type="range" min="0" max="500" value="100" step="10"></div>
+      <div class="field"><label><span data-lang="en">Distance weight (β)</span><span data-lang="id">Bobot jarak (β)</span> <span class="val" id="acoBetaOut">3.0</span></label><input id="acoBeta" type="range" min="0" max="800" value="300" step="10"></div>
+      <div class="field"><label><span data-lang="en">Evaporation rate</span><span data-lang="id">Laju penguapan</span> <span class="val" id="acoEvapOut">0.30</span></label><input id="acoEvap" type="range" min="1" max="90" value="30" step="1"></div>
+      <div class="field"><label><span data-lang="en">Deposit amount (Q)</span><span data-lang="id">Jumlah deposit (Q)</span> <span class="val" id="acoQOut">100</span></label><input id="acoQ" type="range" min="10" max="500" value="100" step="10"></div>
+      <h2><span data-lang="en">Playback</span><span data-lang="id">Pemutaran</span></h2>
+      <div class="field"><label><span data-lang="en">Speed</span><span data-lang="id">Kecepatan</span> <span class="val" id="acoSpeedOut">200ms</span></label><input id="acoSpeed" type="range" min="30" max="800" value="200" step="10"></div>
+      <div class="row2" style="margin-bottom:8px;"><button class="btn" id="acoStepBtn"><span data-lang="en">Step</span><span data-lang="id">Langkah</span></button><button class="btn primary" id="acoPlay">Play</button></div>
+      <button class="btn block" id="acoReset"><span data-lang="en">Reset pheromones</span><span data-lang="id">Atur ulang feromon</span></button>
     </div>
     <div>
       <div class="stats">
-        <div class="stat"><div class="label">Iteration</div><div class="value" id="acoIterOut">0</div></div>
-        <div class="stat hi"><div class="label">Shortest tour found</div><div class="value" id="acoBestOut">–</div></div>
+        <div class="stat"><div class="label"><span data-lang="en">Iteration</span><span data-lang="id">Iterasi</span></div><div class="value" id="acoIterOut">0</div></div>
+        <div class="stat hi"><div class="label"><span data-lang="en">Shortest tour found</span><span data-lang="id">Tur terpendek ditemukan</span></div><div class="value" id="acoBestOut">–</div></div>
       </div>
-      <div class="box"><h2>Cities &amp; pheromone trails</h2><canvas class="main" id="acoCanvas"></canvas>
-        <div class="legend"><span><i class="swatch" style="background:#2D2D2D"></i>city</span><span><i class="swatch" style="background:#F0DCC6"></i>pheromone trail</span><span><i class="swatch" style="background:#C17A3E"></i>best tour</span></div>
+      <div class="box"><h2><span data-lang="en">Cities &amp; pheromone trails</span><span data-lang="id">Kota &amp; jejak feromon</span></h2><canvas class="main" id="acoCanvas"></canvas>
+        <div class="legend"><span><i class="swatch" style="background:#2D2D2D"></i><span data-lang="en">city</span><span data-lang="id">kota</span></span><span><i class="swatch" style="background:#F0DCC6"></i><span data-lang="en">pheromone trail</span><span data-lang="id">jejak feromon</span></span><span><i class="swatch" style="background:#C17A3E"></i><span data-lang="en">best tour</span><span data-lang="id">tur terbaik</span></span></div>
       </div>
-      <div class="box"><h2>Shortest tour length vs. iteration</h2><canvas class="chart" id="acoChart"></canvas></div>
+      <div class="box"><h2><span data-lang="en">Shortest tour length vs. iteration</span><span data-lang="id">Panjang tur terpendek vs. iterasi</span></h2><canvas class="chart" id="acoChart"></canvas></div>
     </div>
   </div>
 </div>
 
-<footer>Every parameter updates the next step live. Switching tabs pauses whichever simulation you're leaving; each keeps its own state so you can come back to it.</footer>
+<footer><span data-lang="en">Every parameter updates the next step live. Switching tabs pauses whichever simulation you're leaving; each keeps its own state so you can come back to it.</span><span data-lang="id">Setiap parameter memperbarui langkah berikutnya secara langsung. Berpindah tab menjeda simulasi yang kamu tinggalkan; masing-masing menyimpan keadaannya sendiri agar bisa kamu kunjungi lagi.</span></footer>
 
 </div>
 
 <script>
 (function(){
   const $ = id => document.getElementById(id);
+  function LANG(){ return document.documentElement.lang==='id'?'id':'en'; }
+  const TRMAP={ 'Play':'Putar','Pause':'Jeda' };
+  function TR(s){ return LANG()==='id'?(TRMAP[s]||s):s; }
+  window.__onLang=function(){ try{ ['gsPlayBtn','gkPlayBtn','psoPlay','saPlay','acoPlay'].forEach(function(id){ var b=document.getElementById(id); if(!b)return; b.textContent=/Pause|Jeda/.test(b.textContent)?TR('Pause'):TR('Play'); }); }catch(e){} };
 
   // ---------- shared canvas / chart helpers ----------
   function sizeCanvas(canvas){
@@ -569,7 +579,7 @@
     gs.history.push({gen:gs.generation, best:Math.max(...gs.population.map(gsFitness)), avg:gsAvgFitness()});
     gsRender();
   }
-  function gsStopPlay(){ gs.playing=false; $('gsPlayBtn').textContent='Play'; if(gs.timer) clearInterval(gs.timer); gs.timer=null; }
+  function gsStopPlay(){ gs.playing=false; $('gsPlayBtn').textContent=TR('Play'); if(gs.timer) clearInterval(gs.timer); gs.timer=null; }
   function gsRender(){
     $('gsGenOut').textContent = gs.generation;
     const best = Math.max(...gs.population.map(gsFitness));
@@ -612,7 +622,7 @@
   $('gsStepBtn').addEventListener('click', gsStepAuto);
   $('gsPlayBtn').addEventListener('click', ()=>{
     if(gs.playing){ gsStopPlay(); return; }
-    gs.playing=true; $('gsPlayBtn').textContent='Pause';
+    gs.playing=true; $('gsPlayBtn').textContent=TR('Pause');
     gs.timer = setInterval(gsStepAuto, parseInt($('gsSpeed').value,10));
   });
   $('gsBreedBtn').addEventListener('click', gsBreedManual);
@@ -701,7 +711,7 @@
     gk.history.push({gen:gk.generation, best:bestNow, avg:gkAvg(), opt:gk.optimalValue});
     gkRender();
   }
-  function gkStopPlay(){ gk.playing=false; $('gkPlayBtn').textContent='Play'; if(gk.timer) clearInterval(gk.timer); gk.timer=null; }
+  function gkStopPlay(){ gk.playing=false; $('gkPlayBtn').textContent=TR('Play'); if(gk.timer) clearInterval(gk.timer); gk.timer=null; }
   function gkRenderItemsDisplay(){
     const div = $('gkItemsDisplay'); div.innerHTML="";
     gk.items.forEach(it=>{
@@ -769,7 +779,7 @@
   $('gkStepBtn').addEventListener('click', gkStepGen);
   $('gkPlayBtn').addEventListener('click', ()=>{
     if(gk.playing){ gkStopPlay(); return; }
-    gk.playing=true; $('gkPlayBtn').textContent='Pause';
+    gk.playing=true; $('gkPlayBtn').textContent=TR('Pause');
     gk.timer = setInterval(gkStepGen, parseInt($('gkSpeed').value,10));
   });
   $('gkResetBtn').addEventListener('click', ()=>{ gkInitPop(); gkRender(); });
@@ -841,7 +851,7 @@
     pso.iter++; pso.history.push({iter:pso.iter, best:pso.gbestVal});
     psoRender();
   }
-  function psoStopPlay(){ pso.playing=false; $('psoPlay').textContent='Play'; if(pso.timer) clearInterval(pso.timer); pso.timer=null; }
+  function psoStopPlay(){ pso.playing=false; $('psoPlay').textContent=TR('Play'); if(pso.timer) clearInterval(pso.timer); pso.timer=null; }
   function psoRender(){
     $('psoIterOut').textContent = pso.iter; $('psoBestOut').textContent = pso.gbestVal.toFixed(3);
     const canvas = $('psoCanvas'); const {ctx,w,h} = sizeCanvas(canvas);
@@ -885,7 +895,7 @@
     sa.history.push({iter:sa.iter, current:sa.val, best:sa.bestVal});
     saRender();
   }
-  function saStopPlay(){ sa.playing=false; $('saPlay').textContent='Play'; if(sa.timer) clearInterval(sa.timer); sa.timer=null; }
+  function saStopPlay(){ sa.playing=false; $('saPlay').textContent=TR('Play'); if(sa.timer) clearInterval(sa.timer); sa.timer=null; }
   function saRender(){
     $('saIterOut').textContent = sa.iter; $('saTOut').textContent = sa.T.toFixed(2); $('saBestOut').textContent = sa.bestVal.toFixed(3);
     const canvas = $('saCanvas'); const {ctx,w,h} = sizeCanvas(canvas);
@@ -945,7 +955,7 @@
     aco.iter++; aco.history.push({iter:aco.iter, best:aco.bestLen});
     acoRender();
   }
-  function acoStopPlay(){ aco.playing=false; $('acoPlay').textContent='Play'; if(aco.timer) clearInterval(aco.timer); aco.timer=null; }
+  function acoStopPlay(){ aco.playing=false; $('acoPlay').textContent=TR('Play'); if(aco.timer) clearInterval(aco.timer); aco.timer=null; }
   function acoRender(){
     $('acoIterOut').textContent = aco.iter;
     $('acoBestOut').textContent = isFinite(aco.bestLen) ? aco.bestLen.toFixed(2) : '–';
@@ -988,7 +998,7 @@
   $('psoReset').addEventListener('click', psoInit);
   $('psoPlay').addEventListener('click', ()=>{
     if(pso.playing){ psoStopPlay(); return; }
-    pso.playing=true; $('psoPlay').textContent='Pause';
+    pso.playing=true; $('psoPlay').textContent=TR('Pause');
     pso.timer = setInterval(psoStep, parseInt($('psoSpeed').value,10));
   });
 
@@ -1001,7 +1011,7 @@
   $('saReset').addEventListener('click', saInit);
   $('saPlay').addEventListener('click', ()=>{
     if(sa.playing){ saStopPlay(); return; }
-    sa.playing=true; $('saPlay').textContent='Pause';
+    sa.playing=true; $('saPlay').textContent=TR('Pause');
     sa.timer = setInterval(saStep, parseInt($('saSpeed').value,10));
   });
 
@@ -1022,7 +1032,7 @@
   });
   $('acoPlay').addEventListener('click', ()=>{
     if(aco.playing){ acoStopPlay(); return; }
-    aco.playing=true; $('acoPlay').textContent='Pause';
+    aco.playing=true; $('acoPlay').textContent=TR('Pause');
     aco.timer = setInterval(acoStep, parseInt($('acoSpeed').value,10));
   });
 
@@ -1064,6 +1074,19 @@
   psoInit(); psoRender();
   saInit(); saRender();
   acoNewCities();
+})();
+</script>
+<script>
+(function(){ var KEY='phxLang';
+  function apply(l){ document.documentElement.lang=l;
+    var b=document.querySelectorAll('[data-lang-btn]'); for(var i=0;i<b.length;i++) b[i].classList.toggle('on', b[i].getAttribute('data-lang-btn')===l);
+    if(window.__onLang){ try{ window.__onLang(); }catch(e){} }
+  }
+  function set(l){ try{ localStorage.setItem(KEY,l); }catch(e){} apply(l); }
+  var s=null; try{ s=localStorage.getItem(KEY); }catch(e){}
+  apply(s==='id'?'id':'en');
+  var btns=document.querySelectorAll('[data-lang-btn]');
+  for(var i=0;i<btns.length;i++) btns[i].addEventListener('click',function(e){ e.preventDefault(); set(this.getAttribute('data-lang-btn')); });
 })();
 </script>
 </body>
