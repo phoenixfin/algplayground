@@ -4,6 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <link rel="icon" type="image/png" href="logo.png">
+<script>try{var _l=localStorage.getItem('phxLang');if(_l==='id'||_l==='en')document.documentElement.lang=_l;}catch(e){}</script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=Lato:wght@300;400;700&display=swap" rel="stylesheet">
@@ -18,6 +19,7 @@
     --gold: #2F7069; --accent-deep: #8F5620; --gold-dim: #D3E5E2; --card: #FFFDF9; --border: #E4DACB;
   }
   *{ box-sizing: border-box; }
+  html[lang="en"] [data-lang="id"], html[lang="id"] [data-lang="en"]{ display: none !important; }
   body{
     margin:0; background: var(--paper); color: var(--ink);
     font-family: Lato, "Helvetica Neue", Helvetica, Arial, sans-serif; line-height: 1.5;
@@ -32,6 +34,9 @@
   header.top p.eyebrow{ color: var(--accent-deep); }
   .crumbs{ font-size: 12.5px; margin: 14px 0 0; }
   .crumbs a{ color: var(--moss); }
+  .langtog{ display:inline-flex; border:1px solid var(--border); border-radius:20px; overflow:hidden; }
+  .langtog button{ font-family:inherit; font-size:11.5px; letter-spacing:0.06em; padding:4px 11px; border:0; background:#fff; color:var(--ink-soft); cursor:pointer; }
+  .langtog button.on{ background:var(--accent-deep); color:#fff; font-weight:700; }
 
   .tabs{ display: flex; gap: 8px; margin: 0 0 22px; flex-wrap: wrap;  position: sticky; top: 0; z-index: 20; background: var(--paper); padding: 12px 0 10px; border-bottom: 1px solid var(--border); }
   .tab{ padding: 9px 14px; font-size: 13px; font-weight: 600; border: 1px solid var(--ink); border-radius: 3px; background: var(--card); cursor: pointer; }
@@ -134,16 +139,17 @@
 <nav style="display:flex;align-items:center;gap:16px;font-family:'SF Mono',SFMono-Regular,Consolas,monospace;font-size:13px;margin-bottom:24px;flex-wrap:wrap">
 <a href="https://phx.my.id" style="display:inline-flex;align-items:center;gap:9px;text-decoration:none;color:#2D2D2D;font-weight:600"><img src="logo.png" alt="" style="width:30px;height:30px;border-radius:7px;display:block">phx.my.id</a>
 <span style="flex:1;min-width:12px"></span>
-<a href="https://phx.my.id" style="text-decoration:none;color:#6E6259">Home</a>
-<a href="https://research.phx.my.id" style="text-decoration:none;color:#6E6259">Research</a>
-<a href="index.html" style="text-decoration:none;color:#8F5620;font-weight:600">Playgrounds</a>
+<a href="https://phx.my.id" style="text-decoration:none;color:#6E6259"><span data-lang="en">Home</span><span data-lang="id">Beranda</span></a>
+<a href="https://research.phx.my.id" style="text-decoration:none;color:#6E6259"><span data-lang="en">Research</span><span data-lang="id">Riset</span></a>
+<a href="index.html" style="text-decoration:none;color:#8F5620;font-weight:600"><span data-lang="en">Playgrounds</span><span data-lang="id">Playground</span></a>
+<span class="langtog"><button data-lang-btn="en">EN</button><button data-lang-btn="id">ID</button></span>
 </nav>
 
 <header class="top">
-  <p class="eyebrow">Scientific machine learning</p>
-  <h1>Teaching equations and networks to work together</h1>
-  <p>Now that differential equations feel familiar, here is what modern <b>scientific machine learning</b> does with them. Five ideas, each a different bargain between <b>what we know</b> (the equations) and <b>what we measured</b> (the data) — from a network that obeys a known law, to one that discovers the law, to ones that replace the solver entirely. Everything trains live in your browser.</p>
-  <p class="crumbs">Part 2 of 2 · new here? start with <a href="differential_equations.html">&larr; Differential equations</a></p>
+  <p class="eyebrow"><span data-lang="en">Scientific machine learning</span><span data-lang="id">Scientific machine learning</span></p>
+  <h1><span data-lang="en">Teaching equations and networks to work together</span><span data-lang="id">Mengajari persamaan dan jaringan bekerja sama</span></h1>
+  <p data-lang="en">Now that differential equations feel familiar, here is what modern <b>scientific machine learning</b> does with them. Five ideas, each a different bargain between <b>what we know</b> (the equations) and <b>what we measured</b> (the data) — from a network that obeys a known law, to one that discovers the law, to ones that replace the solver entirely. Everything trains live in your browser.</p><p data-lang="id">Setelah persamaan diferensial terasa akrab, inilah yang dilakukan <b>scientific machine learning</b> modern terhadapnya. Lima ide, masing-masing tawar-menawar berbeda antara <b>apa yang kita tahu</b> (persamaannya) dan <b>apa yang kita ukur</b> (datanya) — dari jaringan yang menaati hukum yang diketahui, ke yang justru menemukan hukumnya, sampai yang menggantikan solver sepenuhnya. Semuanya dilatih langsung di browser-mu.</p>
+  <p class="crumbs"><span data-lang="en">Part 2 of 2 · new here? start with</span><span data-lang="id">Bagian 2 dari 2 · baru di sini? mulai dari</span> <a href="differential_equations.html">&larr; <span data-lang="en">Differential equations</span><span data-lang="id">Persamaan diferensial</span></a></p>
 </header>
 
 <div class="tabs">
@@ -152,7 +158,7 @@
   <button class="tab" data-tab="node">3 &middot; Neural ODE</button>
   <button class="tab" data-tab="don">4 &middot; DeepONet</button>
   <button class="tab" data-tab="fno">5 &middot; FNO</button>
-  <button class="tab" data-tab="map">6 &middot; Big picture</button>
+  <button class="tab" data-tab="map">6 &middot; <span data-lang="en">Big picture</span><span data-lang="id">Gambaran besar</span></button>
 </div>
 <!-- ==================== 3 · PINN ==================== -->
 <div class="section active" id="sec-pinn">
@@ -173,83 +179,90 @@
       <text x="132" y="92" font-family="SF Mono,monospace" font-size="9" fill="#C17A3E">physics ✓</text>
     </svg>
     <div class="txt">
-      <h3>PINN — a neural network graded by two teachers</h3>
-      <p>A <b>Physics-Informed Neural Network</b> is just a small network that takes time t and outputs a guess u(t). It is trained by two losses at once: a <b>data loss</b> ("pass near my measurements") and a <b>physics loss</b> ("your derivative must obey the differential equation — everywhere"). The magic: with almost no data, the physics term alone carries the solution into regions no measurement ever touched.</p>
+      <h3><span data-lang="en">PINN — a neural network graded by two teachers</span><span data-lang="id">PINN — jaringan saraf yang dinilai dua guru</span></h3>
+      <p data-lang="en">A <b>Physics-Informed Neural Network</b> is just a small network that takes time t and outputs a guess u(t). It is trained by two losses at once: a <b>data loss</b> ("pass near my measurements") and a <b>physics loss</b> ("your derivative must obey the differential equation — everywhere"). The magic: with almost no data, the physics term alone carries the solution into regions no measurement ever touched.</p><p data-lang="id">Sebuah <b>Physics-Informed Neural Network</b> hanyalah jaringan kecil yang menerima waktu t dan mengeluarkan tebakan u(t). Ia dilatih oleh dua loss sekaligus: sebuah <b>data loss</b> ("lewati dekat pengukuranku") dan sebuah <b>physics loss</b> ("turunanmu harus menaati persamaan diferensial — di mana pun"). Keajaibannya: dengan nyaris tanpa data, suku fisika sendirian membawa solusi ke wilayah yang tak pernah disentuh satu pengukuran pun.</p>
     </div>
   </div>
 
   <div class="layout">
     <div class="panel">
-      <h2>Problem</h2>
+      <h2><span data-lang="en">Problem</span><span data-lang="id">Masalah</span></h2>
       <div class="field"><select id="pinnProb">
-        <option value="decay">Cooling / decay · u′ = −λu</option>
-        <option value="logistic">Logistic growth · u′ = ρu(1−u)</option>
-        <option value="osc">Oscillator · u″ = −ω²u</option>
+        <option value="decay" data-lang="en">Cooling / decay · u′ = −λu</option><option value="decay" data-lang="id">Pendinginan / peluruhan · u′ = −λu</option>
+        <option value="logistic" data-lang="en">Logistic growth · u′ = ρu(1−u)</option><option value="logistic" data-lang="id">Pertumbuhan logistik · u′ = ρu(1−u)</option>
+        <option value="osc" data-lang="en">Oscillator · u″ = −ω²u</option><option value="osc" data-lang="id">Osilator · u″ = −ω²u</option>
       </select></div>
       <div class="field"><label><span id="pinnPLab">λ — decay rate</span> <span class="val" id="pinnPOut">1.00</span></label><input id="pinnP" type="range" min="0.5" max="2" step="0.05" value="1"></div>
 
-      <h2>Measurements (data)</h2>
-      <div class="field"><label>Data points <span class="val" id="pinnNDOut">4</span></label><input id="pinnND" type="range" min="0" max="12" step="1" value="4"></div>
-      <div class="field"><label>Noise <span class="val" id="pinnNoiseOut">0.05</span></label><input id="pinnNoise" type="range" min="0" max="0.3" step="0.01" value="0.05"></div>
-      <button class="btn block" id="pinnResample">🎲 New random measurements</button>
+      <h2><span data-lang="en">Measurements (data)</span><span data-lang="id">Pengukuran (data)</span></h2>
+      <div class="field"><label><span data-lang="en">Data points</span><span data-lang="id">Titik data</span> <span class="val" id="pinnNDOut">4</span></label><input id="pinnND" type="range" min="0" max="12" step="1" value="4"></div>
+      <div class="field"><label><span data-lang="en">Noise</span><span data-lang="id">Derau</span> <span class="val" id="pinnNoiseOut">0.05</span></label><input id="pinnNoise" type="range" min="0" max="0.3" step="0.01" value="0.05"></div>
+      <button class="btn block" id="pinnResample">🎲 <span data-lang="en">New random measurements</span><span data-lang="id">Pengukuran acak baru</span></button>
 
-      <h2>Physics loss</h2>
-      <div class="field"><label>Physics weight <span class="val" id="pinnWPOut">1.0</span></label><input id="pinnWP" type="range" min="0" max="3" step="0.1" value="1"></div>
-      <div class="field"><label>Collocation points <span class="val" id="pinnNCOut">30</span></label><input id="pinnNC" type="range" min="5" max="60" step="1" value="30"></div>
+      <h2><span data-lang="en">Physics loss</span><span data-lang="id">Physics loss</span></h2>
+      <div class="field"><label><span data-lang="en">Physics weight</span><span data-lang="id">Bobot fisika</span> <span class="val" id="pinnWPOut">1.0</span></label><input id="pinnWP" type="range" min="0" max="3" step="0.1" value="1"></div>
+      <div class="field"><label><span data-lang="en">Collocation points</span><span data-lang="id">Titik kolokasi</span> <span class="val" id="pinnNCOut">30</span></label><input id="pinnNC" type="range" min="5" max="60" step="1" value="30"></div>
 
-      <h2>Training</h2>
+      <h2><span data-lang="en">Training</span><span data-lang="id">Pelatihan</span></h2>
       <div class="row2" style="margin-bottom:8px">
         <button class="btn primary" id="pinnTrain">▶ Train</button>
-        <button class="btn" id="pinnStep">+300 steps</button>
+        <button class="btn" id="pinnStep">+300 <span data-lang="en">steps</span><span data-lang="id">langkah</span></button>
       </div>
-      <button class="btn block" id="pinnReset">Reset network</button>
-      <p class="hint">The network: 1 → 32 tanh neurons → 1. Its derivatives u′, u″ are computed exactly (that is what "autodiff" does in real PINN libraries), then punished where they break the equation.</p>
+      <button class="btn block" id="pinnReset"><span data-lang="en">Reset network</span><span data-lang="id">Atur ulang jaringan</span></button>
+      <p class="hint" data-lang="en">The network: 1 → 32 tanh neurons → 1. Its derivatives u′, u″ are computed exactly (that is what "autodiff" does in real PINN libraries), then punished where they break the equation.</p><p class="hint" data-lang="id">Jaringannya: 1 → 32 neuron tanh → 1. Turunan u′, u″-nya dihitung persis (itulah yang dilakukan "autodiff" di pustaka PINN sungguhan), lalu dihukum di tempat mereka melanggar persamaan.</p>
     </div>
 
     <div>
       <div class="stats">
-        <div class="stat"><div class="label">training steps</div><div class="value" id="pinnStepOut">0</div></div>
+        <div class="stat"><div class="label"><span data-lang="en">training steps</span><span data-lang="id">langkah pelatihan</span></div><div class="value" id="pinnStepOut">0</div></div>
         <div class="stat warn"><div class="label">data loss</div><div class="value" id="pinnLd">–</div></div>
         <div class="stat hi"><div class="label">physics loss</div><div class="value" id="pinnLp">–</div></div>
-        <div class="stat"><div class="label">error vs truth</div><div class="value" id="pinnErr">–</div></div>
+        <div class="stat"><div class="label"><span data-lang="en">error vs truth</span><span data-lang="id">galat vs kebenaran</span></div><div class="value" id="pinnErr">–</div></div>
       </div>
 
       <div class="box">
-        <h2>The network's guess u(t) — shaded region has no data at all</h2>
+        <h2><span data-lang="en">The network's guess u(t) — shaded region has no data at all</span><span data-lang="id">Tebakan jaringan u(t) — wilayah berarsir sama sekali tak berdata</span></h2>
         <canvas id="pinnMain" class="big" style="cursor:default"></canvas>
         <div class="legend">
-          <span><i class="swatch" style="background:#C17A3E"></i>network u(t)</span>
-          <span><i class="swatch" style="background:#2D2D2D"></i>true solution</span>
-          <span><i class="swatch" style="background:#A8392A"></i>noisy measurements</span>
-          <span><i class="swatch" style="background:#2F7069"></i>collocation points (where physics is checked)</span>
+          <span><i class="swatch" style="background:#C17A3E"></i><span data-lang="en">network u(t)</span><span data-lang="id">jaringan u(t)</span></span>
+          <span><i class="swatch" style="background:#2D2D2D"></i><span data-lang="en">true solution</span><span data-lang="id">solusi sejati</span></span>
+          <span><i class="swatch" style="background:#A8392A"></i><span data-lang="en">noisy measurements</span><span data-lang="id">pengukuran berderau</span></span>
+          <span><i class="swatch" style="background:#2F7069"></i><span data-lang="en">collocation points (where physics is checked)</span><span data-lang="id">titik kolokasi (tempat fisika diperiksa)</span></span>
         </div>
       </div>
 
       <div class="box">
-        <h2>The loss being minimized</h2>
+        <h2><span data-lang="en">The loss being minimized</span><span data-lang="id">Loss yang diminimalkan</span></h2>
         <div class="eqk" id="pinnLossEq" style="margin-bottom:8px"></div>
         <div class="eqk" id="pinnResEq"></div>
-        <p><span class="lossD">Red</span>: distance to measurements. <span class="lossI">Gold</span>: match the known starting condition. <span class="lossP">Green</span>: how badly the network's own derivative violates the equation at the gold collocation points — no measurements needed there, the rule is checked on the network itself.</p>
+        <p data-lang="en"><span class="lossD">Red</span>: distance to measurements. <span class="lossI">Gold</span>: match the known starting condition. <span class="lossP">Green</span>: how badly the network's own derivative violates the equation at the gold collocation points — no measurements needed there, the rule is checked on the network itself.</p><p data-lang="id"><span class="lossD">Merah</span>: jarak ke pengukuran. <span class="lossI">Emas</span>: cocokkan kondisi awal yang diketahui. <span class="lossP">Hijau</span>: seberapa buruk turunan jaringan itu sendiri melanggar persamaan di titik-titik kolokasi emas — tak perlu pengukuran di sana, aturannya diperiksa pada jaringan itu sendiri.</p>
       </div>
 
       <div class="cols2">
-        <div class="box"><h2>Physics residual — where the rule is broken</h2><canvas id="pinnRes" class="mid"></canvas></div>
-        <div class="box"><h2>Both losses during training (log scale)</h2><canvas id="pinnLoss" class="mid"></canvas></div>
+        <div class="box"><h2><span data-lang="en">Physics residual — where the rule is broken</span><span data-lang="id">Residu fisika — di mana aturan dilanggar</span></h2><canvas id="pinnRes" class="mid"></canvas></div>
+        <div class="box"><h2><span data-lang="en">Both losses during training (log scale)</span><span data-lang="id">Kedua loss selama pelatihan (skala log)</span></h2><canvas id="pinnLoss" class="mid"></canvas></div>
       </div>
 
-      <div class="try"><b>Try this — the one experiment that explains PINNs</b>
+      <div class="try" data-lang="en"><b>Try this — the one experiment that explains PINNs</b>
         <ol>
           <li>Set physics weight to <b>0</b> and train. The network hits the red dots (including their noise!) and does whatever it likes in the shaded half — it has no reason to behave there.</li>
           <li>Reset, set physics weight to <b>1</b>, train again. Now the curve is smooth through the noise and lands on the true solution even in the shaded region, <b>where it has never seen a single data point</b>. The equation filled the gap.</li>
           <li>Set data points to <b>0</b>: only the start condition + physics remain. It still finds the solution — you just watched a neural network act as a differential-equation solver.</li>
           <li>Try the oscillator: same story with a second derivative. Watch the residual chart flatten toward zero as training proceeds.</li>
         </ol>
+      </div><div class="try" data-lang="id"><b>Coba ini — satu eksperimen yang menjelaskan PINN</b>
+        <ol>
+          <li>Atur bobot fisika ke <b>0</b> lalu latih. Jaringan mengenai titik-titik merah (termasuk deraunya!) dan berbuat sesukanya di paruh berarsir — ia tak punya alasan untuk berkelakuan baik di sana.</li>
+          <li>Atur ulang, set bobot fisika ke <b>1</b>, latih lagi. Kini kurvanya mulus menembus derau dan mendarat di solusi sejati bahkan di wilayah berarsir, <b>tempat ia tak pernah melihat satu titik data pun</b>. Persamaan mengisi celahnya.</li>
+          <li>Atur titik data ke <b>0</b>: tinggal kondisi awal + fisika. Ia tetap menemukan solusinya — kamu baru saja menyaksikan jaringan saraf berperan sebagai solver persamaan diferensial.</li>
+          <li>Coba osilator: cerita yang sama dengan turunan kedua. Lihat grafik residu mendatar menuju nol seiring pelatihan berjalan.</li>
+        </ol>
       </div>
 
       <div class="box">
-        <h2>What just happened</h2>
-        <p>The network never saw the formula for the true solution. It only got: a few noisy dots, a starting value, and the demand <i>"your slope must equal what the equation says, at these gold points."</i> Gradient descent then sculpted the weights until both teachers were satisfied.</p>
-        <p><b>Why people care:</b> real measurements are sparse and noisy (a few sensors on a wing, a few probes in a reactor), but the governing equations are known. PINNs blend both — and unlike the classical grid solvers in part 1, they don't need a grid, handle missing data naturally, and can also run "backwards" (infer λ itself from data — inverse problems). <b>The catch:</b> training is slow and fiddly compared to RK4 when the problem is easy — PINNs shine when classical solvers struggle, not on this toy.</p>
+        <h2><span data-lang="en">What just happened</span><span data-lang="id">Apa yang barusan terjadi</span></h2>
+        <p data-lang="en">The network never saw the formula for the true solution. It only got: a few noisy dots, a starting value, and the demand <i>"your slope must equal what the equation says, at these gold points."</i> Gradient descent then sculpted the weights until both teachers were satisfied.</p><p data-lang="id">Jaringan tak pernah melihat rumus solusi sejati. Ia hanya menerima: beberapa titik berderau, sebuah nilai awal, dan tuntutan <i>"kemiringanmu harus sama dengan yang dikatakan persamaan, di titik-titik emas ini."</i> Gradient descent lalu memahat bobotnya sampai kedua guru puas.</p>
+        <p data-lang="en"><b>Why people care:</b> real measurements are sparse and noisy (a few sensors on a wing, a few probes in a reactor), but the governing equations are known. PINNs blend both — and unlike the classical grid solvers in part 1, they don't need a grid, handle missing data naturally, and can also run "backwards" (infer λ itself from data — inverse problems). <b>The catch:</b> training is slow and fiddly compared to RK4 when the problem is easy — PINNs shine when classical solvers struggle, not on this toy.</p><p data-lang="id"><b>Kenapa orang peduli:</b> pengukuran nyata itu jarang dan berderau (beberapa sensor di sayap, beberapa probe di reaktor), tapi persamaan yang mengaturnya diketahui. PINN memadukan keduanya — dan tidak seperti solver grid klasik di bagian 1, ia tak butuh grid, menangani data hilang secara alami, dan juga bisa berjalan "mundur" (menyimpulkan λ sendiri dari data — masalah invers). <b>Tangkapannya:</b> pelatihan lambat dan rewel dibanding RK4 saat masalahnya mudah — PINN bersinar ketika solver klasik kesulitan, bukan pada mainan ini.</p>
       </div>
     </div>
   </div>
@@ -267,72 +280,79 @@
       <text x="122" y="96" font-family="SF Mono,monospace" font-size="9" fill="#6E6259">the law, recovered</text>
     </svg>
     <div class="txt">
-      <h3>SINDy — let the data write the equation</h3>
-      <p>The opposite direction from PINNs: here we <b>don't know the law</b>. We only have a measured trajectory. SINDy (Sparse Identification of Nonlinear Dynamics) writes down a menu of candidate terms (x, y, x², xy, …), asks which tiny combination best explains the measured rates of change, and deletes everything small. What survives <i>is</i> the differential equation — the same way Kepler's data became Newton's law.</p>
+      <h3><span data-lang="en">SINDy — let the data write the equation</span><span data-lang="id">SINDy — biarkan data menulis persamaannya</span></h3>
+      <p data-lang="en">The opposite direction from PINNs: here we <b>don't know the law</b>. We only have a measured trajectory. SINDy (Sparse Identification of Nonlinear Dynamics) writes down a menu of candidate terms (x, y, x², xy, …), asks which tiny combination best explains the measured rates of change, and deletes everything small. What survives <i>is</i> the differential equation — the same way Kepler's data became Newton's law.</p><p data-lang="id">Arah kebalikan dari PINN: di sini kita <b>tak tahu hukumnya</b>. Kita hanya punya lintasan terukur. SINDy (Sparse Identification of Nonlinear Dynamics) menuliskan menu suku-suku kandidat (x, y, x², xy, …), menanyakan kombinasi kecil mana yang paling menjelaskan laju perubahan terukur, lalu menghapus semua yang kecil. Yang bertahan <i>adalah</i> persamaan diferensialnya — sama seperti data Kepler menjadi hukum Newton.</p>
     </div>
   </div>
 
   <div class="layout">
     <div class="panel">
-      <h2>Hidden system (pretend we don't know it)</h2>
+      <h2><span data-lang="en">Hidden system (pretend we don't know it)</span><span data-lang="id">Sistem tersembunyi (pura-pura tak tahu)</span></h2>
       <div class="field"><select id="siSys">
-        <option value="linear">Damped oscillator (linear)</option>
-        <option value="cubic">Cubic oscillator (nonlinear)</option>
-        <option value="lotka">Predator–prey (Lotka–Volterra)</option>
+        <option value="linear" data-lang="en">Damped oscillator (linear)</option><option value="linear" data-lang="id">Osilator teredam (linear)</option>
+        <option value="cubic" data-lang="en">Cubic oscillator (nonlinear)</option><option value="cubic" data-lang="id">Osilator kubik (nonlinear)</option>
+        <option value="lotka" data-lang="en">Predator–prey (Lotka–Volterra)</option><option value="lotka" data-lang="id">Predator–mangsa (Lotka–Volterra)</option>
       </select></div>
 
-      <h2>Measurement quality</h2>
-      <div class="field"><label>Samples along trajectory <span class="val" id="siNOut">200</span></label><input id="siN" type="range" min="40" max="400" step="10" value="200"></div>
-      <div class="field"><label>Sensor noise σ <span class="val" id="siNoiseOut">0.010</span></label><input id="siNoise" type="range" min="0" max="0.1" step="0.005" value="0.01"></div>
-      <button class="btn block" id="siRegen">🎲 Re-measure (new noise)</button>
+      <h2><span data-lang="en">Measurement quality</span><span data-lang="id">Kualitas pengukuran</span></h2>
+      <div class="field"><label><span data-lang="en">Samples along trajectory</span><span data-lang="id">Sampel sepanjang lintasan</span> <span class="val" id="siNOut">200</span></label><input id="siN" type="range" min="40" max="400" step="10" value="200"></div>
+      <div class="field"><label><span data-lang="en">Sensor noise σ</span><span data-lang="id">Derau sensor σ</span> <span class="val" id="siNoiseOut">0.010</span></label><input id="siNoise" type="range" min="0" max="0.1" step="0.005" value="0.01"></div>
+      <button class="btn block" id="siRegen">🎲 <span data-lang="en">Re-measure (new noise)</span><span data-lang="id">Ukur ulang (derau baru)</span></button>
 
-      <h2>Sparsity knob</h2>
-      <div class="field"><label>Threshold λ — delete terms below <span class="val" id="siLamOut">0.10</span></label><input id="siLam" type="range" min="0" max="0.5" step="0.01" value="0.1"></div>
-      <p class="hint">Pipeline: measure (x, y) → estimate ẋ, ẏ by finite differences (Euler from part 1, in reverse!) → least-squares fit over the term menu → repeatedly zero out small coefficients (STLSQ).</p>
+      <h2><span data-lang="en">Sparsity knob</span><span data-lang="id">Tombol kesparsan</span></h2>
+      <div class="field"><label><span data-lang="en">Threshold λ — delete terms below</span><span data-lang="id">Ambang λ — hapus suku di bawah</span> <span class="val" id="siLamOut">0.10</span></label><input id="siLam" type="range" min="0" max="0.5" step="0.01" value="0.1"></div>
+      <p class="hint" data-lang="en">Pipeline: measure (x, y) → estimate ẋ, ẏ by finite differences (Euler from part 1, in reverse!) → least-squares fit over the term menu → repeatedly zero out small coefficients (STLSQ).</p><p class="hint" data-lang="id">Alur: ukur (x, y) → estimasi ẋ, ẏ lewat beda hingga (Euler dari bagian 1, dibalik!) → fit least-squares atas menu suku → berulang-ulang menolkan koefisien kecil (STLSQ).</p>
     </div>
 
     <div>
       <div class="stats">
-        <div class="stat hi"><div class="label">correct terms kept</div><div class="value" id="siGood">–</div></div>
-        <div class="stat warn"><div class="label">spurious terms</div><div class="value" id="siBad">–</div></div>
-        <div class="stat"><div class="label">missed terms</div><div class="value" id="siMiss">–</div></div>
+        <div class="stat hi"><div class="label"><span data-lang="en">correct terms kept</span><span data-lang="id">suku benar disimpan</span></div><div class="value" id="siGood">–</div></div>
+        <div class="stat warn"><div class="label"><span data-lang="en">spurious terms</span><span data-lang="id">suku palsu</span></div><div class="value" id="siBad">–</div></div>
+        <div class="stat"><div class="label"><span data-lang="en">missed terms</span><span data-lang="id">suku terlewat</span></div><div class="value" id="siMiss">–</div></div>
       </div>
 
       <div class="cols2">
         <div class="box">
-          <h2>Phase plane — truth, measurements, rediscovery</h2>
+          <h2><span data-lang="en">Phase plane — truth, measurements, rediscovery</span><span data-lang="id">Bidang fase — kebenaran, pengukuran, penemuan ulang</span></h2>
           <canvas id="siPhase" class="sq"></canvas>
           <div class="legend">
-            <span><i class="swatch" style="background:#2D2D2D"></i>hidden true trajectory</span>
-            <span><i class="swatch" style="background:#A8392A"></i>noisy samples</span>
-            <span><i class="swatch" style="background:#C17A3E"></i>simulated from the discovered equation</span>
+            <span><i class="swatch" style="background:#2D2D2D"></i><span data-lang="en">hidden true trajectory</span><span data-lang="id">lintasan sejati tersembunyi</span></span>
+            <span><i class="swatch" style="background:#A8392A"></i><span data-lang="en">noisy samples</span><span data-lang="id">sampel berderau</span></span>
+            <span><i class="swatch" style="background:#C17A3E"></i><span data-lang="en">simulated from the discovered equation</span><span data-lang="id">disimulasikan dari persamaan temuan</span></span>
           </div>
         </div>
         <div>
           <div class="box">
-            <h2>Discovered equations</h2>
+            <h2><span data-lang="en">Discovered equations</span><span data-lang="id">Persamaan yang ditemukan</span></h2>
             <div class="eqfound" id="siEq">…</div>
           </div>
           <div class="box" style="margin-top:18px">
-            <h2>Coefficients — found vs true</h2>
+            <h2><span data-lang="en">Coefficients — found vs true</span><span data-lang="id">Koefisien — temuan vs sejati</span></h2>
             <table class="coef" id="siTable"></table>
           </div>
         </div>
       </div>
 
-      <div class="try"><b>Try this</b>
+      <div class="try" data-lang="en"><b>Try this</b>
         <ol>
           <li>Damped oscillator, defaults: SINDy recovers <span class="mono">ẋ = y, ẏ = −2x − 0.3y</span> almost perfectly from dots alone.</li>
           <li>Slide threshold λ to <b>0</b>: the fit "uses" every term in the menu with tiny nonsense coefficients. Sparsity is not decoration — it's what turns a fit into a <i>law</i>.</li>
           <li>Raise noise to 0.08: spurious terms (red) creep in, because noise wrecks the finite-difference derivatives. Raise λ to clean up… too far and you delete real physics (gold cells). That tension — noise vs sparsity — is the daily life of equation discovery.</li>
           <li>Predator–prey: the discovered law has an <span class="mono">xy</span> term in both equations — "rabbits meet foxes". The math found the ecology.</li>
         </ol>
+      </div><div class="try" data-lang="id"><b>Coba ini</b>
+        <ol>
+          <li>Osilator teredam, bawaan: SINDy memulihkan <span class="mono">ẋ = y, ẏ = −2x − 0.3y</span> nyaris sempurna hanya dari titik-titik.</li>
+          <li>Geser ambang λ ke <b>0</b>: fit "memakai" setiap suku di menu dengan koefisien kecil tak berarti. Kesparsan bukan hiasan — ia yang mengubah sebuah fit jadi sebuah <i>hukum</i>.</li>
+          <li>Naikkan derau ke 0.08: suku palsu (merah) menyusup, karena derau merusak turunan beda-hingga. Naikkan λ untuk membersihkan… terlalu jauh dan kamu menghapus fisika sejati (sel emas). Ketegangan itu — derau vs kesparsan — adalah keseharian penemuan persamaan.</li>
+          <li>Predator–mangsa: hukum yang ditemukan punya suku <span class="mono">xy</span> di kedua persamaan — "kelinci bertemu rubah". Matematika menemukan ekologinya.</li>
+        </ol>
       </div>
 
       <div class="box">
-        <h2>What just happened</h2>
-        <p>SINDy solved <span class="mono">ẋ ≈ Θ(x,y)·w</span> where Θ's columns are the menu terms evaluated on your data, then kept only large entries of w. It's plain linear least squares plus a delete-loop — no neural network at all — yet it outputs something a human can read, publish, and reason about: an equation.</p>
-        <p><b>Contrast with the PINN:</b> a PINN knows the law and finds the solution. SINDy has the solution (measured) and finds the law. <b>Weak spot:</b> everything hinges on estimating derivatives from noisy data, and the true law must be expressible in your menu — if the real term is sin(x) and your menu only has polynomials, you get a polynomial impostor.</p>
+        <h2><span data-lang="en">What just happened</span><span data-lang="id">Apa yang barusan terjadi</span></h2>
+        <p data-lang="en">SINDy solved <span class="mono">ẋ ≈ Θ(x,y)·w</span> where Θ's columns are the menu terms evaluated on your data, then kept only large entries of w. It's plain linear least squares plus a delete-loop — no neural network at all — yet it outputs something a human can read, publish, and reason about: an equation.</p><p data-lang="id">SINDy menyelesaikan <span class="mono">ẋ ≈ Θ(x,y)·w</span> di mana kolom-kolom Θ adalah suku menu yang dievaluasi pada datamu, lalu menyimpan hanya entri besar dari w. Ini sekadar least squares linear plus loop-penghapus — tanpa jaringan saraf sama sekali — namun keluarannya sesuatu yang bisa dibaca, dipublikasikan, dan dinalar manusia: sebuah persamaan.</p>
+        <p data-lang="en"><b>Contrast with the PINN:</b> a PINN knows the law and finds the solution. SINDy has the solution (measured) and finds the law. <b>Weak spot:</b> everything hinges on estimating derivatives from noisy data, and the true law must be expressible in your menu — if the real term is sin(x) and your menu only has polynomials, you get a polynomial impostor.</p><p data-lang="id"><b>Bandingkan dengan PINN:</b> PINN tahu hukumnya dan mencari solusinya. SINDy punya solusinya (terukur) dan mencari hukumnya. <b>Titik lemah:</b> semuanya bergantung pada estimasi turunan dari data berderau, dan hukum sejati harus bisa dinyatakan dalam menumu — jika suku sebenarnya sin(x) dan menumu hanya berisi polinomial, kamu dapat penipu polinomial.</p>
       </div>
     </div>
   </div>
@@ -352,71 +372,78 @@
       <text x="100" y="18" text-anchor="middle" font-family="SF Mono,monospace" font-size="9" fill="#2D2D2D">f θ (y)</text>
     </svg>
     <div class="txt">
-      <h3>Neural ODE — a neural network <i>is</i> the derivative</h3>
-      <p>SINDy searched a fixed menu of terms. A <b>Neural ODE</b> throws the menu away and lets a small neural network <i>be</i> the right-hand side of the equation: $\dot{\mathbf y} = f_\theta(\mathbf y)$. Train the network so its output matches the observed velocities, and you have learned the dynamics as a smooth vector field — even shapes no polynomial library could spell.</p>
+      <h3><span data-lang="en">Neural ODE — a neural network <i>is</i> the derivative</span><span data-lang="id">Neural ODE — jaringan saraf yang <i>adalah</i> turunannya</span></h3>
+      <p data-lang="en">SINDy searched a fixed menu of terms. A <b>Neural ODE</b> throws the menu away and lets a small neural network <i>be</i> the right-hand side of the equation: $\dot{\mathbf y} = f_\theta(\mathbf y)$. Train the network so its output matches the observed velocities, and you have learned the dynamics as a smooth vector field — even shapes no polynomial library could spell.</p><p data-lang="id">SINDy mencari dalam menu suku yang tetap. Sebuah <b>Neural ODE</b> membuang menu itu dan membiarkan jaringan saraf kecil <i>menjadi</i> ruas kanan persamaan: $\dot{\mathbf y} = f_\theta(\mathbf y)$. Latih jaringan agar keluarannya cocok dengan kecepatan terukur, dan kamu telah mempelajari dinamikanya sebagai medan vektor yang mulus — bahkan bentuk yang tak bisa dieja pustaka polinomial mana pun.</p>
     </div>
   </div>
 
   <div class="layout">
     <div class="panel">
-      <h2>Hidden dynamics</h2>
+      <h2><span data-lang="en">Hidden dynamics</span><span data-lang="id">Dinamika tersembunyi</span></h2>
       <div class="field"><select id="ndSys">
-        <option value="pendulum">Pendulum (nonlinear · sin)</option>
-        <option value="vdp">Van der Pol (limit cycle)</option>
-        <option value="spiral">Damped spiral (linear)</option>
+        <option value="pendulum" data-lang="en">Pendulum (nonlinear · sin)</option><option value="pendulum" data-lang="id">Bandul (nonlinear · sin)</option>
+        <option value="vdp" data-lang="en">Van der Pol (limit cycle)</option><option value="vdp" data-lang="id">Van der Pol (siklus batas)</option>
+        <option value="spiral" data-lang="en">Damped spiral (linear)</option><option value="spiral" data-lang="id">Spiral teredam (linear)</option>
       </select></div>
 
-      <h2>Measurements</h2>
-      <div class="field"><label>Samples on the path <span class="val" id="ndNOut">120</span></label><input id="ndN" type="range" min="30" max="300" step="10" value="120"></div>
-      <div class="field"><label>Velocity noise <span class="val" id="ndNoiseOut">0.02</span></label><input id="ndNoise" type="range" min="0" max="0.2" step="0.01" value="0.02"></div>
-      <button class="btn block" id="ndResample">🎲 Re-measure</button>
+      <h2><span data-lang="en">Measurements</span><span data-lang="id">Pengukuran</span></h2>
+      <div class="field"><label><span data-lang="en">Samples on the path</span><span data-lang="id">Sampel pada lintasan</span> <span class="val" id="ndNOut">120</span></label><input id="ndN" type="range" min="30" max="300" step="10" value="120"></div>
+      <div class="field"><label><span data-lang="en">Velocity noise</span><span data-lang="id">Derau kecepatan</span> <span class="val" id="ndNoiseOut">0.02</span></label><input id="ndNoise" type="range" min="0" max="0.2" step="0.01" value="0.02"></div>
+      <button class="btn block" id="ndResample">🎲 <span data-lang="en">Re-measure</span><span data-lang="id">Ukur ulang</span></button>
 
-      <h2>Training</h2>
+      <h2><span data-lang="en">Training</span><span data-lang="id">Pelatihan</span></h2>
       <div class="row2" style="margin-bottom:8px">
         <button class="btn primary" id="ndTrain">▶ Train</button>
         <button class="btn" id="ndStep">+400</button>
       </div>
-      <button class="btn block" id="ndReset">Reset network</button>
-      <p class="hint">The network: 2 → 16 → 16 → 2 with tanh. Loss = how far its output $f_\theta(\mathbf y_i)$ sits from each measured velocity $\mathbf v_i$.</p>
+      <button class="btn block" id="ndReset"><span data-lang="en">Reset network</span><span data-lang="id">Atur ulang jaringan</span></button>
+      <p class="hint" data-lang="en">The network: 2 → 16 → 16 → 2 with tanh. Loss = how far its output $f_\theta(\mathbf y_i)$ sits from each measured velocity $\mathbf v_i$.</p><p class="hint" data-lang="id">Jaringannya: 2 → 16 → 16 → 2 dengan tanh. Loss = seberapa jauh keluarannya $f_\theta(\mathbf y_i)$ dari tiap kecepatan terukur $\mathbf v_i$.</p>
     </div>
 
     <div>
       <div class="stats">
-        <div class="stat"><div class="label">training steps</div><div class="value" id="ndStepOut">0</div></div>
-        <div class="stat warn"><div class="label">velocity loss</div><div class="value" id="ndLoss">–</div></div>
-        <div class="stat hi"><div class="label">trajectory error</div><div class="value" id="ndErr">–</div></div>
+        <div class="stat"><div class="label"><span data-lang="en">training steps</span><span data-lang="id">langkah pelatihan</span></div><div class="value" id="ndStepOut">0</div></div>
+        <div class="stat warn"><div class="label"><span data-lang="en">velocity loss</span><span data-lang="id">velocity loss</span></div><div class="value" id="ndLoss">–</div></div>
+        <div class="stat hi"><div class="label"><span data-lang="en">trajectory error</span><span data-lang="id">galat lintasan</span></div><div class="value" id="ndErr">–</div></div>
       </div>
 
       <div class="box">
-        <h2>Phase plane — learned vector field, true path, and the network's own rollout</h2>
+        <h2><span data-lang="en">Phase plane — learned vector field, true path, and the network's own rollout</span><span data-lang="id">Bidang fase — medan vektor terpelajar, lintasan sejati, dan rollout jaringan sendiri</span></h2>
         <canvas id="ndMain" class="big" style="cursor:default"></canvas>
         <div class="legend">
-          <span><i class="swatch" style="background:#6E6259"></i>learned field f<sub>θ</sub></span>
-          <span><i class="swatch" style="background:#2D2D2D"></i>true trajectory</span>
-          <span><i class="swatch" style="background:#A8392A"></i>measured points</span>
-          <span><i class="swatch" style="background:#C17A3E"></i>integrated from f<sub>θ</sub></span>
+          <span><i class="swatch" style="background:#6E6259"></i><span data-lang="en">learned field f<sub>θ</sub></span><span data-lang="id">medan terpelajar f<sub>θ</sub></span></span>
+          <span><i class="swatch" style="background:#2D2D2D"></i><span data-lang="en">true trajectory</span><span data-lang="id">lintasan sejati</span></span>
+          <span><i class="swatch" style="background:#A8392A"></i><span data-lang="en">measured points</span><span data-lang="id">titik terukur</span></span>
+          <span><i class="swatch" style="background:#C17A3E"></i><span data-lang="en">integrated from f<sub>θ</sub></span><span data-lang="id">diintegralkan dari f<sub>θ</sub></span></span>
         </div>
       </div>
 
       <div class="cols2">
-        <div class="box"><h2>The model being learned</h2><div class="eqk" id="ndEqBig"></div>
-          <p style="margin-top:10px">No fixed terms, no readable formula — just weights. That is the trade against SINDy: more flexible, less interpretable.</p></div>
-        <div class="box"><h2>Velocity loss (log scale)</h2><canvas id="ndLossCv" class="mid"></canvas></div>
+        <div class="box"><h2><span data-lang="en">The model being learned</span><span data-lang="id">Model yang dipelajari</span></h2><div class="eqk" id="ndEqBig"></div>
+          <p style="margin-top:10px" data-lang="en">No fixed terms, no readable formula — just weights. That is the trade against SINDy: more flexible, less interpretable.</p><p style="margin-top:10px" data-lang="id">Tak ada suku tetap, tak ada rumus terbaca — hanya bobot. Itulah tukar-tambahnya melawan SINDy: lebih fleksibel, kurang bisa ditafsirkan.</p></div>
+        <div class="box"><h2><span data-lang="en">Velocity loss (log scale)</span><span data-lang="id">Velocity loss (skala log)</span></h2><canvas id="ndLossCv" class="mid"></canvas></div>
       </div>
 
-      <div class="try"><b>Try this</b>
+      <div class="try" data-lang="en"><b>Try this</b>
         <ol>
           <li>Pendulum, press <b>Train</b>: the grey arrows organise into a swirl, and the green rollout curls onto the black truth within seconds.</li>
           <li>Look <i>away</i> from the path: arrows there stay wrong. A Neural ODE only learns the field where data visited — integrate from a far-off start and it drifts.</li>
           <li>Van der Pol: the network captures a <b>limit cycle</b> — a self-sustaining loop — that no low-order polynomial menu (SINDy) writes down cleanly. Flexibility wins here.</li>
           <li>Crank velocity noise up: the field gets fuzzy, the rollout wobbles. Same noise-vs-fit tension as everywhere else.</li>
         </ol>
+      </div><div class="try" data-lang="id"><b>Coba ini</b>
+        <ol>
+          <li>Bandul, tekan <b>Train</b>: panah abu-abu menata diri jadi pusaran, dan rollout hijau melingkar ke kebenaran hitam dalam hitungan detik.</li>
+          <li>Lihat <i>menjauh</i> dari lintasan: panah di sana tetap salah. Neural ODE hanya mempelajari medan tempat data singgah — integralkan dari awal yang jauh dan ia melenceng.</li>
+          <li>Van der Pol: jaringan menangkap <b>siklus batas</b> — loop yang mempertahankan diri — yang tak bisa ditulis rapi oleh menu polinomial orde-rendah (SINDy). Fleksibilitas menang di sini.</li>
+          <li>Naikkan derau kecepatan: medannya jadi kabur, rollout-nya goyah. Ketegangan derau-vs-fit yang sama seperti di mana-mana.</li>
+        </ol>
       </div>
 
       <div class="box">
-        <h2>What just happened</h2>
-        <p>You trained a network to <i>be</i> the function $f$ in $\dot{\mathbf y}=f(\mathbf y)$, then handed it to the same RK4 solver from the physics playground. It is the bridge between the two halves of this course: classical solvers need $f$ written by a human; a Neural ODE lets data write $f$, then solves it the classical way.</p>
-        <p><b>Where it shines:</b> continuous-time models of messy real systems (patient vitals, chemical kinetics) where the equations are unknown but trajectories are recorded. <b>The catch:</b> the field is a black box — accurate near the data, untrustworthy beyond it, and it cannot be read like SINDy's equation.</p>
+        <h2><span data-lang="en">What just happened</span><span data-lang="id">Apa yang barusan terjadi</span></h2>
+        <p data-lang="en">You trained a network to <i>be</i> the function $f$ in $\dot{\mathbf y}=f(\mathbf y)$, then handed it to the same RK4 solver from the physics playground. It is the bridge between the two halves of this course: classical solvers need $f$ written by a human; a Neural ODE lets data write $f$, then solves it the classical way.</p><p data-lang="id">Kamu melatih jaringan untuk <i>menjadi</i> fungsi $f$ dalam $\dot{\mathbf y}=f(\mathbf y)$, lalu menyerahkannya ke solver RK4 yang sama dari playground fisika. Inilah jembatan antara dua paruh kursus ini: solver klasik butuh $f$ yang ditulis manusia; Neural ODE membiarkan data menulis $f$, lalu menyelesaikannya dengan cara klasik.</p>
+        <p data-lang="en"><b>Where it shines:</b> continuous-time models of messy real systems (patient vitals, chemical kinetics) where the equations are unknown but trajectories are recorded. <b>The catch:</b> the field is a black box — accurate near the data, untrustworthy beyond it, and it cannot be read like SINDy's equation.</p><p data-lang="id"><b>Di mana ia bersinar:</b> model waktu-kontinu untuk sistem nyata yang berantakan (tanda vital pasien, kinetika kimia) di mana persamaannya tak diketahui tapi lintasannya terekam. <b>Tangkapannya:</b> medannya kotak hitam — akurat dekat data, tak bisa dipercaya di luarnya, dan tak bisa dibaca seperti persamaan SINDy.</p>
       </div>
     </div>
   </div>
@@ -435,79 +462,86 @@
       <path d="M150 96 q 16 10 44 -10" fill="none" stroke="#C17A3E" stroke-width="2.5" opacity="0.55"/>
     </svg>
     <div class="txt">
-      <h3>DeepONet — learn the solver itself</h3>
-      <p>PINN, SINDy, and Neural ODE each handle <i>one</i> problem at a time; change the input and you must re-simulate or re-train. A <b>neural operator</b> learns the whole mapping: give it any input <i>function</i> f (a forcing, a heat source, a load) and it returns the solution <i>function</i> u in a single forward pass. Train once on random examples, then answer infinitely many new problems instantly — draw your own f below and watch.</p>
+      <h3><span data-lang="en">DeepONet — learn the solver itself</span><span data-lang="id">DeepONet — pelajari solver-nya sendiri</span></h3>
+      <p data-lang="en">PINN, SINDy, and Neural ODE each handle <i>one</i> problem at a time; change the input and you must re-simulate or re-train. A <b>neural operator</b> learns the whole mapping: give it any input <i>function</i> f (a forcing, a heat source, a load) and it returns the solution <i>function</i> u in a single forward pass. Train once on random examples, then answer infinitely many new problems instantly — draw your own f below and watch.</p><p data-lang="id">PINN, SINDy, dan Neural ODE masing-masing menangani <i>satu</i> masalah dalam satu waktu; ganti masukannya dan kamu harus simulasi ulang atau latih ulang. Sebuah <b>neural operator</b> mempelajari seluruh pemetaannya: beri ia <i>fungsi</i> masukan f apa pun (gaya paksa, sumber panas, beban) dan ia mengembalikan <i>fungsi</i> solusi u dalam satu forward pass. Latih sekali pada contoh acak, lalu jawab tak hingga masalah baru seketika — gambar sendiri f-mu di bawah dan lihat.</p>
     </div>
   </div>
 
   <div class="layout">
     <div class="panel">
-      <h2>Operator to learn</h2>
+      <h2><span data-lang="en">Operator to learn</span><span data-lang="id">Operator yang dipelajari</span></h2>
       <div class="field"><select id="donOp">
-        <option value="anti">Integrator · u(x) = ∫₀ˣ f(s) ds</option>
-        <option value="decay">ODE solver · u′ = −2u + f(x)</option>
+        <option value="anti" data-lang="en">Integrator · u(x) = ∫₀ˣ f(s) ds</option><option value="anti" data-lang="id">Integrator · u(x) = ∫₀ˣ f(s) ds</option>
+        <option value="decay" data-lang="en">ODE solver · u′ = −2u + f(x)</option><option value="decay" data-lang="id">Solver ODE · u′ = −2u + f(x)</option>
       </select></div>
 
-      <h2>Training (on random functions)</h2>
+      <h2><span data-lang="en">Training (on random functions)</span><span data-lang="id">Pelatihan (pada fungsi acak)</span></h2>
       <div class="row2" style="margin-bottom:8px">
         <button class="btn primary" id="donTrain">▶ Train</button>
         <button class="btn" id="donReset">Reset</button>
       </div>
-      <p class="hint" style="margin-bottom:12px">Every step draws a fresh batch of random wiggly functions f, computes their true u numerically, and teaches branch × trunk to match. The network below is <b>never retrained</b> when you change f.</p>
+      <p class="hint" style="margin-bottom:12px" data-lang="en">Every step draws a fresh batch of random wiggly functions f, computes their true u numerically, and teaches branch × trunk to match. The network below is <b>never retrained</b> when you change f.</p><p class="hint" style="margin-bottom:12px" data-lang="id">Tiap langkah menggambar satu batch fungsi f acak yang meliuk, menghitung u sejatinya secara numerik, dan mengajari branch × trunk agar cocok. Jaringan di bawah <b>tak pernah dilatih ulang</b> saat kamu mengganti f.</p>
 
-      <h2>Test input f</h2>
+      <h2><span data-lang="en">Test input f</span><span data-lang="id">Masukan uji f</span></h2>
       <div class="row2" style="margin-bottom:8px">
-        <button class="btn" id="donPresetWave">random</button>
-        <button class="btn" id="donPresetSine">sine</button>
+        <button class="btn" id="donPresetWave"><span data-lang="en">random</span><span data-lang="id">acak</span></button>
+        <button class="btn" id="donPresetSine"><span data-lang="en">sine</span><span data-lang="id">sinus</span></button>
       </div>
       <div class="row2" style="margin-bottom:8px">
-        <button class="btn" id="donPresetBump">bump</button>
-        <button class="btn" id="donPresetStep">step</button>
+        <button class="btn" id="donPresetBump"><span data-lang="en">bump</span><span data-lang="id">gundukan</span></button>
+        <button class="btn" id="donPresetStep"><span data-lang="en">step</span><span data-lang="id">tangga</span></button>
       </div>
-      <p class="hint"><b>Or draw:</b> drag your mouse on the red chart to sculpt your own f.</p>
+      <p class="hint" data-lang="en"><b>Or draw:</b> drag your mouse on the red chart to sculpt your own f.</p><p class="hint" data-lang="id"><b>Atau gambar:</b> seret mouse-mu pada grafik merah untuk memahat f-mu sendiri.</p>
     </div>
 
     <div>
       <div class="stats">
-        <div class="stat"><div class="label">training steps</div><div class="value" id="donStep">0</div></div>
-        <div class="stat hi"><div class="label">training loss</div><div class="value" id="donLoss">–</div></div>
-        <div class="stat"><div class="label">answer time</div><div class="value">1 pass</div></div>
+        <div class="stat"><div class="label"><span data-lang="en">training steps</span><span data-lang="id">langkah pelatihan</span></div><div class="value" id="donStep">0</div></div>
+        <div class="stat hi"><div class="label"><span data-lang="en">training loss</span><span data-lang="id">training loss</span></div><div class="value" id="donLoss">–</div></div>
+        <div class="stat"><div class="label"><span data-lang="en">answer time</span><span data-lang="id">waktu menjawab</span></div><div class="value">1 pass</div></div>
       </div>
 
       <div class="cols2">
         <div class="box">
-          <h2>Input function f — drag to draw</h2>
+          <h2><span data-lang="en">Input function f — drag to draw</span><span data-lang="id">Fungsi masukan f — seret untuk menggambar</span></h2>
           <canvas id="donIn" class="sq" style="cursor:crosshair"></canvas>
-          <div class="legend"><span><i class="swatch" style="background:#A8392A"></i>your f</span><span><i class="swatch" style="background:#2F7069"></i>the 16 sensor values the branch net sees</span></div>
+          <div class="legend"><span><i class="swatch" style="background:#A8392A"></i><span data-lang="en">your f</span><span data-lang="id">f-mu</span></span><span><i class="swatch" style="background:#2F7069"></i><span data-lang="en">the 16 sensor values the branch net sees</span><span data-lang="id">16 nilai sensor yang dilihat branch net</span></span></div>
         </div>
         <div class="box">
-          <h2>Output u = G(f) — network vs truth</h2>
+          <h2><span data-lang="en">Output u = G(f) — network vs truth</span><span data-lang="id">Keluaran u = G(f) — jaringan vs kebenaran</span></h2>
           <canvas id="donOut" class="sq"></canvas>
-          <div class="legend"><span><i class="swatch" style="background:#C17A3E"></i>DeepONet prediction</span><span><i class="swatch" style="background:#2D2D2D"></i>true answer (computed numerically)</span></div>
+          <div class="legend"><span><i class="swatch" style="background:#C17A3E"></i><span data-lang="en">DeepONet prediction</span><span data-lang="id">prediksi DeepONet</span></span><span><i class="swatch" style="background:#2D2D2D"></i><span data-lang="en">true answer (computed numerically)</span><span data-lang="id">jawaban sejati (dihitung numerik)</span></span></div>
         </div>
       </div>
 
-      <div class="box"><h2>Training loss (log scale)</h2><canvas id="donLossCv" class="small"></canvas></div>
+      <div class="box"><h2><span data-lang="en">Training loss (log scale)</span><span data-lang="id">Training loss (skala log)</span></h2><canvas id="donLossCv" class="small"></canvas></div>
 
       <div class="box">
-        <h2>How the two little networks share the work</h2>
+        <h2><span data-lang="en">How the two little networks share the work</span><span data-lang="id">Bagaimana dua jaringan kecil berbagi tugas</span></h2>
         <div class="eqk" id="donFormula"></div>
-        <p>The <span style="color:#A8392A;font-weight:700">branch net</span> reads f only through 16 sampled sensor values and compresses it into a few numbers bₖ — "which situation am I in?". The <span style="color:#C17A3E;font-weight:700">trunk net</span> turns the query location x into basis functions τₖ(x) — "what shapes can answers have?". Their dot product is the answer. It's a learned, problem-aware Fourier series.</p>
+        <p data-lang="en">The <span style="color:#A8392A;font-weight:700">branch net</span> reads f only through 16 sampled sensor values and compresses it into a few numbers bₖ — "which situation am I in?". The <span style="color:#C17A3E;font-weight:700">trunk net</span> turns the query location x into basis functions τₖ(x) — "what shapes can answers have?". Their dot product is the answer. It's a learned, problem-aware Fourier series.</p><p data-lang="id"><span style="color:#A8392A;font-weight:700">Branch net</span> membaca f hanya lewat 16 nilai sensor tersampel dan memampatkannya jadi beberapa angka bₖ — "aku sedang dalam situasi mana?". <span style="color:#C17A3E;font-weight:700">Trunk net</span> mengubah lokasi kueri x jadi fungsi basis τₖ(x) — "bentuk apa saja yang bisa dimiliki jawaban?". Hasil kali titik keduanya adalah jawabannya. Ini deret Fourier terpelajar yang sadar-masalah.</p>
       </div>
 
-      <div class="try"><b>Try this</b>
+      <div class="try" data-lang="en"><b>Try this</b>
         <ol>
           <li>Before training, click <i>sine</i>: the green prediction is garbage. Press <b>Train</b> and watch it snap onto the black truth within a few seconds — while still training on <i>other</i> random functions.</li>
           <li>Pause training. Draw a completely new f with your mouse. The prediction updates <b>instantly</b> — no solver ran, no retraining happened. That's the product: a solver that costs one forward pass.</li>
           <li>Draw an extreme f (huge sharp spike). The prediction degrades — the network was only trained on smooth waves. Operators interpolate between seen situations; they don't do magic outside them.</li>
           <li>Switch the operator to the ODE solver and re-train: same architecture, entirely different physics learned.</li>
         </ol>
+      </div><div class="try" data-lang="id"><b>Coba ini</b>
+        <ol>
+          <li>Sebelum pelatihan, klik <i>sinus</i>: prediksi hijaunya kacau. Tekan <b>Train</b> dan lihat ia melekat ke kebenaran hitam dalam beberapa detik — sambil tetap berlatih pada fungsi acak <i>lain</i>.</li>
+          <li>Jeda pelatihan. Gambar f yang benar-benar baru dengan mouse-mu. Prediksinya diperbarui <b>seketika</b> — tak ada solver yang jalan, tak ada pelatihan ulang. Itulah produknya: solver yang berharga satu forward pass.</li>
+          <li>Gambar f ekstrem (paku tajam raksasa). Prediksinya memburuk — jaringan hanya dilatih pada gelombang mulus. Operator menginterpolasi di antara situasi yang pernah dilihat; mereka tak bersihir di luar itu.</li>
+          <li>Ganti operatornya ke solver ODE lalu latih ulang: arsitektur sama, fisika yang dipelajari sepenuhnya berbeda.</li>
+        </ol>
       </div>
 
       <div class="box">
-        <h2>What just happened</h2>
-        <p>You trained a network whose input is <i>a function</i> and whose output is <i>a function</i> — an operator, the thing the RK4 loop and Euler rule from part 1 actually are. Real versions (DeepONet, Fourier Neural Operator) do this for weather, airflow over car bodies, and stress in materials: the expensive simulator runs offline to generate training data, then engineers get answers in milliseconds instead of hours.</p>
-        <p><b>The trade:</b> you pay a huge cost once (data generation + training) to make every future query nearly free. Worth it exactly when the same physics must be solved over and over with different inputs — design loops, control, uncertainty sweeps.</p>
+        <h2><span data-lang="en">What just happened</span><span data-lang="id">Apa yang barusan terjadi</span></h2>
+        <p data-lang="en">You trained a network whose input is <i>a function</i> and whose output is <i>a function</i> — an operator, the thing the RK4 loop and Euler rule from part 1 actually are. Real versions (DeepONet, Fourier Neural Operator) do this for weather, airflow over car bodies, and stress in materials: the expensive simulator runs offline to generate training data, then engineers get answers in milliseconds instead of hours.</p><p data-lang="id">Kamu melatih jaringan yang masukannya <i>sebuah fungsi</i> dan keluarannya <i>sebuah fungsi</i> — sebuah operator, hal yang sebenarnya adalah loop RK4 dan aturan Euler dari bagian 1. Versi nyatanya (DeepONet, Fourier Neural Operator) melakukan ini untuk cuaca, aliran udara di bodi mobil, dan tegangan pada material: simulator mahal berjalan offline untuk membangkitkan data pelatihan, lalu insinyur memperoleh jawaban dalam milidetik alih-alih jam.</p>
+        <p data-lang="en"><b>The trade:</b> you pay a huge cost once (data generation + training) to make every future query nearly free. Worth it exactly when the same physics must be solved over and over with different inputs — design loops, control, uncertainty sweeps.</p><p data-lang="id"><b>Tukar-tambahnya:</b> kamu membayar ongkos besar sekali (pembangkitan data + pelatihan) agar tiap kueri berikutnya nyaris gratis. Sepadan tepat ketika fisika yang sama harus diselesaikan berulang-ulang dengan masukan berbeda — loop desain, kendali, sapuan ketakpastian.</p>
       </div>
     </div>
   </div>
@@ -525,90 +559,97 @@
       <defs><marker id="afno" markerWidth="6" markerHeight="6" refX="3" refY="3" orient="auto"><path d="M0,0 L6,3 L0,6 z" fill="#2D2D2D"/></marker></defs>
     </svg>
     <div class="txt">
-      <h3>FNO — learn the operator in frequency space</h3>
-      <p>DeepONet learned an operator by sampling the input at sensor points. A <b>Fourier Neural Operator</b> does it differently and often better: it moves the input into <b>frequency space</b> (a Fourier transform), rescales each frequency by a learned weight, and transforms back. Many physical operators — smoothing, integrating, diffusing — are almost <i>diagonal</i> in frequency, so this is a stunningly natural fit. Watch it rediscover the exact multipliers.</p>
-      <p style="margin:8px 0 0;font-size:13px"><b>New to Fourier transforms?</b> The <a href="fourier.html">Fourier primer →</a> builds frequency space from scratch and shows why smoothing/integrating are just per-mode multiplies — the weights this tab learns.</p>
+      <h3><span data-lang="en">FNO — learn the operator in frequency space</span><span data-lang="id">FNO — pelajari operatornya di ruang frekuensi</span></h3>
+      <p data-lang="en">DeepONet learned an operator by sampling the input at sensor points. A <b>Fourier Neural Operator</b> does it differently and often better: it moves the input into <b>frequency space</b> (a Fourier transform), rescales each frequency by a learned weight, and transforms back. Many physical operators — smoothing, integrating, diffusing — are almost <i>diagonal</i> in frequency, so this is a stunningly natural fit. Watch it rediscover the exact multipliers.</p><p data-lang="id">DeepONet mempelajari operator dengan menyampel masukan di titik sensor. Sebuah <b>Fourier Neural Operator</b> melakukannya dengan cara berbeda dan sering lebih baik: ia memindahkan masukan ke <b>ruang frekuensi</b> (transformasi Fourier), menskala ulang tiap frekuensi dengan bobot terpelajar, lalu mentransformasikannya kembali. Banyak operator fisika — menghaluskan, mengintegralkan, mendifusikan — nyaris <i>diagonal</i> dalam frekuensi, jadi ini kecocokan yang menakjubkan alaminya. Lihat ia menemukan kembali pengali yang persis.</p>
+      <p data-lang="en" style="margin:8px 0 0;font-size:13px"><b>New to Fourier transforms?</b> The <a href="fourier.html">Fourier primer →</a> builds frequency space from scratch and shows why smoothing/integrating are just per-mode multiplies — the weights this tab learns.</p><p data-lang="id" style="margin:8px 0 0;font-size:13px"><b>Baru dengan transformasi Fourier?</b> <a href="fourier.html">Primer Fourier →</a> membangun ruang frekuensi dari nol dan menunjukkan kenapa menghaluskan/mengintegralkan hanyalah perkalian per-mode — bobot yang dipelajari tab ini.</p>
     </div>
   </div>
 
   <div class="layout">
     <div class="panel">
-      <h2>Operator to learn</h2>
+      <h2><span data-lang="en">Operator to learn</span><span data-lang="id">Operator yang dipelajari</span></h2>
       <div class="field"><select id="fnOp">
-        <option value="anti">Integrate · u = ∫f (÷ frequency)</option>
-        <option value="diff">Smooth / diffuse · damp high modes</option>
+        <option value="anti" data-lang="en">Integrate · u = ∫f (÷ frequency)</option><option value="anti" data-lang="id">Integralkan · u = ∫f (÷ frekuensi)</option>
+        <option value="diff" data-lang="en">Smooth / diffuse · damp high modes</option><option value="diff" data-lang="id">Haluskan / difusi · redam mode tinggi</option>
       </select></div>
 
-      <h2>Fourier layer</h2>
-      <div class="field"><label>Modes kept <span class="val" id="fnMOut">12</span></label><input id="fnM" type="range" min="3" max="20" step="1" value="12"></div>
+      <h2><span data-lang="en">Fourier layer</span><span data-lang="id">Lapisan Fourier</span></h2>
+      <div class="field"><label><span data-lang="en">Modes kept</span><span data-lang="id">Mode disimpan</span> <span class="val" id="fnMOut">12</span></label><input id="fnM" type="range" min="3" max="20" step="1" value="12"></div>
 
-      <h2>Training (on random functions)</h2>
+      <h2><span data-lang="en">Training (on random functions)</span><span data-lang="id">Pelatihan (pada fungsi acak)</span></h2>
       <div class="row2" style="margin-bottom:8px">
         <button class="btn primary" id="fnTrain">▶ Train</button>
         <button class="btn" id="fnReset">Reset</button>
       </div>
-      <p class="hint" style="margin-bottom:12px">Each step draws fresh random functions, transforms them, and nudges the per-mode weights. The net below is never retrained when you change the test input.</p>
+      <p class="hint" style="margin-bottom:12px" data-lang="en">Each step draws fresh random functions, transforms them, and nudges the per-mode weights. The net below is never retrained when you change the test input.</p><p class="hint" style="margin-bottom:12px" data-lang="id">Tiap langkah menggambar fungsi acak baru, mentransformasikannya, dan menyenggol bobot per-mode. Jaringan di bawah tak pernah dilatih ulang saat kamu mengganti masukan uji.</p>
 
-      <h2>Test input f</h2>
+      <h2><span data-lang="en">Test input f</span><span data-lang="id">Masukan uji f</span></h2>
       <div class="row2" style="margin-bottom:8px">
-        <button class="btn" id="fnRand">random</button>
-        <button class="btn" id="fnSine">sine</button>
+        <button class="btn" id="fnRand"><span data-lang="en">random</span><span data-lang="id">acak</span></button>
+        <button class="btn" id="fnSine"><span data-lang="en">sine</span><span data-lang="id">sinus</span></button>
       </div>
       <div class="row2" style="margin-bottom:8px">
-        <button class="btn" id="fnBump">bump</button>
-        <button class="btn" id="fnStep">step</button>
+        <button class="btn" id="fnBump"><span data-lang="en">bump</span><span data-lang="id">gundukan</span></button>
+        <button class="btn" id="fnStep"><span data-lang="en">step</span><span data-lang="id">tangga</span></button>
       </div>
-      <p class="hint"><b>Or draw</b> on the red chart to sculpt your own f.</p>
+      <p class="hint" data-lang="en"><b>Or draw</b> on the red chart to sculpt your own f.</p><p class="hint" data-lang="id"><b>Atau gambar</b> pada grafik merah untuk memahat f-mu sendiri.</p>
     </div>
 
     <div>
       <div class="stats">
-        <div class="stat"><div class="label">training steps</div><div class="value" id="fnStep">0</div></div>
-        <div class="stat hi"><div class="label">training loss</div><div class="value" id="fnLoss">–</div></div>
-        <div class="stat"><div class="label">answer time</div><div class="value">1 pass</div></div>
+        <div class="stat"><div class="label"><span data-lang="en">training steps</span><span data-lang="id">langkah pelatihan</span></div><div class="value" id="fnStep">0</div></div>
+        <div class="stat hi"><div class="label"><span data-lang="en">training loss</span><span data-lang="id">training loss</span></div><div class="value" id="fnLoss">–</div></div>
+        <div class="stat"><div class="label"><span data-lang="en">answer time</span><span data-lang="id">waktu menjawab</span></div><div class="value">1 pass</div></div>
       </div>
 
       <div class="cols2">
         <div class="box">
-          <h2>Input f — drag to draw</h2>
+          <h2><span data-lang="en">Input f — drag to draw</span><span data-lang="id">Masukan f — seret untuk menggambar</span></h2>
           <canvas id="fnIn" class="sq" style="cursor:crosshair"></canvas>
           <div class="legend"><span><i class="swatch" style="background:#A8392A"></i>your f</span></div>
         </div>
         <div class="box">
-          <h2>Output u = G(f) — network vs truth</h2>
+          <h2><span data-lang="en">Output u = G(f) — network vs truth</span><span data-lang="id">Keluaran u = G(f) — jaringan vs kebenaran</span></h2>
           <canvas id="fnOut" class="sq"></canvas>
-          <div class="legend"><span><i class="swatch" style="background:#C17A3E"></i>FNO prediction</span><span><i class="swatch" style="background:#2D2D2D"></i>true answer</span></div>
+          <div class="legend"><span><i class="swatch" style="background:#C17A3E"></i><span data-lang="en">FNO prediction</span><span data-lang="id">prediksi FNO</span></span><span><i class="swatch" style="background:#2D2D2D"></i><span data-lang="en">true answer</span><span data-lang="id">jawaban sejati</span></span></div>
         </div>
       </div>
 
       <div class="box">
-        <h2>The learned per-mode weights — what FNO actually stores</h2>
+        <h2><span data-lang="en">The learned per-mode weights — what FNO actually stores</span><span data-lang="id">Bobot per-mode terpelajar — yang sebenarnya disimpan FNO</span></h2>
         <canvas id="fnSpec" class="small"></canvas>
-        <div class="legend"><span><i class="swatch" style="background:#C17A3E"></i>learned gain |R<sub>k</sub>|</span><span><i class="swatch" style="background:#2D2D2D"></i>the analytic multiplier</span></div>
-        <p>Each bar is how much the network multiplies one frequency. As training proceeds they lock onto the <b>exact</b> analytic curve — for integration that is $1/(2\pi k)$ (low frequencies boosted); for diffusion it is $e^{-\alpha k^2}$ (high frequencies crushed). The operator was hiding in these few numbers all along.</p>
+        <div class="legend"><span><i class="swatch" style="background:#C17A3E"></i><span data-lang="en">learned gain |R<sub>k</sub>|</span><span data-lang="id">gain terpelajar |R<sub>k</sub>|</span></span><span><i class="swatch" style="background:#2D2D2D"></i><span data-lang="en">the analytic multiplier</span><span data-lang="id">pengali analitik</span></span></div>
+        <p data-lang="en">Each bar is how much the network multiplies one frequency. As training proceeds they lock onto the <b>exact</b> analytic curve — for integration that is $1/(2\pi k)$ (low frequencies boosted); for diffusion it is $e^{-\alpha k^2}$ (high frequencies crushed). The operator was hiding in these few numbers all along.</p><p data-lang="id">Tiap batang adalah seberapa banyak jaringan mengalikan satu frekuensi. Seiring pelatihan berjalan, mereka mengunci pada kurva analitik yang <b>persis</b> — untuk integrasi itu $1/(2\pi k)$ (frekuensi rendah dikuatkan); untuk difusi itu $e^{-\alpha k^2}$ (frekuensi tinggi dihancurkan). Operatornya bersembunyi di beberapa angka ini sejak awal.</p>
       </div>
 
       <div class="box"><h2>Training loss (log scale)</h2><canvas id="fnLossCv" class="small"></canvas></div>
 
       <div class="box">
-        <h2>The Fourier layer</h2>
+        <h2><span data-lang="en">The Fourier layer</span><span data-lang="id">Lapisan Fourier</span></h2>
         <div class="eqk" id="fnEqBig"></div>
-        <p style="margin-top:10px">$\mathcal F$ is the Fourier transform, $R$ the learned per-frequency weights, $W$ a plain pointwise term. Real FNOs stack several of these with nonlinearities in between and carry many channels — that is what lets them handle operators that are <i>not</i> perfectly diagonal, like turbulent flow. Here a single clean layer already nails the diagonal ones.</p>
+        <p data-lang="en" style="margin-top:10px">$\mathcal F$ is the Fourier transform, $R$ the learned per-frequency weights, $W$ a plain pointwise term. Real FNOs stack several of these with nonlinearities in between and carry many channels — that is what lets them handle operators that are <i>not</i> perfectly diagonal, like turbulent flow. Here a single clean layer already nails the diagonal ones.</p><p data-lang="id" style="margin-top:10px">$\mathcal F$ adalah transformasi Fourier, $R$ bobot per-frekuensi terpelajar, $W$ suku pointwise biasa. FNO nyata menumpuk beberapa lapisan ini dengan nonlinearitas di antaranya dan membawa banyak kanal — itulah yang membuat mereka menangani operator yang <i>tidak</i> sepenuhnya diagonal, seperti aliran turbulen. Di sini satu lapisan bersih saja sudah menaklukkan yang diagonal.</p>
       </div>
 
-      <div class="try"><b>Try this</b>
+      <div class="try" data-lang="en"><b>Try this</b>
         <ol>
           <li>Before training, click <i>sine</i>: the green output is nonsense and the weight bars are flat. Press <b>Train</b> — the bars snap onto the black analytic curve and the output lands on the truth.</li>
           <li>Pause, then <b>draw</b> a new f. The answer updates in one pass — no solver, no retraining — because the operator is just those stored per-mode weights.</li>
           <li>Switch to <i>smooth / diffuse</i>: now the learned weights bend the opposite way, killing high frequencies. Same architecture, a different operator living in the weights.</li>
           <li>Cut <i>modes kept</i> to 3: the network can only see the lowest frequencies, so sharp inputs (step, bump) lose their edges. Fewer modes = blurrier operator.</li>
         </ol>
+      </div><div class="try" data-lang="id"><b>Coba ini</b>
+        <ol>
+          <li>Sebelum pelatihan, klik <i>sinus</i>: keluaran hijaunya tak berarti dan batang bobotnya datar. Tekan <b>Train</b> — batangnya melekat ke kurva analitik hitam dan keluarannya mendarat di kebenaran.</li>
+          <li>Jeda, lalu <b>gambar</b> f baru. Jawabannya diperbarui dalam satu pass — tanpa solver, tanpa pelatihan ulang — karena operatornya hanyalah bobot per-mode yang tersimpan itu.</li>
+          <li>Ganti ke <i>haluskan / difusi</i>: kini bobot terpelajarnya membelok ke arah berlawanan, membunuh frekuensi tinggi. Arsitektur sama, operator berbeda yang tinggal di dalam bobot.</li>
+          <li>Potong <i>mode disimpan</i> ke 3: jaringan hanya bisa melihat frekuensi terendah, jadi masukan tajam (tangga, gundukan) kehilangan tepinya. Lebih sedikit mode = operator lebih kabur.</li>
+        </ol>
       </div>
 
       <div class="box">
-        <h2>What just happened</h2>
-        <p>Instead of reading the input at fixed sensor points like DeepONet, the FNO reads it in <b>frequency space</b> and learns one weight per frequency. Because differentiation, integration, and diffusion are all simple multiplications in that space, the FNO represents them almost perfectly with a handful of numbers — and applies to any resolution grid.</p>
-        <p><b>Why people care:</b> FNOs are today's leading fast surrogates for PDEs — weather, fluids, materials — often beating DeepONet on smooth, grid-based physics. <b>The catch:</b> the Fourier basis loves periodic, smooth data; sharp shocks and complex geometries are where it strains and where research is active.</p>
+        <h2><span data-lang="en">What just happened</span><span data-lang="id">Apa yang barusan terjadi</span></h2>
+        <p data-lang="en">Instead of reading the input at fixed sensor points like DeepONet, the FNO reads it in <b>frequency space</b> and learns one weight per frequency. Because differentiation, integration, and diffusion are all simple multiplications in that space, the FNO represents them almost perfectly with a handful of numbers — and applies to any resolution grid.</p><p data-lang="id">Alih-alih membaca masukan di titik sensor tetap seperti DeepONet, FNO membacanya di <b>ruang frekuensi</b> dan mempelajari satu bobot per frekuensi. Karena diferensiasi, integrasi, dan difusi semuanya perkalian sederhana di ruang itu, FNO merepresentasikannya nyaris sempurna dengan segenggam angka — dan berlaku untuk grid resolusi apa pun.</p>
+        <p data-lang="en"><b>Why people care:</b> FNOs are today's leading fast surrogates for PDEs — weather, fluids, materials — often beating DeepONet on smooth, grid-based physics. <b>The catch:</b> the Fourier basis loves periodic, smooth data; sharp shocks and complex geometries are where it strains and where research is active.</p><p data-lang="id"><b>Kenapa orang peduli:</b> FNO adalah surrogate cepat terdepan untuk PDE saat ini — cuaca, fluida, material — sering mengungguli DeepONet pada fisika mulus berbasis grid. <b>Tangkapannya:</b> basis Fourier menyukai data periodik dan mulus; kejut tajam dan geometri rumit adalah tempat ia kesulitan dan tempat riset masih aktif.</p>
       </div>
     </div>
   </div>
@@ -616,7 +657,7 @@
 <!-- ==================== MAP ==================== -->
 <div class="section" id="sec-map">
   <div class="box">
-    <h2>Where each idea lives — knowledge vs data</h2>
+    <h2><span data-lang="en">Where each idea lives — knowledge vs data</span><span data-lang="id">Di mana tiap ide bersemayam — pengetahuan vs data</span></h2>
     <svg viewBox="0 0 760 300" xmlns="http://www.w3.org/2000/svg" style="width:100%;height:auto;display:block">
       <defs><marker id="arrmap" markerWidth="7" markerHeight="7" refX="5" refY="3.5" orient="auto"><path d="M0,0 L7,3.5 L0,7 z" fill="#6E6259"/></marker></defs>
       <line x1="70" y1="250" x2="710" y2="250" stroke="#6E6259" stroke-width="1.5" marker-end="url(#arrmap)"/>
@@ -654,32 +695,32 @@
         <text x="595" y="209" text-anchor="middle" font-size="10" fill="#A8392A" font-family="SF Mono,monospace">your other ML courses</text>
       </g>
     </svg>
-    <p>Scientific ML is the middle of this map: every method is a different answer to <b>"how do I combine what I know with what I measured?"</b> The <a href="differential_equations.html">first playground</a> lived in the green corner — pure equations. These five methods each let go of some knowledge and lean on data instead.</p>
+    <p data-lang="en">Scientific ML is the middle of this map: every method is a different answer to <b>"how do I combine what I know with what I measured?"</b> The <a href="differential_equations.html">first playground</a> lived in the green corner — pure equations. These five methods each let go of some knowledge and lean on data instead.</p><p data-lang="id">Scientific ML adalah bagian tengah peta ini: tiap metode adalah jawaban berbeda atas <b>"bagaimana aku memadukan apa yang kutahu dengan apa yang kuukur?"</b> <a href="differential_equations.html">Playground pertama</a> tinggal di sudut hijau — persamaan murni. Kelima metode ini masing-masing melepas sebagian pengetahuan dan bersandar pada data.</p>
   </div>
 
   <div class="box">
-    <h2>The five methods, side by side</h2>
+    <h2><span data-lang="en">The five methods, side by side</span><span data-lang="id">Kelima metode, berdampingan</span></h2>
     <div style="overflow-x:auto">
     <table class="cmp">
       <tr><th></th><th>PINN</th><th>SINDy</th><th>Neural ODE</th><th>DeepONet</th><th>FNO</th></tr>
-      <tr><td>You give it</td><td>The equation + a few noisy points</td><td>One measured trajectory</td><td>Measured trajectory (+ velocities)</td><td>Many input→solution pairs</td><td>Many input→solution pairs</td></tr>
-      <tr><td>It learns</td><td>The solution of one problem</td><td>The equation, as a readable formula</td><td>The dynamics f as a black-box field</td><td>The solution operator (sensor-based)</td><td>The solution operator (frequency-based)</td></tr>
-      <tr><td>Core trick</td><td>Equation residual in the loss (autodiff)</td><td>Sparse regression on a term menu</td><td>Network is the ODE's right-hand side</td><td>branch(f) · trunk(x)</td><td>Rescale each Fourier mode</td></tr>
-      <tr><td>Output is</td><td>A curve</td><td>An equation</td><td>A vector field you integrate</td><td>A function, in one pass</td><td>A function, in one pass</td></tr>
-      <tr><td>Breaks when</td><td>Training won't converge; easy = use RK4</td><td>Noisy derivatives; term not in menu</td><td>Away from the data; not interpretable</td><td>Input unlike the training set</td><td>Sharp shocks; non-periodic geometry</td></tr>
-      <tr><td>Best for</td><td>Sparse sensors + known physics; inverse problems</td><td>Discovering interpretable laws</td><td>Unknown continuous-time dynamics</td><td>Fast surrogates on scattered inputs</td><td>Fast PDE surrogates on grids</td></tr>
+      <tr><td><span data-lang="en">You give it</span><span data-lang="id">Kamu memberinya</span></td><td><span data-lang="en">The equation + a few noisy points</span><span data-lang="id">Persamaan + beberapa titik berderau</span></td><td><span data-lang="en">One measured trajectory</span><span data-lang="id">Satu lintasan terukur</span></td><td><span data-lang="en">Measured trajectory (+ velocities)</span><span data-lang="id">Lintasan terukur (+ kecepatan)</span></td><td><span data-lang="en">Many input→solution pairs</span><span data-lang="id">Banyak pasangan masukan→solusi</span></td><td><span data-lang="en">Many input→solution pairs</span><span data-lang="id">Banyak pasangan masukan→solusi</span></td></tr>
+      <tr><td><span data-lang="en">It learns</span><span data-lang="id">Ia mempelajari</span></td><td><span data-lang="en">The solution of one problem</span><span data-lang="id">Solusi satu masalah</span></td><td><span data-lang="en">The equation, as a readable formula</span><span data-lang="id">Persamaannya, sebagai rumus terbaca</span></td><td><span data-lang="en">The dynamics f as a black-box field</span><span data-lang="id">Dinamika f sebagai medan kotak-hitam</span></td><td><span data-lang="en">The solution operator (sensor-based)</span><span data-lang="id">Operator solusi (berbasis sensor)</span></td><td><span data-lang="en">The solution operator (frequency-based)</span><span data-lang="id">Operator solusi (berbasis frekuensi)</span></td></tr>
+      <tr><td><span data-lang="en">Core trick</span><span data-lang="id">Trik inti</span></td><td><span data-lang="en">Equation residual in the loss (autodiff)</span><span data-lang="id">Residu persamaan di loss (autodiff)</span></td><td><span data-lang="en">Sparse regression on a term menu</span><span data-lang="id">Regresi sparse atas menu suku</span></td><td><span data-lang="en">Network is the ODE's right-hand side</span><span data-lang="id">Jaringan adalah ruas kanan ODE</span></td><td>branch(f) · trunk(x)</td><td><span data-lang="en">Rescale each Fourier mode</span><span data-lang="id">Skala ulang tiap mode Fourier</span></td></tr>
+      <tr><td><span data-lang="en">Output is</span><span data-lang="id">Keluarannya</span></td><td><span data-lang="en">A curve</span><span data-lang="id">Sebuah kurva</span></td><td><span data-lang="en">An equation</span><span data-lang="id">Sebuah persamaan</span></td><td><span data-lang="en">A vector field you integrate</span><span data-lang="id">Medan vektor yang kamu integralkan</span></td><td><span data-lang="en">A function, in one pass</span><span data-lang="id">Sebuah fungsi, dalam satu pass</span></td><td><span data-lang="en">A function, in one pass</span><span data-lang="id">Sebuah fungsi, dalam satu pass</span></td></tr>
+      <tr><td><span data-lang="en">Breaks when</span><span data-lang="id">Gagal ketika</span></td><td><span data-lang="en">Training won't converge; easy = use RK4</span><span data-lang="id">Pelatihan tak konvergen; mudah = pakai RK4</span></td><td><span data-lang="en">Noisy derivatives; term not in menu</span><span data-lang="id">Turunan berderau; suku tak ada di menu</span></td><td><span data-lang="en">Away from the data; not interpretable</span><span data-lang="id">Jauh dari data; tak dapat ditafsirkan</span></td><td><span data-lang="en">Input unlike the training set</span><span data-lang="id">Masukan tak seperti set pelatihan</span></td><td><span data-lang="en">Sharp shocks; non-periodic geometry</span><span data-lang="id">Kejut tajam; geometri non-periodik</span></td></tr>
+      <tr><td><span data-lang="en">Best for</span><span data-lang="id">Paling cocok untuk</span></td><td><span data-lang="en">Sparse sensors + known physics; inverse problems</span><span data-lang="id">Sensor jarang + fisika diketahui; masalah invers</span></td><td><span data-lang="en">Discovering interpretable laws</span><span data-lang="id">Menemukan hukum yang dapat ditafsirkan</span></td><td><span data-lang="en">Unknown continuous-time dynamics</span><span data-lang="id">Dinamika waktu-kontinu tak diketahui</span></td><td><span data-lang="en">Fast surrogates on scattered inputs</span><span data-lang="id">Surrogate cepat untuk masukan tersebar</span></td><td><span data-lang="en">Fast PDE surrogates on grids</span><span data-lang="id">Surrogate PDE cepat pada grid</span></td></tr>
     </table>
     </div>
   </div>
 
   <div class="box">
-    <h2>Check yourself</h2>
+    <h2><span data-lang="en">Check yourself</span><span data-lang="id">Uji dirimu</span></h2>
     <div id="quizBox"></div>
   </div>
 </div>
 
 <footer>
-  Built for classroom use · every model trains live in this page — Fourier transforms, autodiff, and all — with no server · part 2 of 2, after <a href="differential_equations.html">Differential equations</a>.
+  <span data-lang="en">Built for classroom use · every model trains live in this page — Fourier transforms, autodiff, and all — with no server · part 2 of 2, after <a href="differential_equations.html">Differential equations</a>.</span><span data-lang="id">Dibuat untuk kelas · setiap model dilatih langsung di halaman ini — transformasi Fourier, autodiff, semuanya — tanpa server · bagian 2 dari 2, setelah <a href="differential_equations.html">Persamaan diferensial</a>.</span>
 </footer>
 
 </div>
@@ -692,6 +733,15 @@ function fmt(v,d=2){ if(!isFinite(v)) return '–'; return v.toFixed(d).replace(
 function lerp(a,b,t){ return Math.round(a+(b-a)*t); }
 function randn(){ let u=0,v=0; while(u===0)u=Math.random(); while(v===0)v=Math.random(); return Math.sqrt(-2*Math.log(u))*Math.cos(2*Math.PI*v); }
 function fmtSci(v){ if(!isFinite(v))return '\u2013'; if(v===0)return '0'; if(v>=0.01&&v<1000) return v.toPrecision(3); const e=Math.floor(Math.log10(Math.abs(v))); return (v/Math.pow(10,e)).toFixed(1)+'e'+e; }
+function LANG(){ return document.documentElement.lang==='id'?'id':'en'; }
+const TRMAP={
+ 'residual r(t)':'residu r(t)','frequency k':'frekuensi k','step':'langkah',
+ 'λ — decay rate':'λ — laju peluruhan','ρ — growth rate':'ρ — laju pertumbuhan','ω — frequency':'ω — frekuensi',
+ '▶ Train':'▶ Latih','⏸ Pause':'⏸ Jeda',
+ 'no data here — physics only':'tak ada data di sini — fisika saja','data+start':'data+awal','physics':'fisika',
+ '(everything got deleted)':'(semuanya terhapus)','truth: ':'sejati: '
+};
+function TR(s){ return LANG()==='id' ? (TRMAP[s]||s) : s; }
 
 /* ---- KaTeX ---- */
 let KATEX_READY=false;
@@ -736,8 +786,8 @@ function Plot(cv,x0,x1,y0,y1,opt={}){
     g.fillStyle=COL.soft; g.textAlign='right'; g.fillText((+v.toFixed(6)).toString(), p.l-5, py(v)+3.5);
   }
   g.strokeStyle=COL.border; g.strokeRect(p.l,p.t,W-p.l-p.r,H-p.t-p.b);
-  if(opt.xlab){ g.fillStyle=COL.soft; g.textAlign='right'; g.font='11px Consolas,monospace'; g.fillText(opt.xlab,W-p.r-4,H-p.b-6); }
-  if(opt.ylab){ g.fillStyle=COL.soft; g.textAlign='left'; g.font='11px Consolas,monospace'; g.fillText(opt.ylab,p.l+6,p.t+13); }
+  if(opt.xlab){ g.fillStyle=COL.soft; g.textAlign='right'; g.font='11px Consolas,monospace'; g.fillText(TR(opt.xlab),W-p.r-4,H-p.b-6); }
+  if(opt.ylab){ g.fillStyle=COL.soft; g.textAlign='left'; g.font='11px Consolas,monospace'; g.fillText(TR(opt.ylab),p.l+6,p.t+13); }
   return { g,px,py,x0,x1,y0,y1,p,W,H,
     clip(){ g.save(); g.beginPath(); g.rect(p.l,p.t,W-p.l-p.r,H-p.t-p.b); g.clip(); },
     unclip(){ g.restore(); },
@@ -934,7 +984,7 @@ function draw(){
     pl.g.fillStyle='rgba(47,112,105,0.09)';
     pl.g.fillRect(pl.px(c.T/2),pl.p.t,pl.px(c.T)-pl.px(c.T/2),pl.H-pl.p.t-pl.p.b);
     pl.g.fillStyle='rgba(39,88,90,0.65)'; pl.g.font='10px Consolas,monospace'; pl.g.textAlign='center';
-    pl.g.fillText('no data here — physics only', (pl.px(c.T/2)+pl.px(c.T))/2, pl.p.t+14);
+    pl.g.fillText(TR('no data here — physics only'), (pl.px(c.T/2)+pl.px(c.T))/2, pl.p.t+14);
     pl.clip();
     // collocation ticks
     pl.g.strokeStyle=COL.gold; pl.g.lineWidth=1.5;
@@ -977,8 +1027,8 @@ function draw(){
     pl.line(lossH.map((_,i)=>i*5), lossH.map(q=>lg(q[1])), COL.moss, 1.8);
     pl.unclip();
     pl.g.font='11px Consolas,monospace'; pl.g.textAlign='left';
-    pl.g.fillStyle=COL.rust; pl.g.fillText('data+start', pl.p.l+8, pl.p.t+14);
-    pl.g.fillStyle=COL.moss; pl.g.fillText('physics', pl.p.l+8, pl.p.t+28);
+    pl.g.fillStyle=COL.rust; pl.g.fillText(TR('data+start'), pl.p.l+8, pl.p.t+14);
+    pl.g.fillStyle=COL.moss; pl.g.fillText(TR('physics'), pl.p.l+8, pl.p.t+28);
   } else if(cv3){
     Plot(cv3,0,1,0,1,{xlab:'step',ylab:'log₁₀ loss'});
   }
@@ -999,7 +1049,7 @@ TICKS.push(() => {
 $('pinnProb').addEventListener('change',e=>{
   prob=e.target.value; const c=cfg();
   const s=$('pinnP'); s.min=c.pr[0]; s.max=c.pr[1]; s.step=c.pr[2]; s.value=c.pr[3]; pp=c.pr[3];
-  $('pinnPLab').textContent=c.plab; $('pinnPOut').textContent=fmt(pp);
+  $('pinnPLab').textContent=TR(c.plab); $('pinnPOut').textContent=fmt(pp);
   initNet(); regenData(); regenCol();
 });
 $('pinnP').addEventListener('input',e=>{ pp=+e.target.value; $('pinnPOut').textContent=fmt(pp); dirty=true; });
@@ -1009,7 +1059,7 @@ $('pinnResample').addEventListener('click',()=>regenData());
 $('pinnWP').addEventListener('input',e=>{ wP=+e.target.value; $('pinnWPOut').textContent=fmt(wP,1); dirty=true; });
 $('pinnNC').addEventListener('input',e=>{ nC=+e.target.value; $('pinnNCOut').textContent=nC; regenCol(); });
 $('pinnTrain').addEventListener('click',()=>{
-  training=!training; $('pinnTrain').textContent=training?'⏸ Pause':'▶ Train';
+  training=!training; $('pinnTrain').textContent=training?TR('⏸ Pause'):TR('▶ Train');
 });
 $('pinnStep').addEventListener('click',()=>{
   let L; for(let i=0;i<300;i++) L=trainStep();
@@ -1120,7 +1170,7 @@ function eqHTML(name, w, truth){
     const cls = truth[i]!==0 ? 'good' : 'bad';
     terms.push({ s:`<span class="${cls}">${fmt(Math.abs(w[i]),2)}·${LIB[i].lab}</span>`, neg:w[i]<0 });
   }
-  if(!terms.length) return `${name} = <span class="bad">0</span> &nbsp;<span class="true-eq">(everything got deleted)</span>`;
+  if(!terms.length) return `${name} = <span class="bad">0</span> &nbsp;<span class="true-eq">${TR('(everything got deleted)')}</span>`;
   let out=`${name} = `;
   terms.forEach((t,i)=>{
     if(i===0) out += (t.neg?'−':'')+t.s;
@@ -1180,7 +1230,7 @@ function recompute(){
   // equations
   $('siEq').innerHTML =
     eqHTML('ẋ',wx,c.tx) + '<br>' + eqHTML('ẏ',wy,c.ty) +
-    `<br><span class="true-eq">truth: &nbsp;${trueEqHTML('ẋ',c.tx)} &nbsp;·&nbsp; ${trueEqHTML('ẏ',c.ty)}</span>`;
+    `<br><span class="true-eq">${TR('truth: ')}&nbsp;${trueEqHTML('ẋ',c.tx)} &nbsp;·&nbsp; ${trueEqHTML('ẏ',c.ty)}</span>`;
   // table
   let good=0, bad=0, miss=0, totTrue=0;
   let html='<tr><th>term</th><th>ẋ found</th><th>ẋ true</th><th>ẏ found</th><th>ẏ true</th></tr>';
@@ -1309,7 +1359,7 @@ $('ndSys').addEventListener('change',e=>{ sys=e.target.value; initNet(); regen()
 $('ndN').addEventListener('input',e=>{ N=+e.target.value; $('ndNOut').textContent=N; regen(); });
 $('ndNoise').addEventListener('input',e=>{ noise=+e.target.value; $('ndNoiseOut').textContent=fmt(noise); regen(); });
 $('ndResample').addEventListener('click',()=>regen());
-$('ndTrain').addEventListener('click',()=>{ training=!training; $('ndTrain').textContent=training?'⏸ Pause':'▶ Train'; });
+$('ndTrain').addEventListener('click',()=>{ training=!training; $('ndTrain').textContent=training?TR('⏸ Pause'):TR('▶ Train'); });
 $('ndStep').addEventListener('click',()=>{ for(let i=0;i<400;i++) trainStep(); dirty=true; });
 $('ndReset').addEventListener('click',()=>{ initNet(); });
 REDRAW.node=()=>{ dirty=true; };
@@ -1528,7 +1578,7 @@ $('donPresetBump').addEventListener('click',()=>setPreset(x=>1.8*Math.exp(-(((x-
 $('donPresetStep').addEventListener('click',()=>setPreset(x=>1.5*Math.tanh(9*(x-0.5))));
 $('donOp').addEventListener('change',e=>{ op=e.target.value; initNet(); dirty=true; });
 $('donTrain').addEventListener('click',()=>{
-  training=!training; $('donTrain').textContent=training?'⏸ Pause':'▶ Train';
+  training=!training; $('donTrain').textContent=training?TR('⏸ Pause'):TR('▶ Train');
 });
 $('donReset').addEventListener('click',()=>{ initNet(); });
 // drawing on the input canvas
@@ -1671,7 +1721,7 @@ $('fnBump').addEventListener('click',()=>setPreset(x=>1.8*Math.exp(-(Math.pow((x
 $('fnStep').addEventListener('click',()=>setPreset(x=>1.3*Math.tanh(9*(x-0.5))));
 $('fnOp').addEventListener('change',e=>{ op=e.target.value; initNet(); dirty=true; });
 $('fnM').addEventListener('input',e=>{ M=+e.target.value; $('fnMOut').textContent=M; buildT(); initNet(); dirty=true; });
-$('fnTrain').addEventListener('click',()=>{ training=!training; $('fnTrain').textContent=training?'⏸ Pause':'▶ Train'; });
+$('fnTrain').addEventListener('click',()=>{ training=!training; $('fnTrain').textContent=training?TR('⏸ Pause'):TR('▶ Train'); });
 $('fnReset').addEventListener('click',()=>{ initNet(); });
 let drawing=false; const inEl=$('fnIn');
 function pen(e){ if(!LPin) return null; const r=inEl.getBoundingClientRect();
@@ -1692,7 +1742,7 @@ buildT(); initNet(); setPreset(x=>1.2*Math.sin(2*Math.PI*x));
 
 /* ==================== QUIZ ==================== */
 (() => {
-const QS=[
+const QS_EN=[
   { q:'In a PINN, the "physics loss" is checked…',
     o:['only where you have measurements','at collocation points, which need no data at all','only at the final time','on a validation set'],
     a:1, e:'The network is differentiated and plugged into the equation at freely chosen points. Knowledge stands in for data — which is how the PINN fills the data-free region.' },
@@ -1712,18 +1762,60 @@ const QS=[
     o:['a smooth input like the training set','an input wildly unlike anything seen in training (or a sharp shock for FNO)','a slightly shifted input','a scaled-down input'],
     a:1, e:'Operators interpolate between situations they were trained on. Far outside that distribution — or, for FNO, sharp non-periodic features — accuracy falls. They are fast surrogates, not magic.' },
 ];
-const box=$('quizBox');
-QS.forEach((Q,qi)=>{ const d=document.createElement('div'); d.className='q';
-  d.innerHTML=`<div class="qt">${qi+1}. ${Q.q}</div>`;
-  const opts=document.createElement('div'); opts.className='opts';
-  Q.o.forEach((o,oi)=>{ const b=document.createElement('button'); b.className='opt'; b.textContent=o;
-    b.addEventListener('click',()=>{ if(oi===Q.a){ opts.querySelectorAll('.opt').forEach(x=>x.classList.remove('wrong')); b.classList.add('correct'); exp.style.display='block'; } else b.classList.add('wrong'); });
-    opts.appendChild(b); });
-  const exp=document.createElement('div'); exp.className='exp'; exp.textContent=Q.e;
-  d.appendChild(opts); d.appendChild(exp); box.appendChild(d);
-});
+const QS_ID=[
+  { q:'Dalam PINN, "physics loss" diperiksa…',
+    o:['hanya di tempat kamu punya pengukuran','di titik kolokasi, yang sama sekali tak butuh data','hanya di waktu terakhir','pada set validasi'],
+    a:1, e:'Jaringan diturunkan dan disisipkan ke persamaan di titik-titik yang dipilih bebas. Pengetahuan menggantikan data — begitulah PINN mengisi wilayah tanpa-data.' },
+  { q:'Kamu punya lintasan terukur tapi tak tahu hukum yang mengaturnya, dan kamu ingin rumus yang bisa dibaca. Alat terbaik?',
+    o:['PINN','SINDy','DeepONet','FNO'],
+    a:1, e:'SINDy melakukan data → persamaan lewat regresi sparse, dan keluarannya rumus yang bisa dibaca manusia. PINN sudah butuh hukumnya; operator menghasilkan kotak hitam.' },
+  { q:'Neural ODE berbeda dari SINDy terutama karena…',
+    o:['ia tak butuh data','ruas kanannya jaringan saraf, bukan rumus sparse — fleksibel tapi tak terbaca','ia hanya bekerja pada sistem linear','ia berjalan mundur dalam waktu'],
+    a:1, e:'Keduanya mempelajari dinamika dari gerak, tapi SINDy memilih beberapa suku dari menu (dapat ditafsirkan); Neural ODE membiarkan jaringan menjadi f (fleksibel, menangkap siklus batas, tapi kotak hitam).' },
+  { q:'Sebuah pabrik harus mengevaluasi PDE yang sama untuk ribuan masukan berbeda, tiap-tiap milidetik. Paling cocok?',
+    o:['Jalankan ulang RK4 / solver PDE tiap kali','Latih satu PINN per masukan','Sebuah neural operator (DeepONet atau FNO)','SINDy'],
+    a:2, e:'Operator mengamortisasi: bayar sekali dengan simulasi offline + pelatihan, lalu tiap masukan baru berharga satu forward pass. Solver atau PINN per-masukan membayar harga penuh tiap kali.' },
+  { q:'Apa trik inti FNO yang tak dipakai DeepONet?',
+    o:['ia membaca masukan di ruang frekuensi dan menskala ulang tiap mode Fourier','ia memakai lebih banyak sensor','ia menghindari pelatihan','ia tak butuh contoh'],
+    a:0, e:'FNO mentransformasi ke ruang frekuensi dan mempelajari satu bobot per mode. Karena integrasi/difusi diagonal di sana, ia mencocokkannya nyaris persis — dan bekerja pada resolusi grid mana pun.' },
+  { q:'DeepONet dan FNO sama-sama memburuk pada jenis masukan uji yang sama. Yang mana?',
+    o:['masukan mulus seperti set pelatihan','masukan yang sangat tak mirip apa pun yang dilihat saat pelatihan (atau kejut tajam bagi FNO)','masukan yang sedikit digeser','masukan yang diperkecil'],
+    a:1, e:'Operator menginterpolasi di antara situasi yang pernah dilatihkan. Jauh di luar distribusi itu — atau, bagi FNO, fitur tajam non-periodik — akurasi jatuh. Mereka surrogate cepat, bukan sihir.' },
+];
+function buildQuiz(){
+  const box=$('quizBox'); if(!box) return; box.innerHTML='';
+  const QS = LANG()==='id'?QS_ID:QS_EN;
+  QS.forEach((Q,qi)=>{ const d=document.createElement('div'); d.className='q';
+    d.innerHTML=`<div class="qt">${qi+1}. ${Q.q}</div>`;
+    const opts=document.createElement('div'); opts.className='opts';
+    Q.o.forEach((o,oi)=>{ const b=document.createElement('button'); b.className='opt'; b.textContent=o;
+      b.addEventListener('click',()=>{ if(oi===Q.a){ opts.querySelectorAll('.opt').forEach(x=>x.classList.remove('wrong')); b.classList.add('correct'); exp.style.display='block'; } else b.classList.add('wrong'); });
+      opts.appendChild(b); });
+    const exp=document.createElement('div'); exp.className='exp'; exp.textContent=Q.e;
+    d.appendChild(opts); d.appendChild(exp); box.appendChild(d);
+  });
+}
+window.__buildQuiz=buildQuiz; buildQuiz();
 })();
 
+/* ---- language switch ---- */
+window.__onLang=function(){
+  try{ if(typeof REDRAW!=='undefined' && REDRAW[ACTIVE]) REDRAW[ACTIVE](); }catch(e){}
+  try{ ['pinnTrain','ndTrain','donTrain','fnTrain'].forEach(function(id){ var b=$(id); if(b) b.textContent=/⏸/.test(b.textContent)?TR('⏸ Pause'):TR('▶ Train'); }); }catch(e){}
+  try{ var pb=$('pinnProb'); if(pb&&$('pinnPLab')){ var m={decay:'λ — decay rate',logistic:'ρ — growth rate',osc:'ω — frequency'}; $('pinnPLab').textContent=TR(m[pb.value]||''); } }catch(e){}
+  try{ if(window.__buildQuiz) window.__buildQuiz(); }catch(e){}
+};
+(function(){ var KEY='phxLang';
+  function apply(l){ document.documentElement.lang=l;
+    var b=document.querySelectorAll('[data-lang-btn]'); for(var i=0;i<b.length;i++) b[i].classList.toggle('on', b[i].getAttribute('data-lang-btn')===l);
+    if(window.__onLang){ try{ window.__onLang(l); }catch(e){} } }
+  function set(l){ try{ localStorage.setItem(KEY,l); }catch(e){} apply(l); }
+  var s=null; try{ s=localStorage.getItem(KEY); }catch(e){}
+  apply(s==='id'?'id':'en');
+  var btns=document.querySelectorAll('[data-lang-btn]');
+  for(var i=0;i<btns.length;i++) btns[i].addEventListener('click',function(e){ e.preventDefault(); set(this.getAttribute('data-lang-btn')); });
+  window.setLang=set;
+})();
 </script>
 </body>
 </html>
