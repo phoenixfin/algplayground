@@ -148,14 +148,60 @@
   .filtrow .fcap{ font-size:10.5px; color:var(--ink-soft); font-family:"SF Mono",SFMono-Regular,Consolas,monospace; margin-top:4px; }
   canvas.mid{ height:200px; }
 </style>
-<nav style="display:flex;align-items:center;gap:16px;font-family:'SF Mono',SFMono-Regular,Consolas,monospace;font-size:13px;margin-bottom:24px;flex-wrap:wrap">
-<a href="https://phx.my.id" style="display:inline-flex;align-items:center;gap:9px;text-decoration:none;color:#2D2D2D;font-weight:600"><img src="logo.png" alt="" style="width:30px;height:30px;border-radius:7px;display:block">phx.my.id</a>
-<span style="flex:1;min-width:12px"></span>
-<a href="https://phx.my.id" style="text-decoration:none;color:#6E6259"><span data-lang="en">Home</span><span data-lang="id">Beranda</span></a>
-<a href="https://research.phx.my.id" style="text-decoration:none;color:#6E6259"><span data-lang="en">Research</span><span data-lang="id">Riset</span></a>
-<a href="index.html" style="text-decoration:none;color:#8F5620;font-weight:600"><span data-lang="en">Playgrounds</span><span data-lang="id">Playground</span></a>
-<span class="langtog"><button data-lang-btn="en">EN</button><button data-lang-btn="id">ID</button></span>
+<style>
+  .pnav{ display:flex; align-items:center; gap:14px; margin-bottom:24px; font-family:"SF Mono",SFMono-Regular,Consolas,monospace; font-size:13px; flex-wrap:wrap; }
+  .pnav a{ text-decoration:none; color:var(--ink-soft); }
+  .pnav a:hover{ color:var(--ink); }
+  .pnav .brand{ display:inline-flex; align-items:center; gap:9px; color:var(--ink); font-weight:700; }
+  .pnav .brand img{ width:30px; height:30px; border-radius:7px; display:block; }
+  .pnav .spacer{ flex:1; min-width:8px; }
+  .pnav a.ext::after{ content:" \2197"; color:var(--ink-soft); font-size:11px; }
+  .pnav details.topics{ position:relative; }
+  .pnav details.topics>summary{ list-style:none; cursor:pointer; color:var(--ink); font-weight:600; padding:2px 2px; }
+  .pnav details.topics>summary::-webkit-details-marker{ display:none; }
+  .pnav details.topics>summary::after{ content:" \25BE"; }
+  .pnav details.topics[open]>summary::after{ content:" \25B4"; }
+  .pnav .menu{ position:absolute; top:100%; left:0; margin-top:9px; background:var(--card); border:1px solid var(--border); border-radius:7px; padding:14px 16px; box-shadow:0 8px 26px rgba(45,45,45,0.13); z-index:60; display:flex; gap:24px; }
+  .pnav .mgroup{ display:flex; flex-direction:column; gap:6px; }
+  .pnav .mgroup>b{ font-size:10px; letter-spacing:0.09em; text-transform:uppercase; color:var(--accent-deep); margin-bottom:2px; }
+  .pnav .mgroup a{ color:var(--ink); white-space:nowrap; }
+  .pnav .mgroup a:hover{ color:var(--accent-deep); }
+  .pnav .mgroup a.cur{ color:var(--accent-deep); font-weight:700; }
+  @media(max-width:700px){ .pnav .menu{ flex-direction:column; gap:14px; } }
+</style>
+<nav class="pnav">
+  <a class="brand" href="index.html"><img src="logo.png" alt=""><span data-lang="en">Playgrounds</span><span data-lang="id">Playground</span></a>
+  <details class="topics">
+    <summary><span data-lang="en">Topics</span><span data-lang="id">Topik</span></summary>
+    <div class="menu">
+      <div class="mgroup"><b><span data-lang="en">Optimization</span><span data-lang="id">Optimasi</span></b>
+        <a href="evolutionary_swarm.html"><span data-lang="en">Evolutionary &amp; swarm</span><span data-lang="id">Evolusioner &amp; swarm</span></a>
+        <a href="apps/optimizers/"><span data-lang="en">Gradient descent</span><span data-lang="id">Gradient descent</span></a>
+      </div>
+      <div class="mgroup"><b>Machine Learning</b>
+        <a href="classical_ml.html"><span data-lang="en">Classical ML</span><span data-lang="id">ML klasik</span></a>
+        <a href="apps/mlp/"><span data-lang="en">Neural net from scratch</span><span data-lang="id">Neural net dari nol</span></a>
+        <a href="convolution.html"><span data-lang="en">Convolution &amp; CNNs</span><span data-lang="id">Konvolusi &amp; CNN</span></a>
+      </div>
+      <div class="mgroup"><b>Scientific ML</b>
+        <a href="differential_equations.html"><span data-lang="en">Differential equations</span><span data-lang="id">Persamaan diferensial</span></a>
+        <a href="fourier.html">Fourier</a>
+        <a href="scientific_ml.html">Scientific ML</a>
+      </div>
+    </div>
+  </details>
+  <span class="spacer"></span>
+  <a class="ext" href="https://phx.my.id" target="_blank" rel="noopener noreferrer">phx.my.id</a>
+  <a class="ext" href="https://research.phx.my.id" target="_blank" rel="noopener noreferrer"><span data-lang="en">Research</span><span data-lang="id">Riset</span></a>
+  <span class="langtog"><button data-lang-btn="en">EN</button><button data-lang-btn="id">ID</button></span>
 </nav>
+<script>(function(){
+  var path=(location.pathname.split('/').filter(Boolean).pop()||'index.html');
+  var links=document.querySelectorAll('.pnav .menu a');
+  for(var i=0;i<links.length;i++){ var hf=links[i].getAttribute('href')||''; var seg=hf.split('/').filter(Boolean).pop()||'';
+    if(seg===path || (path!=='index.html' && hf.indexOf(path)>=0)) links[i].classList.add('cur'); }
+  document.addEventListener('click',function(e){ var d=document.querySelector('.pnav details[open]'); if(d && !d.contains(e.target)) d.removeAttribute('open'); });
+})();</script>
 
 <header class="top">
   <p class="eyebrow"><span data-lang="en">Convolution &amp; CNNs</span><span data-lang="id">Konvolusi &amp; CNN</span></p>
