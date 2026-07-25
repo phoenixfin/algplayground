@@ -1,0 +1,759 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="icon" type="image/png" href="logo.png">
+<script>try{var _l=localStorage.getItem('phxLang');if(_l==='id'||_l==='en')document.documentElement.lang=_l;}catch(e){}</script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=Lato:wght@300;400;700&display=swap" rel="stylesheet">
+<title>Convolution & CNNs — seeing with filters</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css" crossorigin="anonymous">
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js" crossorigin="anonymous"></script>
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/contrib/auto-render.min.js" crossorigin="anonymous" onload="window.__mathReady&&window.__mathReady()"></script>
+<style>
+  :root{
+    --paper: #FAF7F2; --paper-line: #EDE4D8; --ink: #2D2D2D; --ink-soft: #6E6259;
+    --moss: #C17A3E; --moss-dim: #F0DCC6; --rust: #A8392A; --rust-dim: #F3DBD5;
+    --gold: #2F7069; --accent-deep: #8F5620; --gold-dim: #D3E5E2; --card: #FFFDF9; --border: #E4DACB;
+  }
+  *{ box-sizing: border-box; }
+  html[lang="en"] [data-lang="id"], html[lang="id"] [data-lang="en"]{ display: none !important; }
+  body{
+    margin:0; background: var(--paper); color: var(--ink);
+    font-family: Lato, "Helvetica Neue", Helvetica, Arial, sans-serif; line-height: 1.5;
+    background-image: linear-gradient(var(--paper-line) 1px, transparent 1px), linear-gradient(90deg, var(--paper-line) 1px, transparent 1px);
+    background-size: 28px 28px; background-attachment: fixed;
+  }
+  .wrap{ max-width: 1100px; margin: 0 auto; padding: 36px 24px 80px; }
+  header.top{ margin-bottom: 18px; border-bottom: 2px solid var(--ink); padding-bottom: 14px; }
+  .eyebrow{ font-family: "SF Mono", SFMono-Regular, Consolas, monospace; font-size: 12px; letter-spacing: 0.12em; text-transform: uppercase; color: var(--moss); margin: 0 0 6px; }
+  h1{ font-family: "Playfair Display", "Playfair Display", Georgia, serif; font-weight: 600; font-size: 32px; margin: 0 0 8px; }
+  header.top p{ margin: 0; color: var(--ink-soft); max-width: 800px; font-size: 15px; }
+  header.top p.eyebrow{ color: var(--accent-deep); }
+  .crumbs{ font-size: 12.5px; margin: 14px 0 0; }
+  .crumbs a{ color: var(--moss); }
+  .langtog{ display:inline-flex; border:1px solid var(--border); border-radius:20px; overflow:hidden; }
+  .langtog button{ font-family:inherit; font-size:11.5px; letter-spacing:0.06em; padding:4px 11px; border:0; background:#fff; color:var(--ink-soft); cursor:pointer; }
+  .langtog button.on{ background:var(--accent-deep); color:#fff; font-weight:700; }
+
+  .tabs{ display: flex; gap: 8px; margin: 0 0 22px; flex-wrap: wrap;  position: sticky; top: 0; z-index: 20; background: var(--paper); padding: 12px 0 10px; border-bottom: 1px solid var(--border); }
+  .tab{ padding: 9px 14px; font-size: 13px; font-weight: 600; border: 1px solid var(--ink); border-radius: 3px; background: var(--card); cursor: pointer; }
+  .tab.active{ background: var(--ink); color: #fff; }
+
+  .section{ display: none; }
+  .section.active{ display: block; }
+
+  .intro{ display:grid; grid-template-columns: 200px 1fr; gap: 20px; align-items:center; background: var(--card); border: 1px solid var(--border); border-radius: 4px; padding: 14px 18px; margin-bottom: 20px; }
+  @media (max-width: 700px){ .intro{ grid-template-columns: 1fr; } }
+  .intro svg{ width: 100%; height: auto; display:block; }
+  .intro .txt h3{ margin: 0 0 6px; font-family: "Playfair Display", Georgia, serif; font-size: 17px; font-weight: 400; }
+  .intro .txt p{ margin: 0; font-size: 13.5px; color: var(--ink-soft); }
+
+  .layout{ display: grid; grid-template-columns: 300px 1fr; gap: 24px; align-items: start; }
+  @media (max-width: 820px){
+    .layout{ grid-template-columns: 1fr; }
+    .panel{ position: static !important; top: auto !important; }
+  }
+  .panel{ background: var(--card); border: 1px solid var(--border); border-radius: 4px; padding: 18px; position: sticky; top: 84px; align-self: start; }
+  .panel h2{ font-family: "SF Mono", SFMono-Regular, Consolas, monospace; font-size: 12px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--ink-soft); margin: 18px 0 12px; border-bottom: 1px solid var(--border); padding-bottom: 6px; }
+  .panel h2:first-child{ margin-top: 0; }
+  .field{ margin-bottom: 14px; }
+  .field label{ display: flex; justify-content: space-between; font-size: 13px; font-weight: 600; margin-bottom: 5px; gap:8px; }
+  .field label span.val{ font-weight: 400; color: var(--moss); font-family: "SF Mono", SFMono-Regular, Consolas, monospace; white-space:nowrap; }
+  .field input[type=range]{ width: 100%; accent-color: var(--moss); }
+  .field select{ width: 100%; padding: 6px 8px; font-size: 13px; border: 1px solid var(--border); border-radius: 3px; background: #fff; font-family: inherit; }
+
+  .btn{ display: inline-block; padding: 8px 14px; font-size: 13px; font-weight: 600; border: 1px solid var(--ink); border-radius: 3px; background: var(--card); color: var(--ink); cursor: pointer; }
+  .btn:hover{ background: var(--paper-line); }
+  .btn.primary{ background: var(--moss); color: #fff; border-color: var(--moss); }
+  .btn.primary:hover{ background: #A6642F; }
+  .btn.toggle.active{ background: var(--ink); color: #fff; }
+  .btn.block{ width: 100%; margin-bottom: 8px; }
+  .btngroup{ display:flex; gap:8px; margin-bottom: 14px; }
+  .btngroup .btn{ flex:1; }
+  .row2{ display: flex; gap: 8px; }
+  .row2 > *{ flex: 1; }
+  .hint{ font-size: 12.5px; color: var(--ink-soft); margin: 10px 0 0; }
+
+  .stats{ display: flex; gap: 12px; margin-bottom: 20px; flex-wrap: wrap; }
+  .stat{ flex: 1; min-width: 120px; background: var(--card); border: 1px solid var(--border); border-radius: 4px; padding: 10px 14px; overflow: hidden; }
+  .stat .label{ font-size: 11px; letter-spacing: 0.08em; text-transform: uppercase; color: var(--ink-soft); font-family: "SF Mono", SFMono-Regular, Consolas, monospace; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .stat .value{ font-size: 20px; font-family: "Playfair Display", Georgia, serif; line-height: 1.3; word-break: break-word; }
+  .stat .value.eqv{ font-size: 15px; padding-top: 4px; }
+  .stat.hi .value{ color: var(--moss); }
+  .stat.warn .value{ color: var(--rust); }
+
+  .box{ background: var(--card); border: 1px solid var(--border); border-radius: 4px; padding: 12px 14px; margin-bottom: 20px; }
+  .box h2{ font-family: "SF Mono", SFMono-Regular, Consolas, monospace; font-size: 12px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--ink-soft); margin: 0 0 10px; }
+  .box p{ font-size: 13.5px; color: var(--ink-soft); margin: 8px 0 0; }
+  .box p b{ color: var(--ink); }
+  canvas{ display:block; width:100%; }
+  canvas.big{ height: 430px; cursor: crosshair; }
+  canvas.mid{ height: 230px; }
+  canvas.small{ height: 160px; }
+  canvas.sq{ aspect-ratio: 1.15/1; height:auto; }
+  canvas.anim{ aspect-ratio: 1.15/1; height:auto; }
+  canvas.heat{ height: 200px; }
+
+  .cols2{ display:grid; grid-template-columns: 1fr 1fr; gap: 18px; margin-bottom:20px; }
+  @media (max-width: 900px){ .cols2{ grid-template-columns: 1fr; } }
+  .cols2 .box{ margin-bottom: 0; }
+
+  .legend{ display:flex; gap:16px; font-size:12px; color: var(--ink-soft); margin-top:8px; flex-wrap:wrap; }
+  .legend span{ display:inline-flex; align-items:center; gap:5px; }
+  .swatch{ width:10px; height:10px; border-radius:50%; display:inline-block; }
+
+  .try{ background: var(--gold-dim); border: 1px solid var(--gold); border-radius: 4px; padding: 10px 14px; font-size: 13px; margin-bottom: 20px; }
+  .try b{ text-transform: uppercase; font-size: 11px; letter-spacing: 0.08em; font-family: "SF Mono", SFMono-Regular, Consolas, monospace; color: #27585A; }
+  .try ol{ margin: 6px 0 0; padding-left: 20px; }
+  .try li{ margin-bottom: 3px; }
+
+  .eqk{ background:#fff; border:1px solid var(--border); border-radius:3px; padding:12px 14px; overflow-x:auto; margin-bottom:0; }
+  .eqk .katex-display{ margin:0; }
+  .katex{ font-size:1.04em; }
+
+  table.cmp{ width:100%; border-collapse:collapse; font-size:13px; }
+  table.cmp th, table.cmp td{ border:1px solid var(--border); padding:9px 12px; text-align:left; vertical-align:top; }
+  table.cmp th{ background:var(--paper); font-family:"Playfair Display", Georgia, serif; font-weight:400; font-size:15px; }
+  table.cmp td:first-child, table.cmp th:first-child{ background:var(--paper); font-weight:600; font-size:12px; text-transform:uppercase; letter-spacing:0.06em; font-family:"SF Mono",SFMono-Regular,Consolas,monospace; color:var(--ink-soft); width:120px; }
+  table.cmp td{ color: var(--ink); }
+
+  .q{ margin-bottom: 18px; }
+  .q .qt{ font-weight: 600; font-size: 14px; margin-bottom: 8px; }
+  .q .opts{ display:flex; flex-direction:column; gap:6px; }
+  .q button.opt{ border:1px solid var(--border); border-radius:3px; padding:8px 12px; cursor:pointer; background:#fff; text-align:left; font-size:13.5px; font-family:inherit; color:var(--ink); }
+  .q button.opt:hover{ border-color: var(--ink); }
+  .q button.opt.correct{ background: var(--moss-dim); border-color: var(--moss); font-weight:600; }
+  .q button.opt.wrong{ background: var(--rust-dim); border-color: var(--rust); }
+  .q .exp{ display:none; font-size:13px; color:var(--ink-soft); margin-top:8px; background:var(--paper); border-left:3px solid var(--moss); padding:8px 12px; }
+
+  .mono{ font-family:"SF Mono",SFMono-Regular,Consolas,monospace; }
+  footer{ margin-top: 30px; border-top: 1px solid var(--border); padding-top: 14px; font-size: 12px; color: var(--ink-soft); }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<style>
+  .kgrid{ display:grid; grid-template-columns:repeat(3,1fr); gap:5px; margin-top:4px; }
+  .kgrid input{ width:100%; padding:6px 4px; text-align:center; font-family:"SF Mono",SFMono-Regular,Consolas,monospace; font-size:13px; border:1px solid var(--border); border-radius:3px; background:#fff; color:var(--ink); }
+  .cols3{ display:grid; grid-template-columns:repeat(3,1fr); gap:12px; }
+  @media(max-width:640px){ .cols3{ grid-template-columns:1fr; } }
+  .caplab{ text-align:center; font-size:11px; color:var(--ink-soft); font-family:"SF Mono",SFMono-Regular,Consolas,monospace; margin-top:5px; }
+  .filtrow{ display:flex; gap:14px; flex-wrap:wrap; }
+  .filtrow .fcell{ text-align:center; }
+  .filtrow canvas{ width:66px; height:66px; display:block; border:1px solid var(--border); border-radius:3px; image-rendering:pixelated; }
+  .filtrow .fcap{ font-size:10.5px; color:var(--ink-soft); font-family:"SF Mono",SFMono-Regular,Consolas,monospace; margin-top:4px; }
+  canvas.mid{ height:200px; }
+</style>
+<nav style="display:flex;align-items:center;gap:16px;font-family:'SF Mono',SFMono-Regular,Consolas,monospace;font-size:13px;margin-bottom:24px;flex-wrap:wrap">
+<a href="https://phx.my.id" style="display:inline-flex;align-items:center;gap:9px;text-decoration:none;color:#2D2D2D;font-weight:600"><img src="logo.png" alt="" style="width:30px;height:30px;border-radius:7px;display:block">phx.my.id</a>
+<span style="flex:1;min-width:12px"></span>
+<a href="https://phx.my.id" style="text-decoration:none;color:#6E6259">Home</a>
+<a href="https://research.phx.my.id" style="text-decoration:none;color:#6E6259">Research</a>
+<a href="index.html" style="text-decoration:none;color:#8F5620;font-weight:600">Playgrounds</a>
+</nav>
+
+<header class="top">
+  <p class="eyebrow">Convolution &amp; CNNs</p>
+  <h1>Seeing with filters</h1>
+  <p>A convolutional network sees an image by sliding tiny <b>filters</b> across it, each one lighting up where it finds the pattern it likes — an edge, a corner, a blob. Here you build filters by hand, watch convolution turn into simple multiplication in frequency space, and then let a network <b>discover its own filters</b> from scratch. You only need the idea of a weighted sum.</p>
+  <p class="crumbs">Deep learning · pairs with <a href="fourier.html">Fourier</a> (a filter is a frequency selector) and the <a href="apps/mlp/">neural-net-from-scratch</a> playground.</p>
+</header>
+
+<div class="tabs">
+  <button class="tab active" data-tab="conv">1 · Filters &amp; feature maps</button>
+  <button class="tab" data-tab="freq">2 · Convolution = filtering</button>
+  <button class="tab" data-tab="cnn">3 · A CNN learns its filters</button>
+  <button class="tab" data-tab="map">4 · The big picture</button>
+</div>
+
+<!-- ==================== 1 · FILTERS ==================== -->
+<div class="section active" id="sec-conv">
+  <div class="intro">
+    <svg viewBox="0 0 200 120" xmlns="http://www.w3.org/2000/svg">
+      <g stroke="#E4DACB" stroke-width="1"><rect x="8" y="18" width="84" height="84" fill="#FFFDF9"/>
+        <line x1="8" y1="46" x2="92" y2="46"/><line x1="8" y1="74" x2="92" y2="74"/><line x1="36" y1="18" x2="36" y2="102"/><line x1="64" y1="18" x2="64" y2="102"/></g>
+      <rect x="8" y="18" width="28" height="28" fill="none" stroke="#C17A3E" stroke-width="2.5"/>
+      <path d="M96 60 h 16" stroke="#2D2D2D" stroke-width="1.5" marker-end="url(#arc)"/>
+      <defs><marker id="arc" markerWidth="6" markerHeight="6" refX="3" refY="3" orient="auto"><path d="M0,0 L6,3 L0,6 z" fill="#2D2D2D"/></marker></defs>
+      <g fill="#2F7069"><rect x="120" y="30" width="70" height="70" opacity="0.15"/></g>
+      <rect x="120" y="30" width="14" height="14" fill="#C17A3E"/>
+      <rect x="134" y="44" width="14" height="14" fill="#C17A3E" opacity="0.6"/>
+      <rect x="148" y="58" width="14" height="14" fill="#C17A3E" opacity="0.3"/>
+    </svg>
+    <div class="txt">
+      <h3>A filter is a small weighted stamp</h3>
+      <p>Take a 3×3 grid of weights. Slide it over the image; at every position, multiply the nine weights by the nine pixels underneath and add them up. That single number is the <b>feature map</b> value there. Different weights detect different things — a blur, an edge, a corner — all from the same slide-multiply-add.</p>
+    </div>
+  </div>
+
+  <div class="layout">
+    <div class="panel">
+      <h2>Image</h2>
+      <div class="row2" style="margin-bottom:8px">
+        <button class="btn" id="cvDigit">digit</button>
+        <button class="btn" id="cvCircle">circle</button>
+      </div>
+      <div class="row2" style="margin-bottom:8px">
+        <button class="btn" id="cvDiag">edges</button>
+        <button class="btn" id="cvClear">clear</button>
+      </div>
+      <p class="hint"><b>Or draw</b> on the left image with your mouse.</p>
+
+      <h2>Filter (3×3 weights)</h2>
+      <div class="field"><select id="cvPreset">
+        <option value="identity">Identity (do nothing)</option>
+        <option value="blur">Box blur</option>
+        <option value="gauss">Gaussian blur</option>
+        <option value="sharpen">Sharpen</option>
+        <option value="edge">Edge (Laplacian)</option>
+        <option value="sobelx">Sobel ↔ (vertical edges)</option>
+        <option value="sobely">Sobel ↕ (horizontal edges)</option>
+        <option value="emboss">Emboss</option>
+      </select></div>
+      <div id="cvKernel" class="kgrid"></div>
+      <p class="hint">Edit any weight — the feature map updates live. Presets just fill these nine numbers.</p>
+    </div>
+
+    <div>
+      <div class="stats">
+        <div class="stat"><div class="label">weight sum</div><div class="value" id="cvSum">1.00</div></div>
+        <div class="stat"><div class="label">hovered output</div><div class="value" id="cvHover">–</div></div>
+      </div>
+      <div class="cols2">
+        <div class="box"><h2>Input image — draw here</h2><canvas id="cvIn" style="aspect-ratio:1/1;height:auto;cursor:crosshair"></canvas></div>
+        <div class="box"><h2>Feature map — hover to inspect</h2><canvas id="cvOut" style="aspect-ratio:1/1;height:auto;cursor:crosshair"></canvas></div>
+      </div>
+      <div class="box">
+        <h2>What one output pixel is</h2>
+        <div class="eqk" id="cvEq"></div>
+        <p>Hover a cell in the feature map: the matching 3×3 patch lights up on the input, and the box above shows the exact nine-term weighted sum that produced it. That is <b>all</b> a convolution layer does — this, millions of times.</p>
+      </div>
+      <div class="try"><b>Try this</b>
+        <ol>
+          <li>Pick <i>edges</i> and the <b>Sobel ↔</b> filter: only the vertical strokes light up. Switch to <b>Sobel ↕</b>: now the horizontal ones. Each filter is tuned to one orientation.</li>
+          <li>Pick <b>box blur</b>: the sharp digit turns soft — the filter replaces each pixel with the average of its neighbours. Compare with <b>sharpen</b>, which does the opposite.</li>
+          <li>Hand-edit the weights to all-zero except the centre = 1: that's <i>identity</i>, the image passes through untouched. Nudge one neighbour and watch a ghost appear.</li>
+        </ol>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ==================== 2 · CONV = FILTERING ==================== -->
+<div class="section" id="sec-freq">
+  <div class="intro">
+    <svg viewBox="0 0 200 120" xmlns="http://www.w3.org/2000/svg">
+      <rect x="12" y="30" width="40" height="40" fill="#C17A3E" opacity="0.3"/><rect x="12" y="30" width="40" height="40" fill="none" stroke="#C17A3E"/>
+      <text x="60" y="55" font-family="SF Mono,monospace" font-size="16" fill="#6E6259">×</text>
+      <rect x="78" y="30" width="40" height="40" fill="#2F7069" opacity="0.25"/><rect x="78" y="30" width="40" height="40" fill="none" stroke="#2F7069"/>
+      <text x="124" y="55" font-family="SF Mono,monospace" font-size="16" fill="#6E6259">=</text>
+      <rect x="142" y="30" width="40" height="40" fill="#A8392A" opacity="0.3"/><rect x="142" y="30" width="40" height="40" fill="none" stroke="#A8392A"/>
+      <text x="95" y="92" text-anchor="middle" font-family="SF Mono,monospace" font-size="9" fill="#6E6259">in frequency space, blur is just a mask</text>
+    </svg>
+    <div class="txt">
+      <h3>Every filter is a frequency selector</h3>
+      <p>Convolution feels like a lot of sliding and adding. But move to <b>frequency space</b> (a 2D Fourier transform) and it collapses to a single rule: <b>multiply</b> the image's spectrum by the filter's spectrum. A blur is a filter that keeps only low frequencies; an edge filter keeps only high ones. Same lesson as the Fourier page, now in 2D.</p>
+    </div>
+  </div>
+
+  <div class="layout">
+    <div class="panel">
+      <h2>Image</h2>
+      <div class="row2" style="margin-bottom:8px">
+        <button class="btn" id="fqDigit">digit</button>
+        <button class="btn" id="fqCircle">circle</button>
+      </div>
+      <button class="btn block" id="fqNoise">texture</button>
+      <p class="hint"><b>Or draw</b> on the input image.</p>
+
+      <h2>Filter</h2>
+      <div class="field"><select id="fqFilter">
+        <option value="blur">Blur — a low-pass filter</option>
+        <option value="edge">Edge — a high-pass filter</option>
+        <option value="sharpen">Sharpen — boost high modes</option>
+        <option value="identity">Identity</option>
+      </select></div>
+      <p class="hint">The spectra below are the 2D Fourier transforms: centre = low frequency, edges = high frequency, brighter = more energy.</p>
+    </div>
+
+    <div>
+      <div class="cols2">
+        <div class="box"><h2>Input image</h2><canvas id="fqIn" style="aspect-ratio:1/1;height:auto;cursor:crosshair"></canvas></div>
+        <div class="box"><h2>Filtered output</h2><canvas id="fqOut" style="aspect-ratio:1/1;height:auto"></canvas></div>
+      </div>
+      <div class="box">
+        <h2>The same thing in frequency space — output spectrum = input × filter</h2>
+        <div class="cols3">
+          <div><canvas id="fqSpecIn" style="aspect-ratio:1/1;height:auto"></canvas><div class="caplab">input spectrum</div></div>
+          <div><canvas id="fqSpecK" style="aspect-ratio:1/1;height:auto"></canvas><div class="caplab">filter response</div></div>
+          <div><canvas id="fqSpecOut" style="aspect-ratio:1/1;height:auto"></canvas><div class="caplab">output spectrum</div></div>
+        </div>
+      </div>
+      <div class="box">
+        <h2>The rule</h2>
+        <div class="eqk" id="fqEq"></div>
+        <p>A blur's response is bright in the middle (keeps low frequencies, kills the fine detail); an edge filter's is bright at the rim (keeps the fast changes, drops the flat regions). <b>This is exactly the Fourier page in two dimensions</b> — see the <a href="fourier.html">Fourier bridge →</a> for the 1D story.</p>
+      </div>
+      <div class="try"><b>Try this</b>
+        <ol>
+          <li><i>Blur</i>: watch the outer ring of the output spectrum go dark — high frequencies removed — and the image goes soft.</li>
+          <li><i>Edge</i>: the opposite — the centre goes dark, only the rim survives, and the output is all outlines. Flat regions (low frequency) vanish.</li>
+          <li>Draw something jagged, then blur it: the jaggedness (high frequency) is exactly what disappears first.</li>
+        </ol>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ==================== 3 · CNN LEARNS ==================== -->
+<div class="section" id="sec-cnn">
+  <div class="intro">
+    <svg viewBox="0 0 200 120" xmlns="http://www.w3.org/2000/svg">
+      <rect x="10" y="35" width="44" height="44" fill="#FFFDF9" stroke="#2D2D2D"/>
+      <line x1="30" y1="38" x2="30" y2="76" stroke="#C17A3E" stroke-width="3"/>
+      <path d="M60 57 h 12" stroke="#2D2D2D" stroke-width="1.4" marker-end="url(#acn)"/>
+      <defs><marker id="acn" markerWidth="6" markerHeight="6" refX="3" refY="3" orient="auto"><path d="M0,0 L6,3 L0,6 z" fill="#2D2D2D"/></marker></defs>
+      <g><rect x="80" y="30" width="20" height="20" fill="#C17A3E" opacity="0.8"/><rect x="80" y="54" width="20" height="20" fill="#2F7069" opacity="0.5"/><rect x="80" y="78" width="20" height="14" fill="#A8392A" opacity="0.4"/></g>
+      <text x="120" y="45" font-family="SF Mono,monospace" font-size="9" fill="#6E6259">learned</text>
+      <text x="120" y="58" font-family="SF Mono,monospace" font-size="9" fill="#6E6259">filters</text>
+      <path d="M104 60 h 40" stroke="#E4DACB" stroke-width="1"/>
+    </svg>
+    <div class="txt">
+      <h3>Nobody tells it what an edge is</h3>
+      <p>So far you chose the filters. A convolutional network <b>learns them</b>. Here a tiny CNN is shown random images of a single stroke — sometimes vertical, sometimes horizontal — and must say which. It starts with random filters and, purely from being right or wrong, sculpts them into edge detectors. Watch the filters below turn from noise into structure.</p>
+    </div>
+  </div>
+
+  <div class="layout">
+    <div class="panel">
+      <h2>The task</h2>
+      <p class="hint" style="margin-top:0">Each image has one bright stroke plus noise. Class: is it <b>vertical</b> or <b>horizontal</b>? The net: 4 learnable 3×3 filters → ReLU → average-pool → a 2-way decision.</p>
+      <h2>Training</h2>
+      <div class="row2" style="margin-bottom:8px">
+        <button class="btn primary" id="cnTrain">▶ Train</button>
+        <button class="btn" id="cnReset">Reset</button>
+      </div>
+      <p class="hint">Every step draws a fresh batch of random strokes, predicts, and nudges the filters by gradient descent — exactly the loop from the neural-net playground, now over images.</p>
+    </div>
+
+    <div>
+      <div class="stats">
+        <div class="stat"><div class="label">training steps</div><div class="value" id="cnStep">0</div></div>
+        <div class="stat hi"><div class="label">accuracy</div><div class="value" id="cnAcc">–</div></div>
+        <div class="stat warn"><div class="label">loss</div><div class="value" id="cnLoss">–</div></div>
+      </div>
+      <div class="cols2">
+        <div class="box"><h2>A sample &amp; the network's guess</h2><canvas id="cnSample" style="aspect-ratio:1/1;height:auto"></canvas>
+          <div class="value" id="cnPred" style="text-align:center;font-family:Georgia,serif;margin-top:6px">–</div></div>
+        <div class="box"><h2>Accuracy while training</h2><canvas id="cnChart" class="mid"></canvas></div>
+      </div>
+      <div class="box">
+        <h2>The four filters it is learning — watch them become edge detectors</h2>
+        <div id="cnFilters" class="filtrow"></div>
+        <p style="margin-top:8px">Warm = positive weight, cool = negative. A good vertical-edge filter ends up with one bright column beside one dark column — the same Sobel shape you built by hand in tab 1, but <b>discovered</b>, not designed.</p>
+      </div>
+      <div class="try"><b>Try this</b>
+        <ol>
+          <li>Press <b>Train</b> and watch the accuracy shoot up while the four noisy filters organise into clean light/dark stripes within a few seconds.</li>
+          <li>Reset a few times: the filters land in different arrangements each run — there is no single "correct" filter, only ones that work. Some runs even leave a filter unused.</li>
+          <li>Compare a learned filter to the hand-built Sobel in tab 1. The network reinvented the edge detector on its own, guided only by right-vs-wrong.</li>
+        </ol>
+      </div>
+      <div class="box">
+        <h2>What just happened</h2>
+        <p>This is the whole idea of deep learning for vision: <b>don't hand-engineer features, learn them.</b> Stack more of these layers and the filters in later layers combine edges into corners, corners into textures, textures into object parts — a hierarchy nobody wrote down. Real CNNs (for photos, medical scans, self-driving) are this exact mechanism, just wider, deeper, and trained on millions of images.</p>
+        <p><b>The catch:</b> that power needs data and compute, and the learned filters are only as unbiased as the training set. This toy learns two clean classes in seconds; ImageNet-scale vision took years of GPUs.</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ==================== 4 · MAP ==================== -->
+<div class="section" id="sec-map">
+  <div class="box">
+    <h2>Three views of one operation</h2>
+    <div style="overflow-x:auto">
+    <table class="cmp">
+      <tr><th></th><th>In space</th><th>In frequency</th><th>In a CNN</th></tr>
+      <tr><td>What a filter is</td><td>A 3×3 grid of weights you slide and dot-product</td><td>A mask that scales each frequency</td><td>Nine numbers the network learns by gradient descent</td></tr>
+      <tr><td>Blur</td><td>Average of neighbours</td><td>Keep low frequencies (low-pass)</td><td>Rarely learned — it throws away detail</td></tr>
+      <tr><td>Edge</td><td>Neighbour minus neighbour</td><td>Keep high frequencies (high-pass)</td><td>The first thing early layers learn</td></tr>
+      <tr><td>Cost</td><td>One dot product per output pixel</td><td>One multiply per frequency (via FFT)</td><td>Filters shared across the whole image — few weights, huge reach</td></tr>
+    </table>
+    </div>
+    <p>The same operation, seen three ways. The Fourier view explains <i>why</i> filters do what they do; the CNN view explains <i>where the filters come from.</i></p>
+  </div>
+
+  <div class="box">
+    <h2>Where this connects</h2>
+    <p><b>← Fourier.</b> A filter is a frequency selector; convolution in space is multiplication in frequency. The <a href="fourier.html">Fourier bridge</a> is the 1D version of tab 2.</p>
+    <p><b>← Neural net from scratch.</b> Tab 3 is the same gradient-descent training loop as the <a href="apps/mlp/">MLP playground</a>, but the weights are shared filters slid over an image instead of a dense layer.</p>
+    <p><b>→ What comes next.</b> Pooling, stacking layers into a deep hierarchy, and — the modern successor for many tasks — attention, where a token learns which other tokens to look at instead of using a fixed local window.</p>
+  </div>
+
+  <div class="box">
+    <h2>Check yourself</h2>
+    <div id="quizBox"></div>
+  </div>
+</div>
+
+<footer>
+  Built for hands-on learning · every filter, transform, and training step runs live in this page — no server · part of the Interactive Playgrounds.
+</footer>
+
+</div>
+<script>
+"use strict";
+const $ = id => document.getElementById(id);
+const COL = { ink:'#2D2D2D', soft:'#6E6259', moss:'#C17A3E', mossDim:'#F0DCC6', rust:'#A8392A',
+              rustDim:'#F3DBD5', gold:'#2F7069', goldDim:'#D3E5E2', border:'#E4DACB', line:'#EDE4D8' };
+function fmt(v,d=2){ if(!isFinite(v)) return '–'; return v.toFixed(d).replace(/-/g,'−'); }
+function lerp(a,b,t){ return Math.round(a+(b-a)*t); }
+function LANG(){ return document.documentElement.lang==='id'?'id':'en'; }
+const TRMAP={
+ 'time (min)':'waktu (mnt)','temp °C':'suhu °C','time':'waktu','population y':'populasi y',
+ 't (s)':'t (dtk)','position x':'posisi x','height u':'tinggi u','temp u':'suhu u','log₁₀ gap':'log₁₀ selisih',
+ '▶ Play':'▶ Putar','⏸ Pause':'⏸ Jeda','Exact ✓':'Eksak ✓','Exact ✗':'Eksak ✗',
+ 'Two nearby starts: ':'Dua awal berdekatan: ','Wiggle the left end: ':'Goyang ujung kiri: ',
+ 'k — cooling rate':'k — laju pendinginan','r — growth rate':'r — laju pertumbuhan',
+ 'holding…':'menahan…','off':'mati'
+};
+function TR(s){ return LANG()==='id' ? (TRMAP[s]||s) : s; }
+
+/* ---- KaTeX ---- */
+let KATEX_READY=false;
+function renderEq(el,tex,display){
+  if(!el) return;
+  el.dataset.tex=tex; el.dataset.disp=display?'1':'0';
+  if(KATEX_READY && window.katex){ try{ katex.render(tex,el,{displayMode:!!display,throwOnError:false}); return; }catch(e){} }
+  el.textContent=tex;
+}
+window.__mathReady=function(){
+  KATEX_READY=true;
+  document.querySelectorAll('[data-tex]').forEach(el=>{ try{ katex.render(el.dataset.tex,el,{displayMode:el.dataset.disp==='1',throwOnError:false}); }catch(e){} });
+  try{ if(window.renderMathInElement) renderMathInElement(document.body,{delimiters:[{left:'$$',right:'$$',display:true},{left:'$',right:'$',display:false},{left:'\\(',right:'\\)',display:false}],ignoredClasses:['mono']}); }catch(e){}
+};
+
+/* ---- canvas + plot ---- */
+function getCv(id){
+  const c=$(id); if(!c) return null; const r=c.getBoundingClientRect();
+  if(r.width<5) return null;
+  const dpr=window.devicePixelRatio||1, W=Math.round(r.width), H=Math.round(r.height);
+  if(c.width!==Math.round(W*dpr)||c.height!==Math.round(H*dpr)){ c.width=Math.round(W*dpr); c.height=Math.round(H*dpr); }
+  const x=c.getContext('2d'); x.setTransform(dpr,0,0,dpr,0,0);
+  return { x, w:W, h:H, el:c };
+}
+function niceStep(range,n){ const raw=range/Math.max(1,n), mag=Math.pow(10,Math.floor(Math.log10(raw))), nm=raw/mag;
+  return (nm<1.5?1:nm<3.5?2:nm<7.5?5:10)*mag; }
+function Plot(cv,x0,x1,y0,y1,opt={}){
+  const p={ l:opt.l??46, r:opt.r??10, t:opt.t??10, b:opt.b??24 };
+  const g=cv.x, W=cv.w, H=cv.h;
+  const px=v=>p.l+(v-x0)/(x1-x0)*(W-p.l-p.r);
+  const py=v=>H-p.b-(v-y0)/(y1-y0)*(H-p.t-p.b);
+  g.clearRect(0,0,W,H); g.fillStyle='#fff'; g.fillRect(p.l,p.t,W-p.l-p.r,H-p.t-p.b);
+  g.font='10px Consolas,monospace'; g.lineWidth=1;
+  const sx=niceStep(x1-x0,opt.nx??6);
+  for(let v=Math.ceil(x0/sx-1e-9)*sx; v<=x1+1e-9; v+=sx){
+    g.strokeStyle=COL.line; g.beginPath(); g.moveTo(px(v),p.t); g.lineTo(px(v),H-p.b); g.stroke();
+    g.fillStyle=COL.soft; g.textAlign='center'; g.fillText(Math.abs(v)<1e-9?'0':(+v.toFixed(6)).toString(), px(v), H-p.b+13);
+  }
+  const sy=niceStep(y1-y0,opt.ny??5);
+  for(let v=Math.ceil(y0/sy-1e-9)*sy; v<=y1+1e-9; v+=sy){
+    g.strokeStyle=COL.line; g.beginPath(); g.moveTo(p.l,py(v)); g.lineTo(W-p.r,py(v)); g.stroke();
+    g.fillStyle=COL.soft; g.textAlign='right'; g.fillText((+v.toFixed(6)).toString(), p.l-5, py(v)+3.5);
+  }
+  g.strokeStyle=COL.border; g.strokeRect(p.l,p.t,W-p.l-p.r,H-p.t-p.b);
+  if(opt.xlab){ g.fillStyle=COL.soft; g.textAlign='right'; g.font='11px Consolas,monospace'; g.fillText(TR(opt.xlab),W-p.r-4,H-p.b-6); }
+  if(opt.ylab){ g.fillStyle=COL.soft; g.textAlign='left'; g.font='11px Consolas,monospace'; g.fillText(TR(opt.ylab),p.l+6,p.t+13); }
+  return { g,px,py,x0,x1,y0,y1,p,W,H,
+    clip(){ g.save(); g.beginPath(); g.rect(p.l,p.t,W-p.l-p.r,H-p.t-p.b); g.clip(); },
+    unclip(){ g.restore(); },
+    line(xs,ys,color,wd=2,dash=[]){ g.strokeStyle=color; g.lineWidth=wd; g.setLineDash(dash); g.beginPath();
+      let st=false; for(let i=0;i<xs.length;i++){ const X=px(xs[i]),Y=py(ys[i]);
+        if(!isFinite(X)||!isFinite(Y)){ st=false; continue; } if(!st){ g.moveTo(X,Y); st=true; } else g.lineTo(X,Y); }
+      g.stroke(); g.setLineDash([]); },
+    dot(x,y,r,color,strokeC){ g.fillStyle=color; g.beginPath(); g.arc(px(x),py(y),r,0,7); g.fill();
+      if(strokeC){ g.strokeStyle=strokeC; g.lineWidth=1.2; g.stroke(); } },
+    invx(mx){ return x0+(mx-p.l)/(W-p.l-p.r)*(x1-x0); },
+    invy(my){ return y0+(H-p.b-my)/(H-p.t-p.b)*(y1-y0); },
+  };
+}
+function arrowSeg(g,x0,y0,x1,y1,color,wd=2){
+  g.strokeStyle=color; g.fillStyle=color; g.lineWidth=wd;
+  g.beginPath(); g.moveTo(x0,y0); g.lineTo(x1,y1); g.stroke();
+  const a=Math.atan2(y1-y0,x1-x0), s=6;
+  g.beginPath(); g.moveTo(x1,y1);
+  g.lineTo(x1-s*Math.cos(a-0.45),y1-s*Math.sin(a-0.45));
+  g.lineTo(x1-s*Math.cos(a+0.45),y1-s*Math.sin(a+0.45));
+  g.closePath(); g.fill();
+}
+const _tmpc = document.createElement('canvas');
+function drawHeat(cv, rows, N, vmax, diverging){
+  const g=cv.x, W=cv.w, H=cv.h;
+  g.clearRect(0,0,W,H); g.fillStyle='#fff'; g.fillRect(0,0,W,H);
+  const R=rows.length; if(R===0) return;
+  _tmpc.width=N; _tmpc.height=R;
+  const tg=_tmpc.getContext('2d'), img=tg.createImageData(N,R);
+  for(let r=0;r<R;r++){ const row=rows[r];
+    for(let i=0;i<N;i++){ let v=row[i]/(vmax||1), cr,cg,cb;
+      if(diverging){ const t=Math.max(-1,Math.min(1,v));
+        if(t>=0){ cr=lerp(247,166,t); cg=lerp(246,71,t); cb=lerp(239,47,t); }
+        else { const s=-t; cr=lerp(247,47,s); cg=lerp(246,111,s); cb=lerp(239,78,s); } }
+      else { const t=Math.max(0,Math.min(1,v));
+        if(t<0.5){ const s=t/0.5; cr=lerp(247,184,s); cg=lerp(246,137,s); cb=lerp(239,43,s); }
+        else { const s=(t-0.5)/0.5; cr=lerp(184,166,s); cg=lerp(137,71,s); cb=lerp(43,47,s); } }
+      const o=(r*N+i)*4; img.data[o]=cr; img.data[o+1]=cg; img.data[o+2]=cb; img.data[o+3]=255;
+    } }
+  tg.putImageData(img,0,0);
+  g.imageSmoothingEnabled=true; g.drawImage(_tmpc,0,0,N,R,0,0,W,H);
+}
+
+/* ---- tab plumbing + loop ---- */
+let ACTIVE='sf';
+const REDRAW={}, TICKS=[];
+document.querySelectorAll('.tab').forEach(b=>b.addEventListener('click',()=>{
+  document.querySelectorAll('.tab').forEach(x=>x.classList.toggle('active',x===b));
+  ACTIVE=b.dataset.tab;
+  document.querySelectorAll('.section').forEach(s=>s.classList.toggle('active',s.id==='sec-'+ACTIVE));
+  if(REDRAW[ACTIVE]) REDRAW[ACTIVE]();
+}));
+window.addEventListener('resize',()=>{ if(REDRAW[ACTIVE]) REDRAW[ACTIVE](); });
+let _lastTs=0;
+function _loop(ts){ const dt=Math.min(0.05,(ts-_lastTs)/1000); _lastTs=ts;
+  for(const f of TICKS) f(dt); requestAnimationFrame(_loop); }
+requestAnimationFrame(_loop);
+
+/* ===== convolution playground ===== */
+const NI=28;
+function randn(){let u=0,v=0;while(u===0)u=Math.random();while(v===0)v=Math.random();return Math.sqrt(-2*Math.log(u))*Math.cos(2*Math.PI*v);}
+function fmtSci(v){ if(!isFinite(v))return '–'; if(v===0)return '0'; if(v>=0.01&&v<1000) return v.toPrecision(3); const e=Math.floor(Math.log10(Math.abs(v))); return (v/Math.pow(10,e)).toFixed(1)+'e'+e; }
+const KERNELS={
+  identity:[0,0,0,0,1,0,0,0,0],
+  blur:[1/9,1/9,1/9,1/9,1/9,1/9,1/9,1/9,1/9],
+  gauss:[1/16,2/16,1/16,2/16,4/16,2/16,1/16,2/16,1/16],
+  sharpen:[0,-1,0,-1,5,-1,0,-1,0],
+  edge:[0,-1,0,-1,4,-1,0,-1,0],
+  sobelx:[-1,0,1,-2,0,2,-1,0,1],
+  sobely:[-1,-2,-1,0,0,0,1,2,1],
+  emboss:[-2,-1,0,-1,1,1,0,1,2]
+};
+function conv2(img,N,k){ const out=new Float64Array(N*N);
+  for(let y=0;y<N;y++)for(let x=0;x<N;x++){ let s=0;
+    for(let i=-1;i<=1;i++)for(let j=-1;j<=1;j++){ const yy=y+i,xx=x+j; if(yy<0||yy>=N||xx<0||xx>=N) continue; s+=img[yy*N+xx]*k[(i+1)*3+(j+1)]; }
+    out[y*N+x]=s; } return out; }
+function drawGrid(cv,img,N,mode,hl){
+  const g=cv.x,W=cv.w,H=cv.h; g.clearRect(0,0,W,H);
+  let mx=1e-6; if(mode==='div'){ for(let i=0;i<N*N;i++) mx=Math.max(mx,Math.abs(img[i])); }
+  const px=W/N,py=H/N;
+  for(let y=0;y<N;y++)for(let x=0;x<N;x++){ const v=img[y*N+x]; let r,gr,b;
+    if(mode==='div'){ const t=Math.max(-1,Math.min(1,v/mx));
+      if(t>=0){ r=lerp(255,193,t); gr=lerp(253,122,t); b=lerp(249,62,t); }
+      else { const s=-t; r=lerp(255,47,s); gr=lerp(253,112,s); b=lerp(249,105,s); } }
+    else if(mode==='spec'){ const t=Math.max(0,Math.min(1,v)); r=lerp(255,143,t); gr=lerp(253,86,t); b=lerp(249,32,t); }
+    else { const t=Math.max(0,Math.min(1,v)); r=lerp(255,45,t); gr=lerp(253,45,t); b=lerp(249,45,t); }
+    g.fillStyle='rgb('+r+','+gr+','+b+')'; g.fillRect(Math.floor(x*px),Math.floor(y*py),Math.ceil(px)+1,Math.ceil(py)+1); }
+  if(hl){ g.strokeStyle=COL.ink; g.lineWidth=2; g.strokeRect(hl.x*px,hl.y*py,px*(hl.w||1),py*(hl.h||1)); }
+}
+/* preset images */
+function imgClear(){ return new Float64Array(NI*NI); }
+function imgDigit(){ const a=new Float64Array(NI*NI);
+  for(let x=6;x<=21;x++){ a[5*NI+x]=1; a[6*NI+x]=0.85; }
+  for(let k=0;k<15;k++){ const y=7+k, x=20-Math.round(k*0.85); if(x>=0){ a[y*NI+x]=1; if(x+1<NI)a[y*NI+x+1]=0.6; } }
+  return a; }
+function imgCircle(){ const a=new Float64Array(NI*NI),c=13.5;
+  for(let y=0;y<NI;y++)for(let x=0;x<NI;x++){ const d=Math.hypot(x-c,y-c); if(d>7.5&&d<9.8) a[y*NI+x]=1; else if(d>=9.8&&d<10.6) a[y*NI+x]=0.5; }
+  return a; }
+function imgEdges(){ const a=new Float64Array(NI*NI);
+  for(let t=6;t<=21;t++){ a[6*NI+t]=1; a[21*NI+t]=1; a[t*NI+6]=1; a[t*NI+21]=1; }
+  for(let k=0;k<16;k++){ a[(6+k)*NI+(6+k)]=1; } return a; }
+function imgTexture(){ let a=new Float64Array(NI*NI); for(let i=0;i<NI*NI;i++) a[i]=Math.random();
+  for(let p=0;p<2;p++) a=conv2(a,NI,KERNELS.gauss); let mx=1e-6; for(let i=0;i<a.length;i++) mx=Math.max(mx,a[i]); for(let i=0;i<a.length;i++) a[i]/=mx; return a; }
+
+/* 2D DFT magnitude, fft-shifted, log-normalised (for display) */
+function dftMag(img,N){
+  const R=new Float64Array(N*N),I=new Float64Array(N*N);
+  for(let ku=0;ku<N;ku++)for(let kv=0;kv<N;kv++){ let sr=0,si=0;
+    for(let y=0;y<N;y++)for(let x=0;x<N;x++){ const ang=-2*Math.PI*(ku*y+kv*x)/N; const v=img[y*N+x]; sr+=v*Math.cos(ang); si+=v*Math.sin(ang); }
+    R[ku*N+kv]=sr; I[ku*N+kv]=si; }
+  const out=new Float64Array(N*N); let mx=1e-9;
+  for(let ku=0;ku<N;ku++)for(let kv=0;kv<N;kv++){ const m=Math.log(1+Math.hypot(R[ku*N+kv],I[ku*N+kv]));
+    const sy=(ku+Math.floor(N/2))%N, sx=(kv+Math.floor(N/2))%N; out[sy*N+sx]=m; mx=Math.max(mx,m); }
+  for(let i=0;i<N*N;i++) out[i]/=mx; return out;
+}
+function kernelToImg(k,N){ const a=new Float64Array(N*N); const c=Math.floor(N/2);
+  for(let i=-1;i<=1;i++)for(let j=-1;j<=1;j++) a[((c+i)%N+N)%N*N+((c+j)%N+N)%N]=k[(i+1)*3+(j+1)]; return a; }
+
+/* ==================== 1 · FILTERS ==================== */
+(() => {
+let img=imgDigit(), ker=KERNELS.sobelx.slice(), hover=null, LPscale=null;
+const inEl=$('cvIn'), outEl=$('cvOut');
+function buildKernelInputs(){ const box=$('cvKernel'); box.innerHTML='';
+  for(let i=0;i<9;i++){ const inp=document.createElement('input'); inp.type='text'; inp.value=(+ker[i].toFixed(2));
+    inp.addEventListener('input',e=>{ const v=parseFloat(e.target.value); ker[i]=isFinite(v)?v:0; draw(); });
+    box.appendChild(inp); } }
+function syncInputs(){ const ins=$('cvKernel').querySelectorAll('input'); for(let i=0;i<9;i++) ins[i].value=(+ker[i].toFixed(2)); }
+function draw(){
+  const ci=getCv('cvIn'), co=getCv('cvOut'); if(!ci||!co) return;
+  const out=conv2(img,NI,ker);
+  drawGrid(ci,img,NI,'gray', hover?{x:hover.x-1,y:hover.y-1,w:3,h:3}:null);
+  drawGrid(co,out,NI,'div', hover?{x:hover.x,y:hover.y}:null);
+  let sum=0; for(let i=0;i<9;i++) sum+=ker[i]; $('cvSum').textContent=fmt(sum);
+  if(hover){ $('cvHover').textContent=fmt(out[hover.y*NI+hover.x]); }
+  else $('cvHover').textContent='–';
+}
+function pen(e,el){ const r=el.getBoundingClientRect(); const x=Math.floor((e.clientX-r.left)/r.width*NI), y=Math.floor((e.clientY-r.top)/r.height*NI);
+  return {x:Math.max(0,Math.min(NI-1,x)), y:Math.max(0,Math.min(NI-1,y))}; }
+let drawing=false;
+inEl.addEventListener('pointerdown',e=>{ drawing=true; inEl.setPointerCapture(e.pointerId); const p=pen(e,inEl); paint(p); e.preventDefault(); });
+inEl.addEventListener('pointermove',e=>{ if(drawing){ paint(pen(e,inEl)); } });
+window.addEventListener('pointerup',()=>{ drawing=false; });
+function paint(p){ for(let i=-1;i<=1;i++)for(let j=-1;j<=1;j++){ const y=p.y+i,x=p.x+j; if(y<0||y>=NI||x<0||x>=NI) continue; const w=(i===0&&j===0)?1:0.5; img[y*NI+x]=Math.max(img[y*NI+x],w); } draw(); }
+outEl.addEventListener('pointermove',e=>{ hover=pen(e,outEl); draw(); });
+outEl.addEventListener('pointerleave',()=>{ hover=null; draw(); });
+$('cvPreset').addEventListener('change',e=>{ ker=KERNELS[e.target.value].slice(); syncInputs(); draw(); });
+$('cvDigit').addEventListener('click',()=>{ img=imgDigit(); draw(); });
+$('cvCircle').addEventListener('click',()=>{ img=imgCircle(); draw(); });
+$('cvDiag').addEventListener('click',()=>{ img=imgEdges(); draw(); });
+$('cvClear').addEventListener('click',()=>{ img=imgClear(); draw(); });
+REDRAW.conv=draw;
+renderEq($('cvEq'),'(I*K)[i,j]=\\sum_{a=-1}^{1}\\sum_{b=-1}^{1} I[i+a,\\,j+b]\\;K[a,b]',true);
+buildKernelInputs(); $('cvPreset').value='sobelx'; draw();
+})();
+
+/* ==================== 2 · CONV = FILTERING ==================== */
+(() => {
+let img=imgDigit(), which='blur', LP=null;
+const inEl=$('fqIn');
+const FILT={ blur:KERNELS.gauss, edge:KERNELS.edge, sharpen:KERNELS.sharpen, identity:KERNELS.identity };
+function draw(specToo){
+  const ci=getCv('fqIn'), co=getCv('fqOut'); if(!ci||!co) return;
+  const out=conv2(img,NI,FILT[which]);
+  drawGrid(ci,img,NI,'gray'); drawGrid(co,out,NI,'div');
+  if(specToo!==false){
+    const si=getCv('fqSpecIn'), sk=getCv('fqSpecK'), so=getCv('fqSpecOut');
+    if(si) drawGrid(si,dftMag(img,NI),NI,'spec');
+    if(sk) drawGrid(sk,dftMag(kernelToImg(FILT[which],NI),NI),NI,'spec');
+    if(so) drawGrid(so,dftMag(out,NI),NI,'spec');
+  }
+  const label = which==='blur'?'e^{-|k|^2}\\text{-like (low-pass)}': which==='edge'?'|k|^2\\text{-like (high-pass)}': which==='sharpen'?'1+|k|^2\\text{ (boost highs)}':'1';
+  renderEq($('fqEq'),'\\widehat{I*K}=\\hat I\\cdot\\hat K \\qquad \\hat K\\sim '+label,true);
+}
+function pen(e){ const r=inEl.getBoundingClientRect(); return {x:Math.max(0,Math.min(NI-1,Math.floor((e.clientX-r.left)/r.width*NI))), y:Math.max(0,Math.min(NI-1,Math.floor((e.clientY-r.top)/r.height*NI)))}; }
+let drawing=false;
+inEl.addEventListener('pointerdown',e=>{ drawing=true; inEl.setPointerCapture(e.pointerId); paint(pen(e)); e.preventDefault(); });
+inEl.addEventListener('pointermove',e=>{ if(drawing){ paint(pen(e)); } });
+window.addEventListener('pointerup',()=>{ if(drawing){ drawing=false; draw(true); } });
+function paint(p){ for(let i=-1;i<=1;i++)for(let j=-1;j<=1;j++){ const y=p.y+i,x=p.x+j; if(y<0||y>=NI||x<0||x>=NI)continue; img[y*NI+x]=Math.max(img[y*NI+x],(i===0&&j===0)?1:0.5); } draw(false); }
+$('fqFilter').addEventListener('change',e=>{ which=e.target.value; draw(true); });
+$('fqDigit').addEventListener('click',()=>{ img=imgDigit(); draw(true); });
+$('fqCircle').addEventListener('click',()=>{ img=imgCircle(); draw(true); });
+$('fqNoise').addEventListener('click',()=>{ img=imgTexture(); draw(true); });
+REDRAW.freq=()=>draw(true);
+draw(true);
+})();
+
+/* ==================== 3 · CNN LEARNS ==================== */
+(() => {
+const N=12, F=4, K=3, OUT=N-K+1;
+let W,b,D,db, mW,vW,mb,vb,mD,vD,mdb,vdb, t, stepCount, accEMA, lossEMA, accH, training=false, dirty=true, sample=null;
+function mk(n){ return new Float64Array(n); }
+function initNet(){
+  W=[]; mW=[]; vW=[]; for(let f=0;f<F;f++){ W.push(mk(K*K)); mW.push(mk(K*K)); vW.push(mk(K*K)); for(let i=0;i<K*K;i++) W[f][i]=randn()*0.5; }
+  b=mk(F); mb=mk(F); vb=mk(F);
+  D=mk(F*2); mD=mk(F*2); vD=mk(F*2); for(let i=0;i<F*2;i++) D[i]=randn()*0.5;
+  db=mk(2); mdb=mk(2); vdb=mk(2);
+  t=0; stepCount=0; accEMA=0.5; lossEMA=NaN; accH=[]; sample=genImg(); dirty=true;
+}
+function genImg(){ const img=new Float64Array(N*N); const horiz=Math.random()<0.5?1:0; const pos=2+Math.floor(Math.random()*(N-4));
+  for(let k=0;k<N;k++){ if(horiz){ img[pos*N+k]=1; if(pos+1<N)img[(pos+1)*N+k]=0.6; } else { img[k*N+pos]=1; if(pos+1<N)img[k*N+pos+1]=0.6; } }
+  for(let i=0;i<N*N;i++) img[i]+=0.12*randn(); return {img,label:horiz}; }
+function forward(img){ const feat=[],pooled=mk(F);
+  for(let f=0;f<F;f++){ feat.push(mk(OUT*OUT)); let sum=0;
+    for(let ox=0;ox<OUT;ox++)for(let oy=0;oy<OUT;oy++){ let s=b[f]; for(let i=0;i<K;i++)for(let j=0;j<K;j++) s+=img[(ox+i)*N+(oy+j)]*W[f][i*K+j];
+      const r=Math.max(0,s); feat[f][ox*OUT+oy]=r; sum+=r; } pooled[f]=sum/(OUT*OUT); }
+  const lo=[db[0],db[1]]; for(let f=0;f<F;f++){ lo[0]+=D[f*2]*pooled[f]; lo[1]+=D[f*2+1]*pooled[f]; }
+  const m=Math.max(lo[0],lo[1]),e0=Math.exp(lo[0]-m),e1=Math.exp(lo[1]-m),Z=e0+e1;
+  return {feat,pooled,p:[e0/Z,e1/Z]}; }
+function trainStep(){
+  const gW=W.map(()=>mk(K*K)),gb=mk(F),gD=mk(F*2),gdb=mk(2); let loss=0,correct=0; const B=16;
+  for(let n=0;n<B;n++){ const {img,label}=genImg(); const fw=forward(img),p=fw.p; loss+=-Math.log(p[label]+1e-9); if((p[1]>p[0]?1:0)===label)correct++;
+    const dl=[p[0]-(label===0?1:0),p[1]-(label===1?1:0)]; gdb[0]+=dl[0]; gdb[1]+=dl[1]; const dpo=mk(F);
+    for(let f=0;f<F;f++){ gD[f*2]+=dl[0]*fw.pooled[f]; gD[f*2+1]+=dl[1]*fw.pooled[f]; dpo[f]=D[f*2]*dl[0]+D[f*2+1]*dl[1]; }
+    for(let f=0;f<F;f++){ const dp=dpo[f]/(OUT*OUT);
+      for(let ox=0;ox<OUT;ox++)for(let oy=0;oy<OUT;oy++){ if(fw.feat[f][ox*OUT+oy]<=0)continue; gb[f]+=dp; for(let i=0;i<K;i++)for(let j=0;j<K;j++) gW[f][i*K+j]+=dp*img[(ox+i)*N+(oy+j)]; } }
+    if(n===B-1) sample={img,label,p}; }
+  t++; const lr=0.02,b1=0.9,b2=0.999,bc1=1-Math.pow(b1,t),bc2=1-Math.pow(b2,t);
+  function upd(p,g,m,v,i){ g/=B; m[i]=b1*m[i]+(1-b1)*g; v[i]=b2*v[i]+(1-b2)*g*g; return p-lr*(m[i]/bc1)/(Math.sqrt(v[i]/bc2)+1e-8); }
+  for(let f=0;f<F;f++){ for(let i=0;i<K*K;i++) W[f][i]=upd(W[f][i],gW[f][i],mW[f],vW[f],i); b[f]=upd(b[f],gb[f],mb,vb,f); }
+  for(let i=0;i<F*2;i++) D[i]=upd(D[i],gD[i],mD,vD,i);
+  for(let i=0;i<2;i++) db[i]=upd(db[i],gdb[i],mdb,vdb,i);
+  stepCount++; const acc=correct/B; accEMA=0.95*accEMA+0.05*acc; lossEMA=isNaN(lossEMA)?loss/B:0.95*lossEMA+0.05*loss/B;
+  if(stepCount%3===0){ accH.push(accEMA); if(accH.length>1500) accH=accH.filter((_,i)=>i%2===0); }
+}
+let fcvs=[];
+function buildFilters(){ const box=$('cnFilters'); box.innerHTML=''; fcvs=[];
+  for(let f=0;f<F;f++){ const d=document.createElement('div'); d.className='fcell'; const c=document.createElement('canvas'); c.width=66;c.height=66;
+    const cap=document.createElement('div'); cap.className='fcap'; cap.textContent='filter '+(f+1); d.appendChild(c); d.appendChild(cap); box.appendChild(d); fcvs.push(c); } }
+function drawFilterCanvas(c,w){ const g=c.getContext('2d'); let mx=1e-6; for(let i=0;i<9;i++) mx=Math.max(mx,Math.abs(w[i])); const px=66/3;
+  for(let y=0;y<3;y++)for(let x=0;x<3;x++){ const t=Math.max(-1,Math.min(1,w[y*3+x]/mx)); let r,gr,b;
+    if(t>=0){ r=lerp(255,193,t); gr=lerp(253,122,t); b=lerp(249,62,t); } else { const s=-t; r=lerp(255,47,s); gr=lerp(253,112,s); b=lerp(249,105,s); }
+    g.fillStyle='rgb('+r+','+gr+','+b+')'; g.fillRect(x*px,y*px,px+1,px+1); } }
+function draw(){
+  const cs=getCv('cnSample'); if(cs && sample){ drawGrid(cs,sample.img,N,'gray'); }
+  if(sample){ const guess=sample.p?(sample.p[1]>sample.p[0]?'horizontal':'vertical'):'–'; const truth=sample.label?'horizontal':'vertical';
+    const ok = sample.p ? ((sample.p[1]>sample.p[0]?1:0)===sample.label) : null;
+    $('cnPred').innerHTML = sample.p ? ('guess: <b style="color:'+(ok?'var(--moss)':'var(--rust)')+'">'+guess+'</b> · actual: '+truth) : ''; }
+  for(let f=0;f<F&&f<fcvs.length;f++) drawFilterCanvas(fcvs[f],W[f]);
+  const cc=getCv('cnChart');
+  if(cc){ if(accH.length>1){ const pl=Plot(cc,0,accH.length*3,0,1.02,{xlab:'step',ylab:'accuracy'}); pl.clip(); pl.line(accH.map((_,i)=>i*3),accH,COL.moss,2); pl.unclip(); }
+    else Plot(cc,0,1,0,1.02,{xlab:'step',ylab:'accuracy'}); }
+  $('cnStep').textContent=stepCount; $('cnAcc').textContent=isFinite(accEMA)?fmt(accEMA*100,0)+'%':'–'; $('cnLoss').textContent=fmtSci(lossEMA);
+}
+TICKS.push(()=>{ if(ACTIVE!=='cnn') return; if(training){ for(let i=0;i<8;i++) trainStep(); draw(); } else if(dirty){ draw(); dirty=false; } });
+$('cnTrain').addEventListener('click',()=>{ training=!training; $('cnTrain').textContent=training?'⏸ Pause':'▶ Train'; });
+$('cnReset').addEventListener('click',()=>{ initNet(); });
+REDRAW.cnn=()=>{ dirty=true; };
+buildFilters(); initNet();
+})();
+
+/* ==================== QUIZ ==================== */
+(() => {
+const QS=[
+  { q:'What is a convolution filter, concretely?',
+    o:['a whole image','a small grid of weights slid over the image, dot-producted at each spot','a random number','a database of pictures'],
+    a:1, e:'A 3×3 (say) grid of weights. At every position you multiply weights by the pixels underneath and sum — one output pixel. Slide it everywhere to get the feature map.' },
+  { q:'A blur filter, seen in frequency space, is…',
+    o:['a high-pass filter','a low-pass filter — it keeps low frequencies, removes fine detail','it deletes everything','it does nothing'],
+    a:1, e:'Blurring = averaging neighbours = keeping the slow-varying (low-frequency) part and dropping the fast detail. Its frequency response is bright in the centre.' },
+  { q:'Convolution in space equals what in frequency space?',
+    o:['convolution again','a multiplication — the image spectrum times the filter spectrum','addition','nothing simple'],
+    a:1, e:'The convolution theorem: transform both, multiply per frequency, transform back. Exactly the Fourier-page rule, now in 2D.' },
+  { q:'Where do a CNN\'s filters come from?',
+    o:['a human designs each one','they are learned by gradient descent from labelled examples','they are always Sobel filters','they are random and never change'],
+    a:1, e:'The network starts with random filters and adjusts them from being right or wrong. Early layers reliably discover edge detectors on their own.' },
+  { q:'Why are convolution filters "shared" across the image?',
+    o:['to use more memory','so the same pattern is detected anywhere it appears, with very few weights','to make training slower','for no reason'],
+    a:1, e:'One 3×3 filter (nine weights) scans the whole image, so an edge is found wherever it occurs — translation-friendly and hugely parameter-efficient versus a dense layer.' },
+  { q:'A trained edge-detecting filter tends to look like…',
+    o:['all equal weights','one bright column/row beside one dark one (a gradient)','all zeros','random noise'],
+    a:1, e:'An edge is a jump from dark to bright, so the detector that fires on it is positive on one side and negative on the other — the Sobel shape, learned from scratch.' },
+];
+const box=$('quizBox');
+QS.forEach((Q,qi)=>{ const d=document.createElement('div'); d.className='q';
+  d.innerHTML='<div class="qt">'+(qi+1)+'. '+Q.q+'</div>';
+  const opts=document.createElement('div'); opts.className='opts';
+  Q.o.forEach((o,oi)=>{ const b=document.createElement('button'); b.className='opt'; b.textContent=o;
+    b.addEventListener('click',()=>{ if(oi===Q.a){ opts.querySelectorAll('.opt').forEach(x=>x.classList.remove('wrong')); b.classList.add('correct'); exp.style.display='block'; } else b.classList.add('wrong'); });
+    opts.appendChild(b); });
+  const exp=document.createElement('div'); exp.className='exp'; exp.textContent=Q.e;
+  d.appendChild(opts); d.appendChild(exp); box.appendChild(d);
+});
+})();
+
+</script>
+</body>
+</html>
