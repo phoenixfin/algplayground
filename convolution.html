@@ -151,23 +151,24 @@
 <nav style="display:flex;align-items:center;gap:16px;font-family:'SF Mono',SFMono-Regular,Consolas,monospace;font-size:13px;margin-bottom:24px;flex-wrap:wrap">
 <a href="https://phx.my.id" style="display:inline-flex;align-items:center;gap:9px;text-decoration:none;color:#2D2D2D;font-weight:600"><img src="logo.png" alt="" style="width:30px;height:30px;border-radius:7px;display:block">phx.my.id</a>
 <span style="flex:1;min-width:12px"></span>
-<a href="https://phx.my.id" style="text-decoration:none;color:#6E6259">Home</a>
-<a href="https://research.phx.my.id" style="text-decoration:none;color:#6E6259">Research</a>
-<a href="index.html" style="text-decoration:none;color:#8F5620;font-weight:600">Playgrounds</a>
+<a href="https://phx.my.id" style="text-decoration:none;color:#6E6259"><span data-lang="en">Home</span><span data-lang="id">Beranda</span></a>
+<a href="https://research.phx.my.id" style="text-decoration:none;color:#6E6259"><span data-lang="en">Research</span><span data-lang="id">Riset</span></a>
+<a href="index.html" style="text-decoration:none;color:#8F5620;font-weight:600"><span data-lang="en">Playgrounds</span><span data-lang="id">Playground</span></a>
+<span class="langtog"><button data-lang-btn="en">EN</button><button data-lang-btn="id">ID</button></span>
 </nav>
 
 <header class="top">
-  <p class="eyebrow">Convolution &amp; CNNs</p>
-  <h1>Seeing with filters</h1>
-  <p>A convolutional network sees an image by sliding tiny <b>filters</b> across it, each one lighting up where it finds the pattern it likes — an edge, a corner, a blob. Here you build filters by hand, watch convolution turn into simple multiplication in frequency space, and then let a network <b>discover its own filters</b> from scratch. You only need the idea of a weighted sum.</p>
-  <p class="crumbs">Deep learning · pairs with <a href="fourier.html">Fourier</a> (a filter is a frequency selector) and the <a href="apps/mlp/">neural-net-from-scratch</a> playground.</p>
+  <p class="eyebrow"><span data-lang="en">Convolution &amp; CNNs</span><span data-lang="id">Konvolusi &amp; CNN</span></p>
+  <h1><span data-lang="en">Seeing with filters</span><span data-lang="id">Melihat dengan filter</span></h1>
+  <p data-lang="en">A convolutional network sees an image by sliding tiny <b>filters</b> across it, each one lighting up where it finds the pattern it likes — an edge, a corner, a blob. Here you build filters by hand, watch convolution turn into simple multiplication in frequency space, and then let a network <b>discover its own filters</b> from scratch. You only need the idea of a weighted sum.</p><p data-lang="id">Jaringan konvolusi melihat sebuah citra dengan menggeser <b>filter</b> kecil ke seluruh permukaannya, masing-masing menyala di tempat ia menemukan pola yang disukainya — tepi, sudut, gumpalan. Di sini kamu membangun filter dengan tangan, menyaksikan konvolusi berubah jadi perkalian sederhana di ruang frekuensi, lalu membiarkan jaringan <b>menemukan filternya sendiri</b> dari nol. Kamu hanya butuh ide penjumlahan berbobot.</p>
+  <p class="crumbs"><span data-lang="en">Deep learning · pairs with</span><span data-lang="id">Deep learning · cocok dengan</span> <a href="fourier.html">Fourier</a> <span data-lang="en">(a filter is a frequency selector) and the</span><span data-lang="id">(filter adalah pemilih frekuensi) dan playground</span> <a href="apps/mlp/"><span data-lang="en">neural-net-from-scratch</span><span data-lang="id">neural-net-dari-nol</span></a> <span data-lang="en">playground.</span><span data-lang="id">itu.</span></p>
 </header>
 
 <div class="tabs">
-  <button class="tab active" data-tab="conv">1 · Filters &amp; feature maps</button>
-  <button class="tab" data-tab="freq">2 · Convolution = filtering</button>
-  <button class="tab" data-tab="cnn">3 · A CNN learns its filters</button>
-  <button class="tab" data-tab="map">4 · The big picture</button>
+  <button class="tab active" data-tab="conv"><span data-lang="en">1 · Filters &amp; feature maps</span><span data-lang="id">1 · Filter &amp; feature map</span></button>
+  <button class="tab" data-tab="freq"><span data-lang="en">2 · Convolution = filtering</span><span data-lang="id">2 · Konvolusi = penyaringan</span></button>
+  <button class="tab" data-tab="cnn"><span data-lang="en">3 · A CNN learns its filters</span><span data-lang="id">3 · CNN mempelajari filternya</span></button>
+  <button class="tab" data-tab="map"><span data-lang="en">4 · The big picture</span><span data-lang="id">4 · Gambaran besar</span></button>
 </div>
 
 <!-- ==================== 1 · FILTERS ==================== -->
@@ -185,58 +186,64 @@
       <rect x="148" y="58" width="14" height="14" fill="#C17A3E" opacity="0.3"/>
     </svg>
     <div class="txt">
-      <h3>A filter is a small weighted stamp</h3>
-      <p>Take a 3×3 grid of weights. Slide it over the image; at every position, multiply the nine weights by the nine pixels underneath and add them up. That single number is the <b>feature map</b> value there. Different weights detect different things — a blur, an edge, a corner — all from the same slide-multiply-add.</p>
+      <h3><span data-lang="en">A filter is a small weighted stamp</span><span data-lang="id">Filter adalah stempel kecil berbobot</span></h3>
+      <p data-lang="en">Take a 3×3 grid of weights. Slide it over the image; at every position, multiply the nine weights by the nine pixels underneath and add them up. That single number is the <b>feature map</b> value there. Different weights detect different things — a blur, an edge, a corner — all from the same slide-multiply-add.</p><p data-lang="id">Ambil grid bobot 3×3. Geser ke seluruh citra; di tiap posisi, kalikan sembilan bobot dengan sembilan piksel di bawahnya lalu jumlahkan. Angka tunggal itulah nilai <b>feature map</b> di sana. Bobot berbeda mendeteksi hal berbeda — blur, tepi, sudut — semua dari geser-kali-jumlah yang sama.</p>
     </div>
   </div>
 
   <div class="layout">
     <div class="panel">
-      <h2>Image</h2>
+      <h2><span data-lang="en">Image</span><span data-lang="id">Citra</span></h2>
       <div class="row2" style="margin-bottom:8px">
-        <button class="btn" id="cvDigit">digit</button>
-        <button class="btn" id="cvCircle">circle</button>
+        <button class="btn" id="cvDigit"><span data-lang="en">digit</span><span data-lang="id">angka</span></button>
+        <button class="btn" id="cvCircle"><span data-lang="en">circle</span><span data-lang="id">lingkaran</span></button>
       </div>
       <div class="row2" style="margin-bottom:8px">
-        <button class="btn" id="cvDiag">edges</button>
-        <button class="btn" id="cvClear">clear</button>
+        <button class="btn" id="cvDiag"><span data-lang="en">edges</span><span data-lang="id">tepi</span></button>
+        <button class="btn" id="cvClear"><span data-lang="en">clear</span><span data-lang="id">bersihkan</span></button>
       </div>
-      <p class="hint"><b>Or draw</b> on the left image with your mouse.</p>
+      <p class="hint" data-lang="en"><b>Or draw</b> on the left image with your mouse.</p><p class="hint" data-lang="id"><b>Atau gambar</b> pada citra kiri dengan mouse-mu.</p>
 
-      <h2>Filter (3×3 weights)</h2>
+      <h2><span data-lang="en">Filter (3×3 weights)</span><span data-lang="id">Filter (bobot 3×3)</span></h2>
       <div class="field"><select id="cvPreset">
-        <option value="identity">Identity (do nothing)</option>
-        <option value="blur">Box blur</option>
-        <option value="gauss">Gaussian blur</option>
-        <option value="sharpen">Sharpen</option>
-        <option value="edge">Edge (Laplacian)</option>
-        <option value="sobelx">Sobel ↔ (vertical edges)</option>
-        <option value="sobely">Sobel ↕ (horizontal edges)</option>
-        <option value="emboss">Emboss</option>
+        <option value="identity" data-lang="en">Identity (do nothing)</option><option value="identity" data-lang="id">Identitas (tak berbuat apa-apa)</option>
+        <option value="blur" data-lang="en">Box blur</option><option value="blur" data-lang="id">Box blur</option>
+        <option value="gauss" data-lang="en">Gaussian blur</option><option value="gauss" data-lang="id">Gaussian blur</option>
+        <option value="sharpen" data-lang="en">Sharpen</option><option value="sharpen" data-lang="id">Pertajam</option>
+        <option value="edge" data-lang="en">Edge (Laplacian)</option><option value="edge" data-lang="id">Tepi (Laplacian)</option>
+        <option value="sobelx" data-lang="en">Sobel ↔ (vertical edges)</option><option value="sobelx" data-lang="id">Sobel ↔ (tepi vertikal)</option>
+        <option value="sobely" data-lang="en">Sobel ↕ (horizontal edges)</option><option value="sobely" data-lang="id">Sobel ↕ (tepi horizontal)</option>
+        <option value="emboss" data-lang="en">Emboss</option><option value="emboss" data-lang="id">Emboss</option>
       </select></div>
       <div id="cvKernel" class="kgrid"></div>
-      <p class="hint">Edit any weight — the feature map updates live. Presets just fill these nine numbers.</p>
+      <p class="hint" data-lang="en">Edit any weight — the feature map updates live. Presets just fill these nine numbers.</p><p class="hint" data-lang="id">Sunting bobot mana pun — feature map diperbarui langsung. Praatur hanya mengisi sembilan angka ini.</p>
     </div>
 
     <div>
       <div class="stats">
-        <div class="stat"><div class="label">weight sum</div><div class="value" id="cvSum">1.00</div></div>
-        <div class="stat"><div class="label">hovered output</div><div class="value" id="cvHover">–</div></div>
+        <div class="stat"><div class="label"><span data-lang="en">weight sum</span><span data-lang="id">jumlah bobot</span></div><div class="value" id="cvSum">1.00</div></div>
+        <div class="stat"><div class="label"><span data-lang="en">hovered output</span><span data-lang="id">keluaran tersorot</span></div><div class="value" id="cvHover">–</div></div>
       </div>
       <div class="cols2">
-        <div class="box"><h2>Input image — draw here</h2><canvas id="cvIn" style="aspect-ratio:1/1;height:auto;cursor:crosshair"></canvas></div>
-        <div class="box"><h2>Feature map — hover to inspect</h2><canvas id="cvOut" style="aspect-ratio:1/1;height:auto;cursor:crosshair"></canvas></div>
+        <div class="box"><h2><span data-lang="en">Input image — draw here</span><span data-lang="id">Citra masukan — gambar di sini</span></h2><canvas id="cvIn" style="aspect-ratio:1/1;height:auto;cursor:crosshair"></canvas></div>
+        <div class="box"><h2><span data-lang="en">Feature map — hover to inspect</span><span data-lang="id">Feature map — arahkan mouse untuk memeriksa</span></h2><canvas id="cvOut" style="aspect-ratio:1/1;height:auto;cursor:crosshair"></canvas></div>
       </div>
       <div class="box">
-        <h2>What one output pixel is</h2>
+        <h2><span data-lang="en">What one output pixel is</span><span data-lang="id">Apa itu satu piksel keluaran</span></h2>
         <div class="eqk" id="cvEq"></div>
-        <p>Hover a cell in the feature map: the matching 3×3 patch lights up on the input, and the box above shows the exact nine-term weighted sum that produced it. That is <b>all</b> a convolution layer does — this, millions of times.</p>
+        <p data-lang="en">Hover a cell in the feature map: the matching 3×3 patch lights up on the input, and the box above shows the exact nine-term weighted sum that produced it. That is <b>all</b> a convolution layer does — this, millions of times.</p><p data-lang="id">Arahkan mouse ke sebuah sel di feature map: patch 3×3 yang cocok menyala di masukan, dan kotak di atas menampilkan penjumlahan berbobot sembilan-suku yang menghasilkannya. Itulah <b>seluruh</b> yang dilakukan lapisan konvolusi — ini, jutaan kali.</p>
       </div>
-      <div class="try"><b>Try this</b>
+      <div class="try" data-lang="en"><b>Try this</b>
         <ol>
           <li>Pick <i>edges</i> and the <b>Sobel ↔</b> filter: only the vertical strokes light up. Switch to <b>Sobel ↕</b>: now the horizontal ones. Each filter is tuned to one orientation.</li>
           <li>Pick <b>box blur</b>: the sharp digit turns soft — the filter replaces each pixel with the average of its neighbours. Compare with <b>sharpen</b>, which does the opposite.</li>
           <li>Hand-edit the weights to all-zero except the centre = 1: that's <i>identity</i>, the image passes through untouched. Nudge one neighbour and watch a ghost appear.</li>
+        </ol>
+      </div><div class="try" data-lang="id"><b>Coba ini</b>
+        <ol>
+          <li>Pilih <i>tepi</i> dan filter <b>Sobel ↔</b>: hanya goresan vertikal yang menyala. Ganti ke <b>Sobel ↕</b>: kini yang horizontal. Tiap filter disetel untuk satu orientasi.</li>
+          <li>Pilih <b>box blur</b>: angka yang tajam jadi lembut — filter mengganti tiap piksel dengan rata-rata tetangganya. Bandingkan dengan <b>pertajam</b>, yang melakukan kebalikannya.</li>
+          <li>Sunting bobot jadi semua-nol kecuali pusat = 1: itu <i>identitas</i>, citra lewat tanpa berubah. Senggol satu tetangga dan lihat bayangan muncul.</li>
         </ol>
       </div>
     </div>
@@ -255,54 +262,60 @@
       <text x="95" y="92" text-anchor="middle" font-family="SF Mono,monospace" font-size="9" fill="#6E6259">in frequency space, blur is just a mask</text>
     </svg>
     <div class="txt">
-      <h3>Every filter is a frequency selector</h3>
-      <p>Convolution feels like a lot of sliding and adding. But move to <b>frequency space</b> (a 2D Fourier transform) and it collapses to a single rule: <b>multiply</b> the image's spectrum by the filter's spectrum. A blur is a filter that keeps only low frequencies; an edge filter keeps only high ones. Same lesson as the Fourier page, now in 2D.</p>
+      <h3><span data-lang="en">Every filter is a frequency selector</span><span data-lang="id">Tiap filter adalah pemilih frekuensi</span></h3>
+      <p data-lang="en">Convolution feels like a lot of sliding and adding. But move to <b>frequency space</b> (a 2D Fourier transform) and it collapses to a single rule: <b>multiply</b> the image's spectrum by the filter's spectrum. A blur is a filter that keeps only low frequencies; an edge filter keeps only high ones. Same lesson as the Fourier page, now in 2D.</p><p data-lang="id">Konvolusi terasa seperti banyak geser dan tambah. Tapi pindah ke <b>ruang frekuensi</b> (transformasi Fourier 2D) dan ia mengerut jadi satu aturan: <b>kalikan</b> spektrum citra dengan spektrum filter. Blur adalah filter yang hanya menyimpan frekuensi rendah; filter tepi hanya menyimpan yang tinggi. Pelajaran yang sama seperti halaman Fourier, kini dalam 2D.</p>
     </div>
   </div>
 
   <div class="layout">
     <div class="panel">
-      <h2>Image</h2>
+      <h2><span data-lang="en">Image</span><span data-lang="id">Citra</span></h2>
       <div class="row2" style="margin-bottom:8px">
-        <button class="btn" id="fqDigit">digit</button>
-        <button class="btn" id="fqCircle">circle</button>
+        <button class="btn" id="fqDigit"><span data-lang="en">digit</span><span data-lang="id">angka</span></button>
+        <button class="btn" id="fqCircle"><span data-lang="en">circle</span><span data-lang="id">lingkaran</span></button>
       </div>
-      <button class="btn block" id="fqNoise">texture</button>
-      <p class="hint"><b>Or draw</b> on the input image.</p>
+      <button class="btn block" id="fqNoise"><span data-lang="en">texture</span><span data-lang="id">tekstur</span></button>
+      <p class="hint" data-lang="en"><b>Or draw</b> on the input image.</p><p class="hint" data-lang="id"><b>Atau gambar</b> pada citra masukan.</p>
 
       <h2>Filter</h2>
       <div class="field"><select id="fqFilter">
-        <option value="blur">Blur — a low-pass filter</option>
-        <option value="edge">Edge — a high-pass filter</option>
-        <option value="sharpen">Sharpen — boost high modes</option>
-        <option value="identity">Identity</option>
+        <option value="blur" data-lang="en">Blur — a low-pass filter</option><option value="blur" data-lang="id">Blur — filter low-pass</option>
+        <option value="edge" data-lang="en">Edge — a high-pass filter</option><option value="edge" data-lang="id">Tepi — filter high-pass</option>
+        <option value="sharpen" data-lang="en">Sharpen — boost high modes</option><option value="sharpen" data-lang="id">Pertajam — kuatkan mode tinggi</option>
+        <option value="identity" data-lang="en">Identity</option><option value="identity" data-lang="id">Identitas</option>
       </select></div>
-      <p class="hint">The spectra below are the 2D Fourier transforms: centre = low frequency, edges = high frequency, brighter = more energy.</p>
+      <p class="hint" data-lang="en">The spectra below are the 2D Fourier transforms: centre = low frequency, edges = high frequency, brighter = more energy.</p><p class="hint" data-lang="id">Spektrum di bawah adalah transformasi Fourier 2D: pusat = frekuensi rendah, tepi = frekuensi tinggi, makin terang = makin banyak energi.</p>
     </div>
 
     <div>
       <div class="cols2">
-        <div class="box"><h2>Input image</h2><canvas id="fqIn" style="aspect-ratio:1/1;height:auto;cursor:crosshair"></canvas></div>
-        <div class="box"><h2>Filtered output</h2><canvas id="fqOut" style="aspect-ratio:1/1;height:auto"></canvas></div>
+        <div class="box"><h2><span data-lang="en">Input image</span><span data-lang="id">Citra masukan</span></h2><canvas id="fqIn" style="aspect-ratio:1/1;height:auto;cursor:crosshair"></canvas></div>
+        <div class="box"><h2><span data-lang="en">Filtered output</span><span data-lang="id">Keluaran tersaring</span></h2><canvas id="fqOut" style="aspect-ratio:1/1;height:auto"></canvas></div>
       </div>
       <div class="box">
-        <h2>The same thing in frequency space — output spectrum = input × filter</h2>
+        <h2><span data-lang="en">The same thing in frequency space — output spectrum = input × filter</span><span data-lang="id">Hal yang sama di ruang frekuensi — spektrum keluaran = masukan × filter</span></h2>
         <div class="cols3">
-          <div><canvas id="fqSpecIn" style="aspect-ratio:1/1;height:auto"></canvas><div class="caplab">input spectrum</div></div>
-          <div><canvas id="fqSpecK" style="aspect-ratio:1/1;height:auto"></canvas><div class="caplab">filter response</div></div>
-          <div><canvas id="fqSpecOut" style="aspect-ratio:1/1;height:auto"></canvas><div class="caplab">output spectrum</div></div>
+          <div><canvas id="fqSpecIn" style="aspect-ratio:1/1;height:auto"></canvas><div class="caplab"><span data-lang="en">input spectrum</span><span data-lang="id">spektrum masukan</span></div></div>
+          <div><canvas id="fqSpecK" style="aspect-ratio:1/1;height:auto"></canvas><div class="caplab"><span data-lang="en">filter response</span><span data-lang="id">respons filter</span></div></div>
+          <div><canvas id="fqSpecOut" style="aspect-ratio:1/1;height:auto"></canvas><div class="caplab"><span data-lang="en">output spectrum</span><span data-lang="id">spektrum keluaran</span></div></div>
         </div>
       </div>
       <div class="box">
-        <h2>The rule</h2>
+        <h2><span data-lang="en">The rule</span><span data-lang="id">Aturannya</span></h2>
         <div class="eqk" id="fqEq"></div>
-        <p>A blur's response is bright in the middle (keeps low frequencies, kills the fine detail); an edge filter's is bright at the rim (keeps the fast changes, drops the flat regions). <b>This is exactly the Fourier page in two dimensions</b> — see the <a href="fourier.html">Fourier bridge →</a> for the 1D story.</p>
+        <p data-lang="en">A blur's response is bright in the middle (keeps low frequencies, kills the fine detail); an edge filter's is bright at the rim (keeps the fast changes, drops the flat regions). <b>This is exactly the Fourier page in two dimensions</b> — see the <a href="fourier.html">Fourier bridge →</a> for the 1D story.</p><p data-lang="id">Respons blur terang di tengah (menyimpan frekuensi rendah, membunuh detail halus); respons filter tepi terang di pinggir (menyimpan perubahan cepat, membuang wilayah rata). <b>Ini persis halaman Fourier dalam dua dimensi</b> — lihat <a href="fourier.html">jembatan Fourier →</a> untuk kisah 1D-nya.</p>
       </div>
-      <div class="try"><b>Try this</b>
+      <div class="try" data-lang="en"><b>Try this</b>
         <ol>
           <li><i>Blur</i>: watch the outer ring of the output spectrum go dark — high frequencies removed — and the image goes soft.</li>
           <li><i>Edge</i>: the opposite — the centre goes dark, only the rim survives, and the output is all outlines. Flat regions (low frequency) vanish.</li>
           <li>Draw something jagged, then blur it: the jaggedness (high frequency) is exactly what disappears first.</li>
+        </ol>
+      </div><div class="try" data-lang="id"><b>Coba ini</b>
+        <ol>
+          <li><i>Blur</i>: lihat cincin luar spektrum keluaran menggelap — frekuensi tinggi dibuang — dan citra jadi lembut.</li>
+          <li><i>Tepi</i>: kebalikannya — pusat menggelap, hanya pinggir yang bertahan, dan keluarannya serba garis tepi. Wilayah rata (frekuensi rendah) lenyap.</li>
+          <li>Gambar sesuatu yang bergerigi, lalu blur: kegerigian (frekuensi tinggi) itulah yang hilang lebih dulu.</li>
         </ol>
       </div>
     </div>
@@ -323,50 +336,56 @@
       <path d="M104 60 h 40" stroke="#E4DACB" stroke-width="1"/>
     </svg>
     <div class="txt">
-      <h3>Nobody tells it what an edge is</h3>
-      <p>So far you chose the filters. A convolutional network <b>learns them</b>. Here a tiny CNN is shown random images of a single stroke — sometimes vertical, sometimes horizontal — and must say which. It starts with random filters and, purely from being right or wrong, sculpts them into edge detectors. Watch the filters below turn from noise into structure.</p>
+      <h3><span data-lang="en">Nobody tells it what an edge is</span><span data-lang="id">Tak ada yang memberitahunya apa itu tepi</span></h3>
+      <p data-lang="en">So far you chose the filters. A convolutional network <b>learns them</b>. Here a tiny CNN is shown random images of a single stroke — sometimes vertical, sometimes horizontal — and must say which. It starts with random filters and, purely from being right or wrong, sculpts them into edge detectors. Watch the filters below turn from noise into structure.</p><p data-lang="id">Sejauh ini kamu yang memilih filter. Jaringan konvolusi <b>mempelajarinya</b>. Di sini sebuah CNN kecil diperlihatkan citra acak berisi satu goresan — kadang vertikal, kadang horizontal — dan harus menebak yang mana. Ia mulai dengan filter acak dan, murni dari benar-atau-salah, memahatnya jadi detektor tepi. Lihat filter di bawah berubah dari derau jadi struktur.</p>
     </div>
   </div>
 
   <div class="layout">
     <div class="panel">
-      <h2>The task</h2>
-      <p class="hint" style="margin-top:0">Each image has one bright stroke plus noise. Class: is it <b>vertical</b> or <b>horizontal</b>? The net: 4 learnable 3×3 filters → ReLU → average-pool → a 2-way decision.</p>
-      <h2>Training</h2>
+      <h2><span data-lang="en">The task</span><span data-lang="id">Tugasnya</span></h2>
+      <p class="hint" data-lang="en" style="margin-top:0">Each image has one bright stroke plus noise. Class: is it <b>vertical</b> or <b>horizontal</b>? The net: 4 learnable 3×3 filters → ReLU → average-pool → a 2-way decision.</p><p class="hint" data-lang="id" style="margin-top:0">Tiap citra punya satu goresan terang plus derau. Kelas: <b>vertikal</b> atau <b>horizontal</b>? Jaringannya: 4 filter 3×3 yang dapat dilatih → ReLU → average-pool → keputusan 2-arah.</p>
+      <h2><span data-lang="en">Training</span><span data-lang="id">Pelatihan</span></h2>
       <div class="row2" style="margin-bottom:8px">
         <button class="btn primary" id="cnTrain">▶ Train</button>
         <button class="btn" id="cnReset">Reset</button>
       </div>
-      <p class="hint">Every step draws a fresh batch of random strokes, predicts, and nudges the filters by gradient descent — exactly the loop from the neural-net playground, now over images.</p>
+      <p class="hint" data-lang="en">Every step draws a fresh batch of random strokes, predicts, and nudges the filters by gradient descent — exactly the loop from the neural-net playground, now over images.</p><p class="hint" data-lang="id">Tiap langkah menggambar satu batch goresan acak baru, memprediksi, dan menyenggol filter dengan gradient descent — persis loop dari playground neural-net, kini atas citra.</p>
     </div>
 
     <div>
       <div class="stats">
-        <div class="stat"><div class="label">training steps</div><div class="value" id="cnStep">0</div></div>
-        <div class="stat hi"><div class="label">accuracy</div><div class="value" id="cnAcc">–</div></div>
+        <div class="stat"><div class="label"><span data-lang="en">training steps</span><span data-lang="id">langkah pelatihan</span></div><div class="value" id="cnStep">0</div></div>
+        <div class="stat hi"><div class="label"><span data-lang="en">accuracy</span><span data-lang="id">akurasi</span></div><div class="value" id="cnAcc">–</div></div>
         <div class="stat warn"><div class="label">loss</div><div class="value" id="cnLoss">–</div></div>
       </div>
       <div class="cols2">
-        <div class="box"><h2>A sample &amp; the network's guess</h2><canvas id="cnSample" style="aspect-ratio:1/1;height:auto"></canvas>
+        <div class="box"><h2><span data-lang="en">A sample &amp; the network's guess</span><span data-lang="id">Satu contoh &amp; tebakan jaringan</span></h2><canvas id="cnSample" style="aspect-ratio:1/1;height:auto"></canvas>
           <div class="value" id="cnPred" style="text-align:center;font-family:Georgia,serif;margin-top:6px">–</div></div>
-        <div class="box"><h2>Accuracy while training</h2><canvas id="cnChart" class="mid"></canvas></div>
+        <div class="box"><h2><span data-lang="en">Accuracy while training</span><span data-lang="id">Akurasi selama pelatihan</span></h2><canvas id="cnChart" class="mid"></canvas></div>
       </div>
       <div class="box">
-        <h2>The four filters it is learning — watch them become edge detectors</h2>
+        <h2><span data-lang="en">The four filters it is learning — watch them become edge detectors</span><span data-lang="id">Empat filter yang dipelajarinya — lihat mereka jadi detektor tepi</span></h2>
         <div id="cnFilters" class="filtrow"></div>
-        <p style="margin-top:8px">Warm = positive weight, cool = negative. A good vertical-edge filter ends up with one bright column beside one dark column — the same Sobel shape you built by hand in tab 1, but <b>discovered</b>, not designed.</p>
+        <p data-lang="en" style="margin-top:8px">Warm = positive weight, cool = negative. A good vertical-edge filter ends up with one bright column beside one dark column — the same Sobel shape you built by hand in tab 1, but <b>discovered</b>, not designed.</p><p data-lang="id" style="margin-top:8px">Hangat = bobot positif, sejuk = negatif. Filter tepi-vertikal yang baik berakhir dengan satu kolom terang di samping satu kolom gelap — bentuk Sobel yang sama yang kamu bangun sendiri di tab 1, tapi <b>ditemukan</b>, bukan dirancang.</p>
       </div>
-      <div class="try"><b>Try this</b>
+      <div class="try" data-lang="en"><b>Try this</b>
         <ol>
           <li>Press <b>Train</b> and watch the accuracy shoot up while the four noisy filters organise into clean light/dark stripes within a few seconds.</li>
           <li>Reset a few times: the filters land in different arrangements each run — there is no single "correct" filter, only ones that work. Some runs even leave a filter unused.</li>
           <li>Compare a learned filter to the hand-built Sobel in tab 1. The network reinvented the edge detector on its own, guided only by right-vs-wrong.</li>
         </ol>
+      </div><div class="try" data-lang="id"><b>Coba ini</b>
+        <ol>
+          <li>Tekan <b>Train</b> dan lihat akurasi melesat sementara empat filter berderau menata diri jadi garis terang/gelap yang rapi dalam beberapa detik.</li>
+          <li>Reset beberapa kali: filternya mendarat dalam susunan berbeda tiap kali — tak ada satu filter "benar", hanya yang bekerja. Beberapa kali bahkan menyisakan satu filter tak terpakai.</li>
+          <li>Bandingkan filter terpelajar dengan Sobel buatan-tangan di tab 1. Jaringan menemukan kembali detektor tepi sendiri, dipandu hanya oleh benar-vs-salah.</li>
+        </ol>
       </div>
       <div class="box">
         <h2>What just happened</h2>
-        <p>This is the whole idea of deep learning for vision: <b>don't hand-engineer features, learn them.</b> Stack more of these layers and the filters in later layers combine edges into corners, corners into textures, textures into object parts — a hierarchy nobody wrote down. Real CNNs (for photos, medical scans, self-driving) are this exact mechanism, just wider, deeper, and trained on millions of images.</p>
-        <p><b>The catch:</b> that power needs data and compute, and the learned filters are only as unbiased as the training set. This toy learns two clean classes in seconds; ImageNet-scale vision took years of GPUs.</p>
+        <p data-lang="en">This is the whole idea of deep learning for vision: <b>don't hand-engineer features, learn them.</b> Stack more of these layers and the filters in later layers combine edges into corners, corners into textures, textures into object parts — a hierarchy nobody wrote down. Real CNNs (for photos, medical scans, self-driving) are this exact mechanism, just wider, deeper, and trained on millions of images.</p><p data-lang="id">Inilah keseluruhan ide deep learning untuk penglihatan: <b>jangan rekayasa fitur dengan tangan, pelajari.</b> Tumpuk lebih banyak lapisan ini dan filter di lapisan berikutnya menggabungkan tepi jadi sudut, sudut jadi tekstur, tekstur jadi bagian objek — hierarki yang tak ditulis siapa pun. CNN sungguhan (untuk foto, pindai medis, mobil swakemudi) adalah mekanisme persis ini, hanya lebih lebar, lebih dalam, dan dilatih pada jutaan citra.</p>
+        <p data-lang="en"><b>The catch:</b> that power needs data and compute, and the learned filters are only as unbiased as the training set. This toy learns two clean classes in seconds; ImageNet-scale vision took years of GPUs.</p><p data-lang="id"><b>Tangkapannya:</b> kekuatan itu butuh data dan komputasi, dan filter terpelajar hanya senetral set pelatihannya. Mainan ini mempelajari dua kelas bersih dalam hitungan detik; penglihatan skala-ImageNet butuh bertahun-tahun GPU.</p>
       </div>
     </div>
   </div>
@@ -375,34 +394,34 @@
 <!-- ==================== 4 · MAP ==================== -->
 <div class="section" id="sec-map">
   <div class="box">
-    <h2>Three views of one operation</h2>
+    <h2><span data-lang="en">Three views of one operation</span><span data-lang="id">Tiga sudut pandang satu operasi</span></h2>
     <div style="overflow-x:auto">
     <table class="cmp">
-      <tr><th></th><th>In space</th><th>In frequency</th><th>In a CNN</th></tr>
-      <tr><td>What a filter is</td><td>A 3×3 grid of weights you slide and dot-product</td><td>A mask that scales each frequency</td><td>Nine numbers the network learns by gradient descent</td></tr>
-      <tr><td>Blur</td><td>Average of neighbours</td><td>Keep low frequencies (low-pass)</td><td>Rarely learned — it throws away detail</td></tr>
-      <tr><td>Edge</td><td>Neighbour minus neighbour</td><td>Keep high frequencies (high-pass)</td><td>The first thing early layers learn</td></tr>
-      <tr><td>Cost</td><td>One dot product per output pixel</td><td>One multiply per frequency (via FFT)</td><td>Filters shared across the whole image — few weights, huge reach</td></tr>
+      <tr><th></th><th><span data-lang="en">In space</span><span data-lang="id">Di ruang</span></th><th><span data-lang="en">In frequency</span><span data-lang="id">Di frekuensi</span></th><th><span data-lang="en">In a CNN</span><span data-lang="id">Di CNN</span></th></tr>
+      <tr><td><span data-lang="en">What a filter is</span><span data-lang="id">Apa itu filter</span></td><td><span data-lang="en">A 3×3 grid of weights you slide and dot-product</span><span data-lang="id">Grid bobot 3×3 yang digeser dan di-dot-product</span></td><td><span data-lang="en">A mask that scales each frequency</span><span data-lang="id">Topeng yang menskala tiap frekuensi</span></td><td><span data-lang="en">Nine numbers the network learns by gradient descent</span><span data-lang="id">Sembilan angka yang dipelajari jaringan lewat gradient descent</span></td></tr>
+      <tr><td>Blur</td><td><span data-lang="en">Average of neighbours</span><span data-lang="id">Rata-rata tetangga</span></td><td><span data-lang="en">Keep low frequencies (low-pass)</span><span data-lang="id">Simpan frekuensi rendah (low-pass)</span></td><td><span data-lang="en">Rarely learned — it throws away detail</span><span data-lang="id">Jarang dipelajari — ia membuang detail</span></td></tr>
+      <tr><td><span data-lang="en">Edge</span><span data-lang="id">Tepi</span></td><td><span data-lang="en">Neighbour minus neighbour</span><span data-lang="id">Tetangga dikurangi tetangga</span></td><td><span data-lang="en">Keep high frequencies (high-pass)</span><span data-lang="id">Simpan frekuensi tinggi (high-pass)</span></td><td><span data-lang="en">The first thing early layers learn</span><span data-lang="id">Hal pertama yang dipelajari lapisan awal</span></td></tr>
+      <tr><td><span data-lang="en">Cost</span><span data-lang="id">Ongkos</span></td><td><span data-lang="en">One dot product per output pixel</span><span data-lang="id">Satu dot product per piksel keluaran</span></td><td><span data-lang="en">One multiply per frequency (via FFT)</span><span data-lang="id">Satu perkalian per frekuensi (lewat FFT)</span></td><td><span data-lang="en">Filters shared across the whole image — few weights, huge reach</span><span data-lang="id">Filter dibagi ke seluruh citra — sedikit bobot, jangkauan besar</span></td></tr>
     </table>
     </div>
-    <p>The same operation, seen three ways. The Fourier view explains <i>why</i> filters do what they do; the CNN view explains <i>where the filters come from.</i></p>
+    <p data-lang="en">The same operation, seen three ways. The Fourier view explains <i>why</i> filters do what they do; the CNN view explains <i>where the filters come from.</i></p><p data-lang="id">Operasi yang sama, dilihat dari tiga sisi. Sudut Fourier menjelaskan <i>kenapa</i> filter melakukan yang dilakukannya; sudut CNN menjelaskan <i>dari mana filter itu berasal.</i></p>
   </div>
 
   <div class="box">
-    <h2>Where this connects</h2>
-    <p><b>← Fourier.</b> A filter is a frequency selector; convolution in space is multiplication in frequency. The <a href="fourier.html">Fourier bridge</a> is the 1D version of tab 2.</p>
-    <p><b>← Neural net from scratch.</b> Tab 3 is the same gradient-descent training loop as the <a href="apps/mlp/">MLP playground</a>, but the weights are shared filters slid over an image instead of a dense layer.</p>
-    <p><b>→ What comes next.</b> Pooling, stacking layers into a deep hierarchy, and — the modern successor for many tasks — attention, where a token learns which other tokens to look at instead of using a fixed local window.</p>
+    <h2><span data-lang="en">Where this connects</span><span data-lang="id">Ke mana ini terhubung</span></h2>
+    <p data-lang="en"><b>← Fourier.</b> A filter is a frequency selector; convolution in space is multiplication in frequency. The <a href="fourier.html">Fourier bridge</a> is the 1D version of tab 2.</p><p data-lang="id"><b>← Fourier.</b> Filter adalah pemilih frekuensi; konvolusi di ruang adalah perkalian di frekuensi. <a href="fourier.html">Jembatan Fourier</a> adalah versi 1D dari tab 2.</p>
+    <p data-lang="en"><b>← Neural net from scratch.</b> Tab 3 is the same gradient-descent training loop as the <a href="apps/mlp/">MLP playground</a>, but the weights are shared filters slid over an image instead of a dense layer.</p><p data-lang="id"><b>← Neural net dari nol.</b> Tab 3 adalah loop pelatihan gradient-descent yang sama seperti <a href="apps/mlp/">playground MLP</a>, tapi bobotnya adalah filter bersama yang digeser di atas citra alih-alih lapisan dense.</p>
+    <p data-lang="en"><b>→ What comes next.</b> Pooling, stacking layers into a deep hierarchy, and — the modern successor for many tasks — attention, where a token learns which other tokens to look at instead of using a fixed local window.</p><p data-lang="id"><b>→ Apa selanjutnya.</b> Pooling, menumpuk lapisan jadi hierarki dalam, dan — penerus modern untuk banyak tugas — attention, di mana sebuah token mempelajari token lain mana yang harus dilihat alih-alih memakai jendela lokal tetap.</p>
   </div>
 
   <div class="box">
-    <h2>Check yourself</h2>
+    <h2><span data-lang="en">Check yourself</span><span data-lang="id">Uji dirimu</span></h2>
     <div id="quizBox"></div>
   </div>
 </div>
 
 <footer>
-  Built for hands-on learning · every filter, transform, and training step runs live in this page — no server · part of the Interactive Playgrounds.
+  <span data-lang="en">Built for hands-on learning · every filter, transform, and training step runs live in this page — no server · part of the Interactive Playgrounds.</span><span data-lang="id">Dibuat untuk belajar langsung · setiap filter, transformasi, dan langkah pelatihan berjalan langsung di halaman ini — tanpa server · bagian dari Interactive Playgrounds.</span>
 </footer>
 
 </div>
@@ -529,6 +548,7 @@ requestAnimationFrame(_loop);
 
 /* ===== convolution playground ===== */
 const NI=28;
+if(typeof TRMAP!=='undefined') Object.assign(TRMAP,{ 'step':'langkah','accuracy':'akurasi','▶ Train':'▶ Latih','⏸ Pause':'⏸ Jeda','horizontal':'horizontal','vertical':'vertical','guess: ':'tebakan: ',' · actual: ':' · asli: ' });
 function randn(){let u=0,v=0;while(u===0)u=Math.random();while(v===0)v=Math.random();return Math.sqrt(-2*Math.log(u))*Math.cos(2*Math.PI*v);}
 function fmtSci(v){ if(!isFinite(v))return '–'; if(v===0)return '0'; if(v>=0.01&&v<1000) return v.toPrecision(3); const e=Math.floor(Math.log10(Math.abs(v))); return (v/Math.pow(10,e)).toFixed(1)+'e'+e; }
 const KERNELS={
@@ -704,9 +724,9 @@ function drawFilterCanvas(c,w){ const g=c.getContext('2d'); let mx=1e-6; for(let
     g.fillStyle='rgb('+r+','+gr+','+b+')'; g.fillRect(x*px,y*px,px+1,px+1); } }
 function draw(){
   const cs=getCv('cnSample'); if(cs && sample){ drawGrid(cs,sample.img,N,'gray'); }
-  if(sample){ const guess=sample.p?(sample.p[1]>sample.p[0]?'horizontal':'vertical'):'–'; const truth=sample.label?'horizontal':'vertical';
+  if(sample){ const guess=sample.p?(sample.p[1]>sample.p[0]?TR('horizontal'):TR('vertical')):'–'; const truth=sample.label?TR('horizontal'):TR('vertical');
     const ok = sample.p ? ((sample.p[1]>sample.p[0]?1:0)===sample.label) : null;
-    $('cnPred').innerHTML = sample.p ? ('guess: <b style="color:'+(ok?'var(--moss)':'var(--rust)')+'">'+guess+'</b> · actual: '+truth) : ''; }
+    $('cnPred').innerHTML = sample.p ? (TR('guess: ')+'<b style="color:'+(ok?'var(--moss)':'var(--rust)')+'">'+guess+'</b>'+TR(' · actual: ')+truth) : ''; }
   for(let f=0;f<F&&f<fcvs.length;f++) drawFilterCanvas(fcvs[f],W[f]);
   const cc=getCv('cnChart');
   if(cc){ if(accH.length>1){ const pl=Plot(cc,0,accH.length*3,0,1.02,{xlab:'step',ylab:'accuracy'}); pl.clip(); pl.line(accH.map((_,i)=>i*3),accH,COL.moss,2); pl.unclip(); }
@@ -714,7 +734,7 @@ function draw(){
   $('cnStep').textContent=stepCount; $('cnAcc').textContent=isFinite(accEMA)?fmt(accEMA*100,0)+'%':'–'; $('cnLoss').textContent=fmtSci(lossEMA);
 }
 TICKS.push(()=>{ if(ACTIVE!=='cnn') return; if(training){ for(let i=0;i<8;i++) trainStep(); draw(); } else if(dirty){ draw(); dirty=false; } });
-$('cnTrain').addEventListener('click',()=>{ training=!training; $('cnTrain').textContent=training?'⏸ Pause':'▶ Train'; });
+$('cnTrain').addEventListener('click',()=>{ training=!training; $('cnTrain').textContent=training?TR('⏸ Pause'):TR('▶ Train'); });
 $('cnReset').addEventListener('click',()=>{ initNet(); });
 REDRAW.cnn=()=>{ dirty=true; };
 buildFilters(); initNet();
@@ -722,6 +742,26 @@ buildFilters(); initNet();
 
 /* ==================== QUIZ ==================== */
 (() => {
+const QS_ID=[
+  { q:'Apa itu filter konvolusi, secara konkret?',
+    o:['sebuah citra utuh','grid kecil bobot yang digeser di atas citra, di-dot-product di tiap tempat','angka acak','basis data gambar'],
+    a:1, e:'Grid bobot (misalnya 3×3). Di tiap posisi kamu kalikan bobot dengan piksel di bawahnya lalu jumlahkan — satu piksel keluaran. Geser ke mana-mana untuk mendapat feature map.' },
+  { q:'Filter blur, dilihat di ruang frekuensi, adalah…',
+    o:['filter high-pass','filter low-pass — menyimpan frekuensi rendah, membuang detail halus','ia menghapus segalanya','ia tak berbuat apa-apa'],
+    a:1, e:'Blur = merata-ratakan tetangga = menyimpan bagian yang berubah lambat (frekuensi rendah) dan membuang detail cepat. Responsnya terang di tengah.' },
+  { q:'Konvolusi di ruang sama dengan apa di ruang frekuensi?',
+    o:['konvolusi lagi','sebuah perkalian — spektrum citra kali spektrum filter','penjumlahan','tak ada yang sederhana'],
+    a:1, e:'Teorema konvolusi: transformasikan keduanya, kalikan per frekuensi, transformasikan balik. Persis aturan halaman Fourier, kini dalam 2D.' },
+  { q:'Dari mana filter sebuah CNN berasal?',
+    o:['manusia merancang tiap-tiap filter','dipelajari lewat gradient descent dari contoh berlabel','selalu filter Sobel','acak dan tak pernah berubah'],
+    a:1, e:'Jaringan mulai dengan filter acak dan menyesuaikannya dari benar-atau-salah. Lapisan awal andal menemukan detektor tepi sendiri.' },
+  { q:'Kenapa filter konvolusi "dibagi" ke seluruh citra?',
+    o:['agar memakai lebih banyak memori','agar pola yang sama terdeteksi di mana pun ia muncul, dengan sangat sedikit bobot','agar pelatihan lebih lambat','tanpa alasan'],
+    a:1, e:'Satu filter 3×3 (sembilan bobot) memindai seluruh citra, jadi sebuah tepi ditemukan di mana pun ia terjadi — ramah-translasi dan sangat hemat parameter dibanding lapisan dense.' },
+  { q:'Filter pendeteksi tepi yang terlatih cenderung tampak seperti…',
+    o:['semua bobot sama','satu kolom/baris terang di samping satu yang gelap (gradien)','semua nol','derau acak'],
+    a:1, e:'Tepi adalah lompatan dari gelap ke terang, jadi detektor yang menyalakannya positif di satu sisi dan negatif di sisi lain — bentuk Sobel, dipelajari dari nol.' },
+];
 const QS=[
   { q:'What is a convolution filter, concretely?',
     o:['a whole image','a small grid of weights slid over the image, dot-producted at each spot','a random number','a database of pictures'],
@@ -742,8 +782,9 @@ const QS=[
     o:['all equal weights','one bright column/row beside one dark one (a gradient)','all zeros','random noise'],
     a:1, e:'An edge is a jump from dark to bright, so the detector that fires on it is positive on one side and negative on the other — the Sobel shape, learned from scratch.' },
 ];
-const box=$('quizBox');
-QS.forEach((Q,qi)=>{ const d=document.createElement('div'); d.className='q';
+function buildQuiz(){ const box=$('quizBox'); if(!box) return; box.innerHTML='';
+const QSA=(document.documentElement.lang==='id')?QS_ID:QS;
+QSA.forEach((Q,qi)=>{ const d=document.createElement('div'); d.className='q';
   d.innerHTML='<div class="qt">'+(qi+1)+'. '+Q.q+'</div>';
   const opts=document.createElement('div'); opts.className='opts';
   Q.o.forEach((o,oi)=>{ const b=document.createElement('button'); b.className='opt'; b.textContent=o;
@@ -752,8 +793,22 @@ QS.forEach((Q,qi)=>{ const d=document.createElement('div'); d.className='q';
   const exp=document.createElement('div'); exp.className='exp'; exp.textContent=Q.e;
   d.appendChild(opts); d.appendChild(exp); box.appendChild(d);
 });
+}
+window.__buildQuiz=buildQuiz; buildQuiz();
+window.__onLang=function(){
+  try{ if(typeof REDRAW!=='undefined' && REDRAW[ACTIVE]) REDRAW[ACTIVE](); }catch(e){}
+  try{ var b=$('cnTrain'); if(b) b.textContent=/⏸/.test(b.textContent)?TR('⏸ Pause'):TR('▶ Train'); }catch(e){}
+  try{ if(window.__buildQuiz) window.__buildQuiz(); }catch(e){}
+};
+(function(){ var KEY='phxLang';
+  function apply(l){ document.documentElement.lang=l; var bb=document.querySelectorAll('[data-lang-btn]'); for(var i=0;i<bb.length;i++) bb[i].classList.toggle('on', bb[i].getAttribute('data-lang-btn')===l); if(window.__onLang){try{window.__onLang();}catch(e){}} }
+  function set(l){ try{localStorage.setItem(KEY,l);}catch(e){} apply(l); }
+  var s=null; try{s=localStorage.getItem(KEY);}catch(e){} apply(s==='id'?'id':'en');
+  var bt=document.querySelectorAll('[data-lang-btn]'); for(var i=0;i<bt.length;i++) bt[i].addEventListener('click',function(e){e.preventDefault();set(this.getAttribute('data-lang-btn'));});
+  window.setLang=set;
 })();
 
+})();
 </script>
 </body>
 </html>
