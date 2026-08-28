@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Interactive Playgrounds</title>
+<title>Machine learning playgrounds — classical models, neural nets, CNNs</title>
 <link rel="icon" type="image/png" href="logo.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -147,38 +147,36 @@
 })();</script>
 
 <header class="top">
-  <p class="eyebrow"><span data-lang="en">Interactive learning playground</span><span data-lang="id">Playground belajar interaktif</span></p>
-  <h1>Interactive Playgrounds</h1>
-  <p data-lang="en">Learn by doing. Every playground runs entirely in your browser — tweak the parameters, edit the data, draw your own inputs, and watch the idea come to life. Four topics so far, twelve playgrounds in all, with more added over time. Nothing to install.</p>
-  <p data-lang="id">Belajar sambil mencoba. Setiap playground berjalan sepenuhnya di browser-mu — ubah parameternya, sunting datanya, gambar sendiri input-nya, lalu lihat idenya jadi hidup. Empat topik sejauh ini, dua belas playground seluruhnya, dan akan terus bertambah. Tanpa instalasi apa pun.</p>
+  <p class="eyebrow"><span data-lang="en">Interactive playgrounds · Machine Learning</span><span data-lang="id">Playground interaktif · Machine Learning</span></p>
+  <h1>Machine Learning</h1>
+  <p data-lang="en">Learning from examples, from the ground up: fitting classical models to labelled data, building a neural network by hand in NumPy, and watching a convolutional network discover its own filters.</p>
+  <p data-lang="id">Belajar dari contoh, mulai dari dasar: mencocokkan model klasik ke data berlabel, membangun neural network dengan tangan memakai NumPy, dan menyaksikan jaringan konvolusi menemukan filternya sendiri.</p>
+  <p class="crumbs"><a href="index.html"><span data-lang="en">← all playgrounds</span><span data-lang="id">← semua playground</span></a></p>
 </header>
 
 <div class="grid">
 
-<a class="card" href="optimization.html">
+<a class="card" href="classical_ml.html">
     <div class="ill">
       <svg viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg">
-        <path d="M5 8 Q 20 42 35 8" stroke="#6E6259" stroke-width="2"/>
-        <path d="M12 19 Q 16 29 19.5 31" stroke="#E4DACB" stroke-width="1.2" stroke-dasharray="2 2"/>
-        <circle cx="12" cy="19" r="3" fill="#A8392A"/>
-        <circle cx="20" cy="31.4" r="2.4" fill="#2F7069"/>
-        <circle cx="28" cy="19" r="2.4" fill="#C17A3E"/>
-        <circle cx="24" cy="12" r="1.8" fill="#C17A3E"/>
+        <line x1="6" y1="34" x2="34" y2="6" stroke="#C17A3E" stroke-width="2"/>
+        <circle cx="12" cy="12" r="2.2" fill="#A8392A"/><circle cx="18" cy="9" r="2.2" fill="#A8392A"/><circle cx="10" cy="20" r="2.2" fill="#A8392A"/>
+        <circle cx="29" cy="28" r="2.2" fill="#C17A3E"/><circle cx="22" cy="31" r="2.2" fill="#C17A3E"/><circle cx="31" cy="21" r="2.2" fill="#C17A3E"/>
       </svg>
-      <small><span data-lang="en">2 playgrounds</span><span data-lang="id">2 playground</span></small>
+      <small></small>
     </div>
     <div>
-      <h2><span data-lang="en">Optimization</span><span data-lang="id">Optimasi</span></h2>
-      <p data-lang="en">Search without a formula for the answer: populations that breed, particles that swarm, solutions that cool and ants that lay trails — then gradient descent and the whole optimizer zoo, step by step.</p>
-      <p data-lang="id">Mencari tanpa rumus untuk jawabannya: populasi yang berkembang biak, partikel yang bergerombol, solusi yang mendingin dan semut yang meninggalkan jejak — lalu gradient descent dan seisi kebun binatang optimizer, langkah demi langkah.</p>
+      <h2><span data-lang="en">Classical machine learning</span><span data-lang="id">Machine learning klasik</span></h2>
+      <p data-lang="en">Learning from labelled examples: fitting curves, letting neighbors vote, finding the widest margin, splitting the plane, and counting words.</p>
+      <p data-lang="id">Belajar dari contoh berlabel: mencocokkan kurva, membiarkan tetangga ikut memilih, mencari margin terlebar, membelah bidang, dan menghitung kata.</p>
       <div class="tags">
-        <span class="tag">genetic algorithm</span><span class="tag">particle swarm</span><span class="tag">simulated annealing</span><span class="tag">gradient descent</span><span class="tag">Adam</span>
+        <span class="tag">regression</span><span class="tag">k-NN</span><span class="tag">SVM</span><span class="tag">decision tree</span><span class="tag">naive bayes</span>
       </div>
     </div>
     <div class="go"><span data-lang="en">open →</span><span data-lang="id">buka →</span></div>
   </a>
 
-<a class="card" href="machine_learning.html">
+<a class="card" href="apps/mlp/">
     <div class="ill">
       <svg viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg">
         <g stroke="#E4DACB" stroke-width="1">
@@ -193,60 +191,37 @@
           <circle cx="31" cy="14" r="2.4"/><circle cx="31" cy="26" r="2.4"/>
         </g>
       </svg>
-      <small><span data-lang="en">3 playgrounds</span><span data-lang="id">3 playground</span></small>
+      <small>python</small>
     </div>
     <div>
-      <h2>Machine Learning</h2>
-      <p data-lang="en">Learning from labelled examples, from the ground up: classical models fitted live, a neural network written by hand in NumPy, and a convolutional network that discovers its own edge detectors.</p>
-      <p data-lang="id">Belajar dari contoh berlabel, mulai dari dasar: model klasik yang dilatih langsung, neural network yang ditulis dengan tangan memakai NumPy, dan jaringan konvolusi yang menemukan detektor tepinya sendiri.</p>
+      <h2><span data-lang="en">A neural network from scratch</span><span data-lang="id">Neural network dari nol</span></h2>
+      <p data-lang="en">A multilayer perceptron in ~60 lines of NumPy: train once, then scrub through the epochs to watch the boundary form, see each hidden neuron's view of the plane, and watch gradients vanish layer by layer with sigmoid.</p>
+      <p data-lang="id">Multilayer perceptron dalam ~60 baris NumPy: latih sekali, lalu geser epoch-nya untuk melihat batas keputusan terbentuk, lihat cara tiap hidden neuron memandang bidang, dan saksikan gradient menghilang lapis demi lapis dengan sigmoid.</p>
       <div class="tags">
-        <span class="tag">regression</span><span class="tag">SVM</span><span class="tag">decision tree</span><span class="tag">MLP &amp; backprop</span><span class="tag">CNN filters</span>
+        <span class="tag">MLP</span><span class="tag">backprop</span><span class="tag">epoch scrubber</span><span class="tag">vanishing gradients</span><span class="tag">neuron views</span>
       </div>
     </div>
     <div class="go"><span data-lang="en">open →</span><span data-lang="id">buka →</span></div>
   </a>
 
-<a class="card" href="scientific_ml_index.html">
+<a class="card" href="convolution.html">
     <div class="ill">
       <svg viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg">
-        <path d="M4 14 q 4 -7 8 0 t 8 0" stroke="#A8392A" stroke-width="2"/>
-        <path d="M5 31 C 14 29, 22 17, 33 10" stroke="#C17A3E" stroke-width="2"/>
-        <g stroke="#E4DACB" stroke-width="1"><line x1="22" y1="14" x2="32" y2="20"/><line x1="22" y1="14" x2="32" y2="28"/></g>
-        <circle cx="22" cy="14" r="2.4" fill="#2D2D2D"/>
-        <circle cx="32" cy="20" r="2.2" fill="#2F7069"/><circle cx="32" cy="28" r="2.2" fill="#2F7069"/>
+        <rect x="5" y="9" width="20" height="20" fill="#FFFDF9" stroke="#E4DACB"/>
+        <line x1="5" y1="15.7" x2="25" y2="15.7" stroke="#E4DACB"/><line x1="5" y1="22.3" x2="25" y2="22.3" stroke="#E4DACB"/>
+        <line x1="11.7" y1="9" x2="11.7" y2="29" stroke="#E4DACB"/><line x1="18.3" y1="9" x2="18.3" y2="29" stroke="#E4DACB"/>
+        <rect x="5" y="9" width="6.7" height="6.7" fill="none" stroke="#C17A3E" stroke-width="2"/>
+        <path d="M27 19 h 5" stroke="#6E6259" stroke-width="1"/>
+        <rect x="30" y="15" width="8" height="8" fill="#C17A3E"/>
       </svg>
-      <small><span data-lang="en">3 playgrounds</span><span data-lang="id">3 playground</span></small>
+      <small></small>
     </div>
     <div>
-      <h2>Scientific ML</h2>
-      <p data-lang="en">Equations and data, in that order: slope fields, chaos and the wave and heat PDEs; Fourier as the bridge; then PINNs, SINDy, Neural ODEs and the operators that replace the solver.</p>
-      <p data-lang="id">Persamaan dan data, dalam urutan itu: slope field, chaos, serta PDE gelombang dan panas; Fourier sebagai jembatan; lalu PINN, SINDy, Neural ODE, dan operator yang menggantikan solver.</p>
+      <h2><span data-lang="en">Convolution &amp; CNNs</span><span data-lang="id">Konvolusi &amp; CNN</span></h2>
+      <p data-lang="en">Seeing with filters: build 3×3 filters by hand and watch feature maps, see convolution become one multiply per frequency, then let a tiny network discover its own edge detectors — trained live.</p>
+      <p data-lang="id">Melihat dengan filter: bangun filter 3×3 dengan tangan dan lihat feature map, saksikan konvolusi jadi satu perkalian per frekuensi, lalu biarkan jaringan kecil menemukan detektor tepinya sendiri — dilatih langsung.</p>
       <div class="tags">
-        <span class="tag">Euler · RK4</span><span class="tag">Lorenz · chaos</span><span class="tag">Fourier</span><span class="tag">PINN · SINDy</span><span class="tag">DeepONet · FNO</span>
-      </div>
-    </div>
-    <div class="go"><span data-lang="en">open →</span><span data-lang="id">buka →</span></div>
-  </a>
-
-<a class="card" href="mathematical_logic.html">
-    <div class="ill">
-      <svg viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg">
-        <rect x="7" y="8" width="26" height="7" fill="#F0DCC6"/>
-        <rect x="7" y="8" width="26" height="24" fill="none" stroke="#E4DACB"/>
-        <line x1="7" y1="15" x2="33" y2="15" stroke="#E4DACB"/>
-        <line x1="20" y1="8" x2="20" y2="32" stroke="#E4DACB"/>
-        <line x1="7" y1="23.5" x2="33" y2="23.5" stroke="#E4DACB"/>
-        <circle cx="13.5" cy="19" r="2.2" fill="#2F7069"/><circle cx="26.5" cy="19" r="2.2" fill="#A8392A"/>
-        <circle cx="13.5" cy="27.5" r="2.2" fill="#A8392A"/><circle cx="26.5" cy="27.5" r="2.2" fill="#2F7069"/>
-      </svg>
-      <small><span data-lang="en">4 labs</span><span data-lang="id">4 lab</span></small>
-    </div>
-    <div>
-      <h2><span data-lang="en">Mathematical Logic</span><span data-lang="id">Logika Matematika</span></h2>
-      <p data-lang="en">A semester in four labs: truth tables built column by column, quantifiers in a world you can edit, proofs you reorder and pick apart, and set theory traced back to the truth tables of unit 01.</p>
-      <p data-lang="id">Satu semester dalam empat lab: tabel kebenaran yang tersusun kolom demi kolom, kuantor pada dunia yang bisa disunting, bukti yang kamu susun ulang dan bedah, serta teori himpunan yang dilacak balik ke tabel kebenaran unit 01.</p>
-      <div class="tags">
-        <span class="tag">truth tables</span><span class="tag">quantifiers</span><span class="tag">proof methods</span><span class="tag">induction</span><span class="tag">Venn · sets</span>
+        <span class="tag">convolution</span><span class="tag">feature maps</span><span class="tag">filters</span><span class="tag">2D FFT</span><span class="tag">tiny CNN</span>
       </div>
     </div>
     <div class="go"><span data-lang="en">open →</span><span data-lang="id">buka →</span></div>

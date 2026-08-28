@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Interactive Playgrounds</title>
+<title>Optimization playgrounds — evolutionary search &amp; gradient descent</title>
 <link rel="icon" type="image/png" href="logo.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -147,106 +147,52 @@
 })();</script>
 
 <header class="top">
-  <p class="eyebrow"><span data-lang="en">Interactive learning playground</span><span data-lang="id">Playground belajar interaktif</span></p>
-  <h1>Interactive Playgrounds</h1>
-  <p data-lang="en">Learn by doing. Every playground runs entirely in your browser — tweak the parameters, edit the data, draw your own inputs, and watch the idea come to life. Four topics so far, twelve playgrounds in all, with more added over time. Nothing to install.</p>
-  <p data-lang="id">Belajar sambil mencoba. Setiap playground berjalan sepenuhnya di browser-mu — ubah parameternya, sunting datanya, gambar sendiri input-nya, lalu lihat idenya jadi hidup. Empat topik sejauh ini, dua belas playground seluruhnya, dan akan terus bertambah. Tanpa instalasi apa pun.</p>
+  <p class="eyebrow"><span data-lang="en">Interactive playgrounds · Optimization</span><span data-lang="id">Playground interaktif · Optimasi</span></p>
+  <h1><span data-lang="en">Optimization</span><span data-lang="id">Optimasi</span></h1>
+  <p data-lang="en">Finding a good answer when you cannot simply solve for it. Population-based search that needs no gradient at all, and gradient descent that needs nothing else — two playgrounds, both running live in your browser.</p>
+  <p data-lang="id">Mencari jawaban yang baik ketika ia tak bisa dihitung langsung. Pencarian berbasis populasi yang sama sekali tak butuh gradien, dan gradient descent yang justru hanya butuh itu — dua playground, keduanya berjalan langsung di browser-mu.</p>
+  <p class="crumbs"><a href="index.html"><span data-lang="en">← all playgrounds</span><span data-lang="id">← semua playground</span></a></p>
 </header>
 
 <div class="grid">
 
-<a class="card" href="optimization.html">
+<a class="card" href="evolutionary_swarm.html">
     <div class="ill">
       <svg viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg">
-        <path d="M5 8 Q 20 42 35 8" stroke="#6E6259" stroke-width="2"/>
-        <path d="M12 19 Q 16 29 19.5 31" stroke="#E4DACB" stroke-width="1.2" stroke-dasharray="2 2"/>
-        <circle cx="12" cy="19" r="3" fill="#A8392A"/>
-        <circle cx="20" cy="31.4" r="2.4" fill="#2F7069"/>
-        <circle cx="28" cy="19" r="2.4" fill="#C17A3E"/>
-        <circle cx="24" cy="12" r="1.8" fill="#C17A3E"/>
+        <path d="M8 10 L20 20 M14 27 L20 20 M26 11 L20 20 M30 30 L20 20" stroke="#E4DACB" stroke-width="1"/>
+        <circle cx="8" cy="10" r="2.2" fill="#C17A3E"/><circle cx="14" cy="27" r="2.2" fill="#C17A3E"/>
+        <circle cx="26" cy="11" r="2.2" fill="#C17A3E"/><circle cx="30" cy="30" r="2.2" fill="#A8392A"/>
+        <circle cx="20" cy="20" r="3.6" fill="#2F7069"/>
       </svg>
-      <small><span data-lang="en">2 playgrounds</span><span data-lang="id">2 playground</span></small>
+      <small></small>
     </div>
     <div>
-      <h2><span data-lang="en">Optimization</span><span data-lang="id">Optimasi</span></h2>
-      <p data-lang="en">Search without a formula for the answer: populations that breed, particles that swarm, solutions that cool and ants that lay trails — then gradient descent and the whole optimizer zoo, step by step.</p>
-      <p data-lang="id">Mencari tanpa rumus untuk jawabannya: populasi yang berkembang biak, partikel yang bergerombol, solusi yang mendingin dan semut yang meninggalkan jejak — lalu gradient descent dan seisi kebun binatang optimizer, langkah demi langkah.</p>
+      <h2><span data-lang="en">Evolutionary &amp; swarm algorithms</span><span data-lang="id">Algoritma evolusioner &amp; swarm</span></h2>
+      <p data-lang="en">Search without knowing the answer: populations that breed, particles that swarm, solutions that cool, and ants that lay trails.</p>
+      <p data-lang="id">Mencari tanpa tahu jawabannya: populasi yang berkembang biak, partikel yang bergerombol, solusi yang mendingin, dan semut yang meninggalkan jejak.</p>
       <div class="tags">
-        <span class="tag">genetic algorithm</span><span class="tag">particle swarm</span><span class="tag">simulated annealing</span><span class="tag">gradient descent</span><span class="tag">Adam</span>
+        <span class="tag">genetic algorithm</span><span class="tag">knapsack</span><span class="tag">particle swarm</span><span class="tag">simulated annealing</span><span class="tag">ant colony · TSP</span>
       </div>
     </div>
     <div class="go"><span data-lang="en">open →</span><span data-lang="id">buka →</span></div>
   </a>
 
-<a class="card" href="machine_learning.html">
+<a class="card" href="apps/optimizers/">
     <div class="ill">
       <svg viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg">
-        <g stroke="#E4DACB" stroke-width="1">
-          <line x1="9" y1="14" x2="20" y2="8"/><line x1="9" y1="14" x2="20" y2="20"/><line x1="9" y1="14" x2="20" y2="32"/>
-          <line x1="9" y1="26" x2="20" y2="8"/><line x1="9" y1="26" x2="20" y2="20"/><line x1="9" y1="26" x2="20" y2="32"/>
-          <line x1="20" y1="8" x2="31" y2="14"/><line x1="20" y1="20" x2="31" y2="14"/><line x1="20" y1="32" x2="31" y2="14"/>
-          <line x1="20" y1="8" x2="31" y2="26"/><line x1="20" y1="20" x2="31" y2="26"/><line x1="20" y1="32" x2="31" y2="26"/>
-        </g>
-        <g fill="#C17A3E">
-          <circle cx="9" cy="14" r="2.4"/><circle cx="9" cy="26" r="2.4"/>
-          <circle cx="20" cy="8" r="2.4"/><circle cx="20" cy="20" r="2.4"/><circle cx="20" cy="32" r="2.4"/>
-          <circle cx="31" cy="14" r="2.4"/><circle cx="31" cy="26" r="2.4"/>
-        </g>
+        <path d="M6 9 Q 20 42 34 9" stroke="#6E6259" stroke-width="2"/>
+        <path d="M13 20 Q 17 30 19.5 31.5" stroke="#E4DACB" stroke-width="1.2" stroke-dasharray="2 2"/>
+        <circle cx="13" cy="20" r="3" fill="#A8392A"/>
+        <circle cx="20" cy="31.5" r="2.4" fill="#2F7069"/>
       </svg>
-      <small><span data-lang="en">3 playgrounds</span><span data-lang="id">3 playground</span></small>
+      <small>python</small>
     </div>
     <div>
-      <h2>Machine Learning</h2>
-      <p data-lang="en">Learning from labelled examples, from the ground up: classical models fitted live, a neural network written by hand in NumPy, and a convolutional network that discovers its own edge detectors.</p>
-      <p data-lang="id">Belajar dari contoh berlabel, mulai dari dasar: model klasik yang dilatih langsung, neural network yang ditulis dengan tangan memakai NumPy, dan jaringan konvolusi yang menemukan detektor tepinya sendiri.</p>
+      <h2><span data-lang="en">Gradient descent &amp; the optimizer zoo</span><span data-lang="id">Gradient descent &amp; kebun binatang optimizer</span></h2>
+      <p data-lang="en">Why the learning rate matters, and how momentum, RMSProp, and Adam behave on ravines, valleys, and saddle points — race them side by side, then inspect any single step's arithmetic (g, m, v̂, the update) in a table.</p>
+      <p data-lang="id">Kenapa learning rate begitu menentukan, dan bagaimana momentum, RMSProp, serta Adam berperilaku di jurang, lembah, dan saddle point — adu mereka berdampingan, lalu bedah aritmetika satu langkah mana pun (g, m, v̂, update-nya) dalam tabel.</p>
       <div class="tags">
-        <span class="tag">regression</span><span class="tag">SVM</span><span class="tag">decision tree</span><span class="tag">MLP &amp; backprop</span><span class="tag">CNN filters</span>
-      </div>
-    </div>
-    <div class="go"><span data-lang="en">open →</span><span data-lang="id">buka →</span></div>
-  </a>
-
-<a class="card" href="scientific_ml_index.html">
-    <div class="ill">
-      <svg viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg">
-        <path d="M4 14 q 4 -7 8 0 t 8 0" stroke="#A8392A" stroke-width="2"/>
-        <path d="M5 31 C 14 29, 22 17, 33 10" stroke="#C17A3E" stroke-width="2"/>
-        <g stroke="#E4DACB" stroke-width="1"><line x1="22" y1="14" x2="32" y2="20"/><line x1="22" y1="14" x2="32" y2="28"/></g>
-        <circle cx="22" cy="14" r="2.4" fill="#2D2D2D"/>
-        <circle cx="32" cy="20" r="2.2" fill="#2F7069"/><circle cx="32" cy="28" r="2.2" fill="#2F7069"/>
-      </svg>
-      <small><span data-lang="en">3 playgrounds</span><span data-lang="id">3 playground</span></small>
-    </div>
-    <div>
-      <h2>Scientific ML</h2>
-      <p data-lang="en">Equations and data, in that order: slope fields, chaos and the wave and heat PDEs; Fourier as the bridge; then PINNs, SINDy, Neural ODEs and the operators that replace the solver.</p>
-      <p data-lang="id">Persamaan dan data, dalam urutan itu: slope field, chaos, serta PDE gelombang dan panas; Fourier sebagai jembatan; lalu PINN, SINDy, Neural ODE, dan operator yang menggantikan solver.</p>
-      <div class="tags">
-        <span class="tag">Euler · RK4</span><span class="tag">Lorenz · chaos</span><span class="tag">Fourier</span><span class="tag">PINN · SINDy</span><span class="tag">DeepONet · FNO</span>
-      </div>
-    </div>
-    <div class="go"><span data-lang="en">open →</span><span data-lang="id">buka →</span></div>
-  </a>
-
-<a class="card" href="mathematical_logic.html">
-    <div class="ill">
-      <svg viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg">
-        <rect x="7" y="8" width="26" height="7" fill="#F0DCC6"/>
-        <rect x="7" y="8" width="26" height="24" fill="none" stroke="#E4DACB"/>
-        <line x1="7" y1="15" x2="33" y2="15" stroke="#E4DACB"/>
-        <line x1="20" y1="8" x2="20" y2="32" stroke="#E4DACB"/>
-        <line x1="7" y1="23.5" x2="33" y2="23.5" stroke="#E4DACB"/>
-        <circle cx="13.5" cy="19" r="2.2" fill="#2F7069"/><circle cx="26.5" cy="19" r="2.2" fill="#A8392A"/>
-        <circle cx="13.5" cy="27.5" r="2.2" fill="#A8392A"/><circle cx="26.5" cy="27.5" r="2.2" fill="#2F7069"/>
-      </svg>
-      <small><span data-lang="en">4 labs</span><span data-lang="id">4 lab</span></small>
-    </div>
-    <div>
-      <h2><span data-lang="en">Mathematical Logic</span><span data-lang="id">Logika Matematika</span></h2>
-      <p data-lang="en">A semester in four labs: truth tables built column by column, quantifiers in a world you can edit, proofs you reorder and pick apart, and set theory traced back to the truth tables of unit 01.</p>
-      <p data-lang="id">Satu semester dalam empat lab: tabel kebenaran yang tersusun kolom demi kolom, kuantor pada dunia yang bisa disunting, bukti yang kamu susun ulang dan bedah, serta teori himpunan yang dilacak balik ke tabel kebenaran unit 01.</p>
-      <div class="tags">
-        <span class="tag">truth tables</span><span class="tag">quantifiers</span><span class="tag">proof methods</span><span class="tag">induction</span><span class="tag">Venn · sets</span>
+        <span class="tag">gradient descent</span><span class="tag">momentum</span><span class="tag">Adam</span><span class="tag">step-by-step math</span>
       </div>
     </div>
     <div class="go"><span data-lang="en">open →</span><span data-lang="id">buka →</span></div>

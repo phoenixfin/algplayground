@@ -1,0 +1,771 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Set theory - Venn regions and set identities</title>
+<link rel="icon" type="image/png" href="logo.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=Lato:wght@300;400;700&display=swap" rel="stylesheet">
+<script>try{var _l=localStorage.getItem('phxLang');if(_l==='id'||_l==='en')document.documentElement.lang=_l;}catch(e){}</script>
+<style>
+:root{
+  --paper:#FAF7F2; --paper-line:#EDE4D8; --card:#FFFDF9; --ink:#2D2D2D; --ink-soft:#6E6259;
+  --true:#2F7069; --false:#A8392A; --unit:#8F5620; --amber:#C17A3E;
+  --accent-deep:#8F5620; --border:#E4DACB; --moss:#C17A3E;
+  --rule:#E4DACB; --rule-strong:#CFBFA6;
+  --display:"Playfair Display",Georgia,serif;
+  --body:Lato,"Helvetica Neue",Helvetica,Arial,sans-serif;
+  --mono:"SF Mono",SFMono-Regular,Consolas,monospace;
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--paper);color:var(--ink);font-family:var(--body);font-size:16px;line-height:1.5;-webkit-font-smoothing:antialiased;background-image:linear-gradient(var(--paper-line) 1px,transparent 1px),linear-gradient(90deg,var(--paper-line) 1px,transparent 1px);background-size:28px 28px;background-attachment:fixed}
+.wrap{max-width:1020px;margin:0 auto;padding:28px 20px 80px}
+header{border-bottom:2px solid var(--ink);padding-bottom:14px;margin-bottom:20px}
+.eyebrow{font-family:var(--mono);font-size:12px;letter-spacing:.12em;text-transform:uppercase;color:var(--accent-deep)}
+h1{font-family:var(--display);font-weight:600;font-size:clamp(26px,4.5vw,34px);line-height:1.15;letter-spacing:0;margin:4px 0 10px}
+.legend{display:flex;flex-wrap:wrap;gap:6px}
+.chip{font-family:var(--mono);font-size:12px;border:1px solid var(--rule-strong);border-radius:2px;padding:3px 8px;background:var(--card);white-space:nowrap}
+.chip span{color:var(--ink-soft)}
+nav[role="tablist"]{display:flex;flex-wrap:wrap;margin:22px 0 0;border-bottom:1px solid var(--rule-strong)}
+nav[role="tablist"] button{font-family:var(--display);font-weight:500;font-size:14px;background:none;border:none;border-bottom:3px solid transparent;padding:10px 14px;cursor:pointer;color:var(--ink-soft);margin-bottom:-1px}
+nav[role="tablist"] button:hover{color:var(--ink)}
+nav[role="tablist"] button[aria-selected="true"]{color:var(--ink);border-bottom-color:var(--unit)}
+nav[role="tablist"] button:focus-visible,.btn:focus-visible,input:focus-visible,.key:focus-visible{outline:2px solid var(--amber);outline-offset:2px}
+section.panel{display:none;padding-top:24px}
+section.panel.active{display:block}
+h2{font-family:var(--display);font-weight:700;font-size:20px;margin:0 0 4px}
+.sub{color:var(--ink-soft);font-size:15px;margin:0 0 18px}
+.card{background:var(--card);border:1px solid var(--rule);border-radius:3px;padding:16px}
+label.fieldlabel{display:block;font-family:var(--mono);font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--ink-soft);margin-bottom:6px}
+input[type=text]{width:100%;font-family:var(--mono);font-size:19px;padding:11px 12px;border:1px solid var(--rule-strong);border-radius:2px;background:#fff;color:var(--ink)}
+.keys{display:flex;flex-wrap:wrap;gap:5px;margin-top:9px}
+.key{font-family:var(--mono);font-size:14px;padding:6px 10px;background:var(--paper);border:1px solid var(--rule-strong);border-radius:2px;cursor:pointer;color:var(--ink)}
+.key:hover{background:var(--ink);color:var(--card)}
+.btn{font-family:var(--display);font-weight:500;font-size:14px;background:var(--ink);color:var(--card);border:1px solid var(--ink);padding:9px 18px;border-radius:2px;cursor:pointer}
+.btn:hover{background:#4A423C}
+.btn.ghost{background:none;color:var(--ink)}
+.btn.ghost:hover{background:var(--ink);color:var(--card)}
+.btn.small{font-size:12px;padding:5px 11px}
+.row{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin-top:12px}
+.spacer{flex:1}
+.counter{font-family:var(--mono);font-size:12px;color:var(--ink-soft)}
+.err{font-family:var(--mono);font-size:13px;color:var(--false);margin-top:10px}
+.venn{display:block;max-width:100%;height:auto;background:var(--card);border:1px solid var(--rule);border-radius:3px;cursor:pointer;touch-action:manipulation}
+.vennwrap{margin-top:16px}
+.examples{display:flex;flex-wrap:wrap;gap:6px;margin-top:12px}
+.ex{font-family:var(--mono);font-size:12px;background:none;border:1px dashed var(--rule-strong);border-radius:2px;padding:4px 8px;cursor:pointer;color:var(--ink-soft)}
+.ex:hover{color:var(--ink);border-color:var(--ink)}
+.modes{display:flex;gap:5px}
+.modes button{font-family:var(--mono);font-size:12px;padding:5px 11px;border:1px solid var(--rule-strong);background:none;border-radius:2px;cursor:pointer;color:var(--ink-soft)}
+.modes button[aria-pressed="true"]{background:var(--ink);color:var(--card);border-color:var(--ink)}
+table{border-collapse:collapse;font-family:var(--mono);font-size:13px;margin-top:14px;width:100%}
+th,td{border:1px solid var(--rule);padding:6px 9px;text-align:center}
+thead th{background:var(--paper)}
+th.side,td.side{border-left:2px solid var(--ink)}
+tr.differ td{background:rgba(168,57,42,.14)}
+.T{color:var(--true);font-weight:700}.F{color:var(--false);font-weight:700}
+.result{margin-top:14px;padding:12px 14px;background:var(--card);border-left:4px solid var(--unit);font-size:15px}
+.feedback{font-family:var(--mono);font-size:14px;margin-top:12px}
+.feedback.ok{color:var(--true)}.feedback.no{color:var(--false)}
+.given{font-family:var(--mono);font-size:16px;background:var(--paper);padding:10px 12px;border-radius:2px;margin:12px 0}
+.ask{font-family:var(--mono);font-size:22px;margin:10px 0}
+.opts{display:flex;gap:8px;margin-top:14px}
+.opt{font-family:var(--display);font-weight:500;font-size:15px;background:var(--card);border:1px solid var(--rule-strong);border-radius:2px;padding:10px 26px;cursor:pointer;color:var(--ink)}
+.opt:hover{border-color:var(--ink)}
+.opt.correct{border-color:var(--true);background:rgba(47,112,105,.1);border-width:2px}
+.opt.incorrect{border-color:var(--false);background:rgba(168,57,42,.09);border-width:2px}
+.stmt{font-family:var(--mono);font-size:24px;margin:14px 0 2px}
+.reveal{margin-top:14px;padding:12px 14px;background:var(--paper);border-left:3px solid var(--unit);font-size:15px}
+.reveal code{font-family:var(--mono);font-size:14px}
+footer{margin-top:56px;border-top:1px solid var(--rule-strong);padding-top:14px;font-family:var(--mono);font-size:11px;color:var(--ink-soft)}
+
+/* --- site integration --- */
+html[lang="en"] [data-lang="id"], html[lang="id"] [data-lang="en"]{ display:none !important; }
+.langtog{ display:inline-flex; border:1px solid var(--border); border-radius:20px; overflow:hidden; }
+.langtog button{ font-family:inherit; font-size:11.5px; letter-spacing:0.06em; padding:4px 11px; border:0; background:#fff; color:var(--ink-soft); cursor:pointer; }
+.langtog button.on{ background:var(--accent-deep); color:#fff; font-weight:700; }
+.pnav{ display:flex; align-items:center; gap:14px; margin-bottom:24px; font-family:var(--mono); font-size:13px; flex-wrap:wrap; }
+.pnav a{ text-decoration:none; color:var(--ink-soft); }
+.pnav a:hover{ color:var(--ink); }
+.pnav .brand{ display:inline-flex; align-items:center; gap:9px; color:var(--ink); font-weight:700; }
+.pnav .brand img{ width:30px; height:30px; border-radius:7px; display:block; }
+.pnav .spacer{ flex:1; min-width:8px; }
+.pnav a.ext::after{ content:" \2197"; color:var(--ink-soft); font-size:11px; }
+.pnav details.topics{ position:relative; }
+.pnav details.topics>summary{ list-style:none; cursor:pointer; color:var(--ink); font-weight:600; padding:2px 2px; }
+.pnav details.topics>summary::-webkit-details-marker{ display:none; }
+.pnav details.topics>summary::after{ content:" \25BE"; }
+.pnav details.topics[open]>summary::after{ content:" \25B4"; }
+.pnav .menu{ position:absolute; top:100%; left:0; margin-top:9px; background:var(--card); border:1px solid var(--border); border-radius:7px; padding:14px 16px; box-shadow:0 8px 26px rgba(45,45,45,0.13); z-index:60; display:flex; gap:24px; }
+.pnav .mgroup{ display:flex; flex-direction:column; gap:6px; }
+.pnav .mgroup>b{ font-size:10px; letter-spacing:0.09em; text-transform:uppercase; color:var(--accent-deep); margin-bottom:2px; }
+.pnav .mgroup>b a{ color:inherit; text-decoration:none; }
+.pnav .mgroup>b a:hover{ text-decoration:underline; }
+.pnav .mgroup a{ color:var(--ink); white-space:nowrap; }
+.pnav .mgroup a:hover{ color:var(--accent-deep); }
+.pnav .mgroup a.cur{ color:var(--accent-deep); font-weight:700; }
+@media(max-width:700px){ .pnav .menu{ flex-direction:column; gap:14px; } }
+header .lead{ margin:0 0 14px; color:var(--ink-soft); font-size:15px; max-width:70ch; }
+.idnote{ font-family:var(--mono); font-size:12px; color:var(--ink-soft); background:var(--card); border:1px solid var(--border); border-left:3px solid var(--accent-deep); border-radius:3px; padding:8px 12px; margin:0 0 16px; }
+.unitnav{ font-family:var(--mono); font-size:12.5px; color:var(--ink-soft); margin:0 0 20px; display:flex; flex-wrap:wrap; gap:10px; align-items:baseline; }
+.unitnav a{ color:var(--moss); text-decoration:none; }
+.unitnav a:hover{ text-decoration:underline; }
+.unitnav a.cur{ color:var(--accent-deep); font-weight:700; text-decoration:none; }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<nav class="pnav">
+  <a class="brand" href="index.html"><img src="logo.png" alt=""><span data-lang="en">Playgrounds</span><span data-lang="id">Playground</span></a>
+  <details class="topics">
+    <summary><span data-lang="en">Topics</span><span data-lang="id">Topik</span></summary>
+    <div class="menu">
+      <div class="mgroup"><b><a href="optimization.html"><span data-lang="en">Optimization</span><span data-lang="id">Optimasi</span></a></b>
+        <a href="evolutionary_swarm.html"><span data-lang="en">Evolutionary &amp; swarm</span><span data-lang="id">Evolusioner &amp; swarm</span></a>
+        <a href="apps/optimizers/"><span data-lang="en">Gradient descent</span><span data-lang="id">Gradient descent</span></a>
+      </div>
+      <div class="mgroup"><b><a href="machine_learning.html">Machine Learning</a></b>
+        <a href="classical_ml.html"><span data-lang="en">Classical ML</span><span data-lang="id">ML klasik</span></a>
+        <a href="apps/mlp/"><span data-lang="en">Neural net from scratch</span><span data-lang="id">Neural net dari nol</span></a>
+        <a href="convolution.html"><span data-lang="en">Convolution &amp; CNNs</span><span data-lang="id">Konvolusi &amp; CNN</span></a>
+      </div>
+      <div class="mgroup"><b><a href="scientific_ml_index.html">Scientific ML</a></b>
+        <a href="differential_equations.html"><span data-lang="en">Differential equations</span><span data-lang="id">Persamaan diferensial</span></a>
+        <a href="fourier.html">Fourier</a>
+        <a href="scientific_ml.html">Scientific ML</a>
+      </div>
+      <div class="mgroup"><b><a href="mathematical_logic.html"><span data-lang="en">Mathematical Logic</span><span data-lang="id">Logika Matematika</span></a></b>
+        <a href="propositional_logic.html"><span data-lang="en">Propositional logic</span><span data-lang="id">Logika proposisional</span></a>
+        <a href="predicate_logic.html"><span data-lang="en">Predicate logic</span><span data-lang="id">Logika predikat</span></a>
+        <a href="proof_methods.html"><span data-lang="en">Proof methods</span><span data-lang="id">Metode pembuktian</span></a>
+        <a href="set_theory.html"><span data-lang="en">Set theory</span><span data-lang="id">Teori himpunan</span></a>
+      </div>
+    </div>
+  </details>
+  <span class="spacer"></span>
+  <a class="ext" href="https://phx.my.id" target="_blank" rel="noopener noreferrer">phx.my.id</a>
+  <a class="ext" href="https://research.phx.my.id" target="_blank" rel="noopener noreferrer"><span data-lang="en">Research</span><span data-lang="id">Riset</span></a>
+  <span class="langtog"><button data-lang-btn="en">EN</button><button data-lang-btn="id">ID</button></span>
+</nav>
+<script>(function(){
+  var path=(location.pathname.split('/').filter(Boolean).pop()||'index.html');
+  var links=document.querySelectorAll('.pnav .menu a');
+  for(var i=0;i<links.length;i++){ var hf=links[i].getAttribute('href')||''; var seg=hf.split('/').filter(Boolean).pop()||'';
+    if(seg===path || (path!=='index.html' && hf.indexOf(path)>=0)) links[i].classList.add('cur'); }
+  document.addEventListener('click',function(e){ var d=document.querySelector('.pnav details[open]'); if(d && !d.contains(e.target)) d.removeAttribute('open'); });
+})();</script>
+
+
+<header>
+  <p class="eyebrow"><span data-lang="en">Mathematical Logic · Unit 04</span><span data-lang="id">Logika Matematika · Unit 04</span></p>
+  <h1><span data-lang="en">Set Theory</span><span data-lang="id">Teori Himpunan</span></h1>
+  <p class="lead"><span data-lang="en">Venn diagrams you shade yourself, and set identities traced back to the truth tables of unit 01.</span><span data-lang="id">Diagram Venn yang bisa diarsir sendiri, dan identitas himpunan yang dilacak balik ke tabel kebenaran unit 01.</span></p>
+  <div class="legend">
+    <span class="chip">∪ <span><span data-lang="en">union</span><span data-lang="id">gabungan</span></span></span>
+    <span class="chip">∩ <span><span data-lang="en">intersection</span><span data-lang="id">irisan</span></span></span>
+    <span class="chip">− <span><span data-lang="en">difference</span><span data-lang="id">selisih</span></span></span>
+    <span class="chip">△ <span><span data-lang="en">symmetric difference</span><span data-lang="id">selisih simetris</span></span></span>
+    <span class="chip">A' <span><span data-lang="en">complement</span><span data-lang="id">komplemen</span></span></span>
+    <span class="chip">S ∅ <span><span data-lang="en">universe, empty</span><span data-lang="id">semesta, kosong</span></span></span>
+  </div>
+</header>
+
+<p class="unitnav"><a href="mathematical_logic.html"><span data-lang="en">Mathematical logic · 4 labs</span><span data-lang="id">Logika matematika · 4 lab</span></a>
+  <a href="propositional_logic.html"><span data-lang="en">01 Propositional</span><span data-lang="id">01 Proposisional</span></a>
+  <a href="predicate_logic.html"><span data-lang="en">02 Predicate</span><span data-lang="id">02 Predikat</span></a>
+  <a href="proof_methods.html"><span data-lang="en">03 Proofs</span><span data-lang="id">03 Pembuktian</span></a>
+  <a href="set_theory.html" class="cur"><span data-lang="en">04 Sets</span><span data-lang="id">04 Himpunan</span></a>
+  </p>
+
+<nav role="tablist">
+  <button role="tab" data-panel="p-venn" aria-selected="true"><span data-lang="en">Venn diagram</span><span data-lang="id">Diagram Venn</span></button>
+  <button role="tab" data-panel="p-ident" aria-selected="false"><span data-lang="en">Set identities</span><span data-lang="id">Identitas himpunan</span></button>
+  <button role="tab" data-panel="p-konkret" aria-selected="false"><span data-lang="en">Concrete sets</span><span data-lang="id">Himpunan konkret</span></button>
+  <button role="tab" data-panel="p-elem" aria-selected="false"><span data-lang="en">∈ or ⊆</span><span data-lang="id">∈ atau ⊆</span></button>
+</nav>
+
+<!-- ===== VENN ===== -->
+<section class="panel active" id="p-venn">
+  <h2><span data-lang="en">Venn diagrams, both directions</span><span data-lang="id">Diagram Venn dua arah</span></h2>
+  <p class="sub"><span data-lang="en">In <b>show</b> mode, type an expression and watch which regions get shaded. In <b>challenge</b> mode, shade the regions yourself to match the expression given — click any region on the diagram.</span><span data-lang="id">Pada mode <b>tampilkan</b>, ketik ekspresi dan lihat daerah mana yang terarsir. Pada mode <b>tantangan</b>, arsir sendiri daerahnya untuk mencocokkan ekspresi yang diberikan — klik daerah mana pun pada diagram.</span></p>
+
+  <div class="card">
+    <div class="row" style="margin-top:0">
+      <div class="modes">
+        <button data-m="show" aria-pressed="true"><span data-lang="en">show</span><span data-lang="id">tampilkan</span></button>
+        <button data-m="quiz" aria-pressed="false"><span data-lang="en">challenge</span><span data-lang="id">tantangan</span></button>
+      </div>
+      <span class="spacer"></span>
+      <span class="counter" id="vscore"></span>
+    </div>
+
+    <div id="showbox">
+      <label class="fieldlabel" for="ve" style="margin-top:14px"><span data-lang="en">Set expression</span><span data-lang="id">Ekspresi himpunan</span></label>
+      <input type="text" id="ve" value="(A ∪ B) − C" spellcheck="false" autocomplete="off">
+      <div class="keys" id="vkeys"></div>
+      <div class="examples" id="vex"></div>
+      <div class="err" id="verr"></div>
+    </div>
+
+    <div id="quizbox" style="display:none">
+      <p class="ask" id="vtarget"></p>
+      <div class="row">
+        <button class="btn" id="vcheck"><span data-lang="en">Check the shading</span><span data-lang="id">Periksa arsiran</span></button>
+        <button class="btn ghost" id="vnew"><span data-lang="en">New question</span><span data-lang="id">Soal baru</span></button>
+        <button class="btn ghost" id="vclear"><span data-lang="en">Clear</span><span data-lang="id">Bersihkan</span></button>
+      </div>
+      <div class="feedback" id="vfeed"></div>
+    </div>
+  </div>
+
+  <div class="vennwrap" id="vennwrap"></div>
+  <div id="vinfo"></div>
+</section>
+
+<!-- ===== IDENTITAS ===== -->
+<section class="panel" id="p-ident">
+  <h2><span data-lang="en">Test a set identity</span><span data-lang="id">Uji identitas himpunan</span></h2>
+  <p class="sub"><span data-lang="en">Two expressions are equal when membership agrees in every case. Because membership is only a matter of "in or not", a question about sets turns into a question of propositional logic — and the table below is a truth table from unit 01.</span><span data-lang="id">Dua ekspresi sama bila keanggotaannya sama untuk setiap kemungkinan. Karena keanggotaan hanya soal "di dalam atau tidak", pertanyaan himpunan berubah menjadi pertanyaan logika proposisional — dan tabel di bawah adalah tabel kebenaran dari unit 01.</span></p>
+
+  <div class="card">
+    <label class="fieldlabel" for="i1"><span data-lang="en">Left-hand side</span><span data-lang="id">Ruas kiri</span></label>
+    <input type="text" id="i1" value="A − (B ∩ C)" spellcheck="false" autocomplete="off">
+    <label class="fieldlabel" for="i2" style="margin-top:14px"><span data-lang="en">Right-hand side</span><span data-lang="id">Ruas kanan</span></label>
+    <input type="text" id="i2" value="(A − B) ∪ (A − C)" spellcheck="false" autocomplete="off">
+    <div class="keys" id="ikeys"></div>
+    <div class="examples" id="iex"></div>
+    <div class="row"><button class="btn" id="icheck"><span data-lang="en">Compare</span><span data-lang="id">Bandingkan</span></button></div>
+    <div class="err" id="ierr"></div>
+  </div>
+  <div id="iout"></div>
+</section>
+
+<!-- ===== KONKRET ===== -->
+<section class="panel" id="p-konkret">
+  <h2><span data-lang="en">Compute with concrete sets</span><span data-lang="id">Hitung pada himpunan konkret</span></h2>
+  <p class="sub"><span data-lang="en">A fresh question is generated each time. Answers may be written <span style="font-family:var(--mono)">{1, 3, 5}</span> or <span style="font-family:var(--mono)">1 3 5</span> — order and repetition are ignored, as they should be for a set.</span><span data-lang="id">Soal dibangkitkan acak setiap kali. Jawaban boleh ditulis <span style="font-family:var(--mono)">{1, 3, 5}</span> atau <span style="font-family:var(--mono)">1 3 5</span> — urutan dan pengulangan diabaikan, sebagaimana himpunan seharusnya.</span></p>
+
+  <div class="card">
+    <div class="row" style="margin-top:0">
+      <span class="counter" id="kcount"><span data-lang="en">Question 0</span><span data-lang="id">Soal 0</span></span>
+      <span class="spacer"></span>
+      <span class="counter" id="kscore"><span data-lang="en">Correct 0 of 0</span><span data-lang="id">Benar 0 dari 0</span></span>
+    </div>
+    <div class="given" id="kgiven"></div>
+    <p class="ask" id="kask"></p>
+    <label class="fieldlabel" for="kin"><span data-lang="en">Answer</span><span data-lang="id">Jawaban</span></label>
+    <input type="text" id="kin" spellcheck="false" autocomplete="off" placeholder="{ … }">
+    <div class="row">
+      <button class="btn" id="kcheck"><span data-lang="en">Check</span><span data-lang="id">Periksa</span></button>
+      <button class="btn ghost" id="knew"><span data-lang="en">New question</span><span data-lang="id">Soal baru</span></button>
+    </div>
+    <div class="feedback" id="kfeed"></div>
+  </div>
+</section>
+
+<!-- ===== ELEMEN vs SUBSET ===== -->
+<section class="panel" id="p-elem">
+  <h2><span data-lang="en">∈ or ⊆</span><span data-lang="id">∈ atau ⊆</span></h2>
+  <p class="sub"><span data-lang="en">The longest-lived confusion in all of set theory. The key is a single sentence: ∈ links a <i>member</i> to its set, while ⊆ links two <i>sets</i>.</span><span data-lang="id">Kekeliruan paling awet di seluruh teori himpunan. Kuncinya satu kalimat: ∈ menghubungkan sebuah <i>anggota</i> dengan himpunannya, sedangkan ⊆ menghubungkan dua <i>himpunan</i>.</span></p>
+
+  <div class="card">
+    <div class="row" style="margin-top:0">
+      <span class="counter" id="ecount"></span>
+      <span class="spacer"></span>
+      <span class="counter" id="escore"><span data-lang="en">Correct 0</span><span data-lang="id">Benar 0</span></span>
+      <button class="btn ghost small" id="enext"><span data-lang="en">Next</span><span data-lang="id">Berikutnya</span></button>
+    </div>
+    <p class="stmt" id="estmt"></p>
+    <div class="opts" id="eopts">
+      <button class="opt" data-v="true"><span data-lang="en">True</span><span data-lang="id">Benar</span></button>
+      <button class="opt" data-v="false"><span data-lang="en">False</span><span data-lang="id">Salah</span></button>
+    </div>
+    <div id="ereveal"></div>
+  </div>
+</section>
+
+<footer><span data-lang="en">Unit 04 · set theory lab</span><span data-lang="id">Unit 04 · lab teori himpunan</span></footer>
+</div>
+
+<script>
+"use strict";
+
+/* ---- language helpers ---- */
+function LANG(){ return document.documentElement.lang==='id'?'id':'en'; }
+function T(en,id){ return LANG()==='id'?id:en; }
+const REG_ID=['di luar A, B, C','hanya A','hanya B','A ∩ B tanpa C','hanya C','A ∩ C tanpa B','B ∩ C tanpa A','A ∩ B ∩ C'];
+const REG_EN=['outside A, B, C','A only','B only','A ∩ B without C','C only','A ∩ C without B','B ∩ C without A','A ∩ B ∩ C'];
+function REGNAMES(){ return LANG()==='id'?REG_ID:REG_EN; }
+/* English wording for the concrete-set tasks, keyed by their Indonesian prompt */
+const TASKTXT={
+ 'A ∪ B':{q:'A ∪ B',n:'The union holds every member that is in A, in B, or in both — written just once.'},
+ 'A ∩ B':{q:'A ∩ B',n:'The intersection holds only the members that appear in both sets.'},
+ 'A − B':{q:'A − B',n:'The difference removes from A everything that is also in B. Note that A − B and B − A generally differ.'},
+ 'B − A':{q:'B − A',n:'Compare the result with A − B on a similar question: the difference is not commutative.'},
+ 'A △ B':{q:'A △ B',n:'The symmetric difference holds the members that only one of the sets has — exactly (A ∪ B) − (A ∩ B).'},
+ '|A ∪ B|':{q:'|A ∪ B|',n:'Match it against inclusion–exclusion: |A ∪ B| = |A| + |B| − |A ∩ B|.'},
+ '|P(A)| (banyaknya himpunan bagian dari A)':{q:'|P(A)| (the number of subsets of A)',n:'Every member is independently in or out, so the number of subsets is 2 to the power |A| — including ∅ and A itself.'}
+};
+function taskQ(t){ return LANG()==='id'?t.q:(TASKTXT[t.q]||t).q; }
+function taskNote(t){ return LANG()==='id'?t.n:(TASKTXT[t.q]||t).n; }
+/* English explanations for the ∈ / ⊆ drill, in the same order as ELEMS */
+const ELEMW_EN=[
+ '1 really is one of the listed members.',
+ 'The members of that set are 1, 2 and 3 — not the set {1}. What does hold is {1} ⊆ {1, 2, 3}.',
+ 'Every member of {1}, which is just 1, is also a member of {1, 2, 3}.',
+ 'The condition "every member of ∅ is also a member of {1,2}" is vacuously true, since ∅ has no members. That is why ∅ is a subset of every set.',
+ 'The members of {1,2} are only 1 and 2. The empty set is not one of them.',
+ 'This time ∅ really is listed as a member. Compare with the previous item — the only difference is what the right-hand set contains.',
+ 'The members of a power set are the subsets, and {1,2} is one of them. For power sets, ∈ and ⊆ appear to swap roles.',
+ 'This would require 1 and 2 themselves to be members of P({1,2,3}), while its members are sets. What does hold is {{1},{2}} ⊆ P({1,2,3}).',
+ 'The left side is a set with one member, namely ∅; the right side has no member at all. So |{∅}| = 1 while |∅| = 0.',
+ '2³ = 8 subsets, from ∅ up to {1,2,3} itself.',
+ 'Every set is a subset of itself. What fails is ⊊, since there is no extra member.',
+ 'A is always a member of its own power set, because A ⊆ A.'
+];
+function elemWhy(i){ return LANG()==='id'?ELEMS[i].w:ELEMW_EN[i]; }
+document.querySelectorAll('nav[role="tablist"] button').forEach(b=>{
+  b.addEventListener('click',()=>{
+    document.querySelectorAll('nav[role="tablist"] button').forEach(x=>x.setAttribute('aria-selected','false'));
+    b.setAttribute('aria-selected','true');
+    document.querySelectorAll('.panel').forEach(p=>p.classList.remove('active'));
+    document.getElementById(b.dataset.panel).classList.add('active');
+  });
+});
+
+/* ==========================================================
+   1. MESIN EKSPRESI HIMPUNAN
+   Semesta dibagi menjadi 8 daerah; daerah r ditandai bit:
+   bit0 = di dalam A, bit1 = di dalam B, bit2 = di dalam C.
+   Sebuah himpunan diwakili bitmask 8-bit atas daerah-daerah itu.
+   ========================================================== */
+const FULL=0xFF;
+function baseSet(k){let m=0;for(let r=0;r<8;r++)if(r&(1<<k))m|=1<<r;return m;}
+const SET={A:baseSet(0),B:baseSet(1),C:baseSet(2)};
+
+function tokenizeS(s){
+  const out=[];let i=0;
+  while(i<s.length){
+    const c=s[i];
+    if(/\s/.test(c)){i++;continue;}
+    if('∪+'.includes(c)){out.push({t:'uni'});i++;continue;}
+    if('∩&'.includes(c)){out.push({t:'int'});i++;continue;}
+    if('−–—-\\'.includes(c)){out.push({t:'dif'});i++;continue;}
+    if('△⊕^'.includes(c)){out.push({t:'sym'});i++;continue;}
+    if(c==="'"||c==='ᶜ'||c==='ᶦ'){out.push({t:'comp'});i++;continue;}
+    if(c==='~'||c==='¬'){out.push({t:'pre'});i++;continue;}
+    if(c==='('||c==='['){out.push({t:'('});i++;continue;}
+    if(c===')'||c===']'){out.push({t:')'});i++;continue;}
+    if(c==='∅'){out.push({t:'empty'});i++;continue;}
+    if(s.startsWith('{}',i)){out.push({t:'empty'});i+=2;continue;}
+    if(/[ABCS]/.test(c)){out.push({t:'id',v:c});i++;continue;}
+    if(/[a-z]/i.test(c))throw new Error(T('Only the sets A, B, C and the universe S are available (found "','Hanya himpunan A, B, C dan semesta S yang tersedia (ditemukan "')+c+'").');
+    throw new Error(T('Unknown symbol: "','Simbol tidak dikenal: "')+c+'"');
+  }
+  return out;
+}
+function parseS(str){
+  if(!str.trim())throw new Error(T('The expression is empty.','Ekspresi masih kosong.'));
+  const ts=tokenizeS(str);let p=0;
+  const peek=()=>ts[p];
+  const eat=t=>(ts[p]&&ts[p].t===t)?ts[p++]:null;
+  function primary(){
+    let n;
+    if(eat('(')){n=union();if(!eat(')'))throw new Error(T('A closing ")" is missing.','Kurung tutup ")" belum ada.'));}
+    else if(eat('pre'))return {op:'comp',a:primary()};
+    else{
+      const id=eat('id');
+      if(id)n={op:'set',v:id.v};
+      else if(eat('empty'))n={op:'empty'};
+      else throw new Error(p>=ts.length?T('The expression is cut short.','Ekspresi terpotong.'):T('Expected a set name around symbol ','Diharapkan nama himpunan di sekitar simbol ke-')+(p+1)+'.');
+    }
+    while(eat('comp'))n={op:'comp',a:n};
+    return n;
+  }
+  function inter(){let l=primary();while(peek()&&peek().t==='int'){p++;l={op:'int',a:l,b:primary()};}return l;}
+  function union(){
+    let l=inter();
+    while(peek()&&['uni','dif','sym'].includes(peek().t)){
+      const t=ts[p++].t;l={op:t==='uni'?'uni':t==='dif'?'dif':'sym',a:l,b:inter()};
+    }
+    return l;
+  }
+  const e=union();
+  if(p<ts.length)throw new Error(T('There are extra symbols after the expression ends.','Ada simbol berlebih setelah ekspresi selesai.'));
+  return e;
+}
+function evalS(n){
+  switch(n.op){
+    case 'set':return n.v==='S'?FULL:SET[n.v];
+    case 'empty':return 0;
+    case 'comp':return (~evalS(n.a))&FULL;
+    case 'uni':return evalS(n.a)|evalS(n.b);
+    case 'int':return evalS(n.a)&evalS(n.b);
+    case 'dif':return evalS(n.a)&(~evalS(n.b)&FULL);
+    case 'sym':return evalS(n.a)^evalS(n.b);
+  }
+}
+const PS={uni:1,dif:1,sym:1,int:2,comp:3,set:4,empty:4};
+function wS(n,min){const s=fmtS(n);return PS[n.op]>=min?s:'('+s+')';}
+function fmtS(n){
+  switch(n.op){
+    case 'set':return n.v; case 'empty':return '∅';
+    case 'comp':return wS(n.a,3)+"'";
+    case 'int':return wS(n.a,2)+' ∩ '+wS(n.b,2.5);
+    case 'uni':return wS(n.a,n.a.op==='uni'?1:1.5)+' ∪ '+wS(n.b,1.5);
+    case 'dif':return wS(n.a,n.a.op==='dif'?1:1.5)+' − '+wS(n.b,1.5);
+    case 'sym':return wS(n.a,n.a.op==='sym'?1:1.5)+' △ '+wS(n.b,1.5);
+  }
+}
+/* keanggotaan sebagai rumus proposisional: x ∈ A menjadi a */
+function memb(n){
+  switch(n.op){
+    case 'set':return n.v==='S'?'⊤':n.v.toLowerCase();
+    case 'empty':return '⊥';
+    case 'comp':return '¬'+par(n.a);
+    case 'int':return par(n.a)+' ∧ '+par(n.b);
+    case 'uni':return par(n.a)+' ∨ '+par(n.b);
+    case 'dif':return par(n.a)+' ∧ ¬'+par(n.b);
+    case 'sym':return '¬('+memb(n.a)+' ↔ '+memb(n.b)+')';
+  }
+}
+function par(n){const s=memb(n);return (n.op==='set'||n.op==='empty')?s:'('+s+')';}
+
+/* ==========================================================
+   2. GAMBAR VENN
+   ========================================================== */
+const CIRC=[{cx:165,cy:150,r:104,label:'A',lx:88,ly:74},
+            {cx:285,cy:150,r:104,label:'B',lx:362,ly:74},
+            {cx:225,cy:248,r:104,label:'C',lx:225,ly:352}];
+function vennSVG(mask,opts){
+  opts=opts||{};
+  const fill=opts.fill||'var(--unit)';
+  let defs='';
+  CIRC.forEach((c,k)=>{
+    defs+='<mask id="in'+k+opts.id+'"><rect width="460" height="380" fill="black"/><circle cx="'+c.cx+'" cy="'+c.cy+'" r="'+c.r+'" fill="white"/></mask>';
+    defs+='<mask id="out'+k+opts.id+'"><rect width="460" height="380" fill="white"/><circle cx="'+c.cx+'" cy="'+c.cy+'" r="'+c.r+'" fill="black"/></mask>';
+  });
+  let body='';
+  for(let r=0;r<8;r++){
+    if(!(mask&(1<<r)))continue;
+    const m0=(r&1?'in0':'out0')+opts.id, m1=(r&2?'in1':'out1')+opts.id, m2=(r&4?'in2':'out2')+opts.id;
+    body+='<g mask="url(#'+m0+')"><g mask="url(#'+m1+')"><g mask="url(#'+m2+')">'+
+          '<rect x="6" y="6" width="448" height="368" fill="'+fill+'" opacity="'+(opts.opacity||0.42)+'"/>'+
+          '</g></g></g>';
+  }
+  let outline='<rect x="6" y="6" width="448" height="368" fill="none" stroke="var(--ink)" stroke-width="2"/>';
+  outline+='<text x="22" y="30" font-family="SF Mono, Consolas, monospace" font-size="15" fill="var(--ink-soft)">S</text>';
+  CIRC.forEach(c=>{
+    outline+='<circle cx="'+c.cx+'" cy="'+c.cy+'" r="'+c.r+'" fill="none" stroke="var(--ink)" stroke-width="2"/>';
+    outline+='<text x="'+c.lx+'" y="'+c.ly+'" font-family="Playfair Display, Georgia, serif" font-weight="700" font-size="20" text-anchor="middle" fill="var(--ink)">'+c.label+'</text>';
+  });
+  return '<svg class="venn" viewBox="0 0 460 380" id="svg'+opts.id+'" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="'+T('three-set Venn diagram','diagram Venn tiga himpunan')+'">'+
+         '<defs>'+defs+'</defs><rect width="460" height="380" fill="var(--card)"/>'+body+outline+'</svg>';
+}
+function regionAt(x,y){
+  let r=0;
+  CIRC.forEach((c,k)=>{ if((x-c.cx)**2+(y-c.cy)**2<=c.r*c.r)r|=(1<<k); });
+  return r;
+}
+function attachClick(svgId,handler){
+  const svg=document.getElementById(svgId);
+  if(!svg)return;
+  svg.addEventListener('click',e=>{
+    const rect=svg.getBoundingClientRect();
+    const x=(e.clientX-rect.left)/rect.width*460;
+    const y=(e.clientY-rect.top)/rect.height*380;
+    if(x<6||x>454||y<6||y>374)return;
+    handler(regionAt(x,y));
+  });
+}
+
+/* ==========================================================
+   3. TAB VENN
+   ========================================================== */
+function makeKeys(box,target,after){
+  ['∪','∩','−','△',"'",'(',')','A','B','C','S','∅'].forEach(k=>{
+    const b=document.createElement('button');
+    b.className='key';b.type='button';b.textContent=k;
+    b.addEventListener('click',()=>{
+      const el=document.getElementById(target);
+      const st=el.selectionStart??el.value.length,en=el.selectionEnd??el.value.length;
+      el.value=el.value.slice(0,st)+k+el.value.slice(en);
+      el.focus();el.selectionStart=el.selectionEnd=st+k.length;
+      if(after)after();
+    });
+    box.appendChild(b);
+  });
+}
+let vMode='show', vUser=0, vTarget=null, vRight=0, vTotal=0;
+const VEX=['A ∪ B','A ∩ B ∩ C',"(A ∪ B)'",'A − B','A △ B',"A ∩ (B ∪ C)","(A ∩ B) ∪ (A ∩ C)","A' ∩ B' ∩ C'"];
+const QUIZ=['A ∪ B','A ∩ B',"A'",'A − B','A △ B','A ∩ B ∩ C','(A ∪ B) − C',"A' ∩ B","(A ∩ B)'",'A ∪ (B ∩ C)'];
+
+makeKeys(document.getElementById('vkeys'),'ve',drawShow);
+let iFocus='i1';
+['i1','i2'].forEach(id=>document.getElementById(id).addEventListener('focus',()=>{iFocus=id;}));
+(function(){
+  const box=document.getElementById('ikeys');
+  ['∪','∩','−','△',"'",'(',')','A','B','C','S','∅'].forEach(k=>{
+    const b=document.createElement('button');
+    b.className='key';b.type='button';b.textContent=k;
+    b.addEventListener('click',()=>{
+      const el=document.getElementById(iFocus);
+      const st=el.selectionStart??el.value.length,en=el.selectionEnd??el.value.length;
+      el.value=el.value.slice(0,st)+k+el.value.slice(en);
+      el.focus();el.selectionStart=el.selectionEnd=st+k.length;
+    });
+    box.appendChild(b);
+  });
+})();
+const vexBox=document.getElementById('vex');
+VEX.forEach(x=>{
+  const b=document.createElement('button');b.className='ex';b.type='button';b.textContent=x;
+  b.addEventListener('click',()=>{document.getElementById('ve').value=x;drawShow();});
+  vexBox.appendChild(b);
+});
+
+function drawShow(){
+  const err=document.getElementById('verr'),info=document.getElementById('vinfo');
+  err.textContent='';
+  let ast;
+  try{ast=parseS(document.getElementById('ve').value);}
+  catch(e){err.textContent='⚠ '+e.message;return;}
+  const m=evalS(ast);
+  document.getElementById('vennwrap').innerHTML=vennSVG(m,{id:'V'});
+  const nm=REGNAMES();
+  const on=[];for(let r=0;r<8;r++)if(m&(1<<r))on.push(nm[r]);
+  info.innerHTML='<div class="result">'+T('Shaded regions: ','Daerah terarsir: ')+(on.length?on.join(' · '):T('none','tidak ada'))+
+    '.<br>'+T('Membership condition: ','Syarat keanggotaan: ')+'<span style="font-family:var(--mono)">x ∈ '+fmtS(ast)+' ⟺ '+memb(ast)+'</span>'+T(', where a means x ∈ A, and so on.',' dengan a berarti x ∈ A, dan seterusnya.')+'</div>';
+}
+function drawQuiz(feedbackMask){
+  document.getElementById('vennwrap').innerHTML=vennSVG(vUser,{id:'V',fill:feedbackMask===undefined?'var(--unit)':'var(--true)'});
+  attachClick('svgV',r=>{vUser^=(1<<r);drawQuiz();});
+  document.getElementById('vinfo').innerHTML='';
+}
+function newQuiz(){
+  vTarget=QUIZ[Math.floor(Math.random()*QUIZ.length)];
+  document.getElementById('vtarget').textContent=vTarget;
+  vUser=0;document.getElementById('vfeed').textContent='';
+  drawQuiz();
+}
+document.querySelectorAll('.modes button').forEach(b=>{
+  b.addEventListener('click',()=>{
+    document.querySelectorAll('.modes button').forEach(x=>x.setAttribute('aria-pressed','false'));
+    b.setAttribute('aria-pressed','true');vMode=b.dataset.m;
+    document.getElementById('showbox').style.display=vMode==='show'?'':'none';
+    document.getElementById('quizbox').style.display=vMode==='quiz'?'':'none';
+    document.getElementById('vscore').textContent=vMode==='quiz'?(T('Correct ','Benar ')+vRight+T(' of ',' dari ')+vTotal):'';
+    if(vMode==='show')drawShow();else newQuiz();
+  });
+});
+document.getElementById('ve').addEventListener('input',drawShow);
+document.getElementById('vnew').addEventListener('click',newQuiz);
+document.getElementById('vclear').addEventListener('click',()=>{vUser=0;drawQuiz();});
+document.getElementById('vcheck').addEventListener('click',()=>{
+  const want=evalS(parseS(vTarget));
+  const fb=document.getElementById('vfeed');
+  vTotal++;
+  if(want===vUser){
+    vRight++;fb.className='feedback ok';fb.textContent=T('✓ Your shading is right.','✓ Arsiranmu tepat.');
+  }else{
+    const miss=[],extra=[];
+    const nm=REGNAMES();
+    for(let r=0;r<8;r++){
+      if((want&(1<<r))&&!(vUser&(1<<r)))miss.push(nm[r]);
+      if(!(want&(1<<r))&&(vUser&(1<<r)))extra.push(nm[r]);
+    }
+    fb.className='feedback no';
+    fb.innerHTML=T('✗ Not right yet.','✗ Belum tepat.')+(miss.length?T(' Missing: ',' Kurang: ')+miss.join(', ')+'.':'')+(extra.length?T(' Extra: ',' Kelebihan: ')+extra.join(', ')+'.':'');
+  }
+  document.getElementById('vscore').textContent=T('Correct ','Benar ')+vRight+T(' of ',' dari ')+vTotal;
+});
+
+/* ==========================================================
+   4. IDENTITAS
+   ========================================================== */
+const IEX=[["A ∩ (B ∪ C)","(A ∩ B) ∪ (A ∩ C)"],["(A ∪ B)'","A' ∩ B'"],["(A ∩ B)'","A' ∪ B'"],
+           ["A − (B ∪ C)","(A − B) ∩ (A − C)"],["A − (B ∩ C)","(A − B) ∪ (A − C)"],["A △ B","(A ∪ B) − (A ∩ B)"],
+           ["A ∪ (B ∩ C)","(A ∪ B) ∩ C"]];
+const iexBox=document.getElementById('iex');
+IEX.forEach(([l,r])=>{
+  const b=document.createElement('button');b.className='ex';b.type='button';b.textContent=l+'  =?  '+r;
+  b.addEventListener('click',()=>{document.getElementById('i1').value=l;document.getElementById('i2').value=r;compareSets();});
+  iexBox.appendChild(b);
+});
+function compareSets(){
+  const err=document.getElementById('ierr'),out=document.getElementById('iout');
+  err.textContent='';out.innerHTML='';
+  let a,b;
+  try{a=parseS(document.getElementById('i1').value);}catch(e){err.textContent=T('⚠ Left-hand side: ','⚠ Ruas kiri: ')+e.message;return;}
+  try{b=parseS(document.getElementById('i2').value);}catch(e){err.textContent=T('⚠ Right-hand side: ','⚠ Ruas kanan: ')+e.message;return;}
+  const ma=evalS(a),mb=evalS(b),diff=ma^mb;
+
+  let h='<div class="row" style="align-items:flex-start;gap:14px">';
+  h+='<div style="flex:1;min-width:260px"><div class="counter" style="margin-bottom:6px">'+fmtS(a)+'</div>'+vennSVG(ma,{id:'L'})+'</div>';
+  h+='<div style="flex:1;min-width:260px"><div class="counter" style="margin-bottom:6px">'+fmtS(b)+'</div>'+vennSVG(mb,{id:'R'})+'</div>';
+  h+='</div>';
+
+  const nm=REGNAMES();
+  h+='<table><thead><tr><th>a</th><th>b</th><th>c</th><th>'+T('region','daerah')+'</th><th class="side">x ∈ '+fmtS(a)+'</th><th>x ∈ '+fmtS(b)+'</th></tr></thead><tbody>';
+  for(let r=7;r>=0;r--){
+    const va=!!(ma&(1<<r)),vb=!!(mb&(1<<r));
+    h+='<tr'+(va!==vb?' class="differ"':'')+'>';
+    [1,2,4].forEach(bit=>h+='<td class="'+((r&bit)?'T':'F')+'">'+((r&bit)?T('T','B'):T('F','S'))+'</td>');
+    h+='<td style="font-size:12px">'+nm[r]+'</td>';
+    h+='<td class="side '+(va?'T':'F')+'">'+(va?T('T','B'):T('F','S'))+'</td><td class="'+(vb?'T':'F')+'">'+(vb?T('T','B'):T('F','S'))+'</td></tr>';
+  }
+  h+='</tbody></table>';
+
+  if(diff===0){
+    h+='<div class="result">'+T('✓ <b>The identity holds.</b> The last two columns match on all eight regions. That is the same as saying <span style="font-family:var(--mono)">','✓ <b>Identitas berlaku.</b> Kedua kolom terakhir identik pada kedelapan daerah. Setara dengan mengatakan bahwa <span style="font-family:var(--mono)">')+memb(a)+T('</span> and <span style="font-family:var(--mono)">','</span> dan <span style="font-family:var(--mono)">')+memb(b)+T('</span> are logically equivalent — a proof of a set identity is really a proof of propositional equivalence.</div>','</span> ekuivalen secara logis — bukti identitas himpunan pada dasarnya adalah bukti ekuivalensi proposisional.</div>');
+  }else{
+    const where=[];for(let r=0;r<8;r++)if(diff&(1<<r))where.push(nm[r]);
+    h+='<div class="result">'+T('✗ <b>Not an identity.</b> The two differ on the regions: ','✗ <b>Bukan identitas.</b> Keduanya berbeda pada daerah: ')+where.join(', ')+
+       T('. To refute it on the whiteboard, one concrete example is enough: take a single element in that region.</div>','. Untuk menyangkalnya di papan tulis, cukup satu contoh konkret: ambil satu elemen di daerah itu.</div>');
+  }
+  out.innerHTML=h;
+}
+document.getElementById('icheck').addEventListener('click',compareSets);
+
+/* ==========================================================
+   5. HIMPUNAN KONKRET
+   ========================================================== */
+let kA=[],kB=[],kTask=null,kRight=0,kTotal=0,kNum=0;
+function randSet(n,pool){
+  const p=[...pool],out=[];
+  for(let i=0;i<n;i++)out.push(p.splice(Math.floor(Math.random()*p.length),1)[0]);
+  return out.sort((x,y)=>x-y);
+}
+const TASKS=[
+ {q:'A ∪ B',f:(a,b)=>[...new Set([...a,...b])].sort((x,y)=>x-y),t:'set',
+  n:'Gabungan memuat setiap anggota yang ada di A, di B, atau di keduanya — ditulis sekali saja.'},
+ {q:'A ∩ B',f:(a,b)=>a.filter(x=>b.includes(x)),t:'set',
+  n:'Irisan hanya memuat anggota yang muncul di kedua himpunan.'},
+ {q:'A − B',f:(a,b)=>a.filter(x=>!b.includes(x)),t:'set',
+  n:'Selisih membuang dari A semua yang juga ada di B. Perhatikan bahwa A − B dan B − A umumnya berbeda.'},
+ {q:'B − A',f:(a,b)=>b.filter(x=>!a.includes(x)),t:'set',
+  n:'Bandingkan hasilnya dengan A − B pada soal sejenis: selisih tidak komutatif.'},
+ {q:'A △ B',f:(a,b)=>[...a.filter(x=>!b.includes(x)),...b.filter(x=>!a.includes(x))].sort((x,y)=>x-y),t:'set',
+  n:'Selisih simetris memuat anggota yang hanya dimiliki salah satu himpunan — persis (A ∪ B) − (A ∩ B).'},
+ {q:'|A ∪ B|',f:(a,b)=>[...new Set([...a,...b])].length,t:'num',
+  n:'Cocokkan dengan prinsip inklusi–eksklusi: |A ∪ B| = |A| + |B| − |A ∩ B|.'},
+ {q:'|P(A)| (banyaknya himpunan bagian dari A)',f:a=>Math.pow(2,a.length),t:'num',
+  n:'Setiap anggota bebas dipilih masuk atau tidak, jadi banyaknya himpunan bagian adalah 2 pangkat |A| — termasuk ∅ dan A sendiri.'}
+];
+function newKonkret(){
+  const pool=[1,2,3,4,5,6,7,8,9];
+  kA=randSet(3+Math.floor(Math.random()*2),pool);
+  kB=randSet(3+Math.floor(Math.random()*2),pool);
+  kTask=TASKS[Math.floor(Math.random()*TASKS.length)];
+  kNum++;
+  document.getElementById('kcount').textContent=T('Question ','Soal ')+kNum;
+  document.getElementById('kgiven').innerHTML='A = {'+kA.join(', ')+'}<br>B = {'+kB.join(', ')+'}';
+  document.getElementById('kask').textContent=T('Compute  ','Tentukan  ')+taskQ(kTask);
+  document.getElementById('kin').value='';
+  document.getElementById('kin').placeholder=kTask.t==='num'?T('a number','sebuah bilangan'):'{ … }';
+  document.getElementById('kfeed').textContent='';
+}
+function parseSetInput(s){
+  const nums=(s.match(/-?\d+/g)||[]).map(Number);
+  return [...new Set(nums)].sort((x,y)=>x-y);
+}
+document.getElementById('knew').addEventListener('click',newKonkret);
+document.getElementById('kcheck').addEventListener('click',()=>{
+  const fb=document.getElementById('kfeed'),raw=document.getElementById('kin').value;
+  const want=kTask.f(kA,kB);
+  kTotal++;
+  let ok;
+  if(kTask.t==='num'){
+    const got=parseSetInput(raw);
+    ok=got.length===1&&got[0]===want;
+    if(ok)fb.innerHTML=T('✓ Right. ','✓ Tepat. ')+taskNote(kTask);
+    else fb.innerHTML=T('✗ The answer is ','✗ Jawabannya ')+want+'. '+taskNote(kTask);
+  }else{
+    const got=parseSetInput(raw);
+    ok=got.length===want.length&&got.every((v,i)=>v===want[i]);
+    if(ok)fb.innerHTML=T('✓ Right. ','✓ Tepat. ')+taskNote(kTask);
+    else fb.innerHTML=T('✗ It should be {','✗ Seharusnya {')+want.join(', ')+'}. '+taskNote(kTask);
+  }
+  if(ok)kRight++;
+  fb.className='feedback '+(ok?'ok':'no');
+  document.getElementById('kscore').textContent=T('Correct ','Benar ')+kRight+T(' of ',' dari ')+kTotal;
+});
+
+/* ==========================================================
+   6. ∈ ATAU ⊆
+   ========================================================== */
+const ELEMS=[
+ {s:'1 ∈ {1, 2, 3}',v:true,w:'1 memang salah satu anggota yang terdaftar.'},
+ {s:'{1} ∈ {1, 2, 3}',v:false,w:'Anggota himpunan itu adalah 1, 2, dan 3 — bukan himpunan {1}. Yang benar adalah {1} ⊆ {1, 2, 3}.'},
+ {s:'{1} ⊆ {1, 2, 3}',v:true,w:'Setiap anggota {1}, yaitu 1 saja, juga anggota {1, 2, 3}.'},
+ {s:'∅ ⊆ {1, 2}',v:true,w:'Syarat "setiap anggota ∅ juga anggota {1,2}" benar secara hampa, sebab ∅ tak punya anggota. Karena itu ∅ adalah himpunan bagian dari himpunan apa pun.'},
+ {s:'∅ ∈ {1, 2}',v:false,w:'Anggota {1,2} hanyalah 1 dan 2. Himpunan kosong bukan salah satunya.'},
+ {s:'∅ ∈ {∅, 1}',v:true,w:'Kali ini ∅ benar-benar terdaftar sebagai anggota. Bandingkan dengan soal sebelumnya — bedanya hanya pada isi himpunan sebelah kanan.'},
+ {s:'{1, 2} ∈ P({1, 2, 3})',v:true,w:'Anggota himpunan kuasa adalah himpunan-himpunan bagian, dan {1,2} salah satunya. Untuk himpunan kuasa, ∈ dan ⊆ seolah bertukar peran.'},
+ {s:'{1, 2} ⊆ P({1, 2, 3})',v:false,w:'Ini menuntut 1 dan 2 sendiri menjadi anggota P({1,2,3}), padahal anggotanya berupa himpunan. Yang benar: {{1},{2}} ⊆ P({1,2,3}).'},
+ {s:'{∅} = ∅',v:false,w:'Ruas kiri adalah himpunan berisi satu anggota, yaitu ∅; ruas kanan tidak punya anggota sama sekali. Jadi |{∅}| = 1 sedangkan |∅| = 0.'},
+ {s:'|P({1, 2, 3})| = 8',v:true,w:'2³ = 8 himpunan bagian, dari ∅ sampai {1,2,3} sendiri.'},
+ {s:'{1, 2} ⊆ {1, 2}',v:true,w:'Setiap himpunan adalah himpunan bagian dari dirinya sendiri. Yang tidak berlaku adalah ⊊, sebab tidak ada anggota tambahan.'},
+ {s:'A ∈ P(A)',v:true,w:'A selalu anggota himpunan kuasanya sendiri, karena A ⊆ A.'}
+];
+let eIdx=0,eScore=0;
+function renderElem(){
+  const q=ELEMS[eIdx];
+  document.getElementById('ecount').textContent=T('Statement ','Pernyataan ')+(eIdx+1)+T(' of ',' dari ')+ELEMS.length;
+  document.getElementById('estmt').textContent=q.s;
+  document.getElementById('ereveal').innerHTML='';
+  const box=document.getElementById('eopts');
+  box.dataset.done='';
+  box.querySelectorAll('.opt').forEach(b=>b.className='opt');
+}
+document.getElementById('eopts').querySelectorAll('.opt').forEach(b=>{
+  b.addEventListener('click',()=>{
+    const box=document.getElementById('eopts');
+    if(box.dataset.done)return;
+    box.dataset.done='1';
+    const q=ELEMS[eIdx],chose=b.dataset.v==='true';
+    box.querySelectorAll('.opt').forEach(x=>{if((x.dataset.v==='true')===q.v)x.classList.add('correct');});
+    if(chose!==q.v)b.classList.add('incorrect');
+    else{eScore++;document.getElementById('escore').textContent=T('Correct ','Benar ')+eScore;}
+    document.getElementById('ereveal').innerHTML='<div class="reveal"><strong>'+(q.v?T('True.','Benar.'):T('False.','Salah.'))+'</strong> '+elemWhy(eIdx)+'</div>';
+  });
+});
+document.getElementById('enext').addEventListener('click',()=>{eIdx=(eIdx+1)%ELEMS.length;renderElem();});
+
+window.__onLang=function(){
+  document.getElementById('kcount').textContent=T('Question ','Soal ')+kNum;
+  document.getElementById('kask').textContent=T('Compute  ','Tentukan  ')+taskQ(kTask);
+  document.getElementById('kin').placeholder=kTask.t==='num'?T('a number','sebuah bilangan'):'{ … }';
+  document.getElementById('kfeed').textContent='';
+  document.getElementById('kscore').textContent=T('Correct ','Benar ')+kRight+T(' of ',' dari ')+kTotal;
+  document.getElementById('escore').textContent=T('Correct ','Benar ')+eScore;
+  document.getElementById('vscore').textContent=vMode==='quiz'?(T('Correct ','Benar ')+vRight+T(' of ',' dari ')+vTotal):'';
+  if(vMode==='show')drawShow();
+  if(document.getElementById('iout').innerHTML)compareSets();
+  renderElem();
+};
+
+drawShow();newKonkret();renderElem();
+</script>
+<script>
+(function(){
+  var KEY='phxLang';
+  function apply(l){
+    document.documentElement.lang=l;
+    var b=document.querySelectorAll('[data-lang-btn]');
+    for(var i=0;i<b.length;i++) b[i].classList.toggle('on', b[i].getAttribute('data-lang-btn')===l);
+    if(window.__onLang){ try{ window.__onLang(l); }catch(e){} }
+  }
+  function set(l){ try{ localStorage.setItem(KEY,l); }catch(e){} apply(l); }
+  var saved=null; try{ saved=localStorage.getItem(KEY); }catch(e){}
+  apply(saved==='id'?'id':'en');
+  var btns=document.querySelectorAll('[data-lang-btn]');
+  for(var i=0;i<btns.length;i++) btns[i].addEventListener('click',function(e){ e.preventDefault(); set(this.getAttribute('data-lang-btn')); });
+  window.setLang=set;
+})();
+</script>
+</body>
+</html>

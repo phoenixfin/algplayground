@@ -1,0 +1,783 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Proof methods - reorder, choose a strategy, hunt the flaw</title>
+<link rel="icon" type="image/png" href="logo.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=Lato:wght@300;400;700&display=swap" rel="stylesheet">
+<script>try{var _l=localStorage.getItem('phxLang');if(_l==='id'||_l==='en')document.documentElement.lang=_l;}catch(e){}</script>
+<style>
+:root{
+  --paper:#FAF7F2; --paper-line:#EDE4D8; --card:#FFFDF9; --ink:#2D2D2D; --ink-soft:#6E6259;
+  --true:#2F7069; --false:#A8392A; --unit:#C17A3E; --amber:#C17A3E;
+  --accent-deep:#8F5620; --border:#E4DACB; --moss:#C17A3E;
+  --rule:#E4DACB; --rule-strong:#CFBFA6;
+  --display:"Playfair Display",Georgia,serif;
+  --body:Lato,"Helvetica Neue",Helvetica,Arial,sans-serif;
+  --mono:"SF Mono",SFMono-Regular,Consolas,monospace;
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--paper);color:var(--ink);font-family:var(--body);font-size:16px;line-height:1.5;-webkit-font-smoothing:antialiased;background-image:linear-gradient(var(--paper-line) 1px,transparent 1px),linear-gradient(90deg,var(--paper-line) 1px,transparent 1px);background-size:28px 28px;background-attachment:fixed}
+.wrap{max-width:1020px;margin:0 auto;padding:28px 20px 80px}
+header{border-bottom:2px solid var(--ink);padding-bottom:14px;margin-bottom:20px}
+.eyebrow{font-family:var(--mono);font-size:12px;letter-spacing:.12em;text-transform:uppercase;color:var(--accent-deep)}
+h1{font-family:var(--display);font-weight:600;font-size:clamp(26px,4.5vw,34px);line-height:1.15;letter-spacing:0;margin:4px 0 10px}
+.legend{display:flex;flex-wrap:wrap;gap:6px}
+.chip{font-family:var(--mono);font-size:12px;border:1px solid var(--rule-strong);border-radius:2px;padding:3px 8px;background:var(--card);white-space:nowrap}
+.chip span{color:var(--ink-soft)}
+nav[role="tablist"]{display:flex;flex-wrap:wrap;margin:22px 0 0;border-bottom:1px solid var(--rule-strong)}
+nav[role="tablist"] button{font-family:var(--display);font-weight:500;font-size:14px;background:none;border:none;border-bottom:3px solid transparent;padding:10px 14px;cursor:pointer;color:var(--ink-soft);margin-bottom:-1px}
+nav[role="tablist"] button:hover{color:var(--ink)}
+nav[role="tablist"] button[aria-selected="true"]{color:var(--ink);border-bottom-color:var(--unit)}
+nav[role="tablist"] button:focus-visible,.btn:focus-visible,button:focus-visible{outline:2px solid var(--unit);outline-offset:2px}
+section.panel{display:none;padding-top:24px}
+section.panel.active{display:block}
+h2{font-family:var(--display);font-weight:700;font-size:20px;margin:0 0 4px}
+.sub{color:var(--ink-soft);font-size:15px;margin:0 0 18px}
+.card{background:var(--card);border:1px solid var(--rule);border-radius:3px;padding:16px}
+.btn{font-family:var(--display);font-weight:500;font-size:14px;background:var(--ink);color:var(--card);border:1px solid var(--ink);padding:9px 18px;border-radius:2px;cursor:pointer}
+.btn:hover{background:#4A423C}
+.btn.ghost{background:none;color:var(--ink)}
+.btn.ghost:hover{background:var(--ink);color:var(--card)}
+.btn.small{font-size:12px;padding:5px 11px}
+.row{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin-top:12px}
+.spacer{flex:1}
+.counter{font-family:var(--mono);font-size:12px;color:var(--ink-soft)}
+.claimline{font-family:var(--body);font-size:21px;font-style:italic;margin:6px 0 2px}
+.tag{display:inline-block;font-family:var(--mono);font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--unit);border:1px solid var(--unit);border-radius:2px;padding:2px 7px}
+
+/* susun bukti */
+ol.proof{list-style:none;margin:16px 0 0;padding:0;counter-reset:pl}
+ol.proof li{
+  display:flex;gap:12px;align-items:flex-start;
+  background:var(--card);border:1px solid var(--rule-strong);border-radius:2px;
+  padding:11px 13px;margin-bottom:7px;cursor:grab;
+}
+ol.proof li.dragging{opacity:.35}
+ol.proof li.over{border-color:var(--unit);border-width:2px}
+ol.proof li.good{border-left:5px solid var(--true)}
+ol.proof li.bad{border-left:5px solid var(--false)}
+ol.proof li .slot{font-family:var(--mono);font-size:12px;color:var(--ink-soft);min-width:18px;padding-top:3px}
+ol.proof li .txt{flex:1;font-size:16px}
+ol.proof li .arrows{display:flex;flex-direction:column;gap:2px}
+ol.proof li .arrows button{font-family:var(--mono);font-size:10px;line-height:1;padding:3px 6px;border:1px solid var(--rule-strong);background:var(--paper);cursor:pointer;border-radius:2px;color:var(--ink-soft)}
+ol.proof li .arrows button:hover{background:var(--ink);color:var(--card)}
+.result{margin-top:14px;padding:12px 14px;background:var(--card);border-left:4px solid var(--unit);font-size:15px}
+
+/* pilihan ganda */
+.opts{display:grid;gap:7px;margin-top:14px}
+.opt{text-align:left;font-family:var(--body);font-size:16px;background:var(--card);border:1px solid var(--rule-strong);border-radius:2px;padding:10px 13px;cursor:pointer;color:var(--ink)}
+.opt:hover{border-color:var(--ink)}
+.opt.correct{border-color:var(--true);background:rgba(47,112,105,.1);border-width:2px}
+.opt.incorrect{border-color:var(--false);background:rgba(168,57,42,.09);border-width:2px}
+.reveal{margin-top:14px;padding:12px 14px;background:var(--paper);border-left:3px solid var(--unit);font-size:15px}
+.reveal code{font-family:var(--mono);font-size:14px}
+
+/* cari kesalahan */
+ol.flaw{list-style:none;margin:14px 0 0;padding:0}
+ol.flaw li{background:var(--card);border:1px solid var(--rule);border-left:3px solid transparent;padding:9px 13px;margin-bottom:5px;cursor:pointer;font-family:var(--mono);font-size:14px}
+ol.flaw li:hover{border-left-color:var(--unit)}
+ol.flaw li .n{color:var(--ink-soft);margin-right:10px}
+ol.flaw li.hit{border-left-color:var(--false);background:rgba(168,57,42,.1)}
+ol.flaw li.clear{opacity:.5}
+
+/* mesin induksi */
+.dominoes{display:flex;gap:5px;flex-wrap:wrap;margin-top:18px;align-items:flex-end;min-height:96px}
+.dom{width:34px;text-align:center}
+.dom .piece{height:64px;width:20px;margin:0 auto;background:var(--ink-soft);border-radius:2px;transition:transform .25s ease,background .25s ease;transform-origin:bottom left}
+.dom.down .piece{background:var(--true);transform:rotate(-68deg)}
+.dom .lbl{font-family:var(--mono);font-size:11px;color:var(--ink-soft);margin-top:6px}
+.dom.down .lbl{color:var(--true);font-weight:700}
+@media (prefers-reduced-motion:reduce){.dom .piece{transition:none}}
+.ctrls{display:flex;flex-wrap:wrap;gap:16px;margin-top:8px;align-items:center}
+.ctrl{font-family:var(--mono);font-size:13px;display:flex;align-items:center;gap:7px}
+.ctrl select{font-family:var(--mono);font-size:13px;padding:4px 6px;border:1px solid var(--rule-strong);background:#fff;border-radius:2px;color:var(--ink)}
+.presets{display:flex;flex-wrap:wrap;gap:6px;margin-top:14px}
+.presets button{font-family:var(--mono);font-size:12px;border:1px dashed var(--rule-strong);background:none;border-radius:2px;padding:5px 9px;cursor:pointer;color:var(--ink-soft)}
+.presets button:hover{color:var(--ink);border-color:var(--ink)}
+footer{margin-top:56px;border-top:1px solid var(--rule-strong);padding-top:14px;font-family:var(--mono);font-size:11px;color:var(--ink-soft)}
+
+/* --- site integration --- */
+html[lang="en"] [data-lang="id"], html[lang="id"] [data-lang="en"]{ display:none !important; }
+.langtog{ display:inline-flex; border:1px solid var(--border); border-radius:20px; overflow:hidden; }
+.langtog button{ font-family:inherit; font-size:11.5px; letter-spacing:0.06em; padding:4px 11px; border:0; background:#fff; color:var(--ink-soft); cursor:pointer; }
+.langtog button.on{ background:var(--accent-deep); color:#fff; font-weight:700; }
+.pnav{ display:flex; align-items:center; gap:14px; margin-bottom:24px; font-family:var(--mono); font-size:13px; flex-wrap:wrap; }
+.pnav a{ text-decoration:none; color:var(--ink-soft); }
+.pnav a:hover{ color:var(--ink); }
+.pnav .brand{ display:inline-flex; align-items:center; gap:9px; color:var(--ink); font-weight:700; }
+.pnav .brand img{ width:30px; height:30px; border-radius:7px; display:block; }
+.pnav .spacer{ flex:1; min-width:8px; }
+.pnav a.ext::after{ content:" \2197"; color:var(--ink-soft); font-size:11px; }
+.pnav details.topics{ position:relative; }
+.pnav details.topics>summary{ list-style:none; cursor:pointer; color:var(--ink); font-weight:600; padding:2px 2px; }
+.pnav details.topics>summary::-webkit-details-marker{ display:none; }
+.pnav details.topics>summary::after{ content:" \25BE"; }
+.pnav details.topics[open]>summary::after{ content:" \25B4"; }
+.pnav .menu{ position:absolute; top:100%; left:0; margin-top:9px; background:var(--card); border:1px solid var(--border); border-radius:7px; padding:14px 16px; box-shadow:0 8px 26px rgba(45,45,45,0.13); z-index:60; display:flex; gap:24px; }
+.pnav .mgroup{ display:flex; flex-direction:column; gap:6px; }
+.pnav .mgroup>b{ font-size:10px; letter-spacing:0.09em; text-transform:uppercase; color:var(--accent-deep); margin-bottom:2px; }
+.pnav .mgroup>b a{ color:inherit; text-decoration:none; }
+.pnav .mgroup>b a:hover{ text-decoration:underline; }
+.pnav .mgroup a{ color:var(--ink); white-space:nowrap; }
+.pnav .mgroup a:hover{ color:var(--accent-deep); }
+.pnav .mgroup a.cur{ color:var(--accent-deep); font-weight:700; }
+@media(max-width:700px){ .pnav .menu{ flex-direction:column; gap:14px; } }
+header .lead{ margin:0 0 14px; color:var(--ink-soft); font-size:15px; max-width:70ch; }
+.idnote{ font-family:var(--mono); font-size:12px; color:var(--ink-soft); background:var(--card); border:1px solid var(--border); border-left:3px solid var(--accent-deep); border-radius:3px; padding:8px 12px; margin:0 0 16px; }
+.unitnav{ font-family:var(--mono); font-size:12.5px; color:var(--ink-soft); margin:0 0 20px; display:flex; flex-wrap:wrap; gap:10px; align-items:baseline; }
+.unitnav a{ color:var(--moss); text-decoration:none; }
+.unitnav a:hover{ text-decoration:underline; }
+.unitnav a.cur{ color:var(--accent-deep); font-weight:700; text-decoration:none; }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<nav class="pnav">
+  <a class="brand" href="index.html"><img src="logo.png" alt=""><span data-lang="en">Playgrounds</span><span data-lang="id">Playground</span></a>
+  <details class="topics">
+    <summary><span data-lang="en">Topics</span><span data-lang="id">Topik</span></summary>
+    <div class="menu">
+      <div class="mgroup"><b><a href="optimization.html"><span data-lang="en">Optimization</span><span data-lang="id">Optimasi</span></a></b>
+        <a href="evolutionary_swarm.html"><span data-lang="en">Evolutionary &amp; swarm</span><span data-lang="id">Evolusioner &amp; swarm</span></a>
+        <a href="apps/optimizers/"><span data-lang="en">Gradient descent</span><span data-lang="id">Gradient descent</span></a>
+      </div>
+      <div class="mgroup"><b><a href="machine_learning.html">Machine Learning</a></b>
+        <a href="classical_ml.html"><span data-lang="en">Classical ML</span><span data-lang="id">ML klasik</span></a>
+        <a href="apps/mlp/"><span data-lang="en">Neural net from scratch</span><span data-lang="id">Neural net dari nol</span></a>
+        <a href="convolution.html"><span data-lang="en">Convolution &amp; CNNs</span><span data-lang="id">Konvolusi &amp; CNN</span></a>
+      </div>
+      <div class="mgroup"><b><a href="scientific_ml_index.html">Scientific ML</a></b>
+        <a href="differential_equations.html"><span data-lang="en">Differential equations</span><span data-lang="id">Persamaan diferensial</span></a>
+        <a href="fourier.html">Fourier</a>
+        <a href="scientific_ml.html">Scientific ML</a>
+      </div>
+      <div class="mgroup"><b><a href="mathematical_logic.html"><span data-lang="en">Mathematical Logic</span><span data-lang="id">Logika Matematika</span></a></b>
+        <a href="propositional_logic.html"><span data-lang="en">Propositional logic</span><span data-lang="id">Logika proposisional</span></a>
+        <a href="predicate_logic.html"><span data-lang="en">Predicate logic</span><span data-lang="id">Logika predikat</span></a>
+        <a href="proof_methods.html"><span data-lang="en">Proof methods</span><span data-lang="id">Metode pembuktian</span></a>
+        <a href="set_theory.html"><span data-lang="en">Set theory</span><span data-lang="id">Teori himpunan</span></a>
+      </div>
+    </div>
+  </details>
+  <span class="spacer"></span>
+  <a class="ext" href="https://phx.my.id" target="_blank" rel="noopener noreferrer">phx.my.id</a>
+  <a class="ext" href="https://research.phx.my.id" target="_blank" rel="noopener noreferrer"><span data-lang="en">Research</span><span data-lang="id">Riset</span></a>
+  <span class="langtog"><button data-lang-btn="en">EN</button><button data-lang-btn="id">ID</button></span>
+</nav>
+<script>(function(){
+  var path=(location.pathname.split('/').filter(Boolean).pop()||'index.html');
+  var links=document.querySelectorAll('.pnav .menu a');
+  for(var i=0;i<links.length;i++){ var hf=links[i].getAttribute('href')||''; var seg=hf.split('/').filter(Boolean).pop()||'';
+    if(seg===path || (path!=='index.html' && hf.indexOf(path)>=0)) links[i].classList.add('cur'); }
+  document.addEventListener('click',function(e){ var d=document.querySelector('.pnav details[open]'); if(d && !d.contains(e.target)) d.removeAttribute('open'); });
+})();</script>
+
+
+<header>
+  <p class="eyebrow"><span data-lang="en">Mathematical Logic · Unit 03</span><span data-lang="id">Logika Matematika · Unit 03</span></p>
+  <h1><span data-lang="en">Proof Methods</span><span data-lang="id">Metode Pembuktian</span></h1>
+  <p class="lead"><span data-lang="en">Reading proofs actively: reorder a scrambled proof, choose the strategy before writing a line, hunt the step that is not valid, and run induction as a row of dominoes.</span><span data-lang="id">Membaca bukti secara aktif: menyusun ulang baris yang teracak, memilih strategi sebelum menulis, berburu langkah yang tidak sah, dan menjalankan mesin induksi domino.</span></p>
+  <div class="legend">
+    <span class="chip"><span data-lang="en">direct</span><span data-lang="id">langsung</span></span>
+    <span class="chip"><span data-lang="en">contraposition</span><span data-lang="id">kontraposisi</span></span>
+    <span class="chip"><span data-lang="en">contradiction</span><span data-lang="id">kontradiksi</span></span>
+    <span class="chip"><span data-lang="en">cases</span><span data-lang="id">kasus</span></span>
+    <span class="chip"><span data-lang="en">induction</span><span data-lang="id">induksi</span></span>
+    <span class="chip"><span data-lang="en">counterexample</span><span data-lang="id">contoh penyangkal</span></span>
+  </div>
+</header>
+
+<p class="unitnav"><a href="mathematical_logic.html"><span data-lang="en">Mathematical logic · 4 labs</span><span data-lang="id">Logika matematika · 4 lab</span></a>
+  <a href="propositional_logic.html"><span data-lang="en">01 Propositional</span><span data-lang="id">01 Proposisional</span></a>
+  <a href="predicate_logic.html"><span data-lang="en">02 Predicate</span><span data-lang="id">02 Predikat</span></a>
+  <a href="proof_methods.html" class="cur"><span data-lang="en">03 Proofs</span><span data-lang="id">03 Pembuktian</span></a>
+  <a href="set_theory.html"><span data-lang="en">04 Sets</span><span data-lang="id">04 Himpunan</span></a>
+  </p>
+
+<nav role="tablist">
+  <button role="tab" data-panel="p-order" aria-selected="true"><span data-lang="en">Reorder a proof</span><span data-lang="id">Susun bukti</span></button>
+  <button role="tab" data-panel="p-strat" aria-selected="false"><span data-lang="en">Choose a strategy</span><span data-lang="id">Pilih strategi</span></button>
+  <button role="tab" data-panel="p-flaw" aria-selected="false"><span data-lang="en">Spot the flaw</span><span data-lang="id">Cari kesalahan</span></button>
+  <button role="tab" data-panel="p-ind" aria-selected="false"><span data-lang="en">Induction machine</span><span data-lang="id">Mesin induksi</span></button>
+</nav>
+
+<!-- ===== SUSUN BUKTI ===== -->
+<section class="panel active" id="p-order">
+  <h2><span data-lang="en">Put a scrambled proof back in order</span><span data-lang="id">Susun ulang bukti yang teracak</span></h2>
+  <p class="sub"><span data-lang="en">Every line is correct — only the order is scrambled. Reordering forces you to read the logical flow instead of copying it. Drag the lines, or use the arrow buttons.</span><span data-lang="id">Semua barisnya benar — hanya urutannya kacau. Menyusun ulang memaksa pembacaan alur logika, bukan sekadar menyalin. Seret barisnya, atau pakai tombol panah.</span></p>
+
+  <div class="card">
+    <div class="row" style="margin-top:0">
+      <span class="tag" id="ometode"></span>
+      <span class="spacer"></span>
+      <span class="counter" id="ocount"></span>
+      <button class="btn ghost small" id="oprev"><span data-lang="en">Previous</span><span data-lang="id">Sebelumnya</span></button>
+      <button class="btn ghost small" id="onext"><span data-lang="en">Next</span><span data-lang="id">Berikutnya</span></button>
+    </div>
+    <p class="claimline" id="oclaim"></p>
+  </div>
+
+  <ol class="proof" id="olist"></ol>
+  <div class="row">
+    <button class="btn" id="ocheck"><span data-lang="en">Check the order</span><span data-lang="id">Periksa urutan</span></button>
+    <button class="btn ghost" id="oshuffle"><span data-lang="en">Shuffle again</span><span data-lang="id">Acak lagi</span></button>
+    <button class="btn ghost" id="okey"><span data-lang="en">Show the key</span><span data-lang="id">Tampilkan kunci</span></button>
+  </div>
+  <div id="oresult"></div>
+</section>
+
+<!-- ===== PILIH STRATEGI ===== -->
+<section class="panel" id="p-strat">
+  <h2><span data-lang="en">Which method makes the most sense?</span><span data-lang="id">Metode mana yang paling masuk akal?</span></h2>
+  <p class="sub"><span data-lang="en">Before writing a single line, a prover picks a road. This drill trains that one decision — quick, and usable as an oral quiz in class.</span><span data-lang="id">Sebelum menulis satu baris pun, seorang pembukti memilih jalan. Latihan ini melatih keputusan itu saja — cepat, dan bisa dipakai sebagai kuis lisan di kelas.</span></p>
+
+  <div class="card">
+    <div class="row" style="margin-top:0">
+      <span class="counter" id="scount"></span>
+      <span class="spacer"></span>
+      <span class="counter" id="sscore"><span data-lang="en">Correct 0</span><span data-lang="id">Benar 0</span></span>
+      <button class="btn ghost small" id="snext"><span data-lang="en">Next statement</span><span data-lang="id">Pernyataan berikutnya</span></button>
+    </div>
+    <p class="claimline" id="sclaim"></p>
+    <div class="opts" id="sopts"></div>
+    <div id="sreveal"></div>
+  </div>
+</section>
+
+<!-- ===== CARI KESALAHAN ===== -->
+<section class="panel" id="p-flaw">
+  <h2><span data-lang="en">Proofs that look convincing</span><span data-lang="id">Bukti yang tampak meyakinkan</span></h2>
+  <p class="sub"><span data-lang="en">Every proof below concludes something false. Click the line where the mistake first happens — not the line with the strange result, but the line whose step is invalid.</span><span data-lang="id">Setiap bukti di bawah ini menyimpulkan sesuatu yang salah. Klik baris tempat kesalahannya pertama kali terjadi — bukan baris yang hasilnya aneh, melainkan baris yang langkahnya tidak sah.</span></p>
+
+  <div class="card">
+    <div class="row" style="margin-top:0">
+      <span class="counter" id="fcount"></span>
+      <span class="spacer"></span>
+      <button class="btn ghost small" id="fprev"><span data-lang="en">Previous</span><span data-lang="id">Sebelumnya</span></button>
+      <button class="btn ghost small" id="fnext"><span data-lang="en">Next</span><span data-lang="id">Berikutnya</span></button>
+    </div>
+    <p class="claimline" id="fclaim"></p>
+    <ol class="flaw" id="flist"></ol>
+    <div id="freveal"></div>
+  </div>
+</section>
+
+<!-- ===== MESIN INDUKSI ===== -->
+<section class="panel" id="p-ind">
+  <h2><span data-lang="en">The induction machine</span><span data-lang="id">Mesin induksi</span></h2>
+  <p class="sub"><span data-lang="en">The base case knocks over the first domino; the induction step makes sure each domino knocks over the next. Switch one of them off and see for yourself how much is actually proved.</span><span data-lang="id">Basis menjatuhkan domino pertama; langkah induksi memastikan setiap domino menjatuhkan yang berikutnya. Matikan salah satunya dan lihat sendiri berapa banyak yang benar-benar terbukti.</span></p>
+
+  <div class="card">
+    <div class="ctrls">
+      <label class="ctrl"><input type="checkbox" id="c-basis" checked> <span data-lang="en">Base case proved</span><span data-lang="id">Basis dibuktikan</span></label>
+      <label class="ctrl"><span data-lang="en">at n =</span><span data-lang="id">di n =</span> <select id="s-basis"><option>1</option><option>2</option><option>3</option><option>4</option></select></label>
+      <label class="ctrl"><input type="checkbox" id="c-step" checked> <span data-lang="en">Step P(k) → P(k+1) proved</span><span data-lang="id">Langkah P(k) → P(k+1) dibuktikan</span></label>
+      <label class="ctrl"><span data-lang="en">valid for k ≥</span><span data-lang="id">berlaku untuk k ≥</span> <select id="s-step"><option>1</option><option>2</option><option>3</option><option>4</option></select></label>
+    </div>
+    <div class="presets">
+      <button data-p="ok"><span data-lang="en">complete proof</span><span data-lang="id">bukti lengkap</span></button>
+      <button data-p="nobasis"><span data-lang="en">forgot the base case</span><span data-lang="id">lupa basis</span></button>
+      <button data-p="nostep"><span data-lang="en">forgot the induction step</span><span data-lang="id">lupa langkah induksi</span></button>
+      <button data-p="gap"><span data-lang="en">step only valid from k ≥ 3</span><span data-lang="id">langkah baru sah dari k ≥ 3</span></button>
+    </div>
+    <div class="dominoes" id="dominoes"></div>
+    <div class="result" id="indout"></div>
+  </div>
+</section>
+
+<footer><span data-lang="en">Unit 03 · proof methods lab</span><span data-lang="id">Unit 03 · lab metode pembuktian</span></footer>
+</div>
+
+<script>
+"use strict";
+document.querySelectorAll('nav[role="tablist"] button').forEach(b=>{
+  b.addEventListener('click',()=>{
+    document.querySelectorAll('nav[role="tablist"] button').forEach(x=>x.setAttribute('aria-selected','false'));
+    b.setAttribute('aria-selected','true');
+    document.querySelectorAll('.panel').forEach(p=>p.classList.remove('active'));
+    document.getElementById(b.dataset.panel).classList.add('active');
+  });
+});
+
+/* ==========================================================
+   1. SUSUN BUKTI
+   ========================================================== */
+const PROOFS_ID=[
+{metode:'bukti langsung',claim:'Jika n bilangan bulat genap, maka n² genap.',
+ lines:[
+  'Misalkan n bilangan bulat genap.',
+  'Menurut definisi, terdapat bilangan bulat k sehingga n = 2k.',
+  'Kuadratkan kedua ruas: n² = (2k)² = 4k².',
+  'Tulis ulang bentuk itu sebagai n² = 2(2k²).',
+  'Karena 2k² bilangan bulat, n² memenuhi definisi genap. ∎'
+ ]},
+{metode:'kontraposisi',claim:'Jika n² ganjil, maka n ganjil.',
+ lines:[
+  'Alih-alih pernyataan asal, kita buktikan kontraposisinya: jika n genap maka n² genap.',
+  'Misalkan n genap, sehingga n = 2k untuk suatu bilangan bulat k.',
+  'Maka n² = (2k)² = 2(2k²).',
+  'Karena 2k² bilangan bulat, n² genap.',
+  'Kontraposisi terbukti, dan sebuah implikasi selalu ekuivalen dengan kontraposisinya.',
+  'Jadi jika n² ganjil maka n ganjil. ∎'
+ ]},
+{metode:'bukti dengan kasus',claim:'Untuk setiap bilangan bulat n, hasil n² + n selalu genap.',
+ lines:[
+  'Setiap bilangan bulat n pasti genap atau ganjil, jadi cukup ditinjau dua kasus.',
+  'Kasus 1: n genap, sehingga n = 2k untuk suatu bilangan bulat k.',
+  'Maka n² + n = 4k² + 2k = 2(2k² + k), yang genap.',
+  'Kasus 2: n ganjil, sehingga n = 2k + 1 untuk suatu bilangan bulat k.',
+  'Maka n² + n = (4k² + 4k + 1) + (2k + 1) = 2(2k² + 3k + 1), yang juga genap.',
+  'Kedua kasus menghasilkan bilangan genap dan tidak ada kemungkinan lain. ∎'
+ ]},
+{metode:'kontradiksi',claim:'√2 adalah bilangan irasional.',
+ lines:[
+  'Andaikan sebaliknya, yaitu √2 rasional.',
+  'Maka √2 dapat ditulis a/b dengan a, b bilangan bulat, b ≠ 0, dan pecahan itu sudah paling sederhana.',
+  'Kuadratkan kedua ruas: 2 = a²/b², sehingga a² = 2b².',
+  'Maka a² genap, dan karenanya a sendiri genap; tulis a = 2c.',
+  'Substitusikan: 4c² = 2b², yang disederhanakan menjadi b² = 2c².',
+  'Maka b² genap, sehingga b juga genap.',
+  'Jadi a dan b sama-sama genap — bertentangan dengan asumsi bahwa a/b paling sederhana.',
+  'Pengandaian awal mustahil, jadi √2 irasional. ∎'
+ ]},
+{metode:'induksi matematika',claim:'Untuk setiap bilangan asli n berlaku 1 + 2 + ⋯ + n = n(n+1)/2.',
+ lines:[
+  'Basis induksi: untuk n = 1, ruas kiri bernilai 1 dan ruas kanan bernilai 1·2/2 = 1.',
+  'Hipotesis induksi: andaikan pernyataan benar untuk n = k, yaitu 1 + 2 + ⋯ + k = k(k+1)/2.',
+  'Tinjau jumlah sampai suku ke-(k+1), yaitu (1 + 2 + ⋯ + k) + (k+1).',
+  'Ganti bagian dalam kurung memakai hipotesis induksi: k(k+1)/2 + (k+1).',
+  'Faktorkan (k+1): diperoleh (k+1)(k+2)/2.',
+  'Bentuk itu persis rumus untuk n = k+1, jadi P(k) → P(k+1).',
+  'Basis benar dan langkah induksi berlaku, maka pernyataan benar untuk semua n. ∎'
+ ]}
+];
+let oIdx=0,oOrder=[];
+function shuffled(n){
+  const a=[...Array(n).keys()];
+  do{ for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];} }
+  while(a.every((v,i)=>v===i));
+  return a;
+}
+function renderOrder(marks){
+  const p=PROOFS[oIdx];
+  document.getElementById('ometode').textContent=p.metode;
+  document.getElementById('ocount').textContent=T('Proof ','Bukti ')+(oIdx+1)+T(' of ',' dari ')+PROOFS.length;
+  document.getElementById('oclaim').textContent=p.claim;
+  const ol=document.getElementById('olist');ol.innerHTML='';
+  oOrder.forEach((orig,pos)=>{
+    const li=document.createElement('li');
+    li.draggable=true;li.dataset.pos=pos;
+    if(marks)li.className=marks[pos]?'good':'bad';
+    li.innerHTML='<span class="slot">'+(pos+1)+'</span><span class="txt">'+p.lines[orig]+'</span>'+
+      '<span class="arrows"><button data-mv="up" data-pos="'+pos+'" aria-label="'+T('move up','naik')+'">▲</button>'+
+      '<button data-mv="down" data-pos="'+pos+'" aria-label="'+T('move down','turun')+'">▼</button></span>';
+    ol.appendChild(li);
+  });
+  ol.querySelectorAll('.arrows button').forEach(b=>{
+    b.addEventListener('click',e=>{
+      e.stopPropagation();
+      const i=+b.dataset.pos, j=b.dataset.mv==='up'?i-1:i+1;
+      if(j<0||j>=oOrder.length)return;
+      [oOrder[i],oOrder[j]]=[oOrder[j],oOrder[i]];
+      document.getElementById('oresult').innerHTML='';
+      renderOrder();
+    });
+  });
+  let dragFrom=null;
+  ol.querySelectorAll('li').forEach(li=>{
+    li.addEventListener('dragstart',()=>{dragFrom=+li.dataset.pos;li.classList.add('dragging');});
+    li.addEventListener('dragend',()=>li.classList.remove('dragging'));
+    li.addEventListener('dragover',e=>{e.preventDefault();li.classList.add('over');});
+    li.addEventListener('dragleave',()=>li.classList.remove('over'));
+    li.addEventListener('drop',e=>{
+      e.preventDefault();li.classList.remove('over');
+      const to=+li.dataset.pos;
+      if(dragFrom===null||dragFrom===to)return;
+      const [m]=oOrder.splice(dragFrom,1);oOrder.splice(to,0,m);
+      document.getElementById('oresult').innerHTML='';
+      renderOrder();
+    });
+  });
+}
+function newOrder(){
+  oOrder=shuffled(PROOFS[oIdx].lines.length);
+  document.getElementById('oresult').innerHTML='';
+  renderOrder();
+}
+document.getElementById('onext').addEventListener('click',()=>{oIdx=(oIdx+1)%PROOFS.length;newOrder();});
+document.getElementById('oprev').addEventListener('click',()=>{oIdx=(oIdx-1+PROOFS.length)%PROOFS.length;newOrder();});
+document.getElementById('oshuffle').addEventListener('click',newOrder);
+document.getElementById('okey').addEventListener('click',()=>{
+  oOrder=[...Array(PROOFS[oIdx].lines.length).keys()];
+  renderOrder(oOrder.map(()=>true));
+  document.getElementById('oresult').innerHTML='<div class="result">'+T('This is the key order. Notice the shape of a ','Ini urutan kuncinya. Perhatikan pola metode ')+'<b>'+PROOFS[oIdx].metode+'</b>'+T(': the opening line fixes what is assumed, the closing line states what has been reached.',': baris pembuka menetapkan apa yang diandaikan, baris penutup menyatakan apa yang telah dicapai.')+'</div>';
+});
+document.getElementById('ocheck').addEventListener('click',()=>{
+  const marks=oOrder.map((orig,pos)=>orig===pos);
+  renderOrder(marks);
+  const wrong=marks.filter(m=>!m).length;
+  const out=document.getElementById('oresult');
+  if(wrong===0){
+    out.innerHTML='<div class="result">'+T('✓ That is the right order. Notice that the first and last lines are the signature of a ','✓ Urutannya tepat. Perhatikan bahwa baris pertama dan terakhir adalah ciri khas metode ')+'<b>'+PROOFS[oIdx].metode+'</b>'+T(' — that is what helps most when you write a proof of your own.',' — itu yang paling membantu saat menyusun bukti sendiri.')+'</div>';
+  }else{
+    const first=marks.indexOf(false)+1;
+    out.innerHTML='<div class="result">'+wrong+T(' lines are not in place yet. Start from line ',' baris belum pada tempatnya. Mulailah dari baris ')+first+T(': ask what <i>must</i> already be known before that line makes sense.',': tanyakan apa yang <i>harus</i> sudah diketahui sebelum baris itu masuk akal.')+'</div>';
+  }
+});
+
+/* ==========================================================
+   2. PILIH STRATEGI
+   ========================================================== */
+const M_ID=['Bukti langsung','Kontraposisi','Kontradiksi','Bukti dengan kasus','Induksi matematika','Contoh penyangkal'];
+const STRATS_ID=[
+ {c:'Jika n bilangan bulat kelipatan 4, maka n kelipatan 2.',a:0,
+  w:'Anteseden langsung memberi n = 4k, dan dari situ n = 2(2k) tinggal dituliskan. Kalau hipotesisnya sudah berupa bahan yang bisa dipakai, jalan terpendek adalah maju lurus.'},
+ {c:'Jika n² genap, maka n genap.',a:1,
+  w:'Dari "n² genap" sulit menarik informasi tentang n. Kontraposisinya, "jika n ganjil maka n² ganjil", memberi n = 2k+1 yang langsung bisa dihitung. Ciri khasnya: negasi konklusi jauh lebih mudah dipegang daripada anteseden aslinya.'},
+ {c:'Terdapat tak hingga banyak bilangan prima.',a:2,
+  w:'Pernyataan "tak hingga" sulit dibuktikan langsung. Dengan mengandaikan jumlahnya berhingga, kita mendapat daftar lengkap p₁,…,p_n yang bisa dimanipulasi — dan bilangan p₁⋯p_n + 1 meruntuhkannya.'},
+ {c:'Untuk setiap bilangan asli n, berlaku 1 + 3 + 5 + ⋯ + (2n−1) = n².',a:4,
+  w:'Pernyataan berbentuk "untuk setiap n" dengan struktur bertingkat pada n adalah tanda paling jelas untuk induksi: hasil untuk n dapat dibangun dari hasil untuk n−1.'},
+ {c:'Setiap bilangan prima adalah bilangan ganjil.',a:5,
+  w:'Pernyataan ini salah, dan menyangkal pernyataan universal cukup dengan satu contoh: 2 adalah prima yang genap. Tidak perlu bukti umum untuk meruntuhkan klaim umum.'},
+ {c:'Untuk setiap bilangan bulat n, hasil n² + n selalu genap.',a:3,
+  w:'Tidak ada satu perhitungan yang menutup semua n, tetapi setiap bilangan bulat pasti genap atau ganjil. Dua kasus itu menghabiskan seluruh kemungkinan — syarat wajib bukti dengan kasus.'},
+ {c:'Jika a·b ganjil, maka a ganjil dan b ganjil.',a:1,
+  w:'Negasi konklusinya berbunyi "a genap atau b genap", dan dari situ hasil kalinya jelas genap. Ketika konklusi berupa konjungsi, negasinya menjadi disjungsi yang sering lebih mudah dipakai.'},
+ {c:'Terdapat bilangan irasional x dan y sehingga xʸ rasional.',a:0,
+  w:'Pernyataan eksistensial dibuktikan dengan menyajikan atau mengonstruksi objeknya. Bukti klasiknya memakai √2^√2 dan meninjau dua kemungkinan — tetap berupa bukti keberadaan, bukan pengandaian yang diruntuhkan.'},
+ {c:'Untuk setiap n ≥ 4, berlaku 2ⁿ ≥ n².',a:4,
+  w:'Sekali lagi "untuk setiap n" dengan ketergantungan bertingkat. Perhatikan basisnya di n = 4, bukan n = 1 — batas bawah pada soal biasanya menunjukkan di mana basis harus diletakkan.'},
+ {c:'Jika x bilangan real dan x³ − x = 0, maka x = 0 atau x = 1 atau x = −1.',a:3,
+  w:'Pemfaktoran memberi x(x−1)(x+1) = 0, lalu masing-masing faktor ditinjau sebagai satu kasus. Bukti dengan kasus sering muncul begitu sebuah hasil kali bernilai nol.'}
+];
+let sIdx=0,sScore=0;
+function renderStrat(){
+  const q=STRATS[sIdx];
+  document.getElementById('scount').textContent=T('Statement ','Pernyataan ')+(sIdx+1)+T(' of ',' dari ')+STRATS.length;
+  document.getElementById('sclaim').textContent=q.c;
+  document.getElementById('sreveal').innerHTML='';
+  const box=document.getElementById('sopts');box.innerHTML='';
+  M.forEach((m,i)=>{
+    const b=document.createElement('button');
+    b.className='opt';b.type='button';b.textContent=m;
+    b.addEventListener('click',()=>{
+      if(box.dataset.done)return;
+      box.dataset.done='1';
+      box.querySelectorAll('.opt').forEach((x,j)=>{if(j===q.a)x.classList.add('correct');});
+      if(i!==q.a)b.classList.add('incorrect');else{sScore++;document.getElementById('sscore').textContent=T('Correct ','Benar ')+sScore;}
+      document.getElementById('sreveal').innerHTML='<div class="reveal"><strong>'+M[q.a]+'.</strong> '+q.w+'</div>';
+    });
+    box.appendChild(b);
+  });
+  box.dataset.done='';
+}
+document.getElementById('snext').addEventListener('click',()=>{sIdx=(sIdx+1)%STRATS.length;renderStrat();});
+
+/* ==========================================================
+   3. CARI KESALAHAN
+   ========================================================== */
+const FLAWS_ID=[
+{claim:'"Bukti" bahwa 1 = 2.',
+ lines:[
+  'Misalkan a = b, dengan a dan b bilangan real.',
+  'Kalikan kedua ruas dengan a: a² = ab.',
+  'Kurangkan b² dari kedua ruas: a² − b² = ab − b².',
+  'Faktorkan kedua ruas: (a − b)(a + b) = b(a − b).',
+  'Bagi kedua ruas dengan (a − b): a + b = b.',
+  'Karena a = b, ruas kiri menjadi 2b, sehingga 2b = b.',
+  'Bagi dengan b: diperoleh 2 = 1.'
+ ],bad:4,
+ why:'Pembagian dengan (a − b) tidak sah, sebab a = b membuat faktor itu bernilai nol. Setiap langkah sebelumnya benar; justru itulah yang membuat kesalahan ini sulit terlihat. Aturan praktisnya: setiap kali membagi, sebutkan mengapa pembaginya tak mungkin nol.'},
+
+{claim:'"Bukti" bahwa semua kuda berwarna sama.',
+ lines:[
+  'Kita buktikan dengan induksi pada n: dalam setiap himpunan berisi n kuda, semua kuda sewarna.',
+  'Basis: untuk n = 1 himpunan hanya berisi satu kuda, jadi jelas semuanya sewarna.',
+  'Hipotesis induksi: andaikan pernyataan benar untuk n = k.',
+  'Tinjau himpunan berisi k+1 kuda, sebut K = {h₁, …, h_{k+1}}.',
+  'Buang h_{k+1}: sisa k kuda, jadi menurut hipotesis h₁, …, h_k sewarna.',
+  'Buang h₁: sisa k kuda lagi, jadi h₂, …, h_{k+1} juga sewarna.',
+  'Kedua himpunan bagian itu beririsan, sehingga seluruh k+1 kuda sewarna.',
+  'Jadi untuk setiap n, semua kuda dalam himpunan berukuran n sewarna. ∎'
+ ],bad:6,
+ why:'Kedua himpunan bagian itu hanya beririsan bila k ≥ 2. Untuk k = 1, {h₁} dan {h₂} tidak punya anggota bersama, sehingga langkah dari n = 1 ke n = 2 tidak pernah terbukti — dan rantai induksinya putus tepat di awal. Pelajaran: langkah induksi harus sah untuk <em>setiap</em> k mulai dari basis, bukan hanya untuk k yang besar.'},
+
+{claim:'"Bukti" bahwa 1 + 2 + ⋯ + n = n(n+1)/2 + 7.',
+ lines:[
+  'Hipotesis induksi: andaikan 1 + 2 + ⋯ + k = k(k+1)/2 + 7.',
+  'Tinjau jumlah sampai k+1: (1 + 2 + ⋯ + k) + (k+1).',
+  'Gunakan hipotesis: jumlah itu sama dengan k(k+1)/2 + 7 + (k+1).',
+  'Sederhanakan: (k+1)(k+2)/2 + 7.',
+  'Bentuk itu persis rumus untuk n = k+1, sehingga P(k) → P(k+1).',
+  'Jadi rumus tersebut berlaku untuk semua bilangan asli n. ∎'
+ ],bad:5,
+ why:'Langkah induksinya sepenuhnya sah — dan tetap saja kesimpulannya salah, karena basisnya tidak pernah diperiksa. Untuk n = 1 ruas kiri bernilai 1 sedangkan ruas kanan bernilai 8. Implikasi P(k) → P(k+1) hanya memindahkan kebenaran; kalau tidak ada yang benar di awal, tidak ada yang dipindahkan.'},
+
+{claim:'"Bukti" bahwa jika hujan maka jalan basah, sehingga jika jalan basah maka hujan.',
+ lines:[
+  'Diketahui: jika hari hujan, maka jalan menjadi basah.',
+  'Suatu pagi ternyata jalan basah.',
+  'Kalau tidak hujan, jalan tentu tidak akan basah.',
+  'Jadi tadi malam pasti hujan.',
+  'Karena penalaran ini berlaku setiap kali jalan basah, maka jalan basah menandakan hujan. ∎'
+ ],bad:2,
+ why:'Baris itu diam-diam menukar p → q menjadi ¬p → ¬q, padahal keduanya tidak ekuivalen — yang ekuivalen dengan p → q adalah ¬q → ¬p. Jalan bisa basah karena mobil pemadam, air mancur, atau tetangga yang mencuci mobil. Cek cepatnya: susun tabel kebenaran p → q dan ¬p → ¬q di lab unit 01.'},
+
+{claim:'"Bukti" bahwa ada satu orang yang menjadi ibu bagi semua orang.',
+ lines:[
+  'Fakta: setiap orang memiliki seorang ibu.',
+  'Tuliskan secara formal: ∀x ∃y Ibu(y, x).',
+  'Karena setiap x memiliki y yang demikian, pilih satu y tersebut.',
+  'Maka ∃y ∀x Ibu(y, x).',
+  'Jadi ada seseorang yang menjadi ibu bagi semua orang. ∎'
+ ],bad:2,
+ why:'Pemilihan y bergantung pada x, jadi y tidak bisa dibawa keluar mendahului ∀x. Menukar ∀x∃y menjadi ∃y∀x mengubah "masing-masing punya miliknya sendiri" menjadi "ada satu yang berlaku untuk semua". Mainkan kedua rumus itu di tab permainan kuantor unit 02 untuk merasakan bedanya.'}
+];
+let fIdx=0;
+function renderFlaw(){
+  const f=FLAWS[fIdx];
+  document.getElementById('fcount').textContent=T('Proof ','Bukti ')+(fIdx+1)+T(' of ',' dari ')+FLAWS.length;
+  document.getElementById('fclaim').textContent=f.claim;
+  document.getElementById('freveal').innerHTML='';
+  const ol=document.getElementById('flist');ol.innerHTML='';
+  f.lines.forEach((t,i)=>{
+    const li=document.createElement('li');
+    li.innerHTML='<span class="n">'+(i+1)+'</span>'+t;
+    li.addEventListener('click',()=>{
+      if(ol.dataset.done)return;
+      if(i===f.bad){
+        ol.dataset.done='1';
+        ol.querySelectorAll('li').forEach((x,j)=>{if(j!==i)x.classList.add('clear');});
+        li.classList.add('hit');
+        document.getElementById('freveal').innerHTML='<div class="reveal"><strong>'+T('Exactly — line ','Tepat — baris ')+(i+1)+'.</strong> '+f.why+'</div>';
+      }else{
+        li.classList.add('clear');
+        document.getElementById('freveal').innerHTML='<div class="reveal">'+T('Line ','Baris ')+(i+1)+T(' is actually valid. Ask of every line: does its conclusion really follow from the lines before it, with no hidden condition?',' sebenarnya sah. Tanyakan pada setiap baris: apakah kesimpulannya benar-benar mengikuti dari baris sebelumnya, tanpa syarat tersembunyi?')+'</div>';
+      }
+    });
+    ol.appendChild(li);
+  });
+  ol.dataset.done='';
+}
+document.getElementById('fnext').addEventListener('click',()=>{fIdx=(fIdx+1)%FLAWS.length;renderFlaw();});
+document.getElementById('fprev').addEventListener('click',()=>{fIdx=(fIdx-1+FLAWS.length)%FLAWS.length;renderFlaw();});
+
+/* ==========================================================
+   4. MESIN INDUKSI
+   ========================================================== */
+const N=12;
+function renderInd(){
+  const basisOn=document.getElementById('c-basis').checked;
+  const stepOn=document.getElementById('c-step').checked;
+  const basisN=+document.getElementById('s-basis').value;
+  const stepFrom=+document.getElementById('s-step').value;
+
+  const proven=new Set();
+  if(basisOn){
+    proven.add(basisN);
+    if(stepOn){let k=basisN;while(k>=stepFrom&&k<N){proven.add(k+1);k++;}}
+  }
+  let h='';
+  for(let n=1;n<=N;n++){
+    h+='<div class="dom'+(proven.has(n)?' down':'')+'"><div class="piece"></div><div class="lbl">'+n+'</div></div>';
+  }
+  document.getElementById('dominoes').innerHTML=h;
+
+  let msg;
+  if(!basisOn&&!stepOn)msg=T('Nothing is proved at all — neither of the two conditions for induction is met.','Tidak ada yang dibuktikan sama sekali — dua syarat induksi belum satu pun dipenuhi.');
+  else if(!basisOn)msg=T('The induction step is proved, but <b>not a single n is proved</b>. P(k) → P(k+1) only carries truth from one domino to the next; if no domino is ever knocked over, nothing moves. This is exactly the flaw in the third proof under "Spot the flaw".','Langkah induksi terbukti, tetapi <b>tidak ada satu pun n yang terbukti</b>. P(k) → P(k+1) hanya memindahkan kebenaran dari satu domino ke domino berikutnya; kalau tidak ada domino yang dijatuhkan, tak ada yang bergerak. Inilah kesalahan pada bukti ketiga di tab "Cari kesalahan".');
+  else if(!stepOn)msg=T('Only P('+basisN+') is proved. Without the induction step, one case stays one case — checking n = 1 through n = 100 still proves nothing for every n.','Hanya P('+basisN+') yang terbukti. Tanpa langkah induksi, satu kasus tetap satu kasus — memeriksa n = 1 sampai n = 100 pun tidak membuktikan pernyataan untuk semua n.');
+  else if(stepFrom>basisN)msg=T('The base at n = '+basisN+' is proved, but the induction step only becomes valid from k ≥ '+stepFrom+'. The chain breaks in the gap between '+basisN+' and '+stepFrom+', so only P('+basisN+') is proved. This is precisely what happens in the "all horses are the same colour" proof.','Basis di n = '+basisN+' terbukti, tetapi langkah induksi baru sah mulai k ≥ '+stepFrom+'. Rantainya putus di celah antara '+basisN+' dan '+stepFrom+', jadi hanya P('+basisN+') yang terbukti. Persis inilah yang terjadi pada bukti "semua kuda sewarna".');
+  else msg=T('Both conditions hold: P('+basisN+') is true and every P(k) yields P(k+1) for k ≥ '+stepFrom+'. Every domino from n = '+basisN+' upward falls — and that runs to infinity, not just to 12.','Kedua syarat terpenuhi: P('+basisN+') benar dan setiap P(k) menurunkan P(k+1) untuk k ≥ '+stepFrom+'. Seluruh domino dari n = '+basisN+' ke atas jatuh — dan itu berlaku sampai tak hingga, bukan hanya sampai 12.');
+  document.getElementById('indout').innerHTML=msg;
+}
+['c-basis','c-step','s-basis','s-step'].forEach(id=>document.getElementById(id).addEventListener('change',renderInd));
+document.querySelectorAll('.presets button').forEach(b=>{
+  b.addEventListener('click',()=>{
+    const p=b.dataset.p;
+    const cb=document.getElementById('c-basis'),cs=document.getElementById('c-step'),
+          sb=document.getElementById('s-basis'),ss=document.getElementById('s-step');
+    if(p==='ok'){cb.checked=true;cs.checked=true;sb.value='1';ss.value='1';}
+    if(p==='nobasis'){cb.checked=false;cs.checked=true;sb.value='1';ss.value='1';}
+    if(p==='nostep'){cb.checked=true;cs.checked=false;sb.value='1';ss.value='1';}
+    if(p==='gap'){cb.checked=true;cs.checked=true;sb.value='1';ss.value='3';}
+    renderInd();
+  });
+});
+
+/* ==========================================================
+   ENGLISH CONTENT + LANGUAGE PLUMBING
+   ========================================================== */
+const PROOFS_EN=[
+{metode:'direct proof',claim:'If n is an even integer, then n² is even.',
+ lines:[
+  'Let n be an even integer.',
+  'By definition, there is an integer k with n = 2k.',
+  'Square both sides: n² = (2k)² = 4k².',
+  'Rewrite that as n² = 2(2k²).',
+  'Since 2k² is an integer, n² fits the definition of even. ∎'
+ ]},
+{metode:'contraposition',claim:'If n² is odd, then n is odd.',
+ lines:[
+  'Instead of the original statement, we prove its contrapositive: if n is even then n² is even.',
+  'Let n be even, so n = 2k for some integer k.',
+  'Then n² = (2k)² = 2(2k²).',
+  'Since 2k² is an integer, n² is even.',
+  'The contrapositive is proved, and an implication is always equivalent to its contrapositive.',
+  'So if n² is odd then n is odd. ∎'
+ ]},
+{metode:'proof by cases',claim:'For every integer n, the value n² + n is always even.',
+ lines:[
+  'Every integer n is either even or odd, so two cases are enough.',
+  'Case 1: n is even, so n = 2k for some integer k.',
+  'Then n² + n = 4k² + 2k = 2(2k² + k), which is even.',
+  'Case 2: n is odd, so n = 2k + 1 for some integer k.',
+  'Then n² + n = (4k² + 4k + 1) + (2k + 1) = 2(2k² + 3k + 1), which is even too.',
+  'Both cases give an even number, and there is no third possibility. ∎'
+ ]},
+{metode:'proof by contradiction',claim:'√2 is irrational.',
+ lines:[
+  'Suppose the opposite, that √2 is rational.',
+  'Then √2 can be written a/b with a, b integers, b ≠ 0, and the fraction already in lowest terms.',
+  'Square both sides: 2 = a²/b², so a² = 2b².',
+  'Then a² is even, and therefore a itself is even; write a = 2c.',
+  'Substitute: 4c² = 2b², which simplifies to b² = 2c².',
+  'Then b² is even, so b is even as well.',
+  'So a and b are both even — contradicting that a/b was in lowest terms.',
+  'The assumption is impossible, so √2 is irrational. ∎'
+ ]},
+{metode:'mathematical induction',claim:'For every natural number n, 1 + 2 + ⋯ + n = n(n+1)/2.',
+ lines:[
+  'Base case: for n = 1 the left side is 1 and the right side is 1·2/2 = 1.',
+  'Induction hypothesis: assume the statement holds for n = k, that is 1 + 2 + ⋯ + k = k(k+1)/2.',
+  'Consider the sum up to the (k+1)-th term, that is (1 + 2 + ⋯ + k) + (k+1).',
+  'Replace the bracket using the induction hypothesis: k(k+1)/2 + (k+1).',
+  'Factor out (k+1): this gives (k+1)(k+2)/2.',
+  'That is exactly the formula for n = k+1, so P(k) → P(k+1).',
+  'The base case holds and the induction step works, so the statement holds for every n. ∎'
+ ]}
+];
+const M_EN=['Direct proof','Contraposition','Contradiction','Proof by cases','Mathematical induction','Counterexample'];
+const STRATS_EN=[
+ {c:'If n is an integer multiple of 4, then n is a multiple of 2.',a:0,
+  w:'The antecedent hands you n = 4k directly, and from there n = 2(2k) is just a rewrite. When the hypothesis is already usable material, the shortest road is straight ahead.'},
+ {c:'If n² is even, then n is even.',a:1,
+  w:'"n² is even" is hard to draw information from. The contrapositive, "if n is odd then n² is odd", hands you n = 2k+1, which you can compute with straight away. The tell: the negated conclusion is far easier to hold on to than the original antecedent.'},
+ {c:'There are infinitely many prime numbers.',a:2,
+  w:'"Infinitely many" is hard to prove head-on. Assuming a finite number gives you a complete list p₁,…,p_n to manipulate — and the number p₁⋯p_n + 1 brings it down.'},
+ {c:'For every natural number n, 1 + 3 + 5 + ⋯ + (2n−1) = n².',a:4,
+  w:'A "for every n" statement whose structure builds up on n is the clearest sign of induction: the result for n can be built from the result for n−1.'},
+ {c:'Every prime number is odd.',a:5,
+  w:'The statement is false, and refuting a universal claim takes exactly one example: 2 is an even prime. You never need a general proof to bring down a general claim.'},
+ {c:'For every integer n, the value n² + n is always even.',a:3,
+  w:'No single computation covers every n, but every integer is either even or odd. Those two cases exhaust the possibilities — the requirement for a proof by cases.'},
+ {c:'If a·b is odd, then a is odd and b is odd.',a:1,
+  w:'The negated conclusion reads "a is even or b is even", and from there the product is plainly even. When a conclusion is a conjunction, its negation becomes a disjunction that is often easier to use.'},
+ {c:'There exist irrational numbers x and y such that xʸ is rational.',a:0,
+  w:'An existential statement is proved by exhibiting or constructing the object. The classic proof uses √2^√2 and considers two possibilities — still a proof of existence, not an assumption brought down.'},
+ {c:'For every n ≥ 4, 2ⁿ ≥ n².',a:4,
+  w:'Again a "for every n" with a step-by-step dependency. Note the base sits at n = 4, not n = 1 — a lower bound in the statement usually tells you where the base belongs.'},
+ {c:'If x is a real number and x³ − x = 0, then x = 0 or x = 1 or x = −1.',a:3,
+  w:'Factoring gives x(x−1)(x+1) = 0, and each factor becomes a case of its own. Proof by cases shows up as soon as a product equals zero.'}
+];
+const FLAWS_EN=[
+{claim:'A "proof" that 1 = 2.',
+ lines:[
+  'Let a = b, with a and b real numbers.',
+  'Multiply both sides by a: a² = ab.',
+  'Subtract b² from both sides: a² − b² = ab − b².',
+  'Factor both sides: (a − b)(a + b) = b(a − b).',
+  'Divide both sides by (a − b): a + b = b.',
+  'Since a = b, the left side becomes 2b, so 2b = b.',
+  'Divide by b: 2 = 1.'
+ ],bad:4,
+ why:'Dividing by (a − b) is not allowed, because a = b makes that factor zero. Every earlier step is correct — which is exactly what makes this one hard to see. Rule of thumb: whenever you divide, say why the divisor cannot be zero.'},
+
+{claim:'A "proof" that all horses are the same colour.',
+ lines:[
+  'We argue by induction on n: in any set of n horses, all the horses share one colour.',
+  'Base case: for n = 1 the set holds a single horse, so trivially they all share a colour.',
+  'Induction hypothesis: assume the statement holds for n = k.',
+  'Consider a set of k+1 horses, say K = {h₁, …, h_{k+1}}.',
+  'Remove h_{k+1}: k horses are left, so by the hypothesis h₁, …, h_k share a colour.',
+  'Remove h₁: again k horses are left, so h₂, …, h_{k+1} share a colour too.',
+  'The two subsets overlap, so all k+1 horses share one colour.',
+  'Hence for every n, all horses in a set of size n share a colour. ∎'
+ ],bad:6,
+ why:'The two subsets overlap only when k ≥ 2. For k = 1, {h₁} and {h₂} have no member in common, so the step from n = 1 to n = 2 is never proved — and the chain breaks at its very first link. The lesson: the induction step has to be valid for <em>every</em> k from the base onward, not only for large k.'},
+
+{claim:'A "proof" that 1 + 2 + ⋯ + n = n(n+1)/2 + 7.',
+ lines:[
+  'Induction hypothesis: assume 1 + 2 + ⋯ + k = k(k+1)/2 + 7.',
+  'Consider the sum up to k+1: (1 + 2 + ⋯ + k) + (k+1).',
+  'Use the hypothesis: that sum equals k(k+1)/2 + 7 + (k+1).',
+  'Simplify: (k+1)(k+2)/2 + 7.',
+  'That is exactly the formula for n = k+1, so P(k) → P(k+1).',
+  'Therefore the formula holds for every natural number n. ∎'
+ ],bad:5,
+ why:'The induction step is entirely valid — and the conclusion is still false, because the base case was never checked. For n = 1 the left side is 1 while the right side is 8. The implication P(k) → P(k+1) only transports truth; if nothing is true to begin with, nothing gets transported.'},
+
+{claim:'A "proof" that if it rains the road gets wet, so a wet road means it rained.',
+ lines:[
+  'Given: if it rains, the road becomes wet.',
+  'One morning the road turns out to be wet.',
+  'If it had not rained, the road would surely not be wet.',
+  'So it must have rained last night.',
+  'Since this reasoning works every time the road is wet, a wet road signals rain. ∎'
+ ],bad:2,
+ why:'That line quietly turns p → q into ¬p → ¬q, and the two are not equivalent — what is equivalent to p → q is ¬q → ¬p. A road can be wet from a fire truck, a fountain, or a neighbour washing a car. Quick check: build the truth tables for p → q and ¬p → ¬q in the unit 01 lab.'},
+
+{claim:'A "proof" that one person is the mother of everyone.',
+ lines:[
+  'Fact: every person has a mother.',
+  'Written formally: ∀x ∃y Mother(y, x).',
+  'Since every x has such a y, pick one such y.',
+  'Then ∃y ∀x Mother(y, x).',
+  'So there is someone who is the mother of everyone. ∎'
+ ],bad:2,
+ why:'The choice of y depends on x, so y cannot be pulled out in front of ∀x. Swapping ∀x∃y into ∃y∀x turns "each one has their own" into "there is one that works for all". Play both formulas in the quantifier-game tab of unit 02 to feel the difference.'}
+];
+function LANG(){ return document.documentElement.lang==='id'?'id':'en'; }
+function T(en,id){ return LANG()==='id'?id:en; }
+let PROOFS,M,STRATS,FLAWS;
+function syncLang(){
+  const id=LANG()==='id';
+  PROOFS=id?PROOFS_ID:PROOFS_EN;
+  M=id?M_ID:M_EN;
+  STRATS=id?STRATS_ID:STRATS_EN;
+  FLAWS=id?FLAWS_ID:FLAWS_EN;
+}
+window.__onLang=function(){
+  syncLang();
+  document.getElementById('sscore').textContent=T('Correct ','Benar ')+sScore;
+  renderOrder(); renderStrat(); renderFlaw(); renderInd();
+};
+syncLang();
+
+newOrder();renderStrat();renderFlaw();renderInd();
+</script>
+<script>
+(function(){
+  var KEY='phxLang';
+  function apply(l){
+    document.documentElement.lang=l;
+    var b=document.querySelectorAll('[data-lang-btn]');
+    for(var i=0;i<b.length;i++) b[i].classList.toggle('on', b[i].getAttribute('data-lang-btn')===l);
+    if(window.__onLang){ try{ window.__onLang(l); }catch(e){} }
+  }
+  function set(l){ try{ localStorage.setItem(KEY,l); }catch(e){} apply(l); }
+  var saved=null; try{ saved=localStorage.getItem(KEY); }catch(e){}
+  apply(saved==='id'?'id':'en');
+  var btns=document.querySelectorAll('[data-lang-btn]');
+  for(var i=0;i<btns.length;i++) btns[i].addEventListener('click',function(e){ e.preventDefault(); set(this.getAttribute('data-lang-btn')); });
+  window.setLang=set;
+})();
+</script>
+</body>
+</html>

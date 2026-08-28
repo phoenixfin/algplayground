@@ -1,0 +1,948 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Propositional logic - truth tables you build column by column</title>
+<link rel="icon" type="image/png" href="logo.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=Lato:wght@300;400;700&display=swap" rel="stylesheet">
+<script>try{var _l=localStorage.getItem('phxLang');if(_l==='id'||_l==='en')document.documentElement.lang=_l;}catch(e){}</script>
+<style>
+:root{
+  --paper:#FAF7F2; --paper-line:#EDE4D8; --card:#FFFDF9; --ink:#2D2D2D; --ink-soft:#6E6259;
+  --true:#2F7069; --false:#A8392A; --unit:#2D2D2D; --amber:#C17A3E;
+  --accent-deep:#8F5620; --border:#E4DACB; --moss:#C17A3E;
+  --rule:#E4DACB; --rule-strong:#CFBFA6;
+  --display:"Playfair Display",Georgia,serif;
+  --body:Lato,"Helvetica Neue",Helvetica,Arial,sans-serif;
+  --mono:"SF Mono",SFMono-Regular,Consolas,monospace;
+}
+*{box-sizing:border-box}
+html,body{margin:0;padding:0}
+body{margin:0;background:var(--paper);color:var(--ink);font-family:var(--body);font-size:16px;line-height:1.5;-webkit-font-smoothing:antialiased;background-image:linear-gradient(var(--paper-line) 1px,transparent 1px),linear-gradient(90deg,var(--paper-line) 1px,transparent 1px);background-size:28px 28px;background-attachment:fixed}
+.wrap{max-width:1020px;margin:0 auto;padding:28px 20px 80px}
+
+/* ---------- header ---------- */
+header{border-bottom:2px solid var(--ink);padding-bottom:14px;margin-bottom:20px}
+.eyebrow{font-family:var(--mono);font-size:12px;letter-spacing:.12em;text-transform:uppercase;color:var(--accent-deep)}
+h1{font-family:var(--display);font-weight:600;font-size:clamp(26px,4.5vw,34px);line-height:1.15;letter-spacing:0;margin:4px 0 10px}
+.legend{display:flex;flex-wrap:wrap;gap:6px}
+.chip{
+  font-family:var(--mono);font-size:12px;
+  border:1px solid var(--rule-strong);border-radius:2px;
+  padding:3px 8px;background:var(--card);white-space:nowrap;
+}
+.chip b{font-weight:700}
+.chip span{color:var(--ink-soft)}
+
+/* ---------- tabs ---------- */
+nav[role="tablist"]{display:flex;flex-wrap:wrap;gap:0;margin:22px 0 0;border-bottom:1px solid var(--rule-strong)}
+nav[role="tablist"] button{
+  font-family:var(--display);font-weight:500;font-size:14px;
+  background:none;border:none;border-bottom:3px solid transparent;
+  padding:10px 14px;cursor:pointer;color:var(--ink-soft);margin-bottom:-1px;
+}
+nav[role="tablist"] button:hover{color:var(--ink)}
+nav[role="tablist"] button[aria-selected="true"]{color:var(--ink);border-bottom-color:var(--ink)}
+nav[role="tablist"] button:focus-visible{outline:2px solid var(--amber);outline-offset:2px}
+
+section.panel{display:none;padding-top:24px}
+section.panel.active{display:block}
+
+h2{font-family:var(--display);font-weight:700;font-size:20px;letter-spacing:-.01em;margin:0 0 4px}
+.sub{color:var(--ink-soft);font-size:15px;margin:0 0 18px}
+
+/* ---------- controls ---------- */
+.card{background:var(--card);border:1px solid var(--rule);border-radius:3px;padding:16px}
+label.fieldlabel{display:block;font-family:var(--mono);font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--ink-soft);margin-bottom:6px}
+input[type=text]{
+  width:100%;font-family:var(--mono);font-size:20px;
+  padding:11px 12px;border:1px solid var(--rule-strong);border-radius:2px;
+  background:#fff;color:var(--ink);
+}
+input[type=text]:focus{outline:2px solid var(--amber);outline-offset:1px}
+.keys{display:flex;flex-wrap:wrap;gap:5px;margin-top:9px}
+.key{
+  font-family:var(--mono);font-size:15px;min-width:36px;
+  padding:6px 9px;background:var(--paper);border:1px solid var(--rule-strong);
+  border-radius:2px;cursor:pointer;color:var(--ink);
+}
+.key:hover{background:var(--ink);color:var(--card)}
+.key.wide{font-size:12px;letter-spacing:.05em}
+.btn{
+  font-family:var(--display);font-weight:500;font-size:14px;
+  background:var(--ink);color:var(--card);border:1px solid var(--ink);
+  padding:9px 18px;border-radius:2px;cursor:pointer;
+}
+.btn:hover{background:#4A423C}
+.btn.ghost{background:none;color:var(--ink)}
+.btn.ghost:hover{background:var(--ink);color:var(--card)}
+.btn:focus-visible,.key:focus-visible{outline:2px solid var(--amber);outline-offset:2px}
+.row{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin-top:12px}
+.spacer{flex:1}
+.err{font-family:var(--mono);font-size:13px;color:var(--false);margin-top:10px}
+.examples{display:flex;flex-wrap:wrap;gap:6px;margin-top:12px}
+.ex{font-family:var(--mono);font-size:12px;background:none;border:1px dashed var(--rule-strong);
+    border-radius:2px;padding:4px 8px;cursor:pointer;color:var(--ink-soft)}
+.ex:hover{color:var(--ink);border-color:var(--ink)}
+
+/* ---------- table ---------- */
+.tablewrap{overflow-x:auto;margin-top:22px;border:1px solid var(--rule);background:var(--card)}
+table{border-collapse:collapse;width:100%;font-family:var(--mono);font-size:14px}
+th,td{border:1px solid var(--rule);padding:7px 10px;text-align:center;white-space:nowrap}
+thead th{background:var(--paper);font-weight:700;font-size:13px;position:sticky;top:0}
+th.varcol{background:#F3EADC}
+td.varcol{background:rgba(45,45,45,.035)}
+th.final,td.final{border-left:2px solid var(--ink);border-right:2px solid var(--ink);background:#fff}
+tbody tr:hover td{background:rgba(193,122,62,.09)}
+.T{color:var(--true);font-weight:700}
+.F{color:var(--false);font-weight:700}
+.rownum{color:var(--ink-soft);font-size:11px}
+
+/* ---------- stamp ---------- */
+.verdict{display:flex;align-items:center;gap:16px;flex-wrap:wrap;margin-top:20px}
+.stamp{
+  font-family:var(--display);font-weight:700;font-size:15px;letter-spacing:.12em;
+  text-transform:uppercase;padding:9px 16px;border:3px solid currentColor;border-radius:4px;
+  transform:rotate(-2.5deg);
+}
+.stamp.taut{color:var(--true)}
+.stamp.kontra{color:var(--false)}
+.stamp.konting{color:var(--amber)}
+.verdict p{margin:0;font-size:15px;color:var(--ink-soft);flex:1;min-width:220px}
+@media (prefers-reduced-motion:no-preference){
+  .stamp{animation:drop .28s cubic-bezier(.2,1.4,.4,1)}
+  @keyframes drop{from{transform:rotate(-14deg) scale(1.5);opacity:0}to{transform:rotate(-2.5deg) scale(1);opacity:1}}
+}
+
+/* ---------- compare ---------- */
+.cmp{margin-top:18px;padding-top:16px;border-top:1px dashed var(--rule-strong)}
+.cmp-result{font-family:var(--mono);font-size:15px;margin-top:10px}
+
+/* ---------- challenge ---------- */
+.tf-cell{cursor:pointer;user-select:none;min-width:56px}
+.tf-cell:hover{background:rgba(193,122,62,.16)}
+.tf-cell.empty{color:var(--ink-soft)}
+.tf-cell.wrong{background:rgba(168,57,42,.16);outline:2px solid var(--false);outline-offset:-2px}
+.tf-cell.right{background:rgba(47,112,105,.13)}
+.score{font-family:var(--mono);font-size:13px;color:var(--ink-soft)}
+.levels{display:flex;gap:5px}
+.levels button{font-family:var(--mono);font-size:12px;padding:5px 11px;border:1px solid var(--rule-strong);
+  background:none;border-radius:2px;cursor:pointer;color:var(--ink-soft)}
+.levels button[aria-pressed="true"]{background:var(--ink);color:var(--card);border-color:var(--ink)}
+.target{font-family:var(--mono);font-size:22px;margin:0}
+
+/* ---------- puzzles ---------- */
+.dialogue{margin:14px 0}
+.says{display:flex;gap:10px;align-items:baseline;padding:8px 0;border-bottom:1px dashed var(--rule)}
+.who{font-family:var(--display);font-weight:700;font-size:13px;letter-spacing:.06em;min-width:26px}
+.says q{font-family:var(--body);font-style:italic;font-size:17px}
+.opts{display:grid;gap:7px;margin-top:14px}
+.opt{
+  text-align:left;font-family:var(--body);font-size:16px;
+  background:var(--card);border:1px solid var(--rule-strong);border-radius:2px;
+  padding:10px 13px;cursor:pointer;color:var(--ink);
+}
+.opt:hover{border-color:var(--ink)}
+.opt.correct{border-color:var(--true);background:rgba(47,112,105,.1);border-width:2px}
+.opt.incorrect{border-color:var(--false);background:rgba(168,57,42,.09);border-width:2px}
+.reveal{margin-top:14px;padding:12px 14px;background:var(--paper);border-left:3px solid var(--amber);font-size:15px}
+.reveal code{font-family:var(--mono);font-size:14px}
+.counter{font-family:var(--mono);font-size:12px;color:var(--ink-soft)}
+
+/* ---------- translation ---------- */
+.legendbox{font-family:var(--mono);font-size:13px;background:var(--paper);padding:10px 12px;border-radius:2px;margin:12px 0}
+.sentence{font-family:var(--body);font-size:21px;line-height:1.4;margin:6px 0 4px}
+.feedback{font-family:var(--mono);font-size:14px;margin-top:12px}
+.feedback.ok{color:var(--true)}
+.feedback.no{color:var(--false)}
+
+footer{margin-top:56px;border-top:1px solid var(--rule-strong);padding-top:14px;
+  font-family:var(--mono);font-size:11px;color:var(--ink-soft);letter-spacing:.04em}
+
+/* --- site integration --- */
+html[lang="en"] [data-lang="id"], html[lang="id"] [data-lang="en"]{ display:none !important; }
+.langtog{ display:inline-flex; border:1px solid var(--border); border-radius:20px; overflow:hidden; }
+.langtog button{ font-family:inherit; font-size:11.5px; letter-spacing:0.06em; padding:4px 11px; border:0; background:#fff; color:var(--ink-soft); cursor:pointer; }
+.langtog button.on{ background:var(--accent-deep); color:#fff; font-weight:700; }
+.pnav{ display:flex; align-items:center; gap:14px; margin-bottom:24px; font-family:var(--mono); font-size:13px; flex-wrap:wrap; }
+.pnav a{ text-decoration:none; color:var(--ink-soft); }
+.pnav a:hover{ color:var(--ink); }
+.pnav .brand{ display:inline-flex; align-items:center; gap:9px; color:var(--ink); font-weight:700; }
+.pnav .brand img{ width:30px; height:30px; border-radius:7px; display:block; }
+.pnav .spacer{ flex:1; min-width:8px; }
+.pnav a.ext::after{ content:" \2197"; color:var(--ink-soft); font-size:11px; }
+.pnav details.topics{ position:relative; }
+.pnav details.topics>summary{ list-style:none; cursor:pointer; color:var(--ink); font-weight:600; padding:2px 2px; }
+.pnav details.topics>summary::-webkit-details-marker{ display:none; }
+.pnav details.topics>summary::after{ content:" \25BE"; }
+.pnav details.topics[open]>summary::after{ content:" \25B4"; }
+.pnav .menu{ position:absolute; top:100%; left:0; margin-top:9px; background:var(--card); border:1px solid var(--border); border-radius:7px; padding:14px 16px; box-shadow:0 8px 26px rgba(45,45,45,0.13); z-index:60; display:flex; gap:24px; }
+.pnav .mgroup{ display:flex; flex-direction:column; gap:6px; }
+.pnav .mgroup>b{ font-size:10px; letter-spacing:0.09em; text-transform:uppercase; color:var(--accent-deep); margin-bottom:2px; }
+.pnav .mgroup>b a{ color:inherit; text-decoration:none; }
+.pnav .mgroup>b a:hover{ text-decoration:underline; }
+.pnav .mgroup a{ color:var(--ink); white-space:nowrap; }
+.pnav .mgroup a:hover{ color:var(--accent-deep); }
+.pnav .mgroup a.cur{ color:var(--accent-deep); font-weight:700; }
+@media(max-width:700px){ .pnav .menu{ flex-direction:column; gap:14px; } }
+header .lead{ margin:0 0 14px; color:var(--ink-soft); font-size:15px; max-width:70ch; }
+.idnote{ font-family:var(--mono); font-size:12px; color:var(--ink-soft); background:var(--card); border:1px solid var(--border); border-left:3px solid var(--accent-deep); border-radius:3px; padding:8px 12px; margin:0 0 16px; }
+.unitnav{ font-family:var(--mono); font-size:12.5px; color:var(--ink-soft); margin:0 0 20px; display:flex; flex-wrap:wrap; gap:10px; align-items:baseline; }
+.unitnav a{ color:var(--moss); text-decoration:none; }
+.unitnav a:hover{ text-decoration:underline; }
+.unitnav a.cur{ color:var(--accent-deep); font-weight:700; text-decoration:none; }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<nav class="pnav">
+  <a class="brand" href="index.html"><img src="logo.png" alt=""><span data-lang="en">Playgrounds</span><span data-lang="id">Playground</span></a>
+  <details class="topics">
+    <summary><span data-lang="en">Topics</span><span data-lang="id">Topik</span></summary>
+    <div class="menu">
+      <div class="mgroup"><b><a href="optimization.html"><span data-lang="en">Optimization</span><span data-lang="id">Optimasi</span></a></b>
+        <a href="evolutionary_swarm.html"><span data-lang="en">Evolutionary &amp; swarm</span><span data-lang="id">Evolusioner &amp; swarm</span></a>
+        <a href="apps/optimizers/"><span data-lang="en">Gradient descent</span><span data-lang="id">Gradient descent</span></a>
+      </div>
+      <div class="mgroup"><b><a href="machine_learning.html">Machine Learning</a></b>
+        <a href="classical_ml.html"><span data-lang="en">Classical ML</span><span data-lang="id">ML klasik</span></a>
+        <a href="apps/mlp/"><span data-lang="en">Neural net from scratch</span><span data-lang="id">Neural net dari nol</span></a>
+        <a href="convolution.html"><span data-lang="en">Convolution &amp; CNNs</span><span data-lang="id">Konvolusi &amp; CNN</span></a>
+      </div>
+      <div class="mgroup"><b><a href="scientific_ml_index.html">Scientific ML</a></b>
+        <a href="differential_equations.html"><span data-lang="en">Differential equations</span><span data-lang="id">Persamaan diferensial</span></a>
+        <a href="fourier.html">Fourier</a>
+        <a href="scientific_ml.html">Scientific ML</a>
+      </div>
+      <div class="mgroup"><b><a href="mathematical_logic.html"><span data-lang="en">Mathematical Logic</span><span data-lang="id">Logika Matematika</span></a></b>
+        <a href="propositional_logic.html"><span data-lang="en">Propositional logic</span><span data-lang="id">Logika proposisional</span></a>
+        <a href="predicate_logic.html"><span data-lang="en">Predicate logic</span><span data-lang="id">Logika predikat</span></a>
+        <a href="proof_methods.html"><span data-lang="en">Proof methods</span><span data-lang="id">Metode pembuktian</span></a>
+        <a href="set_theory.html"><span data-lang="en">Set theory</span><span data-lang="id">Teori himpunan</span></a>
+      </div>
+    </div>
+  </details>
+  <span class="spacer"></span>
+  <a class="ext" href="https://phx.my.id" target="_blank" rel="noopener noreferrer">phx.my.id</a>
+  <a class="ext" href="https://research.phx.my.id" target="_blank" rel="noopener noreferrer"><span data-lang="en">Research</span><span data-lang="id">Riset</span></a>
+  <span class="langtog"><button data-lang-btn="en">EN</button><button data-lang-btn="id">ID</button></span>
+</nav>
+<script>(function(){
+  var path=(location.pathname.split('/').filter(Boolean).pop()||'index.html');
+  var links=document.querySelectorAll('.pnav .menu a');
+  for(var i=0;i<links.length;i++){ var hf=links[i].getAttribute('href')||''; var seg=hf.split('/').filter(Boolean).pop()||'';
+    if(seg===path || (path!=='index.html' && hf.indexOf(path)>=0)) links[i].classList.add('cur'); }
+  document.addEventListener('click',function(e){ var d=document.querySelector('.pnav details[open]'); if(d && !d.contains(e.target)) d.removeAttribute('open'); });
+})();</script>
+
+
+<header>
+  <p class="eyebrow"><span data-lang="en">Mathematical Logic · Unit 01</span><span data-lang="id">Logika Matematika · Unit 01</span></p>
+  <h1><span data-lang="en">Propositional Logic</span><span data-lang="id">Logika Proposisional</span></h1>
+  <p class="lead"><span data-lang="en">Truth tables assembled column by column, so you can see how they are built — not just the final answer. Compose your own formula, test equivalence, and find the row where two statements disagree.</span><span data-lang="id">Tabel kebenaran yang tersusun kolom demi kolom, sehingga terlihat cara membangunnya — bukan hanya hasil akhirnya. Susun rumusmu sendiri, uji ekuivalensi, dan cari baris yang membedakan dua pernyataan.</span></p>
+  <div class="legend">
+    <span class="chip"><b>¬</b> <span><span data-lang="en">negation · ~ !</span><span data-lang="id">negasi · ~ !</span></span></span>
+    <span class="chip"><b>∧</b> <span><span data-lang="en">conjunction · &amp;</span><span data-lang="id">konjungsi · &amp;</span></span></span>
+    <span class="chip"><b>∨</b> <span><span data-lang="en">disjunction · |</span><span data-lang="id">disjungsi · |</span></span></span>
+    <span class="chip"><b>→</b> <span><span data-lang="en">implication · -&gt;</span><span data-lang="id">implikasi · -&gt;</span></span></span>
+    <span class="chip"><b>↔</b> <span><span data-lang="en">biconditional · &lt;-&gt;</span><span data-lang="id">biimplikasi · &lt;-&gt;</span></span></span>
+  </div>
+</header>
+
+<p class="unitnav"><a href="mathematical_logic.html"><span data-lang="en">Mathematical logic · 4 labs</span><span data-lang="id">Logika matematika · 4 lab</span></a>
+  <a href="propositional_logic.html" class="cur"><span data-lang="en">01 Propositional</span><span data-lang="id">01 Proposisional</span></a>
+  <a href="predicate_logic.html"><span data-lang="en">02 Predicate</span><span data-lang="id">02 Predikat</span></a>
+  <a href="proof_methods.html"><span data-lang="en">03 Proofs</span><span data-lang="id">03 Pembuktian</span></a>
+  <a href="set_theory.html"><span data-lang="en">04 Sets</span><span data-lang="id">04 Himpunan</span></a>
+  </p>
+
+<nav role="tablist">
+  <button role="tab" data-panel="p-table" aria-selected="true"><span data-lang="en">Truth table</span><span data-lang="id">Tabel kebenaran</span></button>
+  <button role="tab" data-panel="p-guess" aria-selected="false"><span data-lang="en">Fill the column</span><span data-lang="id">Isi kolom</span></button>
+  <button role="tab" data-panel="p-knave" aria-selected="false"><span data-lang="en">Knights &amp; knaves</span><span data-lang="id">Ksatria &amp; penipu</span></button>
+  <button role="tab" data-panel="p-trans" aria-selected="false"><span data-lang="en">Translation</span><span data-lang="id">Terjemahan</span></button>
+</nav>
+
+<!-- ============ TABEL KEBENARAN ============ -->
+<section class="panel active" id="p-table">
+  <h2><span data-lang="en">Build a truth table</span><span data-lang="id">Bangun tabel kebenaran</span></h2>
+  <p class="sub"><span data-lang="en">Type any formula. Every subformula gets a column of its own, in the order it is assembled — so you see how the table is built, not just how it ends.</span><span data-lang="id">Ketik rumus apa pun. Setiap sub-rumus mendapat kolomnya sendiri, dalam urutan pembentukan — jadi terlihat bagaimana tabel disusun, bukan hanya hasil akhirnya.</span></p>
+
+  <div class="card">
+    <label class="fieldlabel" for="f1"><span data-lang="en">Formula</span><span data-lang="id">Rumus</span></label>
+    <input type="text" id="f1" value="(p → q) ∧ (q → r) → (p → r)" spellcheck="false" autocomplete="off">
+    <div class="keys" id="keys1"></div>
+    <div class="row">
+      <button class="btn" id="build"><span data-lang="en">Build the table</span><span data-lang="id">Susun tabel</span></button>
+      <button class="btn ghost" id="swapnot"><span data-lang="en">Show 1/0</span><span data-lang="id">Tampilkan T/F</span></button>
+      <span class="spacer"></span>
+      <span class="score" id="rowinfo"></span>
+    </div>
+    <div class="examples" id="examples"></div>
+    <div class="err" id="err1"></div>
+  </div>
+
+  <div id="verdict"></div>
+  <div class="tablewrap" id="table1"></div>
+
+  <div class="cmp card" style="border:none;background:none;padding:0">
+    <label class="fieldlabel" for="f2"><span data-lang="en">Compare with another formula (optional)</span><span data-lang="id">Bandingkan dengan rumus lain (opsional)</span></label>
+    <input type="text" id="f2" placeholder="mis. ¬p ∨ q" spellcheck="false" autocomplete="off">
+    <div class="row">
+      <button class="btn ghost" id="cmpbtn"><span data-lang="en">Check equivalence</span><span data-lang="id">Cek ekuivalensi</span></button>
+    </div>
+    <div class="cmp-result" id="cmpout"></div>
+  </div>
+</section>
+
+<!-- ============ ISI KOLOM ============ -->
+<section class="panel" id="p-guess">
+  <h2><span data-lang="en">Fill in the final column</span><span data-lang="id">Isi kolom terakhir</span></h2>
+  <p class="sub"><span data-lang="en">Click each cell to set a truth value. Click again to change it. Good for a quick five-minute drill at the start of class.</span><span data-lang="id">Klik setiap sel untuk mengisi nilai kebenaran. Klik sekali lagi untuk mengganti. Cocok untuk latihan cepat 5 menit di awal kelas.</span></p>
+
+  <div class="card">
+    <div class="row" style="margin-top:0">
+      <div class="levels">
+        <button data-lv="mudah" aria-pressed="true"><span data-lang="en">easy</span><span data-lang="id">mudah</span></button>
+        <button data-lv="sedang" aria-pressed="false"><span data-lang="en">medium</span><span data-lang="id">sedang</span></button>
+        <button data-lv="sulit" aria-pressed="false"><span data-lang="en">hard</span><span data-lang="id">sulit</span></button>
+      </div>
+      <span class="spacer"></span>
+      <span class="score" id="gscore"><span data-lang="en">Correct 0 of 0</span><span data-lang="id">Benar 0 dari 0</span></span>
+    </div>
+    <p class="target" id="gtarget" style="margin-top:16px"></p>
+  </div>
+
+  <div class="tablewrap" id="gtable"></div>
+  <div class="row">
+    <button class="btn" id="gcheck"><span data-lang="en">Check</span><span data-lang="id">Periksa</span></button>
+    <button class="btn ghost" id="gnew"><span data-lang="en">New question</span><span data-lang="id">Soal baru</span></button>
+    <span class="spacer"></span>
+    <span class="score" id="gmsg"></span>
+  </div>
+</section>
+
+<!-- ============ KSATRIA & PENIPU ============ -->
+<section class="panel" id="p-knave">
+  <h2><span data-lang="en">The island of knights and knaves</span><span data-lang="id">Pulau ksatria dan penipu</span></h2>
+  <p class="sub"><span data-lang="en">Knights always tell the truth. Knaves always lie. Every puzzle below has exactly one consistent answer — and every answer can be proved with a truth table.</span><span data-lang="id">Ksatria selalu berkata benar. Penipu selalu berbohong. Setiap teka-teki di bawah punya tepat satu jawaban konsisten — dan setiap jawaban bisa dibuktikan dengan tabel kebenaran.</span></p>
+
+  <div class="card">
+    <div class="row" style="margin-top:0">
+      <span class="counter" id="kcount"></span>
+      <span class="spacer"></span>
+      <button class="btn ghost" id="kprev"><span data-lang="en">Previous</span><span data-lang="id">Sebelumnya</span></button>
+      <button class="btn ghost" id="knext"><span data-lang="en">Next</span><span data-lang="id">Berikutnya</span></button>
+    </div>
+    <div class="dialogue" id="kdialogue"></div>
+    <div class="opts" id="kopts"></div>
+    <div id="kreveal"></div>
+  </div>
+</section>
+
+<!-- ============ TERJEMAHAN ============ -->
+<section class="panel" id="p-trans">
+  <h2><span data-lang="en">From sentence to formula</span><span data-lang="id">Dari kalimat ke rumus</span></h2>
+  <p class="sub"><span data-lang="en">Write the formula. Answers are checked by <em>logical equivalence</em>, not by matching letters — so any equivalent form is accepted.</span><span data-lang="id">Tulis rumusnya. Jawaban diperiksa berdasarkan <em>ekuivalensi logis</em>, bukan kecocokan huruf — jadi bentuk lain yang setara tetap diterima.</span></p>
+
+  <div class="card">
+    <div class="row" style="margin-top:0">
+      <span class="counter" id="tcount"></span>
+      <span class="spacer"></span>
+      <span class="score" id="tscore"><span data-lang="en">Correct 0</span><span data-lang="id">Benar 0</span></span>
+    </div>
+    <div class="legendbox" id="tlegend"></div>
+    <p class="sentence" id="tsentence"></p>
+    <label class="fieldlabel" for="tin" style="margin-top:14px"><span data-lang="en">Your formula</span><span data-lang="id">Rumus kamu</span></label>
+    <input type="text" id="tin" spellcheck="false" autocomplete="off" placeholder="mis. p → q">
+    <div class="keys" id="keys2"></div>
+    <div class="row">
+      <button class="btn" id="tcheck"><span data-lang="en">Check</span><span data-lang="id">Periksa</span></button>
+      <button class="btn ghost" id="tnext"><span data-lang="en">Skip</span><span data-lang="id">Lewati</span></button>
+    </div>
+    <div class="feedback" id="tfeed"></div>
+  </div>
+</section>
+
+<footer><span data-lang="en">Propositional logic lab · built for the classroom · every check runs in your browser, offline</span><span data-lang="id">Lab logika proposisional · dibuat untuk kelas · semua pemeriksaan berjalan di peramban, tanpa koneksi</span></footer>
+</div>
+
+<script>
+"use strict";
+
+/* =========================================================
+   1. MESIN: tokenizer, parser, evaluator
+   ========================================================= */
+function tokenize(s){
+  const out=[]; let i=0;
+  while(i<s.length){
+    const c=s[i];
+    if(/\s/.test(c)){i++;continue;}
+    if(s.startsWith('<->',i)||s.startsWith('<=>',i)){out.push({t:'iff'});i+=3;continue;}
+    if(s.startsWith('->',i)||s.startsWith('=>',i)){out.push({t:'imp'});i+=2;continue;}
+    if(s.startsWith('/\\',i)){out.push({t:'and'});i+=2;continue;}
+    if(s.startsWith('\\/',i)){out.push({t:'or'});i+=2;continue;}
+    if('¬~!'.includes(c)){out.push({t:'not'});i++;continue;}
+    if('∧&^'.includes(c)){out.push({t:'and'});i++;continue;}
+    if('∨|+'.includes(c)){out.push({t:'or'});i++;continue;}
+    if('→⇒⊃'.includes(c)){out.push({t:'imp'});i++;continue;}
+    if('↔⇔≡'.includes(c)){out.push({t:'iff'});i++;continue;}
+    if(c==='('||c==='['){out.push({t:'('});i++;continue;}
+    if(c===')'||c===']'){out.push({t:')'});i++;continue;}
+    if(c==='⊤'||c==='1'){out.push({t:'const',v:true});i++;continue;}
+    if(c==='⊥'||c==='0'){out.push({t:'const',v:false});i++;continue;}
+    if(/[A-Za-z]/.test(c)){
+      let j=i+1; while(j<s.length&&/[0-9]/.test(s[j]))j++;
+      out.push({t:'var',name:s.slice(i,j)}); i=j; continue;
+    }
+    throw new Error(T('Unknown symbol: "','Simbol tidak dikenal: "')+c+'"');
+  }
+  return out;
+}
+
+function parse(str){
+  if(!str.trim()) throw new Error(T('The formula is empty.','Rumus masih kosong.'));
+  const ts=tokenize(str); let p=0;
+  const peek=()=>ts[p];
+  const eat=t=>(ts[p]&&ts[p].t===t)?ts[p++]:null;
+
+  function primary(){
+    if(eat('(')){ const e=iff(); if(!eat(')')) throw new Error(T('A closing ")" is missing.','Kurung tutup ")" belum ada.')); return e; }
+    if(eat('not')) return {op:'not',a:primary()};
+    const v=eat('var'); if(v) return {op:'var',name:v.name};
+    const c=eat('const'); if(c) return {op:'const',v:c.v};
+    if(p>=ts.length) throw new Error(T('The formula is cut short — an operator has no operand.','Rumus terpotong — ada operator tanpa pasangan.'));
+    throw new Error(T('Something does not fit around symbol ','Ada yang tidak pas di sekitar simbol ke-')+(p+1)+'.');
+  }
+  function and_(){ let l=primary(); while(peek()&&peek().t==='and'){p++;l={op:'and',a:l,b:primary()};} return l; }
+  function or_(){ let l=and_(); while(peek()&&peek().t==='or'){p++;l={op:'or',a:l,b:and_()};} return l; }
+  function imp(){ const l=or_(); if(peek()&&peek().t==='imp'){p++;return {op:'imp',a:l,b:imp()};} return l; }
+  function iff(){ let l=imp(); while(peek()&&peek().t==='iff'){p++;l={op:'iff',a:l,b:imp()};} return l; }
+
+  const e=iff();
+  if(p<ts.length) throw new Error(T('There are extra symbols after the formula ends.','Ada simbol berlebih setelah rumus selesai.'));
+  return e;
+}
+
+const PREC={iff:0,imp:1,or:2,and:3,not:4,var:5,const:5};
+function wrap(n,min){ const s=fmt(n); return PREC[n.op]>=min ? s : '('+s+')'; }
+function fmt(n){
+  switch(n.op){
+    case 'var':return n.name;
+    case 'const':return n.v?'⊤':'⊥';
+    case 'not':return '¬'+wrap(n.a,4);
+    case 'and':return wrap(n.a,3)+' ∧ '+wrap(n.b,3.5);
+    case 'or':return wrap(n.a,2)+' ∨ '+wrap(n.b,2.5);
+    case 'imp':return wrap(n.a,1.5)+' → '+wrap(n.b,1.5);
+    case 'iff':return wrap(n.a,0)+' ↔ '+wrap(n.b,0.5);
+  }
+}
+function evl(n,env){
+  switch(n.op){
+    case 'var':return env[n.name];
+    case 'const':return n.v;
+    case 'not':return !evl(n.a,env);
+    case 'and':return evl(n.a,env)&&evl(n.b,env);
+    case 'or':return evl(n.a,env)||evl(n.b,env);
+    case 'imp':return !evl(n.a,env)||evl(n.b,env);
+    case 'iff':return evl(n.a,env)===evl(n.b,env);
+  }
+}
+function varsOf(n,set){
+  set=set||new Set();
+  if(n.op==='var')set.add(n.name);
+  if(n.a)varsOf(n.a,set); if(n.b)varsOf(n.b,set);
+  return set;
+}
+function subformulas(n,acc,seen){
+  acc=acc||[]; seen=seen||new Set();
+  if(n.a)subformulas(n.a,acc,seen);
+  if(n.b)subformulas(n.b,acc,seen);
+  const s=fmt(n);
+  if(!seen.has(s)){seen.add(s);acc.push(n);}
+  return acc;
+}
+function rowsFor(vars){
+  const N=1<<vars.length, out=[];
+  for(let i=0;i<N;i++){
+    const env={};
+    vars.forEach((v,k)=>{ env[v]= !((i>>(vars.length-1-k))&1); });
+    out.push(env);
+  }
+  return out;
+}
+
+/* truth-value labels: primary and alternate set, per language */
+const LBLSETS={id:[{t:'B',f:'S'},{t:'T',f:'F'}],en:[{t:'T',f:'F'},{t:'1',f:'0'}]};
+let lblIdx=0;
+let LBL=LBLSETS.en[0];
+function lblBtnText(){ const alt=LBLSETS[LANG()][1-lblIdx]; return T('Show ','Tampilkan ')+alt.t+'/'+alt.f; }
+const cellHTML=v=>'<span class="'+(v?'T':'F')+'">'+(v?LBL.t:LBL.f)+'</span>';
+
+/* =========================================================
+   2. TAB
+   ========================================================= */
+document.querySelectorAll('nav[role="tablist"] button').forEach(b=>{
+  b.addEventListener('click',()=>{
+    document.querySelectorAll('nav[role="tablist"] button').forEach(x=>x.setAttribute('aria-selected','false'));
+    b.setAttribute('aria-selected','true');
+    document.querySelectorAll('.panel').forEach(p=>p.classList.remove('active'));
+    document.getElementById(b.dataset.panel).classList.add('active');
+  });
+});
+
+/* tombol simbol */
+function makeKeys(container,target){
+  const keys=[['¬','¬'],['∧','∧'],['∨','∨'],['→','→'],['↔','↔'],['(','('],[')',')'],
+              ['p','p'],['q','q'],['r','r'],['s','s']];
+  keys.forEach(([lbl,ins])=>{
+    const b=document.createElement('button');
+    b.className='key'; b.type='button'; b.textContent=lbl;
+    b.addEventListener('click',()=>{
+      const el=document.getElementById(target);
+      const st=el.selectionStart??el.value.length, en=el.selectionEnd??el.value.length;
+      el.value=el.value.slice(0,st)+ins+el.value.slice(en);
+      el.focus(); el.selectionStart=el.selectionEnd=st+ins.length;
+    });
+    container.appendChild(b);
+  });
+  const del=document.createElement('button');
+  del.className='key wide'; del.type='button'; del.textContent=T('clear','hapus');
+  del.addEventListener('click',()=>{document.getElementById(target).value='';document.getElementById(target).focus();});
+  container.appendChild(del);
+}
+makeKeys(document.getElementById('keys1'),'f1');
+makeKeys(document.getElementById('keys2'),'tin');
+
+/* =========================================================
+   3. PEMBANGUN TABEL
+   ========================================================= */
+const EXAMPLES_ID=[
+  ['Modus ponens','((p → q) ∧ p) → q'],
+  ['Modus tollens','((p → q) ∧ ¬q) → ¬p'],
+  ['Kontraposisi','(p → q) ↔ (¬q → ¬p)'],
+  ['De Morgan','¬(p ∧ q) ↔ (¬p ∨ ¬q)'],
+  ['Distributif','p ∧ (q ∨ r) ↔ (p ∧ q) ∨ (p ∧ r)'],
+  ['Silogisme disjungtif','((p ∨ q) ∧ ¬p) → q'],
+  ['Kesalahan umum','((p → q) ∧ q) → p'],
+];
+function buildExamples(){
+  const exBox=document.getElementById('examples');
+  exBox.innerHTML='';
+  EXAMPLES.forEach(([name,f])=>{
+    const b=document.createElement('button');
+    b.className='ex'; b.type='button'; b.textContent=name;
+    b.addEventListener('click',()=>{document.getElementById('f1').value=f;build();});
+    exBox.appendChild(b);
+  });
+}
+
+function build(){
+  const src=document.getElementById('f1').value;
+  const err=document.getElementById('err1');
+  const box=document.getElementById('table1');
+  const vd=document.getElementById('verdict');
+  err.textContent=''; vd.innerHTML=''; box.innerHTML='';
+  document.getElementById('rowinfo').textContent='';
+  let ast;
+  try{ ast=parse(src); }
+  catch(e){ err.textContent='⚠ '+e.message; return; }
+
+  const vars=[...varsOf(ast)].sort();
+  if(vars.length===0){ err.textContent=T('⚠ The formula contains no propositional variable.','⚠ Rumus tidak memuat variabel proposisi.'); return; }
+  if(vars.length>5){ err.textContent=T('⚠ At most 5 variables (32 rows), to keep the table readable.','⚠ Maksimal 5 variabel (32 baris) agar tabel tetap terbaca.'); return; }
+
+  const subs=subformulas(ast).filter(n=>n.op!=='var');
+  const rows=rowsFor(vars);
+
+  let html='<table><thead><tr><th class="rownum"></th>';
+  vars.forEach(v=>html+='<th class="varcol">'+v+'</th>');
+  subs.forEach((n,i)=>{
+    const last=i===subs.length-1;
+    html+='<th class="'+(last?'final':'')+'">'+fmt(n)+'</th>';
+  });
+  html+='</tr></thead><tbody>';
+
+  const finalCol=[];
+  rows.forEach((env,ri)=>{
+    html+='<tr><td class="rownum">'+(ri+1)+'</td>';
+    vars.forEach(v=>html+='<td class="varcol">'+cellHTML(env[v])+'</td>');
+    subs.forEach((n,i)=>{
+      const val=evl(n,env);
+      if(i===subs.length-1)finalCol.push(val);
+      html+='<td class="'+(i===subs.length-1?'final':'')+'">'+cellHTML(val)+'</td>';
+    });
+    html+='</tr>';
+  });
+  html+='</tbody></table>';
+  box.innerHTML=html;
+
+  document.getElementById('rowinfo').textContent=rows.length+T(' rows · ',' baris · ')+vars.length+T(' variables · ',' variabel · ')+subs.length+T(' steps',' langkah');
+
+  const allT=finalCol.every(Boolean), allF=finalCol.every(v=>!v);
+  let cls,txt,note;
+  if(allT){cls='taut';txt=T('Tautology','Tautologi');note=T('True under every assignment. The formula is logically valid.','Bernilai benar untuk setiap penetapan nilai. Rumus ini sah secara logika.');}
+  else if(allF){cls='kontra';txt=T('Contradiction','Kontradiksi');note=T('False under every assignment. Its negation is a tautology.','Bernilai salah untuk setiap penetapan nilai. Negasinya adalah tautologi.');}
+  else{
+    cls='konting';txt=T('Contingency','Kontingensi');
+    const nT=finalCol.filter(Boolean).length;
+    note=T('True in ','Benar pada ')+nT+T(' of ',' dari ')+finalCol.length+T(' rows. Look for a false row — that is where the counterexample lives.',' baris. Cari baris yang salah — di situlah letak counterexample-nya.');
+  }
+  vd.innerHTML='<div class="verdict"><span class="stamp '+cls+'">'+txt+'</span><p>'+note+'</p></div>';
+}
+document.getElementById('build').addEventListener('click',build);
+document.getElementById('f1').addEventListener('keydown',e=>{if(e.key==='Enter')build();});
+document.getElementById('swapnot').addEventListener('click',e=>{
+  lblIdx=1-lblIdx; LBL=LBLSETS[LANG()][lblIdx];
+  e.target.textContent=lblBtnText();
+  build(); if(gAst)renderGuess();
+});
+
+/* --- ekuivalensi --- */
+document.getElementById('cmpbtn').addEventListener('click',()=>{
+  const out=document.getElementById('cmpout');
+  let a,b;
+  try{ a=parse(document.getElementById('f1').value); }
+  catch(e){ out.innerHTML='<span class="F">'+T('First formula: ','Rumus pertama: ')+e.message+'</span>'; return; }
+  try{ b=parse(document.getElementById('f2').value); }
+  catch(e){ out.innerHTML='<span class="F">'+T('Second formula: ','Rumus kedua: ')+e.message+'</span>'; return; }
+  const vars=[...new Set([...varsOf(a),...varsOf(b)])].sort();
+  if(vars.length>10){out.textContent=T('Too many variables.','Terlalu banyak variabel.');return;}
+  const rows=rowsFor(vars);
+  for(const env of rows){
+    if(evl(a,env)!==evl(b,env)){
+      const assign=vars.map(v=>v+' = '+(env[v]?LBL.t:LBL.f)).join(', ');
+      out.innerHTML='<span class="F">'+T('✗ Not equivalent.','✗ Tidak ekuivalen.')+'</span> '+T('At ','Pada ')+assign+
+        T(', the first formula is ',', rumus pertama bernilai ')+cellHTML(evl(a,env))+T(' while the second is ',' sedangkan rumus kedua ')+cellHTML(evl(b,env))+'.';
+      return;
+    }
+  }
+  out.innerHTML='<span class="T">'+T('✓ Logically equivalent','✓ Ekuivalen secara logis')+'</span>'+T(' — the two final columns match across all ',' — kedua kolom akhir identik di seluruh ')+rows.length+T(' rows.',' baris.');
+});
+
+/* =========================================================
+   4. ISI KOLOM
+   ========================================================= */
+let gLevel='mudah', gAst=null, gVars=[], gRows=[], gAns=[], gRight=0, gTotal=0;
+
+function randFormula(vars,depth,ops){
+  if(depth<=0||Math.random()<0.22){
+    const v={op:'var',name:vars[Math.floor(Math.random()*vars.length)]};
+    return Math.random()<0.3?{op:'not',a:v}:v;
+  }
+  const op=ops[Math.floor(Math.random()*ops.length)];
+  const node={op,a:randFormula(vars,depth-1,ops),b:randFormula(vars,depth-1,ops)};
+  return Math.random()<0.18?{op:'not',a:node}:node;
+}
+function newRound(resetScore){
+  const cfg={mudah:{v:['p','q'],d:2,ops:['and','or','imp']},
+             sedang:{v:['p','q','r'],d:2,ops:['and','or','imp']},
+             sulit:{v:['p','q','r'],d:3,ops:['and','or','imp','iff']}}[gLevel];
+  let ast=null;
+  for(let k=0;k<80;k++){
+    const cand=randFormula(cfg.v,cfg.d,cfg.ops);
+    const vs=[...varsOf(cand)];
+    if(vs.length!==cfg.v.length)continue;
+    const rows=rowsFor(cfg.v);
+    const col=rows.map(e=>evl(cand,e));
+    if(!col.some(Boolean)||!col.some(v=>!v))continue;
+    if(fmt(cand).length>34)continue;
+    ast=cand;break;
+  }
+  if(!ast)ast=randFormula(cfg.v,cfg.d,cfg.ops);
+  gAst=ast; gVars=cfg.v; gRows=rowsFor(gVars); gAns=gRows.map(()=>null);
+  document.getElementById('gtarget').textContent=fmt(gAst);
+  document.getElementById('gmsg').textContent='';
+  renderGuess();
+}
+function renderGuess(marks){
+  let html='<table><thead><tr><th class="rownum"></th>';
+  gVars.forEach(v=>html+='<th class="varcol">'+v+'</th>');
+  html+='<th class="final">'+fmt(gAst)+'</th></tr></thead><tbody>';
+  gRows.forEach((env,i)=>{
+    html+='<tr><td class="rownum">'+(i+1)+'</td>';
+    gVars.forEach(v=>html+='<td class="varcol">'+cellHTML(env[v])+'</td>');
+    const a=gAns[i];
+    let cls='tf-cell final'+(a===null?' empty':'');
+    if(marks)cls+=marks[i]?' right':' wrong';
+    const inner=a===null?'·':cellHTML(a);
+    html+='<td class="'+cls+'" data-i="'+i+'">'+inner+'</td>';
+    html+='</tr>';
+  });
+  html+='</tbody></table>';
+  document.getElementById('gtable').innerHTML=html;
+  document.querySelectorAll('#gtable .tf-cell').forEach(td=>{
+    td.addEventListener('click',()=>{
+      const i=+td.dataset.i;
+      gAns[i]= gAns[i]===null ? true : (gAns[i]===true ? false : null);
+      renderGuess();
+    });
+  });
+}
+document.querySelectorAll('.levels button').forEach(b=>{
+  b.addEventListener('click',()=>{
+    document.querySelectorAll('.levels button').forEach(x=>x.setAttribute('aria-pressed','false'));
+    b.setAttribute('aria-pressed','true'); gLevel=b.dataset.lv; newRound();
+  });
+});
+document.getElementById('gnew').addEventListener('click',()=>newRound());
+document.getElementById('gcheck').addEventListener('click',()=>{
+  if(gAns.some(a=>a===null)){document.getElementById('gmsg').textContent=T('Some cells are still empty.','Masih ada sel kosong.');return;}
+  const truth=gRows.map(e=>evl(gAst,e));
+  const marks=truth.map((t,i)=>t===gAns[i]);
+  const ok=marks.every(Boolean);
+  gTotal++; if(ok)gRight++;
+  document.getElementById('gscore').textContent=T('Correct ','Benar ')+gRight+T(' of ',' dari ')+gTotal;
+  document.getElementById('gmsg').textContent = ok
+    ? T('✓ The whole column is right.','✓ Seluruh kolom tepat.')
+    : marks.filter(m=>!m).length+T(' rows are wrong — look again at the marked rows.',' baris keliru — periksa lagi baris yang ditandai.');
+  renderGuess(marks);
+});
+
+/* =========================================================
+   5. KSATRIA & PENIPU
+   ========================================================= */
+const PUZZLES_ID=[
+  {lines:[['A','Kami berdua penipu.']],
+   opts:['A ksatria, B penipu','A penipu, B ksatria','Keduanya penipu','Keduanya ksatria'],
+   ans:1,
+   why:'Misalkan <code>a</code> = "A ksatria", <code>b</code> = "B ksatria". Pernyataan A adalah <code>¬a ∧ ¬b</code>, dan syarat konsistensinya <code>a ↔ (¬a ∧ ¬b)</code>. Jika A ksatria, ia menyebut dirinya penipu — mustahil. Jadi A penipu, sehingga pernyataannya salah, sehingga tidak keduanya penipu, sehingga B ksatria.'},
+  {lines:[['A','Setidaknya salah satu dari kami adalah penipu.']],
+   opts:['A ksatria, B penipu','A penipu, B ksatria','Keduanya penipu','Tidak dapat ditentukan'],
+   ans:0,
+   why:'Syaratnya <code>a ↔ (¬a ∨ ¬b)</code>. Jika A penipu, maka <code>¬a</code> benar sehingga pernyataannya benar — bertentangan dengan status penipu. Jadi A ksatria, pernyataannya benar, dan karena <code>¬a</code> salah maka <code>¬b</code> harus benar.'},
+  {lines:[['A','B adalah ksatria.'],['B','Kami berdua jenis yang berbeda.']],
+   opts:['Keduanya ksatria','Keduanya penipu','A ksatria, B penipu','A penipu, B ksatria'],
+   ans:1,
+   why:'Syaratnya <code>a ↔ b</code> dan <code>b ↔ ¬(a ↔ b)</code>. Dari yang pertama, <code>a ↔ b</code> selalu benar; maka pernyataan B selalu salah, sehingga B penipu, sehingga A juga penipu. Susun kedua rumus di tab tabel kebenaran untuk melihat satu-satunya baris yang konsisten.'},
+  {lines:[['A','Jika saya ksatria, maka B ksatria.']],
+   opts:['Keduanya ksatria','Keduanya penipu','A ksatria, B penipu','A penipu, B ksatria'],
+   ans:0,
+   why:'Syaratnya <code>a ↔ (a → b)</code>. Andaikan A penipu: maka <code>a</code> salah, sehingga <code>a → b</code> benar secara hampa — tapi penipu tak boleh berkata benar. Jadi A ksatria, pernyataannya benar, dan dari <code>a</code> benar diperoleh <code>b</code> benar. Teka-teki favorit untuk mengajarkan implikasi hampa.'},
+  {lines:[['A','B dan C sejenis.'],['C','A dan saya berbeda jenis.']],
+   opts:['C ksatria','C penipu','B ksatria','Tidak dapat ditentukan'],
+   ans:1,
+   why:'Tinjau dua kasus untuk A. Jika A ksatria maka <code>b ↔ c</code>; pernyataan C berbunyi <code>¬(a ↔ c)</code>, yang bila C ksatria memaksa A penipu — kontradiksi; jadi C penipu, lalu <code>b</code> juga salah. Jika A penipu, penelusuran serupa tetap memberi C penipu. Status C tertentu meski status B bergantung kasus.'},
+  {lines:[['A','Saya penipu.']],
+   opts:['A ksatria','A penipu','Tidak ada penduduk pulau yang bisa mengatakannya','A adalah turis'],
+   ans:2,
+   why:'Syaratnya <code>a ↔ ¬a</code> — sebuah kontradiksi, salin ke tab tabel kebenaran dan kolom akhirnya seluruhnya bernilai salah. Tidak ada penetapan nilai yang membuatnya konsisten, jadi kalimat itu mustahil diucapkan oleh ksatria maupun penipu. Versi formal dari paradoks pembohong.'},
+];
+let kIdx=0;
+function renderKnave(){
+  const p=PUZZLES[kIdx];
+  document.getElementById('kcount').textContent=T('Puzzle ','Teka-teki ')+(kIdx+1)+T(' of ',' dari ')+PUZZLES.length;
+  document.getElementById('kdialogue').innerHTML=p.lines.map(([w,s])=>
+    '<div class="says"><span class="who">'+w+'</span><q>'+s+'</q></div>').join('');
+  const ob=document.getElementById('kopts'); ob.innerHTML='';
+  document.getElementById('kreveal').innerHTML='';
+  p.opts.forEach((o,i)=>{
+    const b=document.createElement('button');
+    b.className='opt'; b.type='button'; b.textContent=o;
+    b.addEventListener('click',()=>{
+      document.querySelectorAll('#kopts .opt').forEach((x,j)=>{
+        x.classList.remove('correct','incorrect');
+        if(j===p.ans)x.classList.add('correct');
+      });
+      if(i!==p.ans)b.classList.add('incorrect');
+      document.getElementById('kreveal').innerHTML='<div class="reveal"><strong>'+T('Formalisation.','Formalisasi.')+'</strong> '+p.why+'</div>';
+    });
+    ob.appendChild(b);
+  });
+}
+document.getElementById('knext').addEventListener('click',()=>{kIdx=(kIdx+1)%PUZZLES.length;renderKnave();});
+document.getElementById('kprev').addEventListener('click',()=>{kIdx=(kIdx-1+PUZZLES.length)%PUZZLES.length;renderKnave();});
+
+/* =========================================================
+   6. TERJEMAHAN
+   ========================================================= */
+const TRANS_ID=[
+  {leg:{p:'Hari hujan',q:'Saya membawa payung'},
+   s:'Jika hari hujan, maka saya membawa payung.', a:'p → q',
+   note:'Bentuk dasar implikasi.'},
+  {leg:{p:'Hari hujan',q:'Saya membawa payung'},
+   s:'Saya membawa payung hanya jika hari hujan.', a:'q → p',
+   note:'"Hanya jika" menandai konsekuen, bukan anteseden — arahnya terbalik dari "jika".'},
+  {leg:{p:'Hari hujan',q:'Saya membawa payung'},
+   s:'Hari hujan adalah syarat cukup untuk saya membawa payung.', a:'p → q',
+   note:'Syarat cukup berada di sisi kiri implikasi.'},
+  {leg:{p:'Hari hujan',q:'Saya membawa payung'},
+   s:'Hari hujan adalah syarat perlu untuk saya membawa payung.', a:'q → p',
+   note:'Syarat perlu berada di sisi kanan. Pasangan soal ini dan sebelumnya paling sering tertukar.'},
+  {leg:{p:'Hari hujan',q:'Saya membawa payung'},
+   s:'Tidak benar bahwa hari hujan dan saya membawa payung.', a:'¬(p ∧ q)',
+   note:'Bandingkan dengan ¬p ∧ ¬q — keduanya berbeda. Cek sendiri di tab ekuivalensi.'},
+  {leg:{p:'Hari hujan',q:'Saya membawa payung'},
+   s:'Hari tidak hujan dan saya juga tidak membawa payung.', a:'¬p ∧ ¬q',
+   note:'Inilah pasangan De Morgan dari ¬(p ∨ q).'},
+  {leg:{p:'Ali lulus',q:'Budi lulus',r:'Cici lulus'},
+   s:'Ali lulus, tetapi Budi maupun Cici tidak.', a:'p ∧ ¬q ∧ ¬r',
+   note:'"Tetapi" secara logika sama dengan "dan"; nuansanya hilang dalam formalisasi.'},
+  {leg:{p:'Ali lulus',q:'Budi lulus',r:'Cici lulus'},
+   s:'Tepat satu di antara Ali dan Budi lulus.', a:'(p ∨ q) ∧ ¬(p ∧ q)',
+   note:'Ini adalah XOR — ekuivalen juga dengan ¬(p ↔ q).'},
+  {leg:{p:'Kamu belajar',q:'Kamu lulus ujian'},
+   s:'Kamu tidak akan lulus ujian kecuali kamu belajar.', a:'q → p',
+   note:'"Kecuali" di sini berarti "hanya jika". Ekuivalen dengan ¬p → ¬q.'},
+  {leg:{p:'Mesin menyala',q:'Lampu indikator hidup',r:'Sekring putus'},
+   s:'Jika mesin menyala dan sekring tidak putus, maka lampu indikator hidup.', a:'(p ∧ ¬r) → q',
+   note:'Pola khas soal rangkaian dan penalaran diagnostik.'},
+];
+let tIdx=0,tScore=0;
+function renderTrans(){
+  const t=TRANS[tIdx];
+  document.getElementById('tcount').textContent=T('Sentence ','Kalimat ')+(tIdx+1)+T(' of ',' dari ')+TRANS.length;
+  document.getElementById('tlegend').innerHTML=Object.entries(t.leg)
+    .map(([k,v])=>'<div><b>'+k+'</b> : '+v+'</div>').join('');
+  document.getElementById('tsentence').textContent=t.s;
+  document.getElementById('tin').value='';
+  document.getElementById('tfeed').textContent='';
+}
+document.getElementById('tnext').addEventListener('click',()=>{tIdx=(tIdx+1)%TRANS.length;renderTrans();});
+document.getElementById('tcheck').addEventListener('click',()=>{
+  const t=TRANS[tIdx], fb=document.getElementById('tfeed');
+  let mine;
+  try{ mine=parse(document.getElementById('tin').value); }
+  catch(e){ fb.className='feedback no'; fb.textContent='⚠ '+e.message; return; }
+  const ref=parse(t.a);
+  const allowed=Object.keys(t.leg);
+  const used=[...varsOf(mine)];
+  const bad=used.filter(v=>!allowed.includes(v));
+  if(bad.length){ fb.className='feedback no'; fb.textContent=T('⚠ Variable "','⚠ Variabel "')+bad[0]+T('" is not in the key.','" tidak ada dalam kamus.'); return; }
+  const vars=[...new Set([...allowed,...used])].sort();
+  const rows=rowsFor(vars);
+  let diff=null;
+  for(const env of rows){ if(evl(mine,env)!==evl(ref,env)){diff=env;break;} }
+  if(!diff){
+    tScore++;
+    document.getElementById('tscore').textContent=T('Correct ','Benar ')+tScore;
+    fb.className='feedback ok';
+    fb.innerHTML=T('✓ Right. Key: <b>','✓ Tepat. Kunci: <b>')+fmt(ref)+T('</b> — your answer is equivalent to it. ','</b> — jawabanmu ekuivalen dengannya. ')+t.note;
+  }else{
+    const assign=vars.map(v=>v+'='+(diff[v]?LBL.t:LBL.f)).join(', ');
+    fb.className='feedback no';
+    fb.innerHTML=T('✗ Not equivalent yet. At ','✗ Belum setara. Pada ')+assign+T(', your formula is ',', rumusmu bernilai ')+cellHTML(evl(mine,diff))+
+                 T(' but the sentence should be ',' tetapi kalimatnya seharusnya ')+cellHTML(evl(ref,diff))+'.';
+  }
+});
+
+/* =========================================================
+   ENGLISH CONTENT + LANGUAGE PLUMBING
+   ========================================================= */
+const EXAMPLES_EN=[
+  ['Modus ponens','((p → q) ∧ p) → q'],
+  ['Modus tollens','((p → q) ∧ ¬q) → ¬p'],
+  ['Contraposition','(p → q) ↔ (¬q → ¬p)'],
+  ['De Morgan','¬(p ∧ q) ↔ (¬p ∨ ¬q)'],
+  ['Distributive','p ∧ (q ∨ r) ↔ (p ∧ q) ∨ (p ∧ r)'],
+  ['Disjunctive syllogism','((p ∨ q) ∧ ¬p) → q'],
+  ['Common fallacy','((p → q) ∧ q) → p'],
+];
+const PUZZLES_EN=[
+  {lines:[['A','We are both knaves.']],
+   opts:['A knight, B knave','A knave, B knight','Both knaves','Both knights'],
+   ans:1,
+   why:'Let <code>a</code> = "A is a knight" and <code>b</code> = "B is a knight". The statement of A is <code>¬a ∧ ¬b</code>, so consistency requires <code>a ↔ (¬a ∧ ¬b)</code>. If A were a knight, he would be calling himself a knave — impossible. So A is a knave, the statement is false, so they are not both knaves, so B is a knight.'},
+  {lines:[['A','At least one of us is a knave.']],
+   opts:['A knight, B knave','A knave, B knight','Both knaves','Cannot be determined'],
+   ans:0,
+   why:'The condition is <code>a ↔ (¬a ∨ ¬b)</code>. If A were a knave, then <code>¬a</code> holds and the statement is true — contradicting knave status. So A is a knight, the statement is true, and since <code>¬a</code> is false, <code>¬b</code> has to be true.'},
+  {lines:[['A','B is a knight.'],['B','The two of us are different kinds.']],
+   opts:['Both knights','Both knaves','A knight, B knave','A knave, B knight'],
+   ans:1,
+   why:'The conditions are <code>a ↔ b</code> and <code>b ↔ ¬(a ↔ b)</code>. From the first, <code>a ↔ b</code> always holds; then the statement of B is always false, so B is a knave, and so is A. Build both formulas in the truth-table tab to see the single consistent row.'},
+  {lines:[['A','If I am a knight, then B is a knight.']],
+   opts:['Both knights','Both knaves','A knight, B knave','A knave, B knight'],
+   ans:0,
+   why:'The condition is <code>a ↔ (a → b)</code>. Suppose A is a knave: then <code>a</code> is false, so <code>a → b</code> is vacuously true — but a knave cannot say something true. So A is a knight, the statement is true, and from <code>a</code> true we get <code>b</code> true. A favourite puzzle for teaching vacuous implication.'},
+  {lines:[['A','B and C are the same kind.'],['C','A and I are different kinds.']],
+   opts:['C is a knight','C is a knave','B is a knight','Cannot be determined'],
+   ans:1,
+   why:'Take two cases for A. If A is a knight then <code>b ↔ c</code>; the statement of C reads <code>¬(a ↔ c)</code>, which — if C were a knight — would force A to be a knave, a contradiction; so C is a knave, and then <code>b</code> is false too. If A is a knave, the same walkthrough still lands on C being a knave. C is settled even though B depends on the case.'},
+  {lines:[['A','I am a knave.']],
+   opts:['A is a knight','A is a knave','No islander could say it','A is a tourist'],
+   ans:2,
+   why:'The condition is <code>a ↔ ¬a</code> — a contradiction; paste it into the truth-table tab and the final column is false throughout. No assignment makes it consistent, so neither a knight nor a knave could utter that sentence. The formal version of the liar paradox.'},
+];
+const TRANS_EN=[
+  {leg:{p:'It is raining',q:'I carry an umbrella'},
+   s:'If it is raining, then I carry an umbrella.', a:'p → q',
+   note:'The basic shape of an implication.'},
+  {leg:{p:'It is raining',q:'I carry an umbrella'},
+   s:'I carry an umbrella only if it is raining.', a:'q → p',
+   note:'"Only if" marks the consequent, not the antecedent — the opposite direction from "if".'},
+  {leg:{p:'It is raining',q:'I carry an umbrella'},
+   s:'Rain is a sufficient condition for me to carry an umbrella.', a:'p → q',
+   note:'A sufficient condition sits on the left of the implication.'},
+  {leg:{p:'It is raining',q:'I carry an umbrella'},
+   s:'Rain is a necessary condition for me to carry an umbrella.', a:'q → p',
+   note:'A necessary condition sits on the right. This item and the previous one are the pair most often swapped.'},
+  {leg:{p:'It is raining',q:'I carry an umbrella'},
+   s:'It is not true that it is raining and I carry an umbrella.', a:'¬(p ∧ q)',
+   note:'Compare with ¬p ∧ ¬q — the two differ. Check it yourself in the equivalence box.'},
+  {leg:{p:'It is raining',q:'I carry an umbrella'},
+   s:'It is not raining and I am not carrying an umbrella either.', a:'¬p ∧ ¬q',
+   note:'This is the De Morgan partner of ¬(p ∨ q).'},
+  {leg:{p:'Ali passes',q:'Budi passes',r:'Cici passes'},
+   s:'Ali passes, but neither Budi nor Cici does.', a:'p ∧ ¬q ∧ ¬r',
+   note:'"But" is logically the same as "and"; the nuance is lost in formalisation.'},
+  {leg:{p:'Ali passes',q:'Budi passes',r:'Cici passes'},
+   s:'Exactly one of Ali and Budi passes.', a:'(p ∨ q) ∧ ¬(p ∧ q)',
+   note:'This is XOR — also equivalent to ¬(p ↔ q).'},
+  {leg:{p:'You study',q:'You pass the exam'},
+   s:'You will not pass the exam unless you study.', a:'q → p',
+   note:'"Unless" here means "only if". Equivalent to ¬p → ¬q.'},
+  {leg:{p:'The machine is on',q:'The indicator lamp is lit',r:'The fuse is blown'},
+   s:'If the machine is on and the fuse is not blown, then the indicator lamp is lit.', a:'(p ∧ ¬r) → q',
+   note:'The typical shape of circuit and diagnostic-reasoning problems.'},
+];
+function LANG(){ return document.documentElement.lang==='id'?'id':'en'; }
+function T(en,id){ return LANG()==='id'?id:en; }
+let EXAMPLES,PUZZLES,TRANS;
+function syncLang(){
+  const id=LANG()==='id';
+  EXAMPLES=id?EXAMPLES_ID:EXAMPLES_EN;
+  PUZZLES=id?PUZZLES_ID:PUZZLES_EN;
+  TRANS=id?TRANS_ID:TRANS_EN;
+  LBL=LBLSETS[id?'id':'en'][lblIdx];
+  document.getElementById('f2').placeholder=T('e.g. ¬p ∨ q','mis. ¬p ∨ q');
+  document.getElementById('tin').placeholder=T('e.g. p → q','mis. p → q');
+  document.getElementById('swapnot').textContent=lblBtnText();
+  document.querySelectorAll('.key.wide').forEach(b=>b.textContent=T('clear','hapus'));
+}
+window.__onLang=function(){
+  syncLang();
+  kIdx=Math.min(kIdx,PUZZLES.length-1); tIdx=Math.min(tIdx,TRANS.length-1);
+  document.getElementById('gscore').textContent=T('Correct ','Benar ')+gRight+T(' of ',' dari ')+gTotal;
+  document.getElementById('gmsg').textContent='';
+  document.getElementById('tscore').textContent=T('Correct ','Benar ')+tScore;
+  buildExamples(); build(); renderGuess(); renderKnave(); renderTrans();
+};
+syncLang(); buildExamples();
+
+/* start */
+build(); newRound(); renderKnave(); renderTrans();
+</script>
+<script>
+(function(){
+  var KEY='phxLang';
+  function apply(l){
+    document.documentElement.lang=l;
+    var b=document.querySelectorAll('[data-lang-btn]');
+    for(var i=0;i<b.length;i++) b[i].classList.toggle('on', b[i].getAttribute('data-lang-btn')===l);
+    if(window.__onLang){ try{ window.__onLang(l); }catch(e){} }
+  }
+  function set(l){ try{ localStorage.setItem(KEY,l); }catch(e){} apply(l); }
+  var saved=null; try{ saved=localStorage.getItem(KEY); }catch(e){}
+  apply(saved==='id'?'id':'en');
+  var btns=document.querySelectorAll('[data-lang-btn]');
+  for(var i=0;i<btns.length;i++) btns[i].addEventListener('click',function(e){ e.preventDefault(); set(this.getAttribute('data-lang-btn')); });
+  window.setLang=set;
+})();
+</script>
+</body>
+</html>

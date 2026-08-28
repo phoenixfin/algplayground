@@ -164,6 +164,8 @@
   .pnav .menu{ position:absolute; top:100%; left:0; margin-top:9px; background:var(--card); border:1px solid var(--border); border-radius:7px; padding:14px 16px; box-shadow:0 8px 26px rgba(45,45,45,0.13); z-index:60; display:flex; gap:24px; }
   .pnav .mgroup{ display:flex; flex-direction:column; gap:6px; }
   .pnav .mgroup>b{ font-size:10px; letter-spacing:0.09em; text-transform:uppercase; color:var(--accent-deep); margin-bottom:2px; }
+  .pnav .mgroup>b a{ color:inherit; text-decoration:none; }
+  .pnav .mgroup>b a:hover{ text-decoration:underline; }
   .pnav .mgroup a{ color:var(--ink); white-space:nowrap; }
   .pnav .mgroup a:hover{ color:var(--accent-deep); }
   .pnav .mgroup a.cur{ color:var(--accent-deep); font-weight:700; }
@@ -174,19 +176,25 @@
   <details class="topics">
     <summary><span data-lang="en">Topics</span><span data-lang="id">Topik</span></summary>
     <div class="menu">
-      <div class="mgroup"><b><span data-lang="en">Optimization</span><span data-lang="id">Optimasi</span></b>
+      <div class="mgroup"><b><a href="optimization.html"><span data-lang="en">Optimization</span><span data-lang="id">Optimasi</span></a></b>
         <a href="evolutionary_swarm.html"><span data-lang="en">Evolutionary &amp; swarm</span><span data-lang="id">Evolusioner &amp; swarm</span></a>
         <a href="apps/optimizers/"><span data-lang="en">Gradient descent</span><span data-lang="id">Gradient descent</span></a>
       </div>
-      <div class="mgroup"><b>Machine Learning</b>
+      <div class="mgroup"><b><a href="machine_learning.html">Machine Learning</a></b>
         <a href="classical_ml.html"><span data-lang="en">Classical ML</span><span data-lang="id">ML klasik</span></a>
         <a href="apps/mlp/"><span data-lang="en">Neural net from scratch</span><span data-lang="id">Neural net dari nol</span></a>
         <a href="convolution.html"><span data-lang="en">Convolution &amp; CNNs</span><span data-lang="id">Konvolusi &amp; CNN</span></a>
       </div>
-      <div class="mgroup"><b>Scientific ML</b>
+      <div class="mgroup"><b><a href="scientific_ml_index.html">Scientific ML</a></b>
         <a href="differential_equations.html"><span data-lang="en">Differential equations</span><span data-lang="id">Persamaan diferensial</span></a>
         <a href="fourier.html">Fourier</a>
         <a href="scientific_ml.html">Scientific ML</a>
+      </div>
+      <div class="mgroup"><b><a href="mathematical_logic.html"><span data-lang="en">Mathematical Logic</span><span data-lang="id">Logika Matematika</span></a></b>
+        <a href="propositional_logic.html"><span data-lang="en">Propositional logic</span><span data-lang="id">Logika proposisional</span></a>
+        <a href="predicate_logic.html"><span data-lang="en">Predicate logic</span><span data-lang="id">Logika predikat</span></a>
+        <a href="proof_methods.html"><span data-lang="en">Proof methods</span><span data-lang="id">Metode pembuktian</span></a>
+        <a href="set_theory.html"><span data-lang="en">Set theory</span><span data-lang="id">Teori himpunan</span></a>
       </div>
     </div>
   </details>
