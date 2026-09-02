@@ -1,0 +1,1376 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Logic algebra - rewriting rules, normal forms, K-maps, gates</title>
+<link rel="icon" type="image/png" href="logo.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=Lato:wght@300;400;700&display=swap" rel="stylesheet">
+<script>try{var _l=localStorage.getItem('phxLang');if(_l==='id'||_l==='en')document.documentElement.lang=_l;}catch(e){}</script>
+<style>
+:root{
+  --paper:#FAF7F2; --paper-line:#EDE4D8; --card:#FFFDF9; --ink:#2D2D2D; --ink-soft:#6E6259;
+  --true:#2F7069; --false:#A8392A; --unit:#A8392A; --amber:#C17A3E;
+  --accent-deep:#8F5620; --border:#E4DACB; --moss:#C17A3E;
+  --rule:#E4DACB; --rule-strong:#CFBFA6;
+  --display:"Playfair Display",Georgia,serif;
+  --body:Lato,"Helvetica Neue",Helvetica,Arial,sans-serif;
+  --mono:"SF Mono",SFMono-Regular,Consolas,monospace;
+}
+*{box-sizing:border-box}
+html,body{margin:0;padding:0}
+body{margin:0;background:var(--paper);color:var(--ink);font-family:var(--body);font-size:16px;line-height:1.5;-webkit-font-smoothing:antialiased;background-image:linear-gradient(var(--paper-line) 1px,transparent 1px),linear-gradient(90deg,var(--paper-line) 1px,transparent 1px);background-size:28px 28px;background-attachment:fixed}
+.wrap{max-width:1020px;margin:0 auto;padding:28px 20px 80px}
+
+/* ---------- header ---------- */
+header{border-bottom:2px solid var(--ink);padding-bottom:14px;margin-bottom:20px}
+.eyebrow{font-family:var(--mono);font-size:12px;letter-spacing:.12em;text-transform:uppercase;color:var(--accent-deep)}
+h1{font-family:var(--display);font-weight:600;font-size:clamp(26px,4.5vw,34px);line-height:1.15;letter-spacing:0;margin:4px 0 10px}
+.legend{display:flex;flex-wrap:wrap;gap:6px}
+.chip{font-family:var(--mono);font-size:12px;border:1px solid var(--rule-strong);border-radius:2px;padding:3px 8px;background:var(--card);white-space:nowrap}
+.chip b{font-weight:700}
+.chip span{color:var(--ink-soft)}
+
+/* ---------- tabs ---------- */
+nav[role="tablist"]{display:flex;flex-wrap:wrap;gap:0;margin:22px 0 0;border-bottom:1px solid var(--rule-strong)}
+nav[role="tablist"] button{
+  font-family:var(--display);font-weight:500;font-size:14px;
+  background:none;border:none;border-bottom:3px solid transparent;
+  padding:10px 14px;cursor:pointer;color:var(--ink-soft);margin-bottom:-1px;
+}
+nav[role="tablist"] button:hover{color:var(--ink)}
+nav[role="tablist"] button[aria-selected="true"]{color:var(--ink);border-bottom-color:var(--unit)}
+nav[role="tablist"] button:focus-visible{outline:2px solid var(--amber);outline-offset:2px}
+
+section.panel{display:none;padding-top:24px}
+section.panel.active{display:block}
+
+h2{font-family:var(--display);font-weight:700;font-size:20px;letter-spacing:-.01em;margin:0 0 4px}
+h3{font-family:var(--mono);font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--ink-soft);margin:22px 0 8px;font-weight:400}
+.sub{color:var(--ink-soft);font-size:15px;margin:0 0 18px}
+
+/* ---------- controls ---------- */
+.card{background:var(--card);border:1px solid var(--rule);border-radius:3px;padding:16px}
+label.fieldlabel{display:block;font-family:var(--mono);font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--ink-soft);margin-bottom:6px}
+input[type=text]{
+  width:100%;font-family:var(--mono);font-size:20px;
+  padding:11px 12px;border:1px solid var(--rule-strong);border-radius:2px;
+  background:#fff;color:var(--ink);
+}
+input[type=text]:focus{outline:2px solid var(--amber);outline-offset:1px}
+.keys{display:flex;flex-wrap:wrap;gap:5px;margin-top:9px}
+.key{
+  font-family:var(--mono);font-size:15px;min-width:36px;
+  padding:6px 9px;background:var(--paper);border:1px solid var(--rule-strong);
+  border-radius:2px;cursor:pointer;color:var(--ink);
+}
+.key:hover{background:var(--ink);color:var(--card)}
+.key.wide{font-size:12px;letter-spacing:.05em}
+.btn{
+  font-family:var(--display);font-weight:500;font-size:14px;
+  background:var(--ink);color:var(--card);border:1px solid var(--ink);
+  padding:9px 18px;border-radius:2px;cursor:pointer;
+}
+.btn:hover{background:#4A423C}
+.btn.ghost{background:none;color:var(--ink)}
+.btn.ghost:hover{background:var(--ink);color:var(--card)}
+.btn.small{font-size:12px;padding:5px 11px}
+.btn:disabled{opacity:.4;cursor:not-allowed}
+.btn:disabled:hover{background:var(--ink)}
+.btn.ghost:disabled:hover{background:none;color:var(--ink)}
+.btn:focus-visible,.key:focus-visible{outline:2px solid var(--amber);outline-offset:2px}
+.row{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin-top:12px}
+.spacer{flex:1}
+.err{font-family:var(--mono);font-size:13px;color:var(--false);margin-top:10px}
+.examples{display:flex;flex-wrap:wrap;gap:6px;margin-top:12px}
+.ex{font-family:var(--mono);font-size:12px;background:none;border:1px dashed var(--rule-strong);
+    border-radius:2px;padding:4px 8px;cursor:pointer;color:var(--ink-soft)}
+.ex:hover{color:var(--ink);border-color:var(--ink)}
+.counter{font-family:var(--mono);font-size:12px;color:var(--ink-soft)}
+.modes{display:flex;gap:5px}
+.modes button{font-family:var(--mono);font-size:12px;padding:5px 11px;border:1px solid var(--rule-strong);
+  background:none;border-radius:2px;cursor:pointer;color:var(--ink-soft)}
+.modes button[aria-pressed="true"]{background:var(--ink);color:var(--card);border-color:var(--ink)}
+.note{margin-top:14px;padding:11px 14px;background:var(--paper);border-left:3px solid var(--amber);font-size:14.5px}
+.note code{font-family:var(--mono);font-size:13px}
+
+/* ---------- derivation ---------- */
+.goalbar{display:flex;flex-wrap:wrap;gap:14px;align-items:baseline;margin-top:14px;font-family:var(--mono);font-size:14px}
+.goalbar .goal{color:var(--ink-soft)}
+.goalbar .goal b{color:var(--ink);font-size:16px}
+.deriv{margin-top:18px;border:1px solid var(--rule);background:var(--card)}
+.dline{display:flex;gap:12px;align-items:baseline;padding:9px 14px;border-bottom:1px dashed var(--rule)}
+.dline:last-child{border-bottom:none}
+.dline .dop{font-family:var(--mono);font-size:15px;color:var(--ink-soft);min-width:14px}
+.dline .dformula{font-family:var(--mono);font-size:17px;flex:1;line-height:1.7}
+.dline .drule{font-family:var(--mono);font-size:11.5px;color:var(--accent-deep);text-align:right;white-space:nowrap}
+.dline.live{background:rgba(193,122,62,.055)}
+.sf{border-radius:2px;padding:1px 0;cursor:pointer}
+.sf:hover{background:rgba(193,122,62,.14)}
+.sf.sel{background:rgba(193,122,62,.28);box-shadow:0 0 0 1px var(--amber)}
+.rulebox{margin-top:14px}
+.rulelist{display:grid;gap:6px;margin-top:8px}
+.rulebtn{
+  display:flex;gap:12px;align-items:baseline;flex-wrap:wrap;text-align:left;
+  background:var(--card);border:1px solid var(--rule-strong);border-radius:2px;
+  padding:9px 12px;cursor:pointer;color:var(--ink);font-family:var(--body);font-size:15px;
+}
+.rulebtn:hover{border-color:var(--ink)}
+.rulebtn .rn{font-weight:700;min-width:150px}
+.rulebtn .rp{font-family:var(--mono);font-size:13px;color:var(--ink-soft)}
+.rulebtn .rr{font-family:var(--mono);font-size:13.5px;color:var(--accent-deep);margin-left:auto}
+.eqbadge{font-family:var(--mono);font-size:12px;color:var(--true)}
+.win{margin-top:14px;padding:12px 14px;background:rgba(47,112,105,.1);border-left:4px solid var(--true);font-size:15px}
+
+/* ---------- catalogue ---------- */
+.cat{display:grid;grid-template-columns:repeat(auto-fill,minmax(258px,1fr));gap:8px;margin-top:10px}
+.catitem{background:var(--card);border:1px solid var(--rule);border-radius:2px;padding:9px 12px}
+.catitem b{font-size:13.5px}
+.catitem div{font-family:var(--mono);font-size:12.5px;color:var(--ink-soft);margin-top:3px}
+
+/* ---------- table ---------- */
+.tablewrap{overflow-x:auto;margin-top:14px;border:1px solid var(--rule);background:var(--card)}
+table{border-collapse:collapse;width:100%;font-family:var(--mono);font-size:14px}
+th,td{border:1px solid var(--rule);padding:6px 10px;text-align:center;white-space:nowrap}
+thead th{background:var(--paper);font-weight:700;font-size:13px}
+th.varcol{background:#F3EADC}
+td.varcol{background:rgba(45,45,45,.035)}
+th.final,td.final{border-left:2px solid var(--ink);border-right:2px solid var(--ink);background:#fff}
+tbody tr.mint td{background:rgba(47,112,105,.10)}
+tbody tr:hover td{background:rgba(193,122,62,.13)}
+.T{color:var(--true);font-weight:700}
+.F{color:var(--false);font-weight:700}
+.rownum{color:var(--ink-soft);font-size:11px}
+
+/* ---------- verdict ---------- */
+.verdict{display:flex;align-items:center;gap:16px;flex-wrap:wrap;margin-top:18px}
+.stamp{
+  font-family:var(--display);font-weight:700;font-size:15px;letter-spacing:.12em;
+  text-transform:uppercase;padding:9px 16px;border:3px solid currentColor;border-radius:4px;
+  transform:rotate(-2.5deg);
+}
+.stamp.taut{color:var(--true)}
+.stamp.kontra{color:var(--false)}
+.stamp.konting{color:var(--amber)}
+.verdict p{margin:0;font-size:15px;color:var(--ink-soft);flex:1;min-width:220px}
+@media (prefers-reduced-motion:no-preference){
+  .stamp{animation:drop .28s cubic-bezier(.2,1.4,.4,1)}
+  @keyframes drop{from{transform:rotate(-14deg) scale(1.5);opacity:0}to{transform:rotate(-2.5deg) scale(1);opacity:1}}
+}
+
+/* ---------- normal forms ---------- */
+.forms{display:grid;gap:10px;margin-top:14px}
+.form{background:var(--card);border:1px solid var(--rule);border-left:3px solid var(--unit);border-radius:2px;padding:11px 14px}
+.form .fl{font-family:var(--mono);font-size:11px;letter-spacing:.13em;text-transform:uppercase;color:var(--ink-soft)}
+.form .fv{font-family:var(--mono);font-size:16px;margin-top:5px;word-break:break-word;line-height:1.6}
+.form .fn{font-size:13.5px;color:var(--ink-soft);margin-top:5px}
+.form.min{border-left-color:var(--true)}
+
+/* ---------- karnaugh ---------- */
+.kwrap{overflow-x:auto;margin-top:14px}
+table.kmap{border-collapse:collapse;font-family:var(--mono);font-size:15px;width:auto}
+table.kmap th{background:var(--paper);font-size:12px;font-weight:700;color:var(--ink-soft);border:1px solid var(--rule);padding:6px 10px}
+table.kmap th.corner{background:var(--card);text-align:left;font-size:11px;letter-spacing:.08em}
+table.kmap td{
+  border:1px solid var(--rule-strong);width:62px;height:52px;text-align:center;cursor:pointer;
+  background:var(--card);font-weight:700;position:relative;
+}
+table.kmap td .mi{position:absolute;top:2px;left:4px;font-size:9px;color:var(--ink-soft);font-weight:400}
+table.kmap td.one{color:var(--true)}
+table.kmap td.zero{color:var(--ink-soft);font-weight:400}
+table.kmap td.hl{outline:2px solid var(--ink);outline-offset:-2px}
+.groups{display:flex;flex-wrap:wrap;gap:6px;margin-top:12px}
+.gchip{font-family:var(--mono);font-size:12.5px;border:1px solid var(--rule-strong);border-left:5px solid var(--gc);
+  border-radius:2px;padding:4px 10px;background:var(--card);cursor:pointer;color:var(--ink)}
+.gchip:hover{border-color:var(--ink)}
+.kstat{font-family:var(--mono);font-size:12.5px;color:var(--ink-soft);margin-top:10px}
+
+/* ---------- gates ---------- */
+.circuit{overflow-x:auto;margin-top:14px;border:1px solid var(--rule);background:var(--card);padding:10px}
+.circuit svg{display:block}
+.switches{display:flex;flex-wrap:wrap;gap:8px;margin-top:12px;align-items:center}
+.sw{font-family:var(--mono);font-size:13px;border:1px solid var(--rule-strong);background:var(--card);
+  border-radius:2px;padding:6px 12px;cursor:pointer;color:var(--ink)}
+.sw b{margin-right:8px}
+.sw.on{border-color:var(--true);color:var(--true);box-shadow:inset 0 0 0 1px var(--true)}
+.sw.off{border-color:var(--false);color:var(--false)}
+.gstat{display:flex;flex-wrap:wrap;gap:18px;margin-top:12px;font-family:var(--mono);font-size:12.5px;color:var(--ink-soft)}
+.gstat b{color:var(--ink)}
+
+footer{margin-top:56px;border-top:1px solid var(--rule-strong);padding-top:14px;
+  font-family:var(--mono);font-size:11px;color:var(--ink-soft);letter-spacing:.04em}
+
+/* --- site integration --- */
+html[lang="en"] [data-lang="id"], html[lang="id"] [data-lang="en"]{ display:none !important; }
+.langtog{ display:inline-flex; border:1px solid var(--border); border-radius:20px; overflow:hidden; }
+.langtog button{ font-family:inherit; font-size:11.5px; letter-spacing:0.06em; padding:4px 11px; border:0; background:#fff; color:var(--ink-soft); cursor:pointer; }
+.langtog button.on{ background:var(--accent-deep); color:#fff; font-weight:700; }
+.pnav{ display:flex; align-items:center; gap:14px; margin-bottom:24px; font-family:var(--mono); font-size:13px; flex-wrap:wrap; }
+.pnav a{ text-decoration:none; color:var(--ink-soft); }
+.pnav a:hover{ color:var(--ink); }
+.pnav .brand{ display:inline-flex; align-items:center; gap:9px; color:var(--ink); font-weight:700; }
+.pnav .brand img{ width:30px; height:30px; border-radius:7px; display:block; }
+.pnav .spacer{ flex:1; min-width:8px; }
+.pnav a.ext::after{ content:" \2197"; color:var(--ink-soft); font-size:11px; }
+.pnav details.topics{ position:relative; }
+.pnav details.topics>summary{ list-style:none; cursor:pointer; color:var(--ink); font-weight:600; padding:2px 2px; }
+.pnav details.topics>summary::-webkit-details-marker{ display:none; }
+.pnav details.topics>summary::after{ content:" \25BE"; }
+.pnav details.topics[open]>summary::after{ content:" \25B4"; }
+.pnav .menu{ position:absolute; top:100%; left:0; margin-top:9px; background:var(--card); border:1px solid var(--border); border-radius:7px; padding:14px 16px; box-shadow:0 8px 26px rgba(45,45,45,0.13); z-index:60; display:flex; gap:24px; }
+.pnav .mgroup{ display:flex; flex-direction:column; gap:6px; }
+.pnav .mgroup>b{ font-size:10px; letter-spacing:0.09em; text-transform:uppercase; color:var(--accent-deep); margin-bottom:2px; }
+.pnav .mgroup>b a{ color:inherit; text-decoration:none; }
+.pnav .mgroup>b a:hover{ text-decoration:underline; }
+.pnav .mgroup a{ color:var(--ink); white-space:nowrap; }
+.pnav .mgroup a:hover{ color:var(--accent-deep); }
+.pnav .mgroup a.cur{ color:var(--accent-deep); font-weight:700; }
+@media(max-width:700px){ .pnav .menu{ flex-direction:column; gap:14px; } }
+header .lead{ margin:0 0 14px; color:var(--ink-soft); font-size:15px; max-width:70ch; }
+.unitnav{ font-family:var(--mono); font-size:12.5px; color:var(--ink-soft); margin:0 0 20px; display:flex; flex-wrap:wrap; gap:10px; align-items:baseline; }
+.unitnav a{ color:var(--moss); text-decoration:none; }
+.unitnav a:hover{ text-decoration:underline; }
+.unitnav a.cur{ color:var(--accent-deep); font-weight:700; text-decoration:none; }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<nav class="pnav">
+  <a class="brand" href="index.html"><img src="logo.png" alt=""><span data-lang="en">Playgrounds</span><span data-lang="id">Playground</span></a>
+  <details class="topics">
+    <summary><span data-lang="en">Topics</span><span data-lang="id">Topik</span></summary>
+    <div class="menu">
+      <div class="mgroup"><b><a href="optimization.html"><span data-lang="en">Optimization</span><span data-lang="id">Optimasi</span></a></b>
+        <a href="evolutionary_swarm.html"><span data-lang="en">Evolutionary &amp; swarm</span><span data-lang="id">Evolusioner &amp; swarm</span></a>
+        <a href="apps/optimizers/"><span data-lang="en">Gradient descent</span><span data-lang="id">Gradient descent</span></a>
+      </div>
+      <div class="mgroup"><b><a href="machine_learning.html">Machine Learning</a></b>
+        <a href="classical_ml.html"><span data-lang="en">Classical ML</span><span data-lang="id">ML klasik</span></a>
+        <a href="apps/mlp/"><span data-lang="en">Neural net from scratch</span><span data-lang="id">Neural net dari nol</span></a>
+        <a href="convolution.html"><span data-lang="en">Convolution &amp; CNNs</span><span data-lang="id">Konvolusi &amp; CNN</span></a>
+      </div>
+      <div class="mgroup"><b><a href="scientific_ml_index.html">Scientific ML</a></b>
+        <a href="differential_equations.html"><span data-lang="en">Differential equations</span><span data-lang="id">Persamaan diferensial</span></a>
+        <a href="fourier.html">Fourier</a>
+        <a href="scientific_ml.html">Scientific ML</a>
+      </div>
+      <div class="mgroup"><b><a href="mathematical_logic.html"><span data-lang="en">Mathematical Logic</span><span data-lang="id">Logika Matematika</span></a></b>
+        <a href="propositional_logic.html"><span data-lang="en">Propositional logic</span><span data-lang="id">Logika proposisional</span></a>
+        <a href="predicate_logic.html"><span data-lang="en">Predicate logic</span><span data-lang="id">Logika predikat</span></a>
+        <a href="proof_methods.html"><span data-lang="en">Proof methods</span><span data-lang="id">Metode pembuktian</span></a>
+        <a href="set_theory.html"><span data-lang="en">Set theory</span><span data-lang="id">Teori himpunan</span></a>
+        <a href="logic_algebra.html"><span data-lang="en">Logic algebra</span><span data-lang="id">Aljabar logika</span></a>
+      </div>
+    </div>
+  </details>
+  <span class="spacer"></span>
+  <a class="ext" href="https://phx.my.id" target="_blank" rel="noopener noreferrer">phx.my.id</a>
+  <a class="ext" href="https://research.phx.my.id" target="_blank" rel="noopener noreferrer"><span data-lang="en">Research</span><span data-lang="id">Riset</span></a>
+  <span class="langtog"><button data-lang-btn="en">EN</button><button data-lang-btn="id">ID</button></span>
+</nav>
+<script>(function(){
+  var path=(location.pathname.split('/').filter(Boolean).pop()||'index.html');
+  var links=document.querySelectorAll('.pnav .menu a');
+  for(var i=0;i<links.length;i++){ var hf=links[i].getAttribute('href')||''; var seg=hf.split('/').filter(Boolean).pop()||'';
+    if(seg===path || (path!=='index.html' && hf.indexOf(path)>=0)) links[i].classList.add('cur'); }
+  document.addEventListener('click',function(e){ var d=document.querySelector('.pnav details[open]'); if(d && !d.contains(e.target)) d.removeAttribute('open'); });
+})();</script>
+
+<header>
+  <p class="eyebrow"><span data-lang="en">Mathematical Logic · Unit 05</span><span data-lang="id">Logika Matematika · Unit 05</span></p>
+  <h1><span data-lang="en">Logic Algebra</span><span data-lang="id">Aljabar Logika</span></h1>
+  <p class="lead"><span data-lang="en">Unit 01 checks whether a formula is true. This one changes it. Apply De Morgan and friends one step at a time, read off the normal forms, minimise on a Karnaugh map, and see what the saved terms mean as actual gates.</span><span data-lang="id">Unit 01 memeriksa apakah sebuah rumus benar. Unit ini mengubahnya. Terapkan De Morgan dan kawan-kawan selangkah demi selangkah, baca bentuk normalnya, minimalkan lewat peta Karnaugh, lalu lihat arti suku yang dihemat itu sebagai gerbang sungguhan.</span></p>
+  <div class="legend">
+    <span class="chip"><b>¬</b> <span data-lang="en">not · ~ !</span><span data-lang="id">negasi · ~ !</span></span>
+    <span class="chip"><b>∧</b> <span data-lang="en">and · &amp;</span><span data-lang="id">konjungsi · &amp;</span></span>
+    <span class="chip"><b>∨</b> <span data-lang="en">or · |</span><span data-lang="id">disjungsi · |</span></span>
+    <span class="chip"><b>→</b> <span data-lang="en">implies · -&gt;</span><span data-lang="id">implikasi · -&gt;</span></span>
+    <span class="chip"><b>↔</b> <span data-lang="en">iff · &lt;-&gt;</span><span data-lang="id">biimplikasi · &lt;-&gt;</span></span>
+    <span class="chip"><b>⊤ ⊥</b> <span data-lang="en">true, false · 1 0</span><span data-lang="id">benar, salah · 1 0</span></span>
+  </div>
+</header>
+
+<p class="unitnav"><a href="mathematical_logic.html"><span data-lang="en">Mathematical logic · 5 labs</span><span data-lang="id">Logika matematika · 5 lab</span></a>
+  <a href="propositional_logic.html"><span data-lang="en">01 Propositional</span><span data-lang="id">01 Proposisional</span></a>
+  <a href="predicate_logic.html"><span data-lang="en">02 Predicate</span><span data-lang="id">02 Predikat</span></a>
+  <a href="proof_methods.html"><span data-lang="en">03 Proofs</span><span data-lang="id">03 Pembuktian</span></a>
+  <a href="set_theory.html"><span data-lang="en">04 Sets</span><span data-lang="id">04 Himpunan</span></a>
+  <a href="logic_algebra.html" class="cur"><span data-lang="en">05 Algebra</span><span data-lang="id">05 Aljabar</span></a>
+  </p>
+
+<nav role="tablist">
+  <button role="tab" data-panel="p-simp" aria-selected="true"><span data-lang="en">Step-by-step rules</span><span data-lang="id">Penyederhanaan bertahap</span></button>
+  <button role="tab" data-panel="p-calc" aria-selected="false"><span data-lang="en">Calculator &amp; normal forms</span><span data-lang="id">Kalkulator &amp; bentuk normal</span></button>
+  <button role="tab" data-panel="p-kmap" aria-selected="false"><span data-lang="en">Karnaugh map</span><span data-lang="id">Peta Karnaugh</span></button>
+  <button role="tab" data-panel="p-gate" aria-selected="false"><span data-lang="en">Logic gates</span><span data-lang="id">Gerbang logika</span></button>
+</nav>
+
+<!-- ===================== TAB 1: SIMPLIFY ===================== -->
+<section class="panel active" id="p-simp">
+  <h2><span data-lang="en">Rewrite a formula, one rule at a time</span><span data-lang="id">Ubah rumus, satu aturan tiap langkah</span></h2>
+  <p class="sub"><span data-lang="en">Click any part of the formula on the last line. Every rule that fits <em>at that spot</em> appears below, with the result it would give. Pick one and the derivation grows a line — the same way you would write it on paper.</span><span data-lang="id">Klik bagian mana pun dari rumus di baris terakhir. Setiap aturan yang cocok <em>di titik itu</em> akan muncul di bawah, lengkap dengan hasilnya. Pilih satu, dan turunannya bertambah satu baris — persis seperti menulisnya di kertas.</span></p>
+
+  <div class="card">
+    <div class="row" style="margin-top:0">
+      <span class="modes">
+        <button id="m-free" aria-pressed="true"><span data-lang="en">Free</span><span data-lang="id">Bebas</span></button>
+        <button id="m-chal" aria-pressed="false"><span data-lang="en">Challenge</span><span data-lang="id">Tantangan</span></button>
+      </span>
+      <span class="spacer"></span>
+      <span class="counter" id="pcount"></span>
+      <button class="btn ghost small" id="pprev"><span data-lang="en">Previous</span><span data-lang="id">Sebelumnya</span></button>
+      <button class="btn ghost small" id="pnext"><span data-lang="en">Next</span><span data-lang="id">Berikutnya</span></button>
+    </div>
+
+    <div id="freebox">
+      <label class="fieldlabel" for="sf"><span data-lang="en">Formula</span><span data-lang="id">Rumus</span></label>
+      <input type="text" id="sf" value="¬(p ∧ ¬q)" spellcheck="false" autocomplete="off">
+      <div class="keys" id="skeys"></div>
+      <div class="row">
+        <button class="btn" id="sstart"><span data-lang="en">Start over from this formula</span><span data-lang="id">Mulai dari rumus ini</span></button>
+        <button class="btn ghost" id="sauto"><span data-lang="en">Simplify automatically</span><span data-lang="id">Sederhanakan otomatis</span></button>
+      </div>
+      <div class="examples" id="sexamples"></div>
+    </div>
+
+    <div class="goalbar" id="goalbar" style="display:none">
+      <span class="goal"><span data-lang="en">target</span><span data-lang="id">target</span> <b id="gtarget"></b></span>
+      <span class="spacer"></span>
+      <span class="counter" id="ghint"></span>
+    </div>
+    <div class="err" id="serr"></div>
+  </div>
+
+  <div class="row">
+    <span class="counter" id="sstep"></span>
+    <span class="eqbadge" id="seq"></span>
+    <span class="spacer"></span>
+    <button class="btn ghost small" id="sup"><span data-lang="en">Select wider ↑</span><span data-lang="id">Perluas pilihan ↑</span></button>
+    <button class="btn ghost small" id="sundo"><span data-lang="en">Undo</span><span data-lang="id">Batalkan</span></button>
+    <button class="btn ghost small" id="sreset"><span data-lang="en">Reset</span><span data-lang="id">Ulangi</span></button>
+  </div>
+
+  <div class="deriv" id="dlist"></div>
+  <div id="swin"></div>
+  <div class="rulebox" id="rulebox"></div>
+
+  <h3><span data-lang="en">The rule catalogue</span><span data-lang="id">Katalog aturan</span></h3>
+  <div class="cat" id="catalogue"></div>
+</section>
+
+<!-- ===================== TAB 2: CALCULATOR ===================== -->
+<section class="panel" id="p-calc">
+  <h2><span data-lang="en">Every canonical form of one function</span><span data-lang="id">Semua bentuk baku dari satu fungsi</span></h2>
+  <p class="sub"><span data-lang="en">Each row where the formula is true is a <b>minterm</b>; OR them together and you have the disjunctive normal form. Each false row is a <b>maxterm</b>, and those give the conjunctive form. Both are read straight off the table — no cleverness required.</span><span data-lang="id">Setiap baris tempat rumus bernilai benar adalah sebuah <b>minterm</b>; gabungkan semuanya dengan ∨ dan jadilah bentuk normal disjungtif. Setiap baris salah adalah <b>maxterm</b>, dan darinya lahir bentuk konjungtif. Keduanya dibaca langsung dari tabel — tanpa trik apa pun.</span></p>
+
+  <div class="card">
+    <label class="fieldlabel" for="cf"><span data-lang="en">Boolean expression</span><span data-lang="id">Ekspresi Boolean</span></label>
+    <input type="text" id="cf" value="(p ∧ q) ∨ (¬p ∧ r)" spellcheck="false" autocomplete="off">
+    <div class="keys" id="ckeys"></div>
+    <div class="row">
+      <button class="btn" id="cbuild"><span data-lang="en">Compute</span><span data-lang="id">Hitung</span></button>
+      <button class="btn ghost" id="cswap"><span data-lang="en">Show T/F</span><span data-lang="id">Tampilkan B/S</span></button>
+      <span class="spacer"></span>
+      <span class="counter" id="cinfo"></span>
+    </div>
+    <div class="examples" id="cexamples"></div>
+    <div class="err" id="cerr"></div>
+  </div>
+
+  <div id="cverdict"></div>
+  <div class="forms" id="cforms"></div>
+  <h3><span data-lang="en">Truth table · minterm rows highlighted</span><span data-lang="id">Tabel kebenaran · baris minterm disorot</span></h3>
+  <div class="tablewrap" id="ctable"></div>
+  <div class="note">
+    <span data-lang="en">Rows here start at <code>000…</code> and count up, unlike the table in unit 01 which starts all-true. That is the convention minterm numbering needs: row 5 of three variables means <code>p=1, q=0, r=1</code>, so it contributes the term <code>p ∧ ¬q ∧ r</code>.</span>
+    <span data-lang="id">Baris di sini dimulai dari <code>000…</code> lalu naik, berbeda dari tabel di unit 01 yang mulai dari semua-benar. Begitulah konvensi penomoran minterm: baris ke-5 pada tiga variabel berarti <code>p=1, q=0, r=1</code>, sehingga menyumbang suku <code>p ∧ ¬q ∧ r</code>.</span>
+  </div>
+</section>
+
+<!-- ===================== TAB 3: KARNAUGH ===================== -->
+<section class="panel" id="p-kmap">
+  <h2><span data-lang="en">Minimise by looking, not by rewriting</span><span data-lang="id">Meminimalkan dengan melihat, bukan menulis ulang</span></h2>
+  <p class="sub"><span data-lang="en">Neighbouring cells differ in exactly one variable, so any block of 1s that is a power of two collapses to a shorter term. Click cells to edit the function directly and watch the minimal form follow.</span><span data-lang="id">Sel-sel bertetangga hanya berbeda pada satu variabel, jadi setiap blok angka 1 sebanyak pangkat dua bisa diringkas jadi suku yang lebih pendek. Klik selnya untuk menyunting fungsi secara langsung, lalu lihat bentuk minimalnya ikut berubah.</span></p>
+
+  <div class="card">
+    <label class="fieldlabel" for="kf"><span data-lang="en">Boolean expression · up to 4 variables</span><span data-lang="id">Ekspresi Boolean · maksimum 4 variabel</span></label>
+    <input type="text" id="kf" value="(p ∧ q) ∨ (¬p ∧ r)" spellcheck="false" autocomplete="off">
+    <div class="keys" id="kkeys"></div>
+    <div class="row">
+      <button class="btn" id="kbuild"><span data-lang="en">Draw the map</span><span data-lang="id">Gambar petanya</span></button>
+      <button class="btn ghost" id="kreset"><span data-lang="en">Undo my edits</span><span data-lang="id">Kembalikan suntingan</span></button>
+      <span class="spacer"></span>
+      <span class="counter" id="kinfo"></span>
+    </div>
+    <div class="examples" id="kexamples"></div>
+    <div class="err" id="kerr"></div>
+  </div>
+
+  <div class="kwrap" id="kgrid"></div>
+  <div class="groups" id="kgroups"></div>
+  <div class="kstat" id="kstat"></div>
+  <div class="forms" id="kforms"></div>
+</section>
+
+<!-- ===================== TAB 4: GATES ===================== -->
+<section class="panel" id="p-gate">
+  <h2><span data-lang="en">The same formula, as hardware</span><span data-lang="id">Rumus yang sama, sebagai perangkat keras</span></h2>
+  <p class="sub"><span data-lang="en">Every ∧ is an AND gate, every ∨ an OR, every ¬ an inverter. Flip the input switches and the wires carry the values through. Then switch to the minimised form and count what the algebra actually saved.</span><span data-lang="id">Setiap ∧ adalah gerbang AND, setiap ∨ adalah OR, setiap ¬ adalah inverter. Balikkan sakelar masukannya dan nilai akan mengalir lewat kabelnya. Lalu pindah ke bentuk minimal, dan hitung berapa yang benar-benar dihemat oleh aljabarnya.</span></p>
+
+  <div class="card">
+    <label class="fieldlabel" for="gf"><span data-lang="en">Boolean expression</span><span data-lang="id">Ekspresi Boolean</span></label>
+    <input type="text" id="gf" value="(p ∧ q) ∨ (¬p ∧ r)" spellcheck="false" autocomplete="off">
+    <div class="keys" id="gkeys"></div>
+    <div class="row">
+      <button class="btn" id="gbuild"><span data-lang="en">Draw the circuit</span><span data-lang="id">Gambar rangkaian</span></button>
+      <span class="modes">
+        <button id="g-orig" aria-pressed="true"><span data-lang="en">As written</span><span data-lang="id">Apa adanya</span></button>
+        <button id="g-min" aria-pressed="false"><span data-lang="en">Minimised</span><span data-lang="id">Bentuk minimal</span></button>
+      </span>
+    </div>
+    <div class="examples" id="gexamples"></div>
+    <div class="err" id="gerr"></div>
+  </div>
+
+  <div class="switches" id="gswitches"></div>
+  <div class="circuit" id="gcircuit"></div>
+  <div class="gstat" id="gstat"></div>
+</section>
+
+<footer>
+  <span data-lang="en">Unit 05 · logic algebra lab · every rule, table and map is computed in your browser</span>
+  <span data-lang="id">Unit 05 · lab aljabar logika · semua aturan, tabel, dan peta dihitung di peramban ini</span>
+</footer>
+
+</div>
+
+<script>
+/* =========================================================
+   0. LANGUAGE
+   ========================================================= */
+function LANG(){ return document.documentElement.lang==='id'?'id':'en'; }
+function T(en,id){ return LANG()==='id'?id:en; }
+const esc=s=>String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+
+/* =========================================================
+   1. PARSER  (same grammar as unit 01)
+   ========================================================= */
+function tokenize(s){
+  const out=[]; let i=0;
+  while(i<s.length){
+    const c=s[i];
+    if(/\s/.test(c)){i++;continue;}
+    if(s.startsWith('<->',i)||s.startsWith('<=>',i)){out.push({t:'iff'});i+=3;continue;}
+    if(s.startsWith('->',i)||s.startsWith('=>',i)){out.push({t:'imp'});i+=2;continue;}
+    if(s.startsWith('/\\',i)){out.push({t:'and'});i+=2;continue;}
+    if(s.startsWith('\\/',i)){out.push({t:'or'});i+=2;continue;}
+    if('¬~!'.includes(c)){out.push({t:'not'});i++;continue;}
+    if('∧&^'.includes(c)){out.push({t:'and'});i++;continue;}
+    if('∨|+'.includes(c)){out.push({t:'or'});i++;continue;}
+    if('→⇒⊃'.includes(c)){out.push({t:'imp'});i++;continue;}
+    if('↔⇔≡'.includes(c)){out.push({t:'iff'});i++;continue;}
+    if(c==='('||c==='['){out.push({t:'('});i++;continue;}
+    if(c===')'||c===']'){out.push({t:')'});i++;continue;}
+    if(c==='⊤'||c==='1'){out.push({t:'const',v:true});i++;continue;}
+    if(c==='⊥'||c==='0'){out.push({t:'const',v:false});i++;continue;}
+    if(/[A-Za-z]/.test(c)){
+      let j=i+1; while(j<s.length&&/[0-9]/.test(s[j]))j++;
+      out.push({t:'var',name:s.slice(i,j)}); i=j; continue;
+    }
+    throw new Error(T('Unknown symbol: "','Simbol tidak dikenal: "')+c+'"');
+  }
+  return out;
+}
+function parse(str){
+  if(!str.trim()) throw new Error(T('The formula is empty.','Rumus masih kosong.'));
+  const ts=tokenize(str); let p=0;
+  const peek=()=>ts[p];
+  const eat=t=>(ts[p]&&ts[p].t===t)?ts[p++]:null;
+  function primary(){
+    if(eat('(')){ const e=iff(); if(!eat(')')) throw new Error(T('A closing ")" is missing.','Kurung tutup ")" belum ada.')); return e; }
+    if(eat('not')) return {op:'not',a:primary()};
+    const v=eat('var'); if(v) return {op:'var',name:v.name};
+    const c=eat('const'); if(c) return {op:'const',v:c.v};
+    throw new Error(T('The formula is cut short — an operator has no operand.','Rumus terpotong — ada operator tanpa pasangan.'));
+  }
+  function and_(){ let l=primary(); while(peek()&&peek().t==='and'){p++;l={op:'and',a:l,b:primary()};} return l; }
+  function or_(){ let l=and_(); while(peek()&&peek().t==='or'){p++;l={op:'or',a:l,b:and_()};} return l; }
+  function imp(){ const l=or_(); if(peek()&&peek().t==='imp'){p++;return {op:'imp',a:l,b:imp()};} return l; }
+  function iff(){ let l=imp(); while(peek()&&peek().t==='iff'){p++;l={op:'iff',a:l,b:imp()};} return l; }
+  const e=iff();
+  if(p<ts.length) throw new Error(T('There are extra symbols after the formula ends.','Ada simbol berlebih setelah rumus selesai.'));
+  return e;
+}
+const PREC={iff:0,imp:1,or:2,and:3,not:4,var:5,const:5,meta:5};
+function wrap(n,min){ const s=fmt(n); return PREC[n.op]>=min ? s : '('+s+')'; }
+function fmt(n){
+  switch(n.op){
+    case 'meta':return n.name;
+    case 'var':return n.name;
+    case 'const':return n.v?'⊤':'⊥';
+    case 'not':return '¬'+wrap(n.a,4);
+    case 'and':return wrap(n.a,3)+' ∧ '+wrap(n.b,3.5);
+    case 'or':return wrap(n.a,2)+' ∨ '+wrap(n.b,2.5);
+    case 'imp':return wrap(n.a,1.5)+' → '+wrap(n.b,1.5);
+    case 'iff':return wrap(n.a,0)+' ↔ '+wrap(n.b,0.5);
+  }
+}
+/* fully parenthesised rendering — used for the rule catalogue, where the
+   shape of the pattern matters more than reading it as a formula */
+function fmtP(n){
+  const atom=x=>x.op==='var'||x.op==='const'||x.op==='meta'||
+    (x.op==='not'&&(x.a.op==='var'||x.a.op==='const'||x.a.op==='meta'));
+  const part=x=>atom(x)?fmtP(x):'('+fmtP(x)+')';
+  switch(n.op){
+    case 'meta': case 'var': return n.name;
+    case 'const': return n.v?'⊤':'⊥';
+    case 'not': return '¬'+part(n.a);
+    case 'and': return part(n.a)+' ∧ '+part(n.b);
+    case 'or':  return part(n.a)+' ∨ '+part(n.b);
+    case 'imp': return part(n.a)+' → '+part(n.b);
+    case 'iff': return part(n.a)+' ↔ '+part(n.b);
+  }
+}
+function evl(n,env){
+  switch(n.op){
+    case 'var':return env[n.name];
+    case 'const':return n.v;
+    case 'not':return !evl(n.a,env);
+    case 'and':return evl(n.a,env)&&evl(n.b,env);
+    case 'or':return evl(n.a,env)||evl(n.b,env);
+    case 'imp':return !evl(n.a,env)||evl(n.b,env);
+    case 'iff':return evl(n.a,env)===evl(n.b,env);
+  }
+}
+function varsOf(n,set){
+  set=set||new Set();
+  if(n.op==='var')set.add(n.name);
+  if(n.a)varsOf(n.a,set); if(n.b)varsOf(n.b,set);
+  return set;
+}
+function sortedVars(n){ return [...varsOf(n)].sort(); }
+function sizeOf(n){ return (n.op==='var'||n.op==='const')?1:1+sizeOf(n.a)+(n.b?sizeOf(n.b):0); }
+
+/* standard boolean numbering: row i, bit k (MSB first) = value of vars[k], 1 = true */
+function envOf(vars,i){
+  const env={};
+  vars.forEach((v,k)=>{ env[v]=((i>>(vars.length-1-k))&1)===1; });
+  return env;
+}
+function valuesOf(ast,vars){
+  const N=1<<vars.length, out=[];
+  for(let i=0;i<N;i++) out.push(evl(ast,envOf(vars,i))?1:0);
+  return out;
+}
+
+/* canonical key: commutative + associative insensitive */
+function canonKey(n){
+  switch(n.op){
+    case 'var':return n.name;
+    case 'const':return n.v?'⊤':'⊥';
+    case 'not':return '¬('+canonKey(n.a)+')';
+    case 'and': case 'or':{
+      const parts=[];
+      (function flat(x){ if(x.op===n.op){flat(x.a);flat(x.b);} else parts.push(canonKey(x)); })(n);
+      parts.sort();
+      return (n.op==='and'?'&[':'|[')+parts.join(',')+']';
+    }
+    default:return n.op+'('+canonKey(n.a)+','+canonKey(n.b)+')';
+  }
+}
+
+/* =========================================================
+   2. REWRITING RULES
+   ========================================================= */
+const A={op:'meta',name:'A'}, B={op:'meta',name:'B'}, C={op:'meta',name:'C'};
+const and=(a,b)=>({op:'and',a,b}), or=(a,b)=>({op:'or',a,b});
+const not=a=>({op:'not',a}), imp=(a,b)=>({op:'imp',a,b}), iff=(a,b)=>({op:'iff',a,b});
+const TT={op:'const',v:true}, FF={op:'const',v:false};
+
+/* from → to, with an optional mirrored variant for ∧ / ∨ patterns */
+const RAW=[
+  {id:'impl',   en:'Implication as ∨', idn:'Implikasi jadi ∨', from:imp(A,B), to:or(not(A),B), simp:true},
+  {id:'impl-r', en:'Back to →',        idn:'Kembali jadi →',   from:or(not(A),B), to:imp(A,B)},
+  {id:'iff',    en:'Biconditional',    idn:'Biimplikasi',      from:iff(A,B), to:and(imp(A,B),imp(B,A)), simp:true},
+  {id:'contra', en:'Contraposition',   idn:'Kontraposisi',     from:imp(A,B), to:imp(not(B),not(A))},
+  {id:'export', en:'Exportation',      idn:'Ekspor–impor',     from:imp(and(A,B),C), to:imp(A,imp(B,C))},
+  {id:'dm1',    en:'De Morgan',        idn:'De Morgan',        from:not(and(A,B)), to:or(not(A),not(B)), simp:true},
+  {id:'dm2',    en:'De Morgan',        idn:'De Morgan',        from:not(or(A,B)),  to:and(not(A),not(B)), simp:true},
+  {id:'dm1-r',  en:'De Morgan ←',      idn:'De Morgan ←',      from:or(not(A),not(B)),  to:not(and(A,B))},
+  {id:'dm2-r',  en:'De Morgan ←',      idn:'De Morgan ←',      from:and(not(A),not(B)), to:not(or(A,B))},
+  {id:'dneg',   en:'Double negation',  idn:'Negasi ganda',     from:not(not(A)), to:A, simp:true},
+  {id:'dist-ao',en:'Distribute ∧ over ∨', idn:'Distribusi ∧ atas ∨', from:and(A,or(B,C)), to:or(and(A,B),and(A,C)), mirror:true},
+  {id:'dist-oa',en:'Distribute ∨ over ∧', idn:'Distribusi ∨ atas ∧', from:or(A,and(B,C)), to:and(or(A,B),or(A,C)), mirror:true},
+  {id:'fact-a', en:'Factor out ∧',     idn:'Faktorkan ∧',      from:or(and(A,B),and(A,C)), to:and(A,or(B,C)), simp:true},
+  {id:'fact-o', en:'Factor out ∨',     idn:'Faktorkan ∨',      from:and(or(A,B),or(A,C)), to:or(A,and(B,C)), simp:true},
+  {id:'comm-a', en:'Commutativity',    idn:'Komutatif',        from:and(A,B), to:and(B,A)},
+  {id:'comm-o', en:'Commutativity',    idn:'Komutatif',        from:or(A,B),  to:or(B,A)},
+  {id:'assoc-a',en:'Associativity',    idn:'Asosiatif',        from:and(and(A,B),C), to:and(A,and(B,C))},
+  {id:'assoc-a2',en:'Associativity',   idn:'Asosiatif',        from:and(A,and(B,C)), to:and(and(A,B),C)},
+  {id:'assoc-o',en:'Associativity',    idn:'Asosiatif',        from:or(or(A,B),C), to:or(A,or(B,C))},
+  {id:'assoc-o2',en:'Associativity',   idn:'Asosiatif',        from:or(A,or(B,C)), to:or(or(A,B),C)},
+  {id:'idem-a', en:'Idempotence',      idn:'Idempoten',        from:and(A,A), to:A, simp:true},
+  {id:'idem-o', en:'Idempotence',      idn:'Idempoten',        from:or(A,A),  to:A, simp:true},
+  {id:'abs-a',  en:'Absorption',       idn:'Absorpsi',         from:and(A,or(A,B)), to:A, simp:true, mirror:true},
+  {id:'abs-o',  en:'Absorption',       idn:'Absorpsi',         from:or(A,and(A,B)), to:A, simp:true, mirror:true},
+  {id:'comp-a', en:'Complement',       idn:'Komplemen',        from:and(A,not(A)), to:FF, simp:true, mirror:true},
+  {id:'comp-o', en:'Complement',       idn:'Komplemen',        from:or(A,not(A)),  to:TT, simp:true, mirror:true},
+  {id:'iden-a', en:'Identity',         idn:'Identitas',        from:and(A,TT), to:A, simp:true, mirror:true},
+  {id:'iden-o', en:'Identity',         idn:'Identitas',        from:or(A,FF),  to:A, simp:true, mirror:true},
+  {id:'domi-a', en:'Domination',       idn:'Dominasi',         from:and(A,FF), to:FF, simp:true, mirror:true},
+  {id:'domi-o', en:'Domination',       idn:'Dominasi',         from:or(A,TT),  to:TT, simp:true, mirror:true},
+  {id:'neg-t',  en:'Negated constant', idn:'Negasi konstanta', from:not(TT), to:FF, simp:true},
+  {id:'neg-f',  en:'Negated constant', idn:'Negasi konstanta', from:not(FF), to:TT, simp:true},
+];
+const RULES=[];
+RAW.forEach(r=>{
+  RULES.push(r);
+  if(r.mirror && (r.from.op==='and'||r.from.op==='or')){
+    RULES.push(Object.assign({},r,{id:r.id+'-m',from:{op:r.from.op,a:r.from.b,b:r.from.a}}));
+  }
+});
+const rname=r=>T(r.en,r.idn);
+
+function match(pat,node,bind){
+  if(pat.op==='meta'){
+    const k=pat.name;
+    if(k in bind) return fmt(bind[k])===fmt(node)?bind:null;
+    bind[k]=node; return bind;
+  }
+  if(pat.op!==node.op) return null;
+  if(pat.op==='var') return pat.name===node.name?bind:null;
+  if(pat.op==='const') return pat.v===node.v?bind:null;
+  let b=match(pat.a,node.a,bind); if(!b) return null;
+  if(pat.b){ b=match(pat.b,node.b,b); if(!b) return null; }
+  return b;
+}
+function inst(pat,bind){
+  if(pat.op==='meta') return bind[pat.name];
+  if(pat.op==='var'||pat.op==='const') return Object.assign({},pat);
+  const n={op:pat.op,a:inst(pat.a,bind)};
+  if(pat.b) n.b=inst(pat.b,bind);
+  return n;
+}
+function tryRule(r,node){
+  const b=match(r.from,node,{});
+  if(!b) return null;
+  try{ return inst(r.to,b); }catch(e){ return null; }
+}
+function applicable(node){
+  const out=[], seen=new Set();
+  RULES.forEach(r=>{
+    const res=tryRule(r,node);
+    if(!res) return;
+    const key=r.en+'||'+fmt(res);
+    if(fmt(res)===fmt(node)) return;
+    if(seen.has(key)) return;
+    seen.add(key); out.push({rule:r,result:res});
+  });
+  return out;
+}
+function nodeAt(root,path){
+  let n=root;
+  for(const c of path) n=n[c];
+  return n;
+}
+function replaceAt(root,path,node){
+  if(path==='') return node;
+  const c=path[0];
+  const copy=Object.assign({},root);
+  copy[c]=replaceAt(root[c],path.slice(1),node);
+  return copy;
+}
+function allPaths(n,path,acc){
+  acc=acc||[]; path=path||'';
+  acc.push(path);
+  if(n.a)allPaths(n.a,path+'a',acc);
+  if(n.b)allPaths(n.b,path+'b',acc);
+  return acc;
+}
+/* one greedy simplifying step, deepest-first */
+function autoStep(root){
+  const paths=allPaths(root).sort((x,y)=>y.length-x.length);
+  for(const p of paths){
+    const node=nodeAt(root,p);
+    for(const r of RULES){
+      if(!r.simp) continue;
+      const res=tryRule(r,node);
+      if(res && fmt(res)!==fmt(node)) return {path:p,rule:r,result:res};
+    }
+  }
+  return null;
+}
+
+/* =========================================================
+   3. CLICKABLE FORMULA RENDERING
+   ========================================================= */
+let selPath=null;
+function fmtH(n,path){
+  let inner;
+  const w=(child,min,cp)=>{ const s=fmtH(child,cp); return PREC[child.op]>=min?s:'('+s+')'; };
+  switch(n.op){
+    case 'var': inner=esc(n.name); break;
+    case 'const': inner=n.v?'⊤':'⊥'; break;
+    case 'not': inner='¬'+w(n.a,4,path+'a'); break;
+    case 'and': inner=w(n.a,3,path+'a')+' ∧ '+w(n.b,3.5,path+'b'); break;
+    case 'or':  inner=w(n.a,2,path+'a')+' ∨ '+w(n.b,2.5,path+'b'); break;
+    case 'imp': inner=w(n.a,1.5,path+'a')+' → '+w(n.b,1.5,path+'b'); break;
+    case 'iff': inner=w(n.a,0,path+'a')+' ↔ '+w(n.b,0.5,path+'b'); break;
+  }
+  const cls='sf'+(path===selPath?' sel':'');
+  return '<span class="'+cls+'" data-p="'+path+'">'+inner+'</span>';
+}
+
+/* =========================================================
+   4. TAB SWITCHING + KEYPADS
+   ========================================================= */
+document.querySelectorAll('nav[role="tablist"] button').forEach(b=>{
+  b.addEventListener('click',()=>{
+    document.querySelectorAll('nav[role="tablist"] button').forEach(x=>x.setAttribute('aria-selected','false'));
+    b.setAttribute('aria-selected','true');
+    document.querySelectorAll('.panel').forEach(p=>p.classList.remove('active'));
+    document.getElementById(b.dataset.panel).classList.add('active');
+  });
+});
+
+const KEYSYMS=['¬','∧','∨','→','↔','(',')','⊤','⊥','p','q','r','s'];
+function makeKeys(containerId,inputId){
+  const c=document.getElementById(containerId), inp=document.getElementById(inputId);
+  c.innerHTML='';
+  KEYSYMS.forEach(s=>{
+    const b=document.createElement('button');
+    b.className='key'; b.type='button'; b.textContent=s;
+    b.addEventListener('click',()=>{
+      const st=inp.selectionStart??inp.value.length, en=inp.selectionEnd??st;
+      inp.value=inp.value.slice(0,st)+s+inp.value.slice(en);
+      inp.focus(); inp.setSelectionRange(st+s.length,st+s.length);
+    });
+    c.appendChild(b);
+  });
+  const clr=document.createElement('button');
+  clr.className='key wide'; clr.type='button'; clr.textContent=T('clear','hapus');
+  clr.dataset.clear='1';
+  clr.addEventListener('click',()=>{ inp.value=''; inp.focus(); });
+  c.appendChild(clr);
+}
+['skeys|sf','ckeys|cf','kkeys|kf','gkeys|gf'].forEach(pair=>{
+  const [c,i]=pair.split('|'); makeKeys(c,i);
+});
+
+/* =========================================================
+   5. TAB 1 — STEP BY STEP
+   ========================================================= */
+const EXAMPLES=['¬(p ∧ ¬q)','¬(p → q)','p ∨ (¬p ∧ q)','(p → q) ∧ (p → r)','(p ∧ q) ∨ (p ∧ ¬q)','¬(p ↔ q)'];
+const PUZZLES=[
+  {from:'¬(p ∧ ¬q)', to:'p → q',
+   en:'Start with De Morgan, clean up the double negation, then read the ∨ back as an implication.',
+   idn:'Mulai dengan De Morgan, bereskan negasi gandanya, lalu baca ∨ itu kembali sebagai implikasi.'},
+  {from:'¬(p → q)', to:'p ∧ ¬q',
+   en:'An implication has to become a ∨ before De Morgan can touch it.',
+   idn:'Implikasi harus jadi ∨ dulu sebelum De Morgan bisa menyentuhnya.'},
+  {from:'p ∨ (¬p ∧ q)', to:'p ∨ q',
+   en:'Distribute ∨ over ∧ first; a complement pair and an identity finish it.',
+   idn:'Distribusikan ∨ atas ∧ lebih dulu; sepasang komplemen dan satu identitas menuntaskannya.'},
+  {from:'(p → q) ∧ (p → r)', to:'p → (q ∧ r)',
+   en:'Turn both implications into ∨, factor the shared ¬p out, then go back to →.',
+   idn:'Ubah kedua implikasi jadi ∨, faktorkan ¬p yang sama, lalu kembalikan jadi →.'},
+  {from:'¬(¬p ∨ ¬q)', to:'p ∧ q',
+   en:'One De Morgan, two double negations.',
+   idn:'Satu De Morgan, dua negasi ganda.'},
+  {from:'(p ∧ q) ∨ (p ∧ ¬q)', to:'p',
+   en:'Factor p out and the rest collapses to ⊤.',
+   idn:'Faktorkan p, sisanya runtuh jadi ⊤.'},
+];
+let sMode='free', pIdx=0, steps=[], origAst=null, targetAst=null;
+
+function sRender(){
+  const dl=document.getElementById('dlist');
+  dl.innerHTML=steps.map((st,i)=>{
+    const last=i===steps.length-1;
+    const f=last?fmtH(st.ast,''):esc(fmt(st.ast));
+    return '<div class="dline'+(last?' live':'')+'">'+
+      '<span class="dop">'+(i===0?'':'≡')+'</span>'+
+      '<span class="dformula">'+f+'</span>'+
+      '<span class="drule">'+(st.rule?esc(st.rule):'')+'</span></div>';
+  }).join('');
+  document.getElementById('sstep').textContent=T('Steps: ','Langkah: ')+(steps.length-1);
+  const cur=steps[steps.length-1].ast;
+  document.getElementById('seq').textContent=equivalent(origAst,cur)?T('still equivalent to the start ✓','masih ekuivalen dengan rumus awal ✓'):T('✗ not equivalent','✗ tidak ekuivalen');
+  document.getElementById('sundo').disabled=steps.length<2;
+  sRules();
+  sWin();
+}
+function equivalent(x,y){
+  const vars=[...new Set([...sortedVars(x),...sortedVars(y)])].sort();
+  const N=1<<vars.length;
+  for(let i=0;i<N;i++){ const e=envOf(vars,i); if(evl(x,e)!==evl(y,e)) return false; }
+  return true;
+}
+function sRules(){
+  const box=document.getElementById('rulebox');
+  const cur=steps[steps.length-1].ast;
+  if(selPath===null){
+    box.innerHTML='<p class="sub" style="margin:0">'+T('Click a part of the formula above to see which rules apply there.','Klik satu bagian rumus di atas untuk melihat aturan yang bisa dipakai di situ.')+'</p>';
+    return;
+  }
+  const node=nodeAt(cur,selPath);
+  const list=applicable(node);
+  let h='<h3>'+T('Rules that fit ','Aturan yang cocok untuk ')+'<span style="font-family:var(--mono);text-transform:none;letter-spacing:0;color:var(--ink)">'+esc(fmt(node))+'</span></h3>';
+  if(!list.length){
+    h+='<p class="sub" style="margin:0">'+T('No rule applies to this part. Try selecting a wider piece.','Tidak ada aturan yang cocok di bagian ini. Coba pilih potongan yang lebih besar.')+'</p>';
+  }else{
+    h+='<div class="rulelist">'+list.map((c,i)=>
+      '<button class="rulebtn" data-i="'+i+'">'+
+      '<span class="rn">'+esc(rname(c.rule))+'</span>'+
+      '<span class="rp">'+esc(fmtP(c.rule.from))+' ≡ '+esc(fmtP(c.rule.to))+'</span>'+
+      '<span class="rr">→ '+esc(fmt(c.result))+'</span></button>').join('')+'</div>';
+  }
+  box.innerHTML=h;
+  box.querySelectorAll('.rulebtn').forEach(b=>{
+    b.addEventListener('click',()=>{
+      const c=list[+b.dataset.i];
+      const next=replaceAt(cur,selPath,c.result);
+      steps.push({ast:next,rule:rname(c.rule)});
+      selPath=null; sRender();
+    });
+  });
+}
+function sWin(){
+  const w=document.getElementById('swin');
+  if(sMode!=='challenge'||!targetAst){ w.innerHTML=''; return; }
+  const cur=steps[steps.length-1].ast;
+  if(canonKey(cur)===canonKey(targetAst)){
+    w.innerHTML='<div class="win"><b>'+T('Target reached.','Target tercapai.')+'</b> '+
+      T('You got there in ','Kamu sampai dalam ')+(steps.length-1)+T(' steps.',' langkah.')+'</div>';
+  }else w.innerHTML='';
+}
+document.getElementById('dlist').addEventListener('click',e=>{
+  const sp=e.target.closest('.sf');
+  if(!sp||!sp.closest('.dline.live')) return;
+  selPath=sp.dataset.p; sRender();
+});
+document.getElementById('sup').addEventListener('click',()=>{
+  if(selPath===null||selPath==='') selPath='';
+  else selPath=selPath.slice(0,-1);
+  sRender();
+});
+document.getElementById('sundo').addEventListener('click',()=>{
+  if(steps.length>1){ steps.pop(); selPath=null; sRender(); }
+});
+document.getElementById('sreset').addEventListener('click',()=>{
+  steps=[{ast:origAst,rule:null}]; selPath=null; sRender();
+});
+document.getElementById('sauto').addEventListener('click',()=>{
+  let guard=0;
+  while(guard++<40){
+    const cur=steps[steps.length-1].ast;
+    const st=autoStep(cur);
+    if(!st) break;
+    steps.push({ast:replaceAt(cur,st.path,st.result),rule:rname(st.rule)+T(' (auto)',' (otomatis)')});
+  }
+  selPath=null; sRender();
+});
+function sStart(str){
+  const err=document.getElementById('serr');
+  try{
+    origAst=parse(str); err.textContent='';
+  }catch(e){ err.textContent=e.message; return; }
+  steps=[{ast:origAst,rule:null}]; selPath=null; sRender();
+}
+document.getElementById('sstart').addEventListener('click',()=>sStart(document.getElementById('sf').value));
+document.getElementById('sf').addEventListener('keydown',e=>{ if(e.key==='Enter') sStart(document.getElementById('sf').value); });
+
+function loadPuzzle(){
+  const p=PUZZLES[pIdx];
+  origAst=parse(p.from); targetAst=parse(p.to);
+  steps=[{ast:origAst,rule:null}]; selPath=null;
+  document.getElementById('gtarget').textContent=fmt(targetAst);
+  document.getElementById('ghint').textContent=T(p.en,p.idn);
+  document.getElementById('pcount').textContent=T('Puzzle ','Soal ')+(pIdx+1)+T(' of ',' dari ')+PUZZLES.length;
+  sRender();
+}
+function setMode(m){
+  sMode=m;
+  document.getElementById('m-free').setAttribute('aria-pressed',m==='free');
+  document.getElementById('m-chal').setAttribute('aria-pressed',m==='challenge');
+  document.getElementById('freebox').style.display=m==='free'?'':'none';
+  document.getElementById('goalbar').style.display=m==='challenge'?'':'none';
+  ['pprev','pnext'].forEach(id=>document.getElementById(id).style.display=m==='challenge'?'':'none');
+  document.getElementById('pcount').style.display=m==='challenge'?'':'none';
+  if(m==='challenge'){ targetAst=null; loadPuzzle(); }
+  else { targetAst=null; sStart(document.getElementById('sf').value); }
+}
+document.getElementById('m-free').addEventListener('click',()=>setMode('free'));
+document.getElementById('m-chal').addEventListener('click',()=>setMode('challenge'));
+document.getElementById('pprev').addEventListener('click',()=>{ pIdx=(pIdx-1+PUZZLES.length)%PUZZLES.length; loadPuzzle(); });
+document.getElementById('pnext').addEventListener('click',()=>{ pIdx=(pIdx+1)%PUZZLES.length; loadPuzzle(); });
+
+function buildExamples(id,arr,fn){
+  const c=document.getElementById(id);
+  c.innerHTML='';
+  arr.forEach(s=>{
+    const b=document.createElement('button');
+    b.className='ex'; b.type='button'; b.textContent=s;
+    b.addEventListener('click',()=>fn(s));
+    c.appendChild(b);
+  });
+}
+function buildCatalogue(){
+  const seen=new Set(), items=[];
+  RAW.forEach(r=>{
+    const k=rname(r);
+    if(seen.has(k+fmt(r.from))) return;
+    seen.add(k+fmt(r.from));
+    items.push('<div class="catitem"><b>'+esc(rname(r))+'</b><div>'+esc(fmtP(r.from))+'  ≡  '+esc(fmtP(r.to))+'</div></div>');
+  });
+  document.getElementById('catalogue').innerHTML=items.join('');
+}
+
+/* =========================================================
+   6. MINTERMS, NORMAL FORMS, MINIMISATION
+   ========================================================= */
+function termFromPattern(pat,vars,join){
+  /* pat: string of '0','1','-' ; join '∧' for SOP (0 → ¬v), '∨' for POS (1 → ¬v) */
+  const lits=[];
+  for(let i=0;i<pat.length;i++){
+    if(pat[i]==='-') continue;
+    const neg = join==='∧' ? pat[i]==='0' : pat[i]==='1';
+    lits.push((neg?'¬':'')+vars[i]);
+  }
+  if(!lits.length) return join==='∧'?'⊤':'⊥';
+  return lits.join(' '+join+' ');
+}
+function bits(i,n){ return i.toString(2).padStart(n,'0'); }
+function literalCount(pat){ return [...pat].filter(c=>c!=='-').length; }
+
+function quineMcCluskey(nVars,minterms){
+  if(!minterms.length) return [];
+  if(minterms.length===(1<<nVars)) return ['-'.repeat(nVars)];
+  let groups=minterms.map(m=>({pat:bits(m,nVars),cov:[m]}));
+  const primes=[];
+  while(groups.length){
+    const used=new Array(groups.length).fill(false);
+    const next=[], seen=new Set();
+    for(let i=0;i<groups.length;i++)for(let j=i+1;j<groups.length;j++){
+      const a=groups[i].pat,b=groups[j].pat;
+      let diff=-1,ok=true;
+      for(let k=0;k<nVars;k++){
+        if(a[k]!==b[k]){ if(diff>=0){ok=false;break;} diff=k; }
+      }
+      if(!ok||diff<0) continue;
+      used[i]=used[j]=true;
+      const pat=a.slice(0,diff)+'-'+a.slice(diff+1);
+      if(seen.has(pat)) continue;
+      seen.add(pat);
+      next.push({pat,cov:[...new Set([...groups[i].cov,...groups[j].cov])]});
+    }
+    groups.forEach((g,i)=>{ if(!used[i]&&!primes.some(p=>p.pat===g.pat)) primes.push(g); });
+    groups=next;
+  }
+  /* cover: essential primes first, then greedy */
+  const need=new Set(minterms), chosen=[];
+  const covers=p=>p.cov.filter(m=>need.has(m));
+  let guard=0;
+  while(need.size&&guard++<64){
+    let ess=null;
+    for(const m of need){
+      const hit=primes.filter(p=>p.cov.includes(m));
+      if(hit.length===1){ ess=hit[0]; break; }
+    }
+    const pick=ess||primes.filter(p=>!chosen.includes(p))
+      .sort((x,y)=>covers(y).length-covers(x).length||literalCount(x.pat)-literalCount(y.pat))[0];
+    if(!pick) break;
+    if(!chosen.includes(pick)) chosen.push(pick);
+    pick.cov.forEach(m=>need.delete(m));
+  }
+  return chosen.map(p=>p.pat);
+}
+function sopString(pats,vars){
+  if(!pats.length) return '⊥';
+  if(pats.length===1&&literalCount(pats[0])===0) return '⊤';
+  return pats.map(p=>{
+    const t=termFromPattern(p,vars,'∧');
+    return (literalCount(p)>1&&pats.length>1)?'('+t+')':t;
+  }).join(' ∨ ');
+}
+function canonicalDNF(values,vars){
+  const terms=[];
+  values.forEach((v,i)=>{ if(v) terms.push('('+termFromPattern(bits(i,vars.length),vars,'∧')+')'); });
+  if(!terms.length) return '⊥';
+  return terms.join(' ∨ ');
+}
+function canonicalCNF(values,vars){
+  const terms=[];
+  values.forEach((v,i)=>{ if(!v) terms.push('('+termFromPattern(bits(i,vars.length),vars,'∨')+')'); });
+  if(!terms.length) return '⊤';
+  return terms.join(' ∧ ');
+}
+
+/* =========================================================
+   7. TAB 2 — CALCULATOR
+   ========================================================= */
+const LBLSETS={id:[{t:'B',f:'S'},{t:'T',f:'F'}],en:[{t:'T',f:'F'},{t:'1',f:'0'}]};
+let lblIdx=0, LBL=LBLSETS.en[0];
+function lblBtnText(){ const alt=LBLSETS[LANG()][1-lblIdx]; return T('Show ','Tampilkan ')+alt.t+'/'+alt.f; }
+const cellHTML=v=>'<span class="'+(v?'T':'F')+'">'+(v?LBL.t:LBL.f)+'</span>';
+const CEXAMPLES=['(p ∧ q) ∨ (¬p ∧ r)','p → (q → p)','(p ∨ q) ∧ ¬(p ∧ q)','p ↔ (q ∨ r)','(p ∧ ¬q) ∨ (¬p ∧ q) ∨ (p ∧ q)'];
+let cAst=null,cVars=[],cVals=[];
+
+function cBuild(){
+  const err=document.getElementById('cerr');
+  let ast;
+  try{ ast=parse(document.getElementById('cf').value); err.textContent=''; }
+  catch(e){ err.textContent=e.message; return; }
+  const vars=sortedVars(ast);
+  if(!vars.length){ err.textContent=T('The expression has no variables.','Ekspresi ini tidak punya variabel.'); return; }
+  if(vars.length>6){ err.textContent=T('Up to 6 variables here — that is already 64 rows.','Maksimum 6 variabel di sini — itu sudah 64 baris.'); return; }
+  cAst=ast; cVars=vars; cVals=valuesOf(ast,vars);
+  cRender();
+}
+function cRender(){
+  if(!cAst) return;
+  const vars=cVars, vals=cVals, n=vars.length, N=1<<n;
+  const mins=[], maxs=[];
+  vals.forEach((v,i)=>(v?mins:maxs).push(i));
+  document.getElementById('cinfo').textContent=
+    n+T(' variables · ',' variabel · ')+N+T(' rows · ',' baris · ')+mins.length+T(' minterms',' minterm');
+
+  const v=document.getElementById('cverdict');
+  if(!maxs.length) v.innerHTML='<div class="verdict"><span class="stamp taut">'+T('TAUTOLOGY','TAUTOLOGI')+'</span><p>'+T('True on every row — the expression carries no information.','Benar di setiap baris — ekspresi ini tidak membawa informasi apa pun.')+'</p></div>';
+  else if(!mins.length) v.innerHTML='<div class="verdict"><span class="stamp kontra">'+T('CONTRADICTION','KONTRADIKSI')+'</span><p>'+T('False on every row — nothing can satisfy it.','Salah di setiap baris — tidak ada yang bisa memenuhinya.')+'</p></div>';
+  else v.innerHTML='<div class="verdict"><span class="stamp konting">'+T('CONTINGENT','KONTINGEN')+'</span><p>'+T('True on some rows, false on others — that is what makes the normal forms below interesting.','Benar di sebagian baris, salah di sebagian lain — di situlah bentuk normal di bawah jadi menarik.')+'</p></div>';
+
+  const pats=quineMcCluskey(n,mins);
+  const minimal=sopString(pats,vars);
+  const dnf=canonicalDNF(vals,vars), cnf=canonicalCNF(vals,vars);
+  const litDNF=mins.length*n, litMin=pats.reduce((s,p)=>s+literalCount(p),0);
+  const F=(label,val,note,cls)=>'<div class="form'+(cls?' '+cls:'')+'"><div class="fl">'+label+'</div><div class="fv">'+esc(val)+'</div>'+(note?'<div class="fn">'+note+'</div>':'')+'</div>';
+  document.getElementById('cforms').innerHTML=
+    F(T('Minterm numbering','Penomoran minterm'),'Σm('+mins.join(', ')+')',
+      T('The rows where it is true.','Baris-baris tempat ia bernilai benar.'))+
+    F(T('Maxterm numbering','Penomoran maxterm'),'ΠM('+maxs.join(', ')+')',
+      T('The rows where it is false.','Baris-baris tempat ia bernilai salah.'))+
+    F(T('Disjunctive normal form (SOP)','Bentuk normal disjungtif (SOP)'),dnf,
+      T('One conjunction per true row, ORed together.','Satu konjungsi untuk tiap baris benar, digabung dengan ∨.'))+
+    F(T('Conjunctive normal form (POS)','Bentuk normal konjungtif (POS)'),cnf,
+      T('One disjunction per false row, ANDed together.','Satu disjungsi untuk tiap baris salah, digabung dengan ∧.'))+
+    F(T('Minimal sum of products','Jumlah hasil kali minimal'),minimal,
+      T('Quine–McCluskey: ','Quine–McCluskey: ')+litMin+T(' literals instead of ',' literal, bukan ')+litDNF+
+      T('. The Karnaugh tab shows the same groups on a grid.','. Tab Karnaugh menampilkan kelompok yang sama di atas kisi.'),'min');
+
+  let h='<table><thead><tr><th class="rownum">#</th>';
+  vars.forEach(x=>h+='<th class="varcol">'+esc(x)+'</th>');
+  h+='<th class="final">'+esc(fmt(cAst))+'</th></tr></thead><tbody>';
+  for(let i=0;i<N;i++){
+    const env=envOf(vars,i);
+    h+='<tr class="'+(vals[i]?'mint':'')+'"><td class="rownum">'+i+'</td>';
+    vars.forEach(x=>h+='<td class="varcol">'+cellHTML(env[x])+'</td>');
+    h+='<td class="final">'+cellHTML(!!vals[i])+'</td></tr>';
+  }
+  h+='</tbody></table>';
+  document.getElementById('ctable').innerHTML=h;
+}
+document.getElementById('cbuild').addEventListener('click',cBuild);
+document.getElementById('cf').addEventListener('keydown',e=>{ if(e.key==='Enter') cBuild(); });
+document.getElementById('cswap').addEventListener('click',e=>{
+  lblIdx=1-lblIdx; LBL=LBLSETS[LANG()][lblIdx];
+  e.currentTarget.textContent=lblBtnText();
+  cRender();
+});
+
+/* =========================================================
+   8. TAB 3 — KARNAUGH MAP
+   ========================================================= */
+const GCOLORS=['#C17A3E','#2F7069','#A8392A','#8F5620','#6E6259','#4A423C'];
+let kVars=[],kVals=[],kBase=[],kEdited=false,kExpr='';
+
+function grayOrder(bitsN){
+  if(bitsN===1) return [0,1];
+  return [0,1,3,2];
+}
+function kBuild(){
+  const err=document.getElementById('kerr');
+  let ast;
+  try{ ast=parse(document.getElementById('kf').value); err.textContent=''; }
+  catch(e){ err.textContent=e.message; return; }
+  const vars=sortedVars(ast);
+  if(vars.length<1||vars.length>4){ err.textContent=T('A Karnaugh map needs 1 to 4 variables.','Peta Karnaugh butuh 1 sampai 4 variabel.'); return; }
+  kVars=vars; kBase=valuesOf(ast,vars); kVals=kBase.slice(); kEdited=false; kExpr=fmt(ast);
+  kRender();
+}
+function kRender(){
+  if(!kVars.length) return;
+  const n=kVars.length;
+  const rowBits=n<=2?(n-1):(n===3?1:2), colBits=n-rowBits;
+  const rows=rowBits===0?[0]:grayOrder(rowBits), cols=grayOrder(colBits);
+  const mins=[]; kVals.forEach((v,i)=>{ if(v) mins.push(i); });
+  const pats=quineMcCluskey(n,mins);
+  const cellGroups={};
+  pats.forEach((p,gi)=>{
+    for(let i=0;i<(1<<n);i++){
+      const b=bits(i,n);
+      let ok=true;
+      for(let k=0;k<n;k++) if(p[k]!=='-'&&p[k]!==b[k]){ ok=false; break; }
+      if(ok){ (cellGroups[i]=cellGroups[i]||[]).push(gi); }
+    }
+  });
+  const rowVars=kVars.slice(0,rowBits).join(''), colVars=kVars.slice(rowBits).join('');
+  let h='<table class="kmap"><thead><tr><th class="corner">'+(rowVars?esc(rowVars)+' \\ ':'')+esc(colVars)+'</th>';
+  cols.forEach(c=>h+='<th>'+bits(c,colBits)+'</th>');
+  h+='</tr></thead><tbody>';
+  rows.forEach(r=>{
+    h+='<tr><th>'+(rowBits?bits(r,rowBits):'')+'</th>';
+    cols.forEach(c=>{
+      const idx=(r<<colBits)|c;
+      const v=kVals[idx];
+      const gs=cellGroups[idx]||[];
+      const tint=v&&gs.length?'background:'+GCOLORS[gs[0]%GCOLORS.length]+'22;':'';
+      h+='<td class="'+(v?'one':'zero')+'" data-i="'+idx+'" data-g="'+gs.join(',')+'" style="'+tint+'"><span class="mi">'+idx+'</span>'+(v?'1':'0')+'</td>';
+    });
+    h+='</tr>';
+  });
+  h+='</tbody></table>';
+  document.getElementById('kgrid').innerHTML=h;
+
+  document.getElementById('kgroups').innerHTML=pats.length
+    ? pats.map((p,gi)=>'<button class="gchip" style="--gc:'+GCOLORS[gi%GCOLORS.length]+'" data-g="'+gi+'">'+
+        esc(termFromPattern(p,kVars,'∧'))+' <span style="color:var(--ink-soft)">· '+(1<<(literalCount(p)===n?0:n-literalCount(p)))+T(' cells',' sel')+'</span></button>').join('')
+    : '<span class="counter">'+T('No 1s to cover.','Tidak ada angka 1 untuk ditutup.')+'</span>';
+
+  const litDNF=mins.length*n, litMin=pats.reduce((s,p)=>s+literalCount(p),0);
+  document.getElementById('kstat').textContent=
+    (kEdited?T('Edited function · ','Fungsi hasil suntingan · '):kExpr+' · ')+
+    mins.length+T(' minterms → ',' minterm → ')+pats.length+T(' groups · ',' kelompok · ')+
+    litMin+T(' literals instead of ',' literal, bukan ')+litDNF;
+
+  document.getElementById('kforms').innerHTML=
+    '<div class="form min"><div class="fl">'+T('Minimal sum of products','Jumlah hasil kali minimal')+
+    '</div><div class="fv">'+esc(sopString(pats,kVars))+'</div><div class="fn">'+
+    T('Each group above is one term; a group of 2 drops one variable, a group of 4 drops two.',
+      'Setiap kelompok di atas adalah satu suku; kelompok berisi 2 menghapus satu variabel, kelompok berisi 4 menghapus dua.')+'</div></div>';
+
+  document.querySelectorAll('#kgrid td').forEach(td=>{
+    td.addEventListener('click',()=>{
+      const i=+td.dataset.i;
+      kVals[i]=kVals[i]?0:1; kEdited=true; kRender();
+    });
+  });
+  document.querySelectorAll('#kgroups .gchip').forEach(ch=>{
+    const gi=ch.dataset.g;
+    const set=on=>document.querySelectorAll('#kgrid td').forEach(td=>{
+      const gs=(td.dataset.g||'').split(',').filter(Boolean);
+      td.classList.toggle('hl', on&&gs.includes(gi));
+    });
+    ch.addEventListener('mouseenter',()=>set(true));
+    ch.addEventListener('mouseleave',()=>set(false));
+    ch.addEventListener('focus',()=>set(true));
+    ch.addEventListener('blur',()=>set(false));
+  });
+  document.getElementById('kinfo').textContent=kEdited?T('edited by hand','disunting manual'):'';
+}
+document.getElementById('kbuild').addEventListener('click',kBuild);
+document.getElementById('kf').addEventListener('keydown',e=>{ if(e.key==='Enter') kBuild(); });
+document.getElementById('kreset').addEventListener('click',()=>{ kVals=kBase.slice(); kEdited=false; kRender(); });
+
+/* =========================================================
+   9. TAB 4 — GATES
+   ========================================================= */
+let gAst=null,gVars=[],gEnv={},gShowMin=false,gMinAst=null,gExprAst=null;
+
+function heightOf(n){ return (n.op==='var'||n.op==='const')?0:1+Math.max(heightOf(n.a),n.b?heightOf(n.b):0); }
+function gateCount(n){ return (n.op==='var'||n.op==='const')?0:1+gateCount(n.a)+(n.b?gateCount(n.b):0); }
+
+function gBuild(){
+  const err=document.getElementById('gerr');
+  let ast;
+  try{ ast=parse(document.getElementById('gf').value); err.textContent=''; }
+  catch(e){ err.textContent=e.message; return; }
+  const vars=sortedVars(ast);
+  if(!vars.length){ err.textContent=T('Nothing to wire up — the expression has no variables.','Tidak ada yang bisa dirangkai — ekspresi ini tanpa variabel.'); return; }
+  if(vars.length>5){ err.textContent=T('Up to 5 variables draw legibly here.','Maksimum 5 variabel supaya gambarnya masih terbaca.'); return; }
+  if(gateCount(ast)>18){ err.textContent=T('That circuit is too large to draw legibly (over 18 gates).','Rangkaian itu terlalu besar untuk digambar (lebih dari 18 gerbang).'); return; }
+  gExprAst=ast; gVars=vars;
+  const vals=valuesOf(ast,vars);
+  const mins=[]; vals.forEach((v,i)=>{ if(v) mins.push(i); });
+  const pats=quineMcCluskey(vars.length,mins);
+  try{ gMinAst=parse(sopString(pats,vars)); }catch(e){ gMinAst=null; }
+  gVars.forEach(v=>{ if(!(v in gEnv)) gEnv[v]=false; });
+  Object.keys(gEnv).forEach(k=>{ if(!gVars.includes(k)) delete gEnv[k]; });
+  gRender();
+}
+function gRender(){
+  if(!gExprAst) return;
+  gAst=(gShowMin&&gMinAst)?gMinAst:gExprAst;
+  const sw=document.getElementById('gswitches');
+  sw.innerHTML=gVars.map(v=>'<button class="sw '+(gEnv[v]?'on':'off')+'" data-v="'+esc(v)+'"><b>'+esc(v)+'</b>'+(gEnv[v]?'1':'0')+'</button>').join('')+
+    '<span class="counter">'+T('click a switch to flip it','klik sakelar untuk membaliknya')+'</span>';
+  sw.querySelectorAll('.sw').forEach(b=>b.addEventListener('click',()=>{ gEnv[b.dataset.v]=!gEnv[b.dataset.v]; gRender(); }));
+  document.getElementById('gcircuit').innerHTML=drawCircuit(gAst,gVars,gEnv);
+  const go=gateCount(gExprAst), gm=gMinAst?gateCount(gMinAst):null;
+  document.getElementById('gstat').innerHTML=
+    '<span>'+T('as written: ','apa adanya: ')+'<b>'+go+'</b>'+T(' gates, depth ',' gerbang, kedalaman ')+'<b>'+heightOf(gExprAst)+'</b></span>'+
+    (gMinAst?'<span>'+T('minimised: ','bentuk minimal: ')+'<b>'+gm+'</b>'+T(' gates, depth ',' gerbang, kedalaman ')+'<b>'+heightOf(gMinAst)+'</b></span>':'')+
+    '<span>'+T('output now: ','keluaran saat ini: ')+'<b class="'+(evl(gAst,gEnv)?'T':'F')+'">'+(evl(gAst,gEnv)?'1':'0')+'</b></span>';
+}
+function drawCircuit(ast,vars,env){
+  const ROW=44, GW=42, GH=30, COL=96, RAIL=54, CHAN=14;
+  if(ast.op==='var'||ast.op==='const'){
+    /* a bare input or constant: no gates at all, just a wire to the lamp */
+    const v=evl(ast,env), c=v?'var(--true)':'var(--false)';
+    const lbl=ast.op==='var'?esc(ast.name)+'='+(v?1:0):(ast.v?'1':'0');
+    return '<svg viewBox="0 0 260 70" width="260" height="70" xmlns="http://www.w3.org/2000/svg" font-family="SF Mono, Consolas, monospace" font-size="12">'+
+      '<rect x="8" y="22" width="52" height="26" rx="4" fill="var(--card)" stroke="'+c+'" stroke-width="1.5"/>'+
+      '<text x="34" y="39" text-anchor="middle" fill="'+c+'" font-weight="700">'+lbl+'</text>'+
+      '<path d="M60 35 H150" stroke="'+c+'" stroke-width="1.6" fill="none"/>'+
+      '<circle cx="163" cy="35" r="11" fill="'+(v?'rgba(47,112,105,.22)':'rgba(168,57,42,.14)')+'" stroke="'+c+'" stroke-width="1.8"/>'+
+      '<text x="163" y="39" text-anchor="middle" fill="'+c+'" font-weight="700">'+(v?'1':'0')+'</text></svg>';
+  }
+  const nodes=[];
+  let slot=0;
+  (function walk(n){
+    if(n.op==='var'||n.op==='const'){ n._slot=slot++; }
+    else{
+      walk(n.a); if(n.b) walk(n.b);
+      n._slot=n.b?(n.a._slot+n.b._slot)/2:n.a._slot;
+    }
+    n._h=heightOf(n); nodes.push(n);
+  })(ast);
+  const H=heightOf(ast);
+  const chanX=v=>RAIL+16+vars.indexOf(v)*CHAN;
+  const leafX=RAIL+16+vars.length*CHAN+16;
+  const gx=n=>leafX+(n._h-1)*COL+30;
+  const cy=n=>28+n._slot*ROW;
+  const val=n=>evl(n,env);
+  const wcol=v=>v?'var(--true)':'var(--false)';
+  /* one rail row per variable, ordered by where its occurrences sit, so two
+     variables can never land on the same y and hide each other */
+  const occ={};
+  nodes.forEach(n=>{ if(n.op==='var'){ (occ[n.name]=occ[n.name]||[]).push(n); } });
+  const rails=vars.filter(v=>(occ[v]||[]).length)
+    .map(v=>({v,mid:occ[v].reduce((a,n)=>a+cy(n),0)/occ[v].length}))
+    .sort((x,y)=>x.mid-y.mid);
+  const railY={};
+  rails.forEach((o,i)=>{ railY[o.v]=28+i*ROW; });
+
+  const W=leafX+H*COL+96, HH=28+Math.max(slot,rails.length)*ROW+20;
+
+  let s='<svg viewBox="0 0 '+W+' '+HH+'" width="'+W+'" height="'+HH+'" xmlns="http://www.w3.org/2000/svg" font-family="SF Mono, Consolas, monospace" font-size="12">';
+
+  rails.forEach(o=>{
+    const v=o.v, list=occ[v], y=railY[v];
+    const on=env[v];
+    s+='<rect x="8" y="'+(y-13)+'" width="42" height="26" rx="4" fill="var(--card)" stroke="'+wcol(on)+'" stroke-width="1.5"/>';
+    s+='<text x="29" y="'+(y+4)+'" text-anchor="middle" fill="'+wcol(on)+'" font-weight="700">'+esc(v)+'='+(on?1:0)+'</text>';
+    list.forEach(n=>{
+      const x=chanX(v), ny=cy(n);
+      s+='<path d="M50 '+y+' H'+x+' V'+ny+' H'+leafX+'" fill="none" stroke="'+wcol(on)+'" stroke-width="1.6"/>';
+      s+='<circle cx="'+x+'" cy="'+y+'" r="2.4" fill="'+wcol(on)+'"/>';
+    });
+  });
+  /* constant leaves */
+  nodes.filter(n=>n.op==='const').forEach(n=>{
+    const y=cy(n);
+    s+='<text x="'+(leafX-24)+'" y="'+(y+4)+'" fill="'+wcol(n.v)+'" font-weight="700">'+(n.v?'1':'0')+'</text>';
+    s+='<path d="M'+(leafX-14)+' '+y+' H'+leafX+'" stroke="'+wcol(n.v)+'" stroke-width="1.6" fill="none"/>';
+  });
+
+  /* wires from child outputs to parent inputs */
+  nodes.filter(n=>n.op!=='var'&&n.op!=='const').forEach(n=>{
+    const px=gx(n), py=cy(n);
+    const kids=n.b?[[n.a,-8],[n.b,8]]:[[n.a,0]];
+    kids.forEach(([k,dy])=>{
+      const ky=cy(k), v=val(k);
+      const kx=(k.op==='var'||k.op==='const')?leafX:gx(k)+GW;
+      const mid=kx+Math.max(14,(px-kx)/2);
+      s+='<path d="M'+kx+' '+ky+' H'+mid+' V'+(py+dy)+' H'+px+'" fill="none" stroke="'+wcol(v)+'" stroke-width="1.6"/>';
+    });
+  });
+
+  /* gates */
+  nodes.filter(n=>n.op!=='var'&&n.op!=='const').forEach(n=>{
+    const x=gx(n), y=cy(n), v=val(n), c=wcol(v);
+    const top=y-GH/2, bot=y+GH/2;
+    if(n.op==='not'){
+      s+='<path d="M'+x+' '+top+' L'+x+' '+bot+' L'+(x+GW-10)+' '+y+' Z" fill="var(--card)" stroke="var(--ink)" stroke-width="1.5"/>';
+      s+='<circle cx="'+(x+GW-5)+'" cy="'+y+'" r="4.5" fill="var(--card)" stroke="var(--ink)" stroke-width="1.5"/>';
+    }else if(n.op==='and'){
+      s+='<path d="M'+x+' '+top+' H'+(x+GW/2)+' A'+(GH/2)+' '+(GH/2)+' 0 0 1 '+(x+GW/2)+' '+bot+' H'+x+' Z" fill="var(--card)" stroke="var(--ink)" stroke-width="1.5"/>';
+    }else if(n.op==='or'){
+      s+='<path d="M'+x+' '+top+' Q'+(x+16)+' '+y+' '+x+' '+bot+' Q'+(x+GW*0.7)+' '+bot+' '+(x+GW)+' '+y+' Q'+(x+GW*0.7)+' '+top+' '+x+' '+top+' Z" fill="var(--card)" stroke="var(--ink)" stroke-width="1.5"/>';
+    }else{
+      s+='<rect x="'+x+'" y="'+top+'" width="'+GW+'" height="'+GH+'" rx="3" fill="var(--card)" stroke="var(--ink)" stroke-width="1.5"/>';
+      s+='<text x="'+(x+GW/2)+'" y="'+(y+4)+'" text-anchor="middle" fill="var(--ink)">'+(n.op==='imp'?'→':'↔')+'</text>';
+    }
+    if(n.op==='and'||n.op==='or')
+      s+='<text x="'+(x+GW/2-2)+'" y="'+(y+4)+'" text-anchor="middle" fill="var(--ink-soft)" font-size="11">'+(n.op==='and'?'&amp;':'≥1')+'</text>';
+    s+='<circle cx="'+(x+GW+3)+'" cy="'+y+'" r="2.6" fill="'+c+'"/>';
+  });
+
+  /* output */
+  const oy=cy(ast), ox=gx(ast)+GW;
+  s+='<path d="M'+(ox+6)+' '+oy+' H'+(ox+34)+'" stroke="'+wcol(val(ast))+'" stroke-width="1.6" fill="none"/>';
+  s+='<circle cx="'+(ox+46)+'" cy="'+oy+'" r="11" fill="'+(val(ast)?'rgba(47,112,105,.22)':'rgba(168,57,42,.14)')+'" stroke="'+wcol(val(ast))+'" stroke-width="1.8"/>';
+  s+='<text x="'+(ox+46)+'" y="'+(oy+4)+'" text-anchor="middle" fill="'+wcol(val(ast))+'" font-weight="700">'+(val(ast)?'1':'0')+'</text>';
+  s+='</svg>';
+  return s;
+}
+document.getElementById('gbuild').addEventListener('click',gBuild);
+document.getElementById('gf').addEventListener('keydown',e=>{ if(e.key==='Enter') gBuild(); });
+document.getElementById('g-orig').addEventListener('click',()=>{
+  gShowMin=false;
+  document.getElementById('g-orig').setAttribute('aria-pressed','true');
+  document.getElementById('g-min').setAttribute('aria-pressed','false');
+  gRender();
+});
+document.getElementById('g-min').addEventListener('click',()=>{
+  if(!gMinAst) return;
+  gShowMin=true;
+  document.getElementById('g-orig').setAttribute('aria-pressed','false');
+  document.getElementById('g-min').setAttribute('aria-pressed','true');
+  gRender();
+});
+
+/* =========================================================
+   10. LANGUAGE SYNC + START
+   ========================================================= */
+function syncLang(){
+  document.getElementById('cswap').textContent=lblBtnText();
+  LBL=LBLSETS[LANG()][lblIdx];
+  document.querySelectorAll('.key.wide').forEach(b=>{ if(b.dataset.clear) b.textContent=T('clear','hapus'); });
+  buildExamples('sexamples',EXAMPLES,s=>{ document.getElementById('sf').value=s; sStart(s); });
+  buildExamples('cexamples',CEXAMPLES,s=>{ document.getElementById('cf').value=s; cBuild(); });
+  buildExamples('kexamples',CEXAMPLES.slice(0,4),s=>{ document.getElementById('kf').value=s; kBuild(); });
+  buildExamples('gexamples',CEXAMPLES.slice(0,4),s=>{ document.getElementById('gf').value=s; gBuild(); });
+  buildCatalogue();
+}
+window.__onLang=function(){
+  syncLang();
+  if(sMode==='challenge') loadPuzzle(); else sRender();
+  cRender(); kRender(); gRender();
+};
+syncLang();
+setMode('free');
+cBuild(); kBuild(); gBuild();
+</script>
+<script>
+(function(){
+  var KEY='phxLang';
+  function apply(l){
+    document.documentElement.lang=l;
+    var b=document.querySelectorAll('[data-lang-btn]');
+    for(var i=0;i<b.length;i++) b[i].classList.toggle('on', b[i].getAttribute('data-lang-btn')===l);
+    if(window.__onLang){ try{ window.__onLang(l); }catch(e){} }
+  }
+  function set(l){ try{ localStorage.setItem(KEY,l); }catch(e){} apply(l); }
+  var saved=null; try{ saved=localStorage.getItem(KEY); }catch(e){}
+  apply(saved==='id'?'id':'en');
+  var btns=document.querySelectorAll('[data-lang-btn]');
+  for(var i=0;i<btns.length;i++) btns[i].addEventListener('click',function(e){ e.preventDefault(); set(this.getAttribute('data-lang-btn')); });
+  window.setLang=set;
+})();
+</script>
+</body>
+</html>
