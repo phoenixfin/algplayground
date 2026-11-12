@@ -1,0 +1,849 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="icon" type="image/png" href="logo.png">
+<script>try{var _l=localStorage.getItem('phxLang');if(_l==='id'||_l==='en')document.documentElement.lang=_l;}catch(e){}</script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=Lato:wght@300;400;700&display=swap" rel="stylesheet">
+<title>Embeddings — words as points</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css" crossorigin="anonymous">
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js" crossorigin="anonymous"></script>
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/contrib/auto-render.min.js" crossorigin="anonymous" onload="window.__mathReady&&window.__mathReady()"></script>
+<style>
+  :root{
+    --paper: #FAF7F2; --paper-line: #EDE4D8; --ink: #2D2D2D; --ink-soft: #6E6259;
+    --moss: #C17A3E; --moss-dim: #F0DCC6; --rust: #A8392A; --rust-dim: #F3DBD5;
+    --gold: #2F7069; --accent-deep: #8F5620; --gold-dim: #D3E5E2; --card: #FFFDF9; --border: #E4DACB;
+  }
+  *{ box-sizing: border-box; }
+  html[lang="en"] [data-lang="id"], html[lang="id"] [data-lang="en"]{ display: none !important; }
+  body{
+    margin:0; background: var(--paper); color: var(--ink);
+    font-family: Lato, "Helvetica Neue", Helvetica, Arial, sans-serif; line-height: 1.5;
+    background-image: linear-gradient(var(--paper-line) 1px, transparent 1px), linear-gradient(90deg, var(--paper-line) 1px, transparent 1px);
+    background-size: 28px 28px; background-attachment: fixed;
+  }
+  .wrap{ max-width: 1100px; margin: 0 auto; padding: 36px 24px 80px; }
+  header.top{ margin-bottom: 18px; border-bottom: 2px solid var(--ink); padding-bottom: 14px; }
+  .eyebrow{ font-family: "SF Mono", SFMono-Regular, Consolas, monospace; font-size: 12px; letter-spacing: 0.12em; text-transform: uppercase; color: var(--moss); margin: 0 0 6px; }
+  h1{ font-family: "Playfair Display", "Playfair Display", Georgia, serif; font-weight: 600; font-size: 32px; margin: 0 0 8px; }
+  header.top p{ margin: 0; color: var(--ink-soft); max-width: 800px; font-size: 15px; }
+  header.top p.eyebrow{ color: var(--accent-deep); }
+  .crumbs{ font-size: 12.5px; margin: 14px 0 0; }
+  .crumbs a{ color: var(--moss); }
+  .langtog{ display:inline-flex; border:1px solid var(--border); border-radius:20px; overflow:hidden; }
+  .langtog button{ font-family:inherit; font-size:11.5px; letter-spacing:0.06em; padding:4px 11px; border:0; background:#fff; color:var(--ink-soft); cursor:pointer; }
+  .langtog button.on{ background:var(--accent-deep); color:#fff; font-weight:700; }
+
+  .tabs{ display: flex; gap: 8px; margin: 0 0 22px; flex-wrap: wrap;  position: sticky; top: 0; z-index: 20; background: var(--paper); padding: 12px 0 10px; border-bottom: 1px solid var(--border); }
+  .tab{ padding: 9px 14px; font-size: 13px; font-weight: 600; border: 1px solid var(--ink); border-radius: 3px; background: var(--card); cursor: pointer; }
+  .tab.active{ background: var(--ink); color: #fff; }
+
+  .section{ display: none; }
+  .section.active{ display: block; }
+
+  .intro{ display:grid; grid-template-columns: 200px 1fr; gap: 20px; align-items:center; background: var(--card); border: 1px solid var(--border); border-radius: 4px; padding: 14px 18px; margin-bottom: 20px; }
+  @media (max-width: 700px){ .intro{ grid-template-columns: 1fr; } }
+  .intro svg{ width: 100%; height: auto; display:block; }
+  .intro .txt h3{ margin: 0 0 6px; font-family: "Playfair Display", Georgia, serif; font-size: 17px; font-weight: 400; }
+  .intro .txt p{ margin: 0; font-size: 13.5px; color: var(--ink-soft); }
+
+  .layout{ display: grid; grid-template-columns: 300px 1fr; gap: 24px; align-items: start; }
+  @media (max-width: 820px){
+    .layout{ grid-template-columns: 1fr; }
+    .panel{ position: static !important; top: auto !important; }
+  }
+  .panel{ background: var(--card); border: 1px solid var(--border); border-radius: 4px; padding: 18px; position: sticky; top: 84px; align-self: start; }
+  .panel h2{ font-family: "SF Mono", SFMono-Regular, Consolas, monospace; font-size: 12px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--ink-soft); margin: 18px 0 12px; border-bottom: 1px solid var(--border); padding-bottom: 6px; }
+  .panel h2:first-child{ margin-top: 0; }
+  .field{ margin-bottom: 14px; }
+  .field label{ display: flex; justify-content: space-between; font-size: 13px; font-weight: 600; margin-bottom: 5px; gap:8px; }
+  .field label span.val{ font-weight: 400; color: var(--moss); font-family: "SF Mono", SFMono-Regular, Consolas, monospace; white-space:nowrap; }
+  .field input[type=range]{ width: 100%; accent-color: var(--moss); }
+  .field select{ width: 100%; padding: 6px 8px; font-size: 13px; border: 1px solid var(--border); border-radius: 3px; background: #fff; font-family: inherit; }
+
+  .btn{ display: inline-block; padding: 8px 14px; font-size: 13px; font-weight: 600; border: 1px solid var(--ink); border-radius: 3px; background: var(--card); color: var(--ink); cursor: pointer; }
+  .btn:hover{ background: var(--paper-line); }
+  .btn.primary{ background: var(--moss); color: #fff; border-color: var(--moss); }
+  .btn.primary:hover{ background: #A6642F; }
+  .btn.toggle.active{ background: var(--ink); color: #fff; }
+  .btn.block{ width: 100%; margin-bottom: 8px; }
+  .btngroup{ display:flex; gap:8px; margin-bottom: 14px; }
+  .btngroup .btn{ flex:1; }
+  .row2{ display: flex; gap: 8px; }
+  .row2 > *{ flex: 1; }
+  .hint{ font-size: 12.5px; color: var(--ink-soft); margin: 10px 0 0; }
+
+  .stats{ display: flex; gap: 12px; margin-bottom: 20px; flex-wrap: wrap; }
+  .stat{ flex: 1; min-width: 120px; background: var(--card); border: 1px solid var(--border); border-radius: 4px; padding: 10px 14px; overflow: hidden; }
+  .stat .label{ font-size: 11px; letter-spacing: 0.08em; text-transform: uppercase; color: var(--ink-soft); font-family: "SF Mono", SFMono-Regular, Consolas, monospace; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .stat .value{ font-size: 20px; font-family: "Playfair Display", Georgia, serif; line-height: 1.3; word-break: break-word; }
+  .stat .value.eqv{ font-size: 15px; padding-top: 4px; }
+  .stat.hi .value{ color: var(--moss); }
+  .stat.warn .value{ color: var(--rust); }
+
+  .box{ background: var(--card); border: 1px solid var(--border); border-radius: 4px; padding: 12px 14px; margin-bottom: 20px; }
+  .box h2{ font-family: "SF Mono", SFMono-Regular, Consolas, monospace; font-size: 12px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--ink-soft); margin: 0 0 10px; }
+  .box p{ font-size: 13.5px; color: var(--ink-soft); margin: 8px 0 0; }
+  .box p b{ color: var(--ink); }
+  canvas{ display:block; width:100%; }
+  canvas.big{ height: 430px; cursor: crosshair; }
+  canvas.mid{ height: 230px; }
+  canvas.small{ height: 160px; }
+  canvas.sq{ aspect-ratio: 1.15/1; height:auto; }
+  canvas.anim{ aspect-ratio: 1.15/1; height:auto; }
+  canvas.heat{ height: 200px; }
+
+  .cols2{ display:grid; grid-template-columns: 1fr 1fr; gap: 18px; margin-bottom:20px; }
+  @media (max-width: 900px){ .cols2{ grid-template-columns: 1fr; } }
+  .cols2 .box{ margin-bottom: 0; }
+
+  .legend{ display:flex; gap:16px; font-size:12px; color: var(--ink-soft); margin-top:8px; flex-wrap:wrap; }
+  .legend span{ display:inline-flex; align-items:center; gap:5px; }
+  .swatch{ width:10px; height:10px; border-radius:50%; display:inline-block; }
+
+  .try{ background: var(--gold-dim); border: 1px solid var(--gold); border-radius: 4px; padding: 10px 14px; font-size: 13px; margin-bottom: 20px; }
+  .try b{ text-transform: uppercase; font-size: 11px; letter-spacing: 0.08em; font-family: "SF Mono", SFMono-Regular, Consolas, monospace; color: #27585A; }
+  .try ol{ margin: 6px 0 0; padding-left: 20px; }
+  .try li{ margin-bottom: 3px; }
+
+  .eqk{ background:#fff; border:1px solid var(--border); border-radius:3px; padding:12px 14px; overflow-x:auto; margin-bottom:0; }
+  .eqk .katex-display{ margin:0; }
+  .katex{ font-size:1.04em; }
+
+  table.cmp{ width:100%; border-collapse:collapse; font-size:13px; }
+  table.cmp th, table.cmp td{ border:1px solid var(--border); padding:9px 12px; text-align:left; vertical-align:top; }
+  table.cmp th{ background:var(--paper); font-family:"Playfair Display", Georgia, serif; font-weight:400; font-size:15px; }
+  table.cmp td:first-child, table.cmp th:first-child{ background:var(--paper); font-weight:600; font-size:12px; text-transform:uppercase; letter-spacing:0.06em; font-family:"SF Mono",SFMono-Regular,Consolas,monospace; color:var(--ink-soft); width:120px; }
+  table.cmp td{ color: var(--ink); }
+
+  .q{ margin-bottom: 18px; }
+  .q .qt{ font-weight: 600; font-size: 14px; margin-bottom: 8px; }
+  .q .opts{ display:flex; flex-direction:column; gap:6px; }
+  .q button.opt{ border:1px solid var(--border); border-radius:3px; padding:8px 12px; cursor:pointer; background:#fff; text-align:left; font-size:13.5px; font-family:inherit; color:var(--ink); }
+  .q button.opt:hover{ border-color: var(--ink); }
+  .q button.opt.correct{ background: var(--moss-dim); border-color: var(--moss); font-weight:600; }
+  .q button.opt.wrong{ background: var(--rust-dim); border-color: var(--rust); }
+  .q .exp{ display:none; font-size:13px; color:var(--ink-soft); margin-top:8px; background:var(--paper); border-left:3px solid var(--moss); padding:8px 12px; }
+
+  .mono{ font-family:"SF Mono",SFMono-Regular,Consolas,monospace; }
+  footer{ margin-top: 30px; border-top: 1px solid var(--border); padding-top: 14px; font-size: 12px; color: var(--ink-soft); }
+
+  .stack{ display:flex; flex-direction:column; gap:0; }
+  .cols3{ display:grid; grid-template-columns:repeat(3,1fr); gap:14px; margin-bottom:20px; }
+  .cols3 .box{ margin-bottom:0; }
+  @media (max-width:900px){ .cols3{ grid-template-columns:1fr; } }
+  .pillrow{ display:flex; flex-wrap:wrap; gap:6px; margin-bottom:12px; }
+  .pill{ font-size:12px; padding:5px 10px; border:1px solid var(--border); background:#fff; border-radius:14px; cursor:pointer; font-family:inherit; color:var(--ink); }
+  .pill.on{ background:var(--ink); color:#fff; border-color:var(--ink); }
+  canvas.sq1{ aspect-ratio:1/1; height:auto; }
+  canvas.wide{ aspect-ratio:2.2/1; height:auto; }
+  .capline{ font-size:11.5px; color:var(--ink-soft); font-family:"SF Mono",SFMono-Regular,Consolas,monospace; margin-top:6px; }
+  .thumbrow{ display:flex; flex-wrap:wrap; gap:6px; }
+  .thumbrow canvas{ width:64px; height:64px; border:1px solid var(--border); border-radius:3px; image-rendering:pixelated; }
+  .formula{ background:#fff; border:1px solid var(--border); border-radius:3px; padding:10px 14px; overflow-x:auto; margin:8px 0 0; font-size:14px; }
+  .katex{ font-size:1.04em; }
+  .hint{ line-height:1.45; }
+
+  .chips{ display:flex; flex-wrap:wrap; gap:6px; margin:6px 0 10px; }
+  .chip{ font-family:"SF Mono",SFMono-Regular,Consolas,monospace; font-size:12px; padding:3px 8px; border-radius:3px; border:1px solid var(--border); background:#fff; cursor:pointer; }
+  .chip.sel{ outline:2px solid var(--ink); }
+  .field input[type=text], .field textarea{ width:100%; padding:6px 8px; font-size:13px; border:1px solid var(--border); border-radius:3px; background:#fff; font-family:inherit; box-sizing:border-box; }
+  .field textarea{ resize:vertical; min-height:62px; font-family:"SF Mono",SFMono-Regular,Consolas,monospace; font-size:12px; }
+  input.bad{ border-color:var(--rust) !important; background:#fbeeea !important; }
+  .legend{ display:flex; flex-wrap:wrap; gap:4px 12px; font-size:11.5px; color:var(--ink-soft); margin-top:6px; }
+  .legend i{ display:inline-block; width:9px; height:9px; border-radius:50%; margin-right:4px; vertical-align:-1px; }
+  .nn{ display:grid; grid-template-columns:92px 1fr 44px; gap:3px 8px; align-items:center; font-size:12.5px; margin-top:6px; }
+  .nn .w{ font-family:"SF Mono",SFMono-Regular,Consolas,monospace; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+  .nn .bar{ height:10px; background:var(--teal); border-radius:2px; opacity:.8; }
+  .nn .n{ text-align:right; color:var(--ink-soft); font-family:"SF Mono",SFMono-Regular,Consolas,monospace; font-size:11.5px; }
+  .eq{ font-family:"Playfair Display",Georgia,serif; font-size:22px; margin:2px 0 10px; }
+  .eq b{ color:var(--rust); }
+  table.bench{ border-collapse:collapse; width:100%; font-size:12.5px; }
+  table.bench td{ padding:3px 8px; border-bottom:1px solid var(--border); font-family:"SF Mono",SFMono-Regular,Consolas,monospace; }
+  table.bench td.ok{ color:var(--teal); } table.bench td.no{ color:var(--rust); }
+  .field select{ margin-bottom:4px; }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<style>
+  .pnav{ display:flex; align-items:center; gap:14px; margin-bottom:24px; font-family:"SF Mono",SFMono-Regular,Consolas,monospace; font-size:13px; flex-wrap:wrap; }
+  .pnav a{ text-decoration:none; color:var(--ink-soft); }
+  .pnav a:hover{ color:var(--ink); }
+  .pnav .brand{ display:inline-flex; align-items:center; gap:9px; color:var(--ink); font-weight:700; }
+  .pnav .brand img{ width:30px; height:30px; border-radius:7px; display:block; }
+  .pnav .spacer{ flex:1; min-width:8px; }
+  .pnav a.ext::after{ content:" \2197"; color:var(--ink-soft); font-size:11px; }
+  .pnav details.topics{ position:relative; }
+  .pnav details.topics>summary{ list-style:none; cursor:pointer; color:var(--ink); font-weight:600; padding:2px 2px; }
+  .pnav details.topics>summary::-webkit-details-marker{ display:none; }
+  .pnav details.topics>summary::after{ content:" \25BE"; }
+  .pnav details.topics[open]>summary::after{ content:" \25B4"; }
+  .pnav .menu{ position:absolute; top:100%; left:0; margin-top:9px; background:var(--card); border:1px solid var(--border); border-radius:7px; padding:14px 16px; box-shadow:0 8px 26px rgba(45,45,45,0.13); z-index:60; display:flex; flex-wrap:wrap; gap:14px 24px; max-width:min(940px,calc(100vw - 32px)); }
+  .pnav .mgroup{ display:flex; flex-direction:column; gap:6px; }
+  .pnav .mgroup>b{ font-size:10px; letter-spacing:0.09em; text-transform:uppercase; color:var(--accent-deep); margin-bottom:2px; }
+  .pnav .mgroup>b a{ color:inherit; text-decoration:none; }
+  .pnav .mgroup>b a:hover{ text-decoration:underline; }
+  .pnav .mgroup a{ color:var(--ink); white-space:nowrap; }
+  .pnav .mgroup a:hover{ color:var(--accent-deep); }
+  .pnav .mgroup a.cur{ color:var(--accent-deep); font-weight:700; }
+  @media(max-width:700px){ .pnav .menu{ flex-direction:column; gap:14px; } }
+</style>
+<nav class="pnav">
+  <a class="brand" href="index.html"><img src="logo.png" alt=""><span data-lang="en">Playgrounds</span><span data-lang="id">Playground</span></a>
+  <details class="topics">
+    <summary><span data-lang="en">Topics</span><span data-lang="id">Topik</span></summary>
+    <div class="menu">
+      <div class="mgroup"><b><a href="optimization.html"><span data-lang="en">Optimization</span><span data-lang="id">Optimasi</span></a></b>
+        <a href="evolutionary_swarm.html"><span data-lang="en">Evolutionary &amp; swarm</span><span data-lang="id">Evolusioner &amp; swarm</span></a>
+        <a href="apps/optimizers/"><span data-lang="en">Gradient descent</span><span data-lang="id">Gradient descent</span></a>
+      </div>
+      <div class="mgroup"><b><a href="machine_learning.html">Machine Learning</a></b>
+        <a href="classical_ml.html"><span data-lang="en">Classical ML</span><span data-lang="id">ML klasik</span></a>
+        <a href="apps/mlp/"><span data-lang="en">Neural net from scratch</span><span data-lang="id">Neural net dari nol</span></a>
+        <a href="convolution.html"><span data-lang="en">Convolution &amp; CNNs</span><span data-lang="id">Konvolusi &amp; CNN</span></a>
+      </div>
+      <div class="mgroup"><b><a href="scientific_ml_index.html">Scientific ML</a></b>
+        <a href="differential_equations.html"><span data-lang="en">Differential equations</span><span data-lang="id">Persamaan diferensial</span></a>
+        <a href="fourier.html">Fourier</a>
+        <a href="scientific_ml.html">Scientific ML</a>
+      </div>
+      <div class="mgroup"><b><a href="mathematical_logic.html"><span data-lang="en">Mathematical Logic</span><span data-lang="id">Logika Matematika</span></a></b>
+        <a href="propositional_logic.html"><span data-lang="en">Propositional logic</span><span data-lang="id">Logika proposisional</span></a>
+        <a href="predicate_logic.html"><span data-lang="en">Predicate logic</span><span data-lang="id">Logika predikat</span></a>
+        <a href="proof_methods.html"><span data-lang="en">Proof methods</span><span data-lang="id">Metode pembuktian</span></a>
+        <a href="set_theory.html"><span data-lang="en">Set theory</span><span data-lang="id">Teori himpunan</span></a>
+        <a href="logic_algebra.html"><span data-lang="en">Logic algebra</span><span data-lang="id">Aljabar logika</span></a>
+      </div>
+      <div class="mgroup"><b><a href="generative_ai.html">Generative AI</a></b>
+        <a href="autoencoder.html"><span data-lang="en">Autoencoders &amp; VAE</span><span data-lang="id">Autoencoder &amp; VAE</span></a>
+        <a href="gan.html"><span data-lang="en">GANs</span><span data-lang="id">GAN</span></a>
+        <a href="embeddings.html"><span data-lang="en">Embeddings</span><span data-lang="id">Embedding</span></a>
+        <a href="attention.html"><span data-lang="en">Attention</span><span data-lang="id">Attention</span></a>
+        <a href="language_models.html"><span data-lang="en">Language models</span><span data-lang="id">Model bahasa</span></a>
+        <a href="diffusion.html"><span data-lang="en">Diffusion</span><span data-lang="id">Difusi</span></a>
+      </div>
+    </div>
+  </details>
+  <span class="spacer"></span>
+  <a class="ext" href="https://phx.my.id" target="_blank" rel="noopener noreferrer">phx.my.id</a>
+  <a class="ext" href="https://research.phx.my.id" target="_blank" rel="noopener noreferrer"><span data-lang="en">Research</span><span data-lang="id">Riset</span></a>
+  <span class="langtog"><button data-lang-btn="en">EN</button><button data-lang-btn="id">ID</button></span>
+</nav>
+<script>(function(){
+  var path=(location.pathname.split('/').filter(Boolean).pop()||'index.html');
+  var links=document.querySelectorAll('.pnav .menu a');
+  for(var i=0;i<links.length;i++){ var hf=links[i].getAttribute('href')||''; var seg=hf.split('/').filter(Boolean).pop()||'';
+    if(seg===path || (path!=='index.html' && hf.indexOf(path)>=0)) links[i].classList.add('cur'); }
+  document.addEventListener('click',function(e){ var d=document.querySelector('.pnav details[open]'); if(d && !d.contains(e.target)) d.removeAttribute('open'); });
+})();</script>
+
+<header class="top">
+  <p class="eyebrow"><span data-lang="en">Generative AI · 3 of 6</span><span data-lang="id">Generative AI · 3 dari 6</span></p>
+  <h1><span data-lang="en">Embeddings — words as points</span><span data-lang="id">Embedding — kata sebagai titik</span></h1>
+  <p data-lang="en">A neural network cannot read words, only numbers. An <b>embedding</b> turns each word into a short list of numbers (a point in space) so that <b>words used in similar ways land close together</b>. Here you build embeddings from a tiny text corpus yourself: count which words appear near each other, squeeze the counts into a few dimensions, then watch a small <i>skip-gram</i> network learn the same thing live. Everything runs in your browser.</p>
+  <p data-lang="id">Jaringan saraf tidak bisa membaca kata, hanya angka. Sebuah <b>embedding</b> mengubah tiap kata menjadi daftar pendek angka (sebuah titik di ruang) sehingga <b>kata yang dipakai dengan cara serupa berada berdekatan</b>. Di sini kamu membangun embedding dari korpus teks kecil: hitung kata mana yang muncul berdekatan, padatkan hitungan itu ke beberapa dimensi, lalu saksikan jaringan <i>skip-gram</i> kecil mempelajari hal yang sama secara langsung. Semuanya berjalan di browsermu.</p>
+  <p class="crumbs"><a href="generative_ai.html"><span data-lang="en">← Generative AI</span><span data-lang="id">← Generative AI</span></a></p>
+</header>
+
+<div class="tabs">
+  <button class="tab active" data-tab="co"><span data-lang="en">1 · Company a word keeps</span><span data-lang="id">1 · Teman sebuah kata</span></button>
+  <button class="tab" data-tab="map"><span data-lang="en">2 · The embedding map</span><span data-lang="id">2 · Peta embedding</span></button>
+  <button class="tab" data-tab="an"><span data-lang="en">3 · Vector arithmetic</span><span data-lang="id">3 · Aritmetika vektor</span></button>
+  <button class="tab" data-tab="sg"><span data-lang="en">4 · Learn it live (skip-gram)</span><span data-lang="id">4 · Belajar langsung (skip-gram)</span></button>
+  <button class="tab" data-tab="big"><span data-lang="en">5 · The big picture</span><span data-lang="id">5 · Gambaran besar</span></button>
+</div>
+
+<!-- ============ 1 · CO-OCCURRENCE ============ -->
+<div class="section active" id="sec-co">
+  <div class="intro">
+    <svg viewBox="0 0 200 120" xmlns="http://www.w3.org/2000/svg">
+      <g font-family="SF Mono,monospace" font-size="9" fill="#2D2D2D" text-anchor="middle">
+        <text x="38" y="30">king</text><text x="38" y="92">queen</text>
+        <text x="150" y="20">crown</text><text x="150" y="54">palace</text><text x="150" y="88">throne</text></g>
+      <g stroke="#6E6259" stroke-width="1.2" opacity=".6"><path d="M56 27 L128 18"/><path d="M56 27 L128 52"/><path d="M56 27 L128 85"/><path d="M58 89 L128 20"/><path d="M58 89 L128 56"/><path d="M58 89 L128 86"/></g>
+      <text x="100" y="116" text-anchor="middle" font-family="SF Mono,monospace" font-size="8" fill="#A8392A">never side by side — same neighbours</text>
+    </svg>
+    <div class="txt">
+      <h3><span data-lang="en">You shall know a word by the company it keeps</span><span data-lang="id">Kenali sebuah kata dari teman-temannya</span></h3>
+      <p data-lang="en">"King" and "queen" almost never appear in the same sentence here, yet both appear next to <i>crown</i>, <i>palace</i> and <i>throne</i>. Count, for every word, how often each other word appears within a few words of it. Each word's <b>row of counts</b> is already a crude vector. Two words with similar rows are used similarly.</p>
+      <p data-lang="id">"King" dan "queen" nyaris tak pernah muncul dalam kalimat yang sama di sini, namun keduanya muncul di dekat <i>crown</i>, <i>palace</i>, dan <i>throne</i>. Hitung, untuk setiap kata, seberapa sering kata lain muncul dalam beberapa kata di sekitarnya. <b>Baris hitungan</b> setiap kata sudah merupakan vektor kasar. Dua kata dengan baris yang mirip dipakai dengan cara yang mirip.</p>
+    </div>
+  </div>
+  <div class="layout">
+    <div class="panel">
+      <h2><span data-lang="en">Corpus</span><span data-lang="id">Korpus</span></h2>
+      <div class="field"><label><span data-lang="en">context window (± words)</span><span data-lang="id">jendela konteks (± kata)</span><span class="val" id="coWv"></span></label><input type="range" id="coW" min="1" max="6" step="1" value="3"></div>
+      <label class="check" style="display:flex;gap:7px;align-items:center;font-size:13px;margin-bottom:10px"><input type="checkbox" id="coStop" checked> <span data-lang="en">drop stop-words (the, a, of …)</span><span data-lang="id">buang stop-word (the, a, of …)</span></label>
+      <button class="btn block" id="coRe"><span data-lang="en">↻ new random corpus</span><span data-lang="id">↻ korpus acak baru</span></button>
+      <div class="field" style="margin-top:12px"><label><span data-lang="en">Add your own sentences (one per line)</span><span data-lang="id">Tambah kalimatmu sendiri (satu per baris)</span></label><textarea id="coEx" placeholder="the duke wore a crown&#10;the duchess lived in the palace"></textarea></div>
+      <button class="btn block" id="coAdd"><span data-lang="en">Add to corpus</span><span data-lang="id">Tambahkan ke korpus</span></button>
+      <p class="hint" data-lang="en">The corpus is 1,600 template sentences about people, animals, food and countries. Your own lines are repeated ×8 so that rare words survive the frequency cut.</p>
+      <p class="hint" data-lang="id">Korpus berisi 1.600 kalimat templat tentang orang, hewan, makanan, dan negara. Barismu diulang ×8 agar kata langka lolos dari batas frekuensi.</p>
+    </div>
+    <div>
+      <div class="stats">
+        <div class="stat"><div class="label"><span data-lang="en">sentences</span><span data-lang="id">kalimat</span></div><div class="value" id="coS">–</div></div>
+        <div class="stat"><div class="label"><span data-lang="en">vocabulary</span><span data-lang="id">kosakata</span></div><div class="value" id="coV">–</div></div>
+        <div class="stat hi"><div class="label"><span data-lang="en">table cells filled</span><span data-lang="id">sel tabel terisi</span></div><div class="value" id="coF">–</div></div>
+      </div>
+      <div class="box"><h2><span data-lang="en">Pick a word</span><span data-lang="id">Pilih kata</span></h2>
+        <div class="chips" id="coChips"></div>
+        <div class="field" style="max-width:240px;margin-bottom:0"><input type="text" id="coIn" placeholder="…or type a word, press Enter"></div>
+        <div class="legend" id="coLg"></div></div>
+      <div class="cols2">
+        <div class="box"><h2><span data-lang="en">Who keeps company with</span><span data-lang="id">Siapa yang menemani</span> “<span id="coWd"></span>”</h2>
+          <div class="pillrow"><button class="pill on" id="coMp">PPMI</button><button class="pill" id="coMc"><span data-lang="en">raw counts</span><span data-lang="id">hitungan mentah</span></button></div>
+          <canvas id="coBars" style="width:100%;aspect-ratio:1.25/1;height:auto"></canvas></div>
+        <div class="box"><h2><span data-lang="en">Rows of the table: similar words, similar rows</span><span data-lang="id">Baris tabel: kata mirip, baris mirip</span></h2>
+          <canvas id="coHm" style="width:100%;aspect-ratio:1.05/1;height:auto"></canvas>
+          <p class="capline" data-lang="en">rows = words, columns = some context words. king and queen light up the same columns (crown, palace) but differ on he / she.</p>
+          <p class="capline" data-lang="id">baris = kata, kolom = beberapa kata konteks. king dan queen menyalakan kolom yang sama (crown, palace) tetapi berbeda pada he / she.</p></div>
+      </div>
+      <div class="box"><p data-lang="en"><b>Why PPMI instead of raw counts?</b> Frequent words like <i>he</i> co-occur with everything, which says little. <b>Pointwise mutual information</b> asks how much more often two words meet than chance would predict, $\mathrm{PMI}(w,c)=\log\frac{P(w,c)}{P(w)P(c)}$. We keep only positive values (PPMI).</p>
+        <p data-lang="id"><b>Kenapa PPMI, bukan hitungan mentah?</b> Kata sering seperti <i>he</i> muncul bersama semuanya, sehingga tak banyak artinya. <b>Pointwise mutual information</b> bertanya seberapa sering dua kata bertemu dibanding kebetulan, $\mathrm{PMI}(w,c)=\log\frac{P(w,c)}{P(w)P(c)}$. Kita hanya menyimpan nilai positif (PPMI).</p></div>
+      <div class="try" data-lang="en"><b>Try this</b><ol>
+        <li>Select <b>king</b>, then <b>queen</b>, and flip between PPMI and raw counts. The top contexts are nearly identical.</li>
+        <li>Select <b>paris</b> and <b>france</b>: they do co-occur directly, as well as sharing contexts with rome / italy.</li>
+        <li>Untick <b>drop stop-words</b>: "the" and "of" flood the table and the PPMI bars change little, which is exactly what the log-ratio is for.</li>
+        <li>Add a line such as <i>the duke wore a crown</i> and select <b>duke</b>: a brand-new word gets a meaningful row from a single repeated sentence.</li>
+      </ol></div>
+      <div class="try" data-lang="id"><b>Coba ini</b><ol>
+        <li>Pilih <b>king</b>, lalu <b>queen</b>, dan ganti antara PPMI dan hitungan mentah. Konteks teratasnya hampir identik.</li>
+        <li>Pilih <b>paris</b> dan <b>france</b>: keduanya memang muncul bersama, selain berbagi konteks dengan rome / italy.</li>
+        <li>Hilangkan centang <b>buang stop-word</b>: "the" dan "of" membanjiri tabel dan batang PPMI hampir tak berubah, itulah gunanya rasio-log.</li>
+        <li>Tambahkan baris seperti <i>the duke wore a crown</i> lalu pilih <b>duke</b>: kata baru mendapat baris bermakna dari satu kalimat yang diulang.</li>
+      </ol></div>
+    </div>
+  </div>
+</div>
+
+<!-- ============ 2 · MAP ============ -->
+<div class="section" id="sec-map">
+  <div class="intro">
+    <svg viewBox="0 0 200 120" xmlns="http://www.w3.org/2000/svg">
+      <g><circle cx="40" cy="34" r="6" fill="#A8392A"/><circle cx="56" cy="46" r="6" fill="#A8392A"/><circle cx="32" cy="52" r="6" fill="#A8392A"/>
+         <circle cx="120" cy="30" r="6" fill="#2F7069"/><circle cx="136" cy="44" r="6" fill="#2F7069"/><circle cx="112" cy="46" r="6" fill="#2F7069"/>
+         <circle cx="90" cy="92" r="6" fill="#4A6FA5"/><circle cx="106" cy="100" r="6" fill="#4A6FA5"/><circle cx="76" cy="100" r="6" fill="#4A6FA5"/>
+         <circle cx="168" cy="92" r="6" fill="#C17A3E"/><circle cx="154" cy="104" r="6" fill="#C17A3E"/></g>
+      <text x="100" y="12" text-anchor="middle" font-family="SF Mono,monospace" font-size="8" fill="#6E6259">dimension 1 × dimension 2</text>
+    </svg>
+    <div class="txt">
+      <h3><span data-lang="en">Squeeze the table into a few dimensions</span><span data-lang="id">Padatkan tabel menjadi beberapa dimensi</span></h3>
+      <p data-lang="en">The PPMI table has one column per vocabulary word, which is far too many numbers per word and mostly noise. A <b>singular value decomposition (SVD)</b> keeps only the <i>d</i> strongest directions of variation. Each word becomes <i>d</i> numbers; words with similar rows stay near each other. With <i>d</i> = 2 we can draw every word on paper.</p>
+      <p data-lang="id">Tabel PPMI punya satu kolom per kata kosakata, terlalu banyak angka per kata dan kebanyakan derau. <b>Dekomposisi nilai singular (SVD)</b> hanya mempertahankan <i>d</i> arah variasi terkuat. Tiap kata menjadi <i>d</i> angka; kata dengan baris mirip tetap berdekatan. Dengan <i>d</i> = 2 kita bisa menggambar setiap kata di atas kertas.</p>
+    </div>
+  </div>
+  <div class="layout">
+    <div class="panel">
+      <h2><span data-lang="en">Embedding</span><span data-lang="id">Embedding</span></h2>
+      <div class="field"><label><span data-lang="en">dimensions d</span><span data-lang="id">dimensi d</span><span class="val" id="mpDv"></span></label><input type="range" id="mpD" min="2" max="24" step="1" value="12"></div>
+      <p class="hint" data-lang="en">Neighbours use all d dimensions (cosine). The picture can only show two of them at a time.</p>
+      <p class="hint" data-lang="id">Tetangga memakai seluruh d dimensi (cosinus). Gambar hanya bisa menampilkan dua dimensi sekaligus.</p>
+      <div class="field"><label><span data-lang="en">shown axes (principal components)</span><span data-lang="id">sumbu ditampilkan (komponen utama)</span></label></div>
+      <div class="pillrow" id="mpPc"></div>
+      <div class="field"><label><span data-lang="en">Pick a word</span><span data-lang="id">Pilih kata</span></label></div>
+      <div class="chips" id="mpChips"></div>
+      <div class="field" style="margin-bottom:0"><input type="text" id="mpIn" placeholder="…or type a word, press Enter"></div>
+      <div class="formula" style="font-size:12.5px">$$\cos(u,v)=\frac{u\cdot v}{\lVert u\rVert\,\lVert v\rVert}$$</div>
+    </div>
+    <div>
+      <div class="cols2">
+        <div class="box"><h2><span data-lang="en">Every word as a point</span><span data-lang="id">Setiap kata sebagai titik</span></h2><canvas id="mpCv" class="sq1" style="cursor:pointer"></canvas>
+          <div class="legend" id="mpLg"></div></div>
+        <div class="box"><h2><span data-lang="en">Nearest neighbours of</span><span data-lang="id">Tetangga terdekat dari</span> “<span id="mpWd"></span>”</h2>
+          <div class="nn" id="mpNn"></div>
+          <p class="capline" data-lang="en">bar = cosine similarity in all d dimensions (1 = same direction)</p><p class="capline" data-lang="id">batang = kemiripan cosinus pada seluruh d dimensi (1 = arah sama)</p></div>
+      </div>
+      <div class="try" data-lang="en"><b>Try this</b><ol>
+        <li>Set d = 2: only the biggest split survives. People, animals and “everything else” (countries, cities, food) form three blobs. Hover to read labels, click to select.</li>
+        <li>Raise d to 12 and step through the axes. At 3 × 4 fruit and bread, stacked on top of each other before, pull apart; at 7 × 8 the people split by rank: royals, ordinary adults, children.</li>
+        <li>Pick <b>puppy</b>: its nearest neighbours are the other young animals and its own adult, not random words.</li>
+        <li>Raise d to 24: neighbours barely change. A dozen dimensions already carry most of the meaning in this small corpus.</li>
+      </ol></div>
+      <div class="try" data-lang="id"><b>Coba ini</b><ol>
+        <li>Atur d = 2: hanya pemisahan terbesar yang bertahan. Orang, hewan, dan “sisanya” (negara, kota, makanan) membentuk tiga gumpalan. Arahkan kursor untuk membaca label, klik untuk memilih.</li>
+        <li>Naikkan d ke 12 dan telusuri sumbunya. Pada 3 × 4 buah dan roti, yang tadi bertumpuk, terpisah; pada 7 × 8 orang terbagi menurut pangkat: bangsawan, dewasa biasa, anak-anak.</li>
+        <li>Pilih <b>puppy</b>: tetangga terdekatnya adalah hewan muda lain dan induk dewasanya, bukan kata acak.</li>
+        <li>Naikkan d ke 24: tetangga nyaris tak berubah. Selusin dimensi sudah membawa sebagian besar makna pada korpus kecil ini.</li>
+      </ol></div>
+    </div>
+  </div>
+</div>
+
+<!-- ============ 3 · ANALOGY ============ -->
+<div class="section" id="sec-an">
+  <div class="intro">
+    <svg viewBox="0 0 200 120" xmlns="http://www.w3.org/2000/svg">
+      <g font-family="SF Mono,monospace" font-size="9" fill="#2D2D2D" text-anchor="middle"><text x="34" y="100">man</text><text x="34" y="30">king</text><text x="150" y="100">woman</text><text x="150" y="30">queen</text></g>
+      <g stroke-width="2" fill="none"><path d="M34 84 L34 42" stroke="#2F7069"/><path d="M150 84 L150 42" stroke="#2F7069"/><path d="M52 98 L128 98" stroke="#A8392A" stroke-dasharray="4 3"/><path d="M52 28 L128 28" stroke="#A8392A" stroke-dasharray="4 3"/></g>
+    </svg>
+    <div class="txt">
+      <h3><span data-lang="en">Directions carry meaning</span><span data-lang="id">Arah membawa makna</span></h3>
+      <p data-lang="en">Nobody told the algorithm about gender or royalty, yet the step from <i>man</i> to <i>woman</i> points the same way as the step from <i>king</i> to <i>queen</i>. So <b>king − man + woman</b> lands near <b>queen</b>. Pick any three words and see what the arithmetic finds. The score table shows which relations survive at your chosen number of dimensions.</p>
+      <p data-lang="id">Tak ada yang memberi tahu algoritma tentang gender atau kebangsawanan, namun langkah dari <i>man</i> ke <i>woman</i> mengarah sama dengan langkah dari <i>king</i> ke <i>queen</i>. Maka <b>king − man + woman</b> mendarat dekat <b>queen</b>. Pilih tiga kata mana pun dan lihat hasil aritmetikanya. Tabel skor menunjukkan relasi mana yang bertahan pada jumlah dimensi yang kamu pilih.</p>
+    </div>
+  </div>
+  <div class="layout">
+    <div class="panel">
+      <h2><span data-lang="en">a is to b as c is to ?</span><span data-lang="id">a terhadap b seperti c terhadap ?</span></h2>
+      <div class="field"><label>a</label><select id="anA"></select></div>
+      <div class="field"><label>b</label><select id="anB"></select></div>
+      <div class="field"><label>c</label><select id="anC"></select></div>
+      <div class="field"><label><span data-lang="en">dimensions d</span><span data-lang="id">dimensi d</span><span class="val" id="anDv"></span></label><input type="range" id="anD" min="2" max="24" step="1" value="12"></div>
+      <div class="pillrow" id="anPre"></div>
+      <div class="formula" style="font-size:12.5px">$$\hat v=\frac{b-a+c}{\lVert b-a+c\rVert}$$</div>
+    </div>
+    <div>
+      <div class="box">
+        <div class="eq" id="anEq"></div>
+        <div class="cols2">
+          <div><div class="nn" id="anNn"></div>
+            <p class="capline" data-lang="en">the three query words are excluded from the answer, as usual</p><p class="capline" data-lang="id">tiga kata query dikeluarkan dari jawaban, seperti biasa</p></div>
+          <div><canvas id="anCv" class="sq1"></canvas>
+            <p class="capline" data-lang="en">first two principal axes (PCA) of the d-dimensional vectors; solid = a→b, dashed = c→answer</p><p class="capline" data-lang="id">dua sumbu utama (PCA) dari vektor d dimensi; garis penuh = a→b, putus = c→jawaban</p></div>
+        </div>
+      </div>
+      <div class="stats">
+        <div class="stat hi"><div class="label"><span data-lang="en">best answer</span><span data-lang="id">jawaban terbaik</span></div><div class="value" id="anTop">–</div></div>
+        <div class="stat"><div class="label"><span data-lang="en">offset agreement</span><span data-lang="id">kesamaan offset</span></div><div class="value" id="anOff">–</div></div>
+        <div class="stat warn"><div class="label"><span data-lang="en">benchmark at this d</span><span data-lang="id">tolok ukur pada d ini</span></div><div class="value" id="anSc">–</div></div>
+      </div>
+      <div class="box"><h2><span data-lang="en">12 test analogies at the current d</span><span data-lang="id">12 analogi uji pada d saat ini</span></h2><div id="anBench" style="overflow-x:auto"></div>
+        <p class="capline" data-lang="en">offset agreement = cos(b − a, answer − c): how parallel the two arrows are</p><p class="capline" data-lang="id">kesamaan offset = cos(b − a, jawaban − c): seberapa sejajar kedua panah</p></div>
+      <div class="try" data-lang="en"><b>Try this</b><ol>
+        <li>Preset <b>king − man + woman</b> at d = 12: the answer is queen. Now drag d down to 2 or 3: the answer changes and the benchmark collapses. Two numbers cannot hold gender, rank, species and nationality at once.</li>
+        <li>Try <b>paris − france + italy</b>, then your own, such as <b>kitten − cat + horse</b> (foal?). Then try nonsense like <b>bread − apple + king</b>: the arithmetic always returns <i>some</i> answer, even when no relation exists.</li>
+        <li>Watch the dashed and solid arrows on the map. When they are parallel (offset agreement near 1) the analogy works.</li>
+      </ol></div>
+      <div class="try" data-lang="id"><b>Coba ini</b><ol>
+        <li>Preset <b>king − man + woman</b> pada d = 12: jawabannya queen. Lalu seret d turun ke 2 atau 3: jawabannya berubah dan tolok ukur runtuh. Dua angka tak sanggup memuat gender, pangkat, spesies, dan kebangsaan sekaligus.</li>
+        <li>Coba <b>paris − france + italy</b>, lalu milikmu sendiri, misalnya <b>kitten − cat + horse</b> (foal?). Lalu coba yang tak masuk akal seperti <b>bread − apple + king</b>: aritmetika selalu mengembalikan <i>suatu</i> jawaban, bahkan saat tak ada relasi.</li>
+        <li>Perhatikan panah putus dan penuh pada peta. Bila sejajar (kesamaan offset mendekati 1) analoginya berhasil.</li>
+      </ol></div>
+    </div>
+  </div>
+</div>
+
+<!-- ============ 4 · SKIP-GRAM ============ -->
+<div class="section" id="sec-sg">
+  <div class="intro">
+    <svg viewBox="0 0 200 120" xmlns="http://www.w3.org/2000/svg">
+      <g font-family="SF Mono,monospace" font-size="9" fill="#2D2D2D" text-anchor="middle"><rect x="70" y="46" width="34" height="22" fill="#F3DBD5" stroke="#A8392A"/><text x="87" y="61">king</text>
+        <rect x="140" y="12" width="40" height="20" fill="#D3E5E2" stroke="#2F7069"/><text x="160" y="26">crown</text><rect x="140" y="50" width="40" height="20" fill="#D3E5E2" stroke="#2F7069"/><text x="160" y="64">palace</text>
+        <rect x="140" y="88" width="40" height="20" fill="#EFEAE0" stroke="#6E6259"/><text x="160" y="102">banana</text></g>
+      <g stroke-width="1.6"><path d="M106 54 L138 24" stroke="#2F7069"/><path d="M106 57 L138 60" stroke="#2F7069"/><path d="M106 62 L138 96" stroke="#A8392A" stroke-dasharray="3 3"/></g>
+      <text x="30" y="60" text-anchor="middle" font-family="SF Mono,monospace" font-size="8" fill="#6E6259">pull ←→ push</text>
+    </svg>
+    <div class="txt">
+      <h3><span data-lang="en">Predict the neighbours; the vectors fall out</span><span data-lang="id">Prediksi tetangga; vektornya muncul sendiri</span></h3>
+      <p data-lang="en">Instead of counting, <b>word2vec</b> gives every word a random vector and trains a tiny network on one task: given a word, is this other word really one of its neighbours? Real neighbours are <b>pulled</b> together, random words are <b>pushed</b> away (<i>negative sampling</i>). After enough steps, words used alike end up near each other. Press Train and watch the map form.</p>
+      <p data-lang="id">Alih-alih menghitung, <b>word2vec</b> memberi tiap kata vektor acak dan melatih jaringan mungil pada satu tugas: diberi sebuah kata, apakah kata lain ini benar-benar tetangganya? Tetangga asli <b>ditarik</b> mendekat, kata acak <b>didorong</b> menjauh (<i>negative sampling</i>). Setelah cukup langkah, kata yang dipakai serupa berakhir berdekatan. Tekan Train dan saksikan peta terbentuk.</p>
+    </div>
+  </div>
+  <div class="layout">
+    <div class="panel">
+      <h2><span data-lang="en">Training</span><span data-lang="id">Pelatihan</span></h2>
+      <div class="row2" style="margin-bottom:10px"><button class="btn" id="sgGo"></button><button class="btn" id="sgReset"><span data-lang="en">Reset</span><span data-lang="id">Reset</span></button></div>
+      <div class="field"><label><span data-lang="en">dimensions d</span><span data-lang="id">dimensi d</span><span class="val" id="sgDv"></span></label><input type="range" id="sgD" min="1" max="4" step="1" value="1"></div>
+      <div class="field"><label><span data-lang="en">window (± words)</span><span data-lang="id">jendela (± kata)</span><span class="val" id="sgWv"></span></label><input type="range" id="sgW" min="1" max="5" step="1" value="3"></div>
+      <div class="field"><label><span data-lang="en">negatives per pair k</span><span data-lang="id">negatif per pasangan k</span><span class="val" id="sgNv"></span></label><input type="range" id="sgN" min="1" max="10" step="1" value="5"></div>
+      <div class="field"><label><span data-lang="en">learning rate</span><span data-lang="id">learning rate</span><span class="val" id="sgLv"></span></label><input type="range" id="sgLR" min="0.01" max="0.1" step="0.005" value="0.05"></div>
+      <div class="field"><label><span data-lang="en">speed (steps / frame)</span><span data-lang="id">kecepatan (langkah / frame)</span><span class="val" id="sgSv"></span></label><input type="range" id="sgSp" min="200" max="4000" step="200" value="1600"></div>
+      <div class="formula" style="font-size:12px">$$\mathcal{L}=-\log\sigma(u_c\!\cdot\! v_w)-\sum_{k}\log\sigma(-u_{n_k}\!\cdot\! v_w)$$</div>
+      <p class="hint" data-lang="en">v = the word's vector, u = a separate "context" vector. After training we keep v.</p><p class="hint" data-lang="id">v = vektor kata, u = vektor "konteks" terpisah. Setelah pelatihan kita pakai v.</p>
+    </div>
+    <div>
+      <div class="stats">
+        <div class="stat"><div class="label"><span data-lang="en">epochs (passes over pairs)</span><span data-lang="id">epoch (lintasan pasangan)</span></div><div class="value" id="sgEp">0</div></div>
+        <div class="stat hi"><div class="label"><span data-lang="en">loss</span><span data-lang="id">loss</span></div><div class="value" id="sgLs">–</div></div>
+        <div class="stat warn"><div class="label"><span data-lang="en">analogies solved</span><span data-lang="id">analogi terselesaikan</span></div><div class="value" id="sgAn">–</div></div>
+      </div>
+      <div class="cols2">
+        <div class="box"><h2><span data-lang="en">The map while it learns</span><span data-lang="id">Peta saat belajar</span></h2><canvas id="sgCv" class="sq1" style="cursor:pointer"></canvas>
+          <div class="legend" id="sgLg"></div></div>
+        <div class="box"><h2><span data-lang="en">Loss</span><span data-lang="id">Loss</span></h2><canvas id="sgLc" class="wide"></canvas>
+          <h2 style="margin-top:12px"><span data-lang="en">Nearest to</span><span data-lang="id">Terdekat dengan</span> “<span id="sgWd"></span>”</h2>
+          <div class="chips" id="sgChips"></div>
+          <div class="field" style="margin-bottom:6px"><input type="text" id="sgIn" placeholder="…or type a word, press Enter"></div>
+          <div class="nn" id="sgNn"></div></div>
+      </div>
+      <div class="try" data-lang="en"><b>Try this</b><ol>
+        <li>Press <b>Train</b> at d = 2. At first the points are a random smudge. Within a few epochs the groups separate. Pause and hover.</li>
+        <li>Reset and try d = 8 or 16: the loss goes lower and more analogies are solved, since there is room for more independent relations.</li>
+        <li>Set the window to 1: only adjacent words count, so clusters become more about grammar and less about topic. Set it to 5 and topics blur together.</li>
+        <li>Compare with tab 2: counting + SVD and prediction + SGD produce very similar maps, a known result: word2vec implicitly factorises a shifted PMI matrix.</li>
+      </ol></div>
+      <div class="try" data-lang="id"><b>Coba ini</b><ol>
+        <li>Tekan <b>Train</b> pada d = 2. Awalnya titik-titik hanya noda acak. Dalam beberapa epoch kelompok terpisah. Jeda lalu arahkan kursor.</li>
+        <li>Reset dan coba d = 8 atau 16: loss turun lebih rendah dan lebih banyak analogi terselesaikan, karena ada ruang untuk lebih banyak relasi independen.</li>
+        <li>Atur jendela ke 1: hanya kata bersebelahan yang dihitung, sehingga klaster lebih soal tata bahasa dan kurang soal topik. Atur ke 5 dan topik mulai kabur.</li>
+        <li>Bandingkan dengan tab 2: hitung + SVD dan prediksi + SGD menghasilkan peta yang sangat mirip, hasil yang dikenal: word2vec secara implisit memfaktorkan matriks PMI yang digeser.</li>
+      </ol></div>
+    </div>
+  </div>
+</div>
+
+<!-- ============ 5 · BIG PICTURE ============ -->
+<div class="section" id="sec-big">
+  <div class="box">
+    <h2><span data-lang="en">From text to a vector in five steps</span><span data-lang="id">Dari teks ke vektor dalam lima langkah</span></h2>
+    <div style="overflow-x:auto;margin-top:8px"><table class="cmp">
+      <tr><th></th><th><span data-lang="en">What happens</span><span data-lang="id">Apa yang terjadi</span></th><th><span data-lang="en">Where you saw it</span><span data-lang="id">Di mana kamu melihatnya</span></th></tr>
+      <tr><td>1 · <span data-lang="en">tokenise</span><span data-lang="id">tokenisasi</span></td><td><span data-lang="en">cut text into words / sub-words and give each an id</span><span data-lang="id">potong teks menjadi kata / sub-kata dan beri id</span></td><td><span data-lang="en">here: whole words; real LLMs use BPE (<a href="language_models.html">Language models</a>)</span><span data-lang="id">di sini: kata utuh; LLM nyata memakai BPE (<a href="language_models.html">Model bahasa</a>)</span></td></tr>
+      <tr><td>2 · <span data-lang="en">count neighbours</span><span data-lang="id">hitung tetangga</span></td><td><span data-lang="en">how often does each word appear near each other word</span><span data-lang="id">seberapa sering tiap kata muncul dekat kata lain</span></td><td>tab 1</td></tr>
+      <tr><td>3 · <span data-lang="en">compress</span><span data-lang="id">padatkan</span></td><td><span data-lang="en">SVD of the PPMI table, or train skip-gram: both give d numbers per word</span><span data-lang="id">SVD tabel PPMI, atau latih skip-gram: keduanya menghasilkan d angka per kata</span></td><td>tab 2 &amp; 4</td></tr>
+      <tr><td>4 · <span data-lang="en">look up</span><span data-lang="id">cari</span></td><td><span data-lang="en">the embedding table is a V × d matrix; a word id selects one row</span><span data-lang="id">tabel embedding adalah matriks V × d; id kata memilih satu baris</span></td><td><span data-lang="en">its size is the first line of the parameter count in <a href="language_models.html">Language models</a></span><span data-lang="id">ukurannya adalah baris pertama hitungan parameter di <a href="language_models.html">Model bahasa</a></span></td></tr>
+      <tr><td>5 · <span data-lang="en">add context</span><span data-lang="id">tambah konteks</span></td><td><span data-lang="en">attention layers mix each vector with its neighbours, so “bank” in a river sentence differs from “bank” in a money sentence</span><span data-lang="id">lapisan attention mencampur tiap vektor dengan tetangganya, sehingga “bank” pada kalimat sungai berbeda dari “bank” pada kalimat uang</span></td><td><a href="attention.html">Attention</a></td></tr>
+    </table></div>
+  </div>
+  <div class="cols2">
+    <div class="box"><h2><span data-lang="en">What this toy can and cannot do</span><span data-lang="id">Yang bisa dan tak bisa dilakukan mainan ini</span></h2>
+      <p data-lang="en"><b>Can:</b> show that meaning can be a position, that similarity is an angle, and that relations become directions. <b>Cannot:</b> give one word several meanings (“bank” gets one vector, the average of all its uses), nor match real word2vec / GloVe quality, which need billions of words.</p>
+      <p data-lang="id"><b>Bisa:</b> menunjukkan bahwa makna bisa berupa posisi, kemiripan adalah sudut, dan relasi menjadi arah. <b>Tak bisa:</b> memberi satu kata beberapa makna (“bank” hanya punya satu vektor, rata-rata semua pemakaiannya), atau menyamai kualitas word2vec / GloVe asli yang butuh miliaran kata.</p></div>
+    <div class="box"><h2><span data-lang="en">A word of caution</span><span data-lang="id">Sebuah peringatan</span></h2>
+      <p data-lang="en">Embeddings absorb whatever patterns the text contains, including stereotypes. Our corpus makes <i>he</i> go with <i>king</i> by construction. A web-scale corpus makes occupations drift towards gender the same way, without anyone intending it. That is why embeddings are audited, not trusted.</p>
+      <p data-lang="id">Embedding menyerap pola apa pun yang ada pada teks, termasuk stereotip. Korpus kita membuat <i>he</i> berpasangan dengan <i>king</i> secara sengaja. Korpus sebesar web membuat profesi condong ke gender tertentu dengan cara yang sama, tanpa ada yang menghendakinya. Karena itu embedding diaudit, bukan dipercaya begitu saja.</p></div>
+  </div>
+  <div class="box"><h2><span data-lang="en">Where this connects</span><span data-lang="id">Ke mana ini terhubung</span></h2>
+    <p data-lang="en"><b>← <a href="gan.html">GANs</a> / <a href="autoencoder.html">Autoencoders</a>.</b> The autoencoder's latent code is also an embedding, learned for images instead of words.</p><p data-lang="id"><b>← <a href="gan.html">GAN</a> / <a href="autoencoder.html">Autoencoder</a>.</b> Kode laten autoencoder juga sebuah embedding, dipelajari untuk gambar alih-alih kata.</p>
+    <p data-lang="en"><b>→ <a href="attention.html">Attention</a>.</b> Embeddings are the vectors that attention queries, keys and values are made from.</p><p data-lang="id"><b>→ <a href="attention.html">Attention</a>.</b> Embedding adalah vektor tempat query, key, dan value attention dibuat.</p></div>
+  <div class="box"><h2><span data-lang="en">Check yourself</span><span data-lang="id">Uji dirimu</span></h2><div id="quizBox"></div></div>
+</div>
+
+
+<footer>
+  <span data-lang="en">Built for hands-on learning · every model, sampler and training step runs live in this page — no server, no GPU · part of the Interactive Playgrounds.</span><span data-lang="id">Dibuat untuk belajar langsung · setiap model, sampler, dan langkah pelatihan berjalan langsung di halaman ini — tanpa server, tanpa GPU · bagian dari Interactive Playgrounds.</span>
+</footer>
+
+</div>
+<script src="genai_lib.js"></script>
+<script>
+
+(function(){
+"use strict";
+const G=GenAI,$=G.$,T=G.T,C=G.col;
+
+const STOP=new Set('the a an of in on to is was and at it its for with from by as that this are were be'.split(' '));
+/* ---- corpus: template sentences with real structure (gender, rank, species, capital-of ...) ---- */
+const LEXG={
+  people:'man woman boy girl king queen prince princess',
+  animal:'dog cat horse cow lion bird fish puppy kitten foal calf',
+  fruit:'apple banana orange grape',
+  meal:'bread rice soup cheese',
+  city:'paris rome berlin madrid tokyo london',
+  country:'france italy germany spain japan england',
+  lang:'french italian german spanish japanese english'
+};
+function makeCorpus(seed,n){
+  const R=GenAI.rng(seed), pick=a=>a[Math.floor(R()*a.length)], out=[];
+  const P=[ /* word, pronoun, possessive, rank */
+   ['man','he','his','common'],['woman','she','her','common'],['boy','he','his','young'],['girl','she','her','young'],
+   ['king','he','his','royal'],['queen','she','her','royal'],['prince','he','his','ry'],['princess','she','her','ry']];
+  const RK={
+   common:['the W worked in the village','the W lived in a house near the market','the W walked to the market','the W was tired after work'],
+   young:['the W played in the garden','the W went to school','the W was small and happy','the W played with a toy'],
+   royal:['the W wore a crown','the W lived in the palace','the W sat on the throne','the W ruled the land','the W was wise and powerful'],
+   ry:['the W lived in the palace','the W played in the palace garden','the W will rule the land one day','the W was small and wore a little crown']};
+  const ALLP=['the W said X was happy','when the W came home X smiled','the W loved Y country','the W took Y hat','the W said X was tired'];
+  const AN=[['dog','puppy','barks','bone','loyal'],['cat','kitten','purrs','mouse','quiet'],['horse','foal','gallops','hay','fast'],['cow','calf','grazes','grass','gentle']];
+  const WILD=[['lion','roars','jungle','wild'],['bird','sings','nest','sky'],['fish','swims','river','water']];
+  const FR=['apple','banana','orange','grape'], ME=['bread','rice','soup','cheese'];
+  const CP=[['paris','france','french'],['rome','italy','italian'],['berlin','germany','german'],['madrid','spain','spanish'],['tokyo','japan','japanese'],['london','england','english']];
+  for(let i=0;i<n;i++){
+    const t=R();
+    if(t<.34){ const p=pick(P), tpl=R()<.65?pick(RK[p[3]]):pick(ALLP); out.push(tpl.replace(/W/g,p[0]).replace('X',p[1]).replace('Y',p[2])); }
+    else if(t<.58){ const a=pick(AN), kind=R();
+      if(kind<.3) out.push('the '+a[0]+' '+a[2]+' and ate '+a[3]); else if(kind<.5) out.push('the '+a[0]+' is '+a[4]+' and big');
+      else if(kind<.7) out.push('the '+a[1]+' is a baby '+a[0]); else if(kind<.85) out.push('the '+a[1]+' was small and '+a[2]); else out.push('the '+a[0]+' and the '+a[1]+' ran in the field'); }
+    else if(t<.66){ const w=pick(WILD); out.push(R()<.5?'the '+w[0]+' '+w[1]+' in the '+w[2]:'the '+w[0]+' is '+w[3]+' and strong'); }
+    else if(t<.76){ const f=pick(FR); out.push(R()<.5?'people eat the '+f+' it tastes sweet':'the '+f+' grows on a tree and is a fruit'); }
+    else if(t<.84){ const m=pick(ME); out.push(R()<.5?'people cook the '+m+' in the kitchen':'the '+m+' is a food cooked and salty'); }
+    else { const c=pick(CP), k=R();
+      if(k<.35) out.push(c[0]+' is the capital of '+c[1]); else if(k<.55) out.push(c[1]+' is a country with the capital '+c[0]);
+      else if(k<.75) out.push('people in '+c[1]+' speak '+c[2]); else if(k<.9) out.push(c[0]+' is a big city where people speak '+c[2]); else out.push('he travelled from '+c[0]+' across '+c[1]); }
+  }
+  return out;
+}
+function tokenize(s){ return s.toLowerCase().replace(/[^a-z' ]/g,' ').split(/\s+/).filter(Boolean); }
+/* sentences -> {words, idx, cnt, seqs} */
+function buildVocab(sents,opt){
+  const cnt={}, seqs=[];
+  sents.forEach(s=>{ let t=tokenize(s); if(opt.stop) t=t.filter(w=>!STOP.has(w)); seqs.push(t); t.forEach(w=>cnt[w]=(cnt[w]||0)+1); });
+  let words=Object.keys(cnt).filter(w=>cnt[w]>=opt.minCount).sort((a,b)=>cnt[b]-cnt[a]||(a<b?-1:1)).slice(0,opt.maxV||160);
+  const idx={}; words.forEach((w,i)=>idx[w]=i);
+  return {words,idx,cnt:words.map(w=>cnt[w]),seqs:seqs.map(t=>t.filter(w=>w in idx).map(w=>idx[w]))};
+}
+function cooc(V,win){ const n=V.words.length, C=new Float64Array(n*n);
+  V.seqs.forEach(s=>{ for(let i=0;i<s.length;i++) for(let j=i+1;j<=Math.min(s.length-1,i+win);j++){ const w=1/(j-i); C[s[i]*n+s[j]]+=w; C[s[j]*n+s[i]]+=w; } });
+  return C; }
+function ppmi(C,n){ let tot=0; const r=new Float64Array(n); for(let i=0;i<n;i++) for(let j=0;j<n;j++){ r[i]+=C[i*n+j]; tot+=C[i*n+j]; }
+  const M=new Float64Array(n*n); if(tot===0) return M;
+  for(let i=0;i<n;i++) for(let j=0;j<n;j++){ const c=C[i*n+j]; if(c>0&&r[i]>0&&r[j]>0){ const v=Math.log(c*tot/(r[i]*r[j])); if(v>0) M[i*n+j]=v; } }
+  return M; }
+/* Jacobi eigen-decomposition of a symmetric matrix (n x n, row-major) */
+function eigSym(A0,n){ const A=Float64Array.from(A0), Vv=new Float64Array(n*n); for(let i=0;i<n;i++) Vv[i*n+i]=1;
+  for(let sw=0;sw<30;sw++){ let off=0; for(let i=0;i<n;i++) for(let j=i+1;j<n;j++) off+=A[i*n+j]*A[i*n+j]; if(off<1e-14) break;
+    for(let p=0;p<n-1;p++) for(let q=p+1;q<n;q++){ const apq=A[p*n+q]; if(Math.abs(apq)<1e-15) continue;
+      const th=(A[q*n+q]-A[p*n+p])/(2*apq), t=Math.sign(th||1)/(Math.abs(th)+Math.sqrt(th*th+1)), c=1/Math.sqrt(t*t+1), s=t*c;
+      for(let k=0;k<n;k++){ const akp=A[k*n+p], akq=A[k*n+q]; A[k*n+p]=c*akp-s*akq; A[k*n+q]=s*akp+c*akq; }
+      for(let k=0;k<n;k++){ const apk=A[p*n+k], aqk=A[q*n+k]; A[p*n+k]=c*apk-s*aqk; A[q*n+k]=s*apk+c*aqk; }
+      for(let k=0;k<n;k++){ const vkp=Vv[k*n+p], vkq=Vv[k*n+q]; Vv[k*n+p]=c*vkp-s*vkq; Vv[k*n+q]=s*vkp+c*vkq; } } }
+  const ev=[]; for(let i=0;i<n;i++) ev.push([A[i*n+i],i]); ev.sort((a,b)=>b[0]-a[0]);
+  return {vals:ev.map(e=>e[0]),vec:(i,k)=>Vv[i*n+ev[k][1]]}; }
+function svdEmbed(M,n,dmax){ const e=eigSym(M,n), E=[]; for(let i=0;i<n;i++){ const r=new Float64Array(dmax); for(let k=0;k<dmax;k++) r[k]=e.vec(i,k)*Math.sqrt(Math.max(0,e.vals[k])); E.push(r);} return {E,vals:e.vals.slice(0,dmax)}; }
+function norm(v,d){ let s=0; for(let k=0;k<d;k++) s+=v[k]*v[k]; s=Math.sqrt(s)||1; const o=new Float64Array(d); for(let k=0;k<d;k++) o[k]=v[k]/s; return o; }
+/* use the first d columns */
+function unit(E,d){ return E.map(r=>norm(r,d)); }
+function dot(a,b,d){ let s=0; for(let k=0;k<d;k++) s+=a[k]*b[k]; return s; }
+function nearest(U,d,vec,excl,k){ const out=[]; for(let i=0;i<U.length;i++){ if(excl&&excl.includes(i)) continue; out.push([i,dot(U[i],vec,d)]); } out.sort((a,b)=>b[1]-a[1]); return out.slice(0,k); }
+function analogyVec(U,d,a,b,c){ const v=new Float64Array(d); for(let k=0;k<d;k++) v[k]=U[b][k]-U[a][k]+U[c][k]; return norm(v,d); }
+const ANALOGIES=[['man','king','woman','queen'],['king','queen','man','woman'],['boy','prince','girl','princess'],['man','woman','boy','girl'],['dog','puppy','cat','kitten'],['horse','foal','cow','calf'],
+ ['france','paris','italy','rome'],['spain','madrid','japan','tokyo'],['germany','berlin','england','london'],['france','french','spain','spanish'],['italy','italian','japan','japanese'],['paris','france','rome','italy']];
+function analogyScore(V,U,d){ let ok=0,tot=0; ANALOGIES.forEach(q=>{ const ix=q.map(w=>V.idx[w]); if(ix.some(i=>i===undefined)) return; tot++; const r=nearest(U,d,analogyVec(U,d,ix[0],ix[1],ix[2]),[ix[0],ix[1],ix[2]],1); if(r[0][0]===ix[3]) ok++; }); return [ok,tot]; }
+
+/* ---- skip-gram with negative sampling (word2vec) ---- */
+function makeSG(V,d,win,seed){
+  const n=V.words.length, R=GenAI.rng(seed), pairs=[];
+  V.seqs.forEach(s=>{ for(let i=0;i<s.length;i++) for(let j=Math.max(0,i-win);j<=Math.min(s.length-1,i+win);j++) if(j!==i) pairs.push(s[i],s[j]); });
+  const W=new Float64Array(n*d), Cx=new Float64Array(n*d); for(let i=0;i<W.length;i++) W[i]=(R()-.5)/d;
+  const tab=[]; V.cnt.forEach((c,i)=>{ const m=Math.max(1,Math.round(Math.pow(c,.75))); for(let k=0;k<m;k++) tab.push(i); });
+  return {n,d,W,Cx,pairs,np:pairs.length/2,tab,R,step:0,loss:0,lossN:0};
+}
+function sgTrain(m,steps,lr,neg){
+  const {d,W,Cx,pairs,np,tab,R}=m, g=new Float64Array(d);
+  for(let s=0;s<steps;s++){
+    const p=Math.floor(R()*np), a=pairs[2*p], b=pairs[2*p+1]; g.fill(0);
+    for(let k=0;k<=neg;k++){
+      const c=k===0?b:tab[Math.floor(R()*tab.length)]; if(k>0&&c===b) continue;
+      const y=k===0?1:0; let z=0; for(let q=0;q<d;q++) z+=W[a*d+q]*Cx[c*d+q];
+      const sg=1/(1+Math.exp(-z)); m.loss+= -Math.log(Math.max(1e-9,y?sg:1-sg)); m.lossN+= k===0?1:0;
+      const e=(y-sg)*lr; for(let q=0;q<d;q++){ g[q]+=e*Cx[c*d+q]; Cx[c*d+q]+=e*W[a*d+q]; }
+    }
+    for(let q=0;q<d;q++) W[a*d+q]+=g[q];
+    m.step++;
+  }
+}
+function sgVectors(m){ const out=[]; for(let i=0;i<m.n;i++) out.push(Float64Array.from(m.W.subarray(i*m.d,(i+1)*m.d))); return out; }
+
+
+const fmt=(v,d=2)=>isFinite(v)?v.toFixed(d).replace('-','−'):'–';
+const CATC={people:'#A8392A',animal:'#2F7069',fruit:'#C17A3E',meal:'#8F5620',city:'#4A6FA5',country:'#7B5E9C',lang:'#6B8E5A',other:'#B8AFA3'};
+const CATN={people:['people','orang'],animal:['animals','hewan'],fruit:['fruit','buah'],meal:['food','makanan'],city:['cities','kota'],country:['countries','negara'],lang:['languages','bahasa'],other:['other words','kata lain']};
+const catOf={}; for(const k in LEXG) LEXG[k].split(' ').forEach(w=>catOf[w]=k);
+const cat=w=>catOf[w]||'other';
+const CHIPS='king queen man woman boy girl prince princess dog cat puppy kitten horse cow lion paris rome france italy french apple bread'.split(' ');
+const S={seed:7,N:1600,win:3,stop:true,extra:'',V:null,SV:null,Cm:null,Pm:null,d:12,pc:0,sel:'king',n:0};
+let U=null;
+
+function setU(){ const dd=Math.min(S.d,S.SV.vals.length); S.dd=dd; U=unit(S.SV.E,dd); }
+function rebuild(){
+  const sents=makeCorpus(S.seed,S.N);
+  S.extra.split('\n').map(s=>s.trim()).filter(Boolean).forEach(s=>{ for(let k=0;k<8;k++) sents.push(s); });
+  S.nSent=sents.length;
+  S.V=buildVocab(sents,{minCount:3,stop:S.stop,maxV:160});
+  const n=S.n=S.V.words.length;
+  S.Cm=cooc(S.V,S.win); S.Pm=ppmi(S.Cm,n);
+  S.SV=svdEmbed(S.Pm,n,Math.min(24,n));
+  setU();
+  if(!(S.sel in S.V.idx)) S.sel=S.V.words.find(w=>w in catOf)||S.V.words[0];
+}
+function legend(box){ box.innerHTML=Object.keys(CATC).map(k=>'<span><i style="background:'+CATC[k]+'"></i>'+T(CATN[k][0],CATN[k][1])+'</span>').join(''); }
+
+/* ---------- shared widgets ---------- */
+const PK=[];
+function picker(boxId,inId,onPick){
+  const box=$(boxId), inp=$(inId); PK.push({box,onPick});
+  inp.addEventListener('keydown',e=>{ if(e.key==='Enter'){ const w=inp.value.trim().toLowerCase(); if(w in S.V.idx){ inp.classList.remove('bad'); onPick(w); } else inp.classList.add('bad'); } });
+}
+function fillPickers(){ PK.forEach(p=>{ p.box.innerHTML=''; CHIPS.filter(w=>w in S.V.idx).concat(S.extra? S.V.words.filter(w=>!(w in catOf)&&S.extra.toLowerCase().split(/[^a-z']+/).includes(w)&&S.V.cnt[S.V.idx[w]]>=8).slice(0,8):[]).forEach(w=>{ const b=document.createElement('button'); b.className='chip'; b.textContent=w; b.onclick=()=>p.onPick(w); p.box.appendChild(b); }); }); markPickers(); }
+function markPickers(){ PK.forEach(p=>p.box.querySelectorAll('.chip').forEach(b=>b.classList.toggle('sel',b.textContent===S.sel))); }
+function select(w){ S.sel=w; markPickers(); redraw(); }
+function nnList(box,Uv,d,w){
+  const i=S.V.idx[w], r=nearest(Uv,d,Uv[i],[i],8);
+  box.innerHTML=r.map(x=>'<span class="w" style="color:'+CATC[cat(S.V.words[x[0]])]+'">'+S.V.words[x[0]]+'</span><span><div class="bar" style="width:'+Math.max(2,Math.round(Math.max(0,x[1])*100))+'%"></div></span><span class="n">'+fmt(x[1],2)+'</span>').join('');
+  return r;
+}
+function scatter(cv,P,o){
+  o=o||{}; const f=G.fit(cv), ctx=f.ctx, W=f.w, H=f.h; ctx.clearRect(0,0,W,H);
+  let x0=Infinity,x1=-Infinity,y0=Infinity,y1=-Infinity;
+  if(o.bounds){ [x0,x1,y0,y1]=o.bounds; } else P.forEach(p=>{ x0=Math.min(x0,p.x);x1=Math.max(x1,p.x);y0=Math.min(y0,p.y);y1=Math.max(y1,p.y); });
+  const m=30, s=Math.min((W-2*m)/Math.max(1e-9,x1-x0),(H-2*m)/Math.max(1e-9,y1-y0)), cx=(x0+x1)/2, cy=(y0+y1)/2;
+  const X=x=>W/2+(x-cx)*s, Y=y=>H/2-(y-cy)*s;
+  ctx.strokeStyle=C.border; ctx.lineWidth=1; ctx.beginPath(); ctx.moveTo(0,Y(0)); ctx.lineTo(W,Y(0)); ctx.moveTo(X(0),0); ctx.lineTo(X(0),H); ctx.stroke();
+  const pos={}; cv._pts=P.map(p=>{ const q={sx:X(p.x),sy:Y(p.y),i:p.i}; pos[p.i]=q; return q; });
+  const nb=new Set(o.nbr||[]);
+  /* arrows first */
+  (o.arrows||[]).forEach(a=>{ const p=pos[a[0]], q=pos[a[1]]; if(!p||!q) return; ctx.strokeStyle=a[2]; ctx.lineWidth=2.2; ctx.setLineDash(a[3]?[5,4]:[]); ctx.beginPath(); ctx.moveTo(p.sx,p.sy); ctx.lineTo(q.sx,q.sy); ctx.stroke(); ctx.setLineDash([]);
+    const an=Math.atan2(q.sy-p.sy,q.sx-p.sx); ctx.fillStyle=a[2]; ctx.beginPath(); ctx.moveTo(q.sx,q.sy); ctx.lineTo(q.sx-9*Math.cos(an-.4),q.sy-9*Math.sin(an-.4)); ctx.lineTo(q.sx-9*Math.cos(an+.4),q.sy-9*Math.sin(an+.4)); ctx.fill(); });
+  const words=S.V.words;
+  P.forEach(p=>{ const w=words[p.i], core=w in catOf; ctx.fillStyle=CATC[cat(w)]; ctx.globalAlpha=core?1:.5; ctx.beginPath(); ctx.arc(X(p.x),Y(p.y),core?5:3,0,6.3); ctx.fill(); ctx.globalAlpha=1; });
+  nb.forEach(i=>{ const q=pos[i]; if(!q) return; ctx.strokeStyle=C.teal; ctx.lineWidth=2; ctx.beginPath(); ctx.arc(q.sx,q.sy,8,0,6.3); ctx.stroke(); });
+  [o.hov,o.sel].forEach((i,k)=>{ if(i===undefined||i<0) return; const q=pos[i]; if(!q) return; ctx.strokeStyle=C.ink; ctx.lineWidth=k?2.6:1.5; ctx.beginPath(); ctx.arc(q.sx,q.sy,9,0,6.3); ctx.stroke(); });
+  ctx.textAlign='left'; ctx.lineJoin='round'; const placed=[];
+  const lab=(i,bold,force)=>{ const q=pos[i]; if(!q) return; const t=words[i]; ctx.font=(bold?'bold ':'')+'11px Lato,sans-serif'; const wd=ctx.measureText(t).width, r=[q.sx+6,q.sy-18,q.sx+8+wd,q.sy-3];
+    if(!force&&placed.some(p=>r[0]<p[2]&&r[2]>p[0]&&r[1]<p[3]&&r[3]>p[1])) return; placed.push(r);
+    ctx.strokeStyle='rgba(255,253,249,.92)'; ctx.lineWidth=3.5; ctx.strokeText(t,q.sx+7,q.sy-6); ctx.fillStyle=bold?C.ink:C.soft; ctx.fillText(t,q.sx+7,q.sy-6); };
+  [o.sel,o.hov].forEach(i=>{ if(i!==undefined&&i>=0) lab(i,true,true); });
+  nb.forEach(i=>lab(i,true,true)); (o.arrowNodes||[]).forEach(i=>lab(i,true,true));
+  if(!o.sparseLabels) P.forEach(p=>{ if(words[p.i] in catOf) lab(p.i,false,false); });
+}
+function hit(cv,p){ let best=-1,bd=14; (cv._pts||[]).forEach(q=>{ const d=Math.hypot(q.sx-p[0],q.sy-p[1]); if(d<bd){bd=d;best=q.i;} }); return best; }
+
+/* ================= TAB 1 : co-occurrence ================= */
+const co={mode:'ppmi'};
+const ROWS='king queen man woman boy girl dog cat puppy kitten paris rome france italy apple bread'.split(' ');
+const COLS='he she crown palace throne village school garden capital speak city sweet tree baby small field kitchen'.split(' ');
+function drawCo(){
+  const i=S.V.idx[S.sel], n=S.n, W=S.V.words, M=co.mode==='cnt'?S.Cm:S.Pm;
+  $('coWd').textContent=S.sel; $('coWv').textContent=S.win;
+  let nz=0; for(let k=0;k<n*n;k++) if(S.Cm[k]>0) nz++;
+  $('coS').textContent=S.nSent.toLocaleString(); $('coV').textContent=n; $('coF').textContent=Math.round(100*nz/(n*n))+'%';
+  /* bars */
+  let f=G.fit($('coBars')), ctx=f.ctx, w=f.w, h=f.h; ctx.clearRect(0,0,w,h);
+  const rows=[]; for(let j=0;j<n;j++) if(j!==i&&M[i*n+j]>0) rows.push([j,M[i*n+j]]); rows.sort((a,b)=>b[1]-a[1]); const top=rows.slice(0,12), mx=top.length?top[0][1]:1, bh=(h-10)/12;
+  ctx.font='12px "SF Mono",Consolas,monospace'; ctx.textBaseline='middle';
+  top.forEach((r,k)=>{ const y=5+k*bh; ctx.fillStyle=C.ink; ctx.textAlign='right'; ctx.fillText(W[r[0]],96,y+bh/2); ctx.fillStyle=CATC[cat(W[r[0]])]; ctx.globalAlpha=.85; ctx.fillRect(104,y+3,(w-160)*r[1]/mx,bh-6); ctx.globalAlpha=1; ctx.fillStyle=C.soft; ctx.textAlign='left'; ctx.fillText(co.mode==='cnt'?Math.round(r[1]):r[1].toFixed(1),108+(w-160)*r[1]/mx,y+bh/2); });
+  ctx.textBaseline='alphabetic';
+  /* heat map */
+  const rr=ROWS.filter(x=>x in S.V.idx), cc=COLS.filter(x=>x in S.V.idx);
+  f=G.fit($('coHm')); ctx=f.ctx; w=f.w; h=f.h; ctx.clearRect(0,0,w,h);
+  const L=62, Tp=64, cw=(w-L-44)/cc.length, ch=(h-Tp-4)/rr.length; let vmax=0; rr.forEach(a=>cc.forEach(b=>{ vmax=Math.max(vmax,M[S.V.idx[a]*n+S.V.idx[b]]); })); vmax=vmax||1;
+  rr.forEach((a,ri)=>{ cc.forEach((b,ci)=>{ const v=M[S.V.idx[a]*n+S.V.idx[b]]; ctx.fillStyle=G.rgb(G.seq(Math.sqrt(v/vmax))); ctx.fillRect(L+ci*cw,Tp+ri*ch,cw-1,ch-1);
+      if(cw>24&&v>0){ ctx.fillStyle=v/vmax>.55?'#fff':C.soft; ctx.font='9px "SF Mono",Consolas,monospace'; ctx.textAlign='center'; ctx.fillText(co.mode==='cnt'?Math.round(v):v.toFixed(1),L+ci*cw+cw/2,Tp+ri*ch+ch/2+3); } });
+    ctx.fillStyle=a===S.sel?C.rust:C.ink; ctx.font=(a===S.sel?'bold ':'')+'11px "SF Mono",Consolas,monospace'; ctx.textAlign='right'; ctx.fillText(a,L-5,Tp+ri*ch+ch/2+4); });
+  cc.forEach((b,ci)=>{ ctx.save(); ctx.translate(L+ci*cw+cw/2+3,Tp-5); ctx.rotate(-Math.PI/2.6); ctx.fillStyle=C.ink; ctx.font='11px "SF Mono",Consolas,monospace'; ctx.textAlign='left'; ctx.fillText(b,0,0); ctx.restore(); });
+}
+$('coMp').onclick=()=>{ co.mode='ppmi'; $('coMp').classList.add('on'); $('coMc').classList.remove('on'); drawCo(); };
+$('coMc').onclick=()=>{ co.mode='cnt'; $('coMc').classList.add('on'); $('coMp').classList.remove('on'); drawCo(); };
+function recompute(){ document.body.style.cursor='progress'; setTimeout(()=>{ rebuild(); fillPickers(); sg.m=null; resetSG(); redraw(); document.body.style.cursor=''; },20); }
+$('coW').addEventListener('input',()=>{ $('coWv').textContent=$('coW').value; });
+$('coW').addEventListener('change',()=>{ S.win=+$('coW').value; recompute(); });
+$('coStop').onchange=()=>{ S.stop=$('coStop').checked; recompute(); };
+$('coRe').onclick=()=>{ S.seed=1+Math.floor(Math.random()*9999); recompute(); };
+$('coAdd').onclick=()=>{ S.extra=$('coEx').value; recompute(); };
+
+/* ================= TAB 2 : map ================= */
+const mp={hov:-1};
+function pcaProj(Uv,dd){ const fit=Uv.filter((v,i)=>S.V.words[i] in catOf), n=fit.length||1, mean=new Float64Array(dd), Cv=new Float64Array(dd*dd);
+  /* the axes are fitted on the named words only, so that the picture shows the groups rather than the quirks of rare context words */
+  fit.forEach(v=>{ for(let k=0;k<dd;k++) mean[k]+=v[k]/n; });
+  fit.forEach(v=>{ for(let a=0;a<dd;a++) for(let b=0;b<dd;b++) Cv[a*dd+b]+=(v[a]-mean[a])*(v[b]-mean[b])/n; });
+  const e=eigSym(Cv,dd), K=Math.min(dd,8), out=Uv.map(()=>new Float64Array(K));
+  for(let k=0;k<K;k++){ const ax=[]; for(let a=0;a<dd;a++) ax.push(e.vec(a,k)); Uv.forEach((v,i)=>{ let s=0; for(let a=0;a<dd;a++) s+=(v[a]-mean[a])*ax[a]; out[i][k]=s; }); }
+  return out; }
+function mapPoints(Uv,pc,dd){ const Pj=pcaProj(Uv,dd); return S.V.words.map((w,i)=>({i,x:Pj[i][2*pc]||0,y:Pj[i][2*pc+1]||0})); }
+function drawMap(){
+  S.d=+$('mpD').value; setU(); const dd=S.dd; $('mpDv').textContent=dd;
+  const maxpc=Math.max(0,Math.floor(Math.min(dd,8)/2)-1); if(S.pc>maxpc) S.pc=maxpc;
+  const pb=$('mpPc'); pb.innerHTML=''; for(let k=0;k<=maxpc;k++){ const b=document.createElement('button'); b.className='pill'+(k===S.pc?' on':''); b.textContent=(2*k+1)+' × '+(2*k+2); b.onclick=()=>{ S.pc=k; drawMap(); }; pb.appendChild(b); }
+  $('mpWd').textContent=S.sel; const r=nnList($('mpNn'),U,dd,S.sel);
+  scatter($('mpCv'),mapPoints(U,S.pc,dd),{sel:S.V.idx[S.sel],hov:mp.hov,nbr:r.slice(0,6).map(x=>x[0])});
+}
+$('mpD').addEventListener('input',()=>{ drawMap(); if(G.active==='an') drawAn(); });
+G.pointer($('mpCv'),{ move(p){ const h=hit($('mpCv'),p); if(h!==mp.hov){ mp.hov=h; drawMap(); } }, leave(){ mp.hov=-1; drawMap(); }, down(p){ const h=hit($('mpCv'),p); if(h>=0) select(S.V.words[h]); } });
+
+/* ================= TAB 3 : analogy ================= */
+const an={};
+const PRE=[['man','king','woman'],['boy','prince','girl'],['dog','puppy','cat'],['france','paris','italy'],['paris','france','rome'],['france','french','spain'],['king','queen','man']];
+function fillAn(){
+  const core=S.V.words.filter(w=>w in catOf);
+  ['anA','anB','anC'].forEach((id,k)=>{ const s=$(id), cur=s.value; s.innerHTML=core.map(w=>'<option>'+w+'</option>').join(''); s.value=(cur&&core.includes(cur))?cur:PRE[0][k]; s.onchange=drawAn; });
+  const pb=$('anPre'); pb.innerHTML=''; PRE.forEach(q=>{ if(!q.every(w=>w in S.V.idx)) return; const b=document.createElement('button'); b.className='pill'; b.textContent=q[1]+' − '+q[0]+' + '+q[2]; b.onclick=()=>{ $('anA').value=q[0]; $('anB').value=q[1]; $('anC').value=q[2]; drawAn(); }; pb.appendChild(b); });
+}
+function drawAn(){
+  const dd=Math.min(+$('anD').value,S.SV.vals.length); $('anDv').textContent=dd; const Ua=unit(S.SV.E,dd);
+  const a=$('anA').value,b=$('anB').value,c=$('anC').value, ia=S.V.idx[a], ib=S.V.idx[b], ic=S.V.idx[c];
+  if(ia===undefined||ib===undefined||ic===undefined) return;
+  const v=analogyVec(Ua,dd,ia,ib,ic), r=nearest(Ua,dd,v,[ia,ib,ic],6), best=r[0][0];
+  $('anEq').innerHTML=b+' − '+a+' + '+c+' ≈ <b>'+S.V.words[best]+'</b>';
+  $('anNn').innerHTML=r.map((x,k)=>'<span class="w" style="color:'+CATC[cat(S.V.words[x[0]])]+(k?'':';font-weight:bold')+'">'+S.V.words[x[0]]+'</span><span><div class="bar" style="width:'+Math.max(2,Math.round(Math.max(0,x[1])*100))+'%;'+(k?'':'background:var(--rust)')+'"></div></span><span class="n">'+fmt(x[1],2)+'</span>').join('');
+  $('anTop').textContent=S.V.words[best];
+  const o1=new Float64Array(dd),o2=new Float64Array(dd); for(let k=0;k<dd;k++){ o1[k]=Ua[ib][k]-Ua[ia][k]; o2[k]=Ua[best][k]-Ua[ic][k]; }
+  $('anOff').textContent=fmt(dot(norm(o1,dd),norm(o2,dd),dd),2);
+  const sc=analogyScore(S.V,Ua,dd); $('anSc').textContent=sc[0]+' / '+sc[1];
+  /* benchmark */
+  let h='<table class="bench">'; ANALOGIES.forEach(q=>{ const ix=q.map(w=>S.V.idx[w]); if(ix.some(i=>i===undefined)) return; const p=nearest(Ua,dd,analogyVec(Ua,dd,ix[0],ix[1],ix[2]),[ix[0],ix[1],ix[2]],1)[0][0], ok=p===ix[3];
+    h+='<tr><td>'+q[0]+' : '+q[1]+' :: '+q[2]+' : ?</td><td>'+q[3]+'</td><td class="'+(ok?'ok':'no')+'">'+(ok?'✓ ':'✗ ')+S.V.words[p]+'</td></tr>'; }); $('anBench').innerHTML=h+'</table>';
+  scatter($('anCv'),mapPoints(Ua,0,dd),{sparseLabels:true,show:[],arrows:[[ia,ib,C.teal,false],[ic,best,C.rust,true]],arrowNodes:[ia,ib,ic,best]});
+}
+$('anD').addEventListener('input',drawAn);
+
+/* ================= TAB 4 : skip-gram ================= */
+const sg={m:null,run:false,hist:[],frame:0,bnd:null,prevAx:null,hov:-1,sc:[0,12]};
+const DIMS=[2,4,8,16];
+function resetSG(){
+  sg.run=false; sg.hist=[]; sg.frame=0; sg.bnd=null; sg.prevAx=null; sg.hov=-1;
+  const d=DIMS[+$('sgD').value-1]; $('sgDv').textContent=d; $('sgWv').textContent=$('sgW').value; $('sgNv').textContent=$('sgN').value; $('sgLv').textContent=(+$('sgLR').value).toFixed(3); $('sgSv').textContent=$('sgSp').value;
+  sg.m=makeSG(S.V,d,+$('sgW').value,11); sg.sc=analogyScore(S.V,unit(sgVectors(sg.m),d),d); syncGo(); drawSG();
+}
+function syncGo(){ $('sgGo').innerHTML=sg.run?'<span data-lang="en">❚❚ Pause</span><span data-lang="id">❚❚ Jeda</span>':'<span data-lang="en">▶ Train</span><span data-lang="id">▶ Latih</span>'; }
+function proj2(Vec,d){
+  if(d===2) return Vec.map(v=>[v[0],v[1]]);
+  const n=Vec.length, mean=new Float64Array(d), Cv=new Float64Array(d*d);
+  Vec.forEach(v=>{ for(let k=0;k<d;k++) mean[k]+=v[k]/n; });
+  Vec.forEach(v=>{ for(let a=0;a<d;a++) for(let b=0;b<d;b++) Cv[a*d+b]+=(v[a]-mean[a])*(v[b]-mean[b])/n; });
+  const e=eigSym(Cv,d), ax=[0,1].map(k=>{ const u=[]; for(let a=0;a<d;a++) u.push(e.vec(a,k)); return u; });
+  ax.forEach((u,k)=>{ const pv=sg.prevAx&&sg.prevAx[k]; if(pv){ let s=0; for(let a=0;a<d;a++) s+=u[a]*pv[a]; if(s<0) for(let a=0;a<d;a++) u[a]=-u[a]; } });
+  sg.prevAx=ax; return Vec.map(v=>{ let x=0,y=0; for(let a=0;a<d;a++){ x+=(v[a]-mean[a])*ax[0][a]; y+=(v[a]-mean[a])*ax[1][a]; } return [x,y]; });
+}
+function drawSG(){
+  const m=sg.m; if(!m) return; const d=m.d, Vec=sgVectors(m), P2=proj2(Vec,d);
+  let x0=Infinity,x1=-Infinity,y0=Infinity,y1=-Infinity; P2.forEach(p=>{ x0=Math.min(x0,p[0]);x1=Math.max(x1,p[0]);y0=Math.min(y0,p[1]);y1=Math.max(y1,p[1]); });
+  const nb=[x0,x1,y0,y1]; if(!sg.bnd) sg.bnd=nb; else sg.bnd=sg.bnd.map((v,k)=>v+(nb[k]-v)*.25);
+  const Us=unit(Vec,d); $('sgWd').textContent=S.sel; const r=nnList($('sgNn'),Us,d,S.sel);
+  scatter($('sgCv'),P2.map((p,i)=>({i,x:p[0],y:p[1]})),{bounds:sg.bnd,sel:S.V.idx[S.sel],hov:sg.hov,nbr:r.slice(0,5).map(x=>x[0])});
+  const ep=m.step/m.np; $('sgEp').textContent=ep<10?ep.toFixed(1):Math.round(ep);
+  $('sgLs').textContent=sg.hist.length?fmt(sg.hist[sg.hist.length-1],2):'–';
+  $('sgAn').textContent=sg.sc[0]+' / '+sg.sc[1];
+  G.lineChart($('sgLc'),[{data:sg.hist,color:C.rust,label:'loss'}],{empty:T('press Train','tekan Latih')});
+}
+function sgFrame(){
+  if(!sg.run) return; if(G.active!=='sg'){ sg.run=false; syncGo(); return; }
+  const m=sg.m, prog=Math.min(1,m.step/(40*m.np)), lr=+$('sgLR').value*Math.max(.15,1-prog);
+  sgTrain(m,+$('sgSp').value,lr,+$('sgN').value);
+  if(m.lossN>0){ sg.hist.push(m.loss/m.lossN); m.loss=0; m.lossN=0; if(sg.hist.length>500) sg.hist.shift(); }
+  if(++sg.frame%8===0) sg.sc=analogyScore(S.V,unit(sgVectors(m),m.d),m.d);
+  drawSG(); requestAnimationFrame(sgFrame);
+}
+$('sgGo').onclick=()=>{ if(!sg.m) resetSG(); sg.run=!sg.run; syncGo(); if(sg.run) requestAnimationFrame(sgFrame); else { sg.sc=analogyScore(S.V,unit(sgVectors(sg.m),sg.m.d),sg.m.d); drawSG(); } };
+$('sgReset').onclick=resetSG;
+['sgD','sgW','sgN'].forEach(id=>$(id).addEventListener('input',resetSG));
+['sgLR','sgSp'].forEach(id=>$(id).addEventListener('input',()=>{ $('sgLv').textContent=(+$('sgLR').value).toFixed(3); $('sgSv').textContent=$('sgSp').value; }));
+G.pointer($('sgCv'),{ move(p){ const h=hit($('sgCv'),p); if(h!==sg.hov){ sg.hov=h; if(!sg.run) drawSG(); } }, leave(){ sg.hov=-1; if(!sg.run) drawSG(); }, down(p){ const h=hit($('sgCv'),p); if(h>=0) select(S.V.words[h]); } });
+
+/* ================= quiz ================= */
+G.quiz('quizBox',[
+ {q:'“king” and “queen” almost never share a sentence, yet their rows in the co-occurrence table look alike. Why?',o:['The table was edited by hand','They keep company with the same other words (crown, palace, throne …)','They have similar spelling','Both are frequent words'],a:1,e:'Similarity of <i>context</i>, not co-appearance, is what embeddings capture: "you shall know a word by the company it keeps".'},
+ {q:'Why does the “king − man + woman” analogy fail at d = 2?',o:['Cosine is undefined in 2-D','Two numbers per word cannot hold gender, rank, species and nationality at the same time','Skip-gram needs d ≥ 10 to run at all','The corpus is too small'],a:1,e:'Each independent relation needs its own direction. With only two dimensions they overwrite each other; with a dozen there is room.'},
+ {q:'What does cosine similarity compare?',o:['The lengths of the vectors','The direction (angle) of the vectors','The number of shared letters','The frequency of the words'],a:1,e:'Frequent words tend to get longer vectors, but the angle is what carries meaning. Cosine ignores length.'},
+ {q:'How does the embedding in GPT-style models differ from a word2vec vector?',o:['It does not differ','It is a lookup table learned together with the rest of the network, then made context-dependent by attention layers','GPT uses one-hot vectors only','GPT embeddings always have exactly two dimensions'],a:1,e:'A static vector gives “bank” one meaning; in a transformer, attention mixes in the neighbours so each occurrence gets its own vector.'}
+],[
+ {q:'“king” dan “queen” hampir tak pernah satu kalimat, tetapi barisnya pada tabel co-occurrence mirip. Kenapa?',o:['Tabel diedit tangan','Keduanya berteman dengan kata lain yang sama (crown, palace, throne …)','Ejaannya mirip','Keduanya kata yang sering muncul'],a:1,e:'Yang ditangkap embedding adalah kemiripan <i>konteks</i>, bukan kemunculan bersama: "kenali kata dari teman-temannya".'},
+ {q:'Kenapa analogi “king − man + woman” gagal pada d = 2?',o:['Cosinus tak terdefinisi di 2-D','Dua angka per kata tak sanggup memuat gender, pangkat, spesies, dan kebangsaan sekaligus','Skip-gram butuh d ≥ 10 agar bisa jalan','Korpusnya terlalu kecil'],a:1,e:'Tiap relasi independen butuh arahnya sendiri. Dengan dua dimensi mereka saling menimpa; dengan belasan ada ruang.'},
+ {q:'Apa yang dibandingkan cosine similarity?',o:['Panjang vektor','Arah (sudut) vektor','Jumlah huruf yang sama','Frekuensi kata'],a:1,e:'Kata sering cenderung mendapat vektor lebih panjang, tetapi sudutlah yang membawa makna. Cosinus mengabaikan panjang.'},
+ {q:'Apa beda embedding pada model gaya GPT dengan vektor word2vec?',o:['Tidak ada bedanya','Ia tabel pencarian yang dilatih bersama seluruh jaringan, lalu dibuat bergantung konteks oleh lapisan attention','GPT hanya memakai vektor one-hot','Embedding GPT selalu persis dua dimensi'],a:1,e:'Vektor statis memberi “bank” satu makna; di transformer, attention mencampurkan tetangga sehingga tiap kemunculan punya vektor sendiri.'}
+]);
+
+/* ================= wiring ================= */
+function redraw(){
+  if(!S.V) return;
+  if(G.active==='co') drawCo(); if(G.active==='map') drawMap(); if(G.active==='an') drawAn(); if(G.active==='sg'){ syncGo(); drawSG(); }
+}
+picker('coChips','coIn',select); picker('mpChips','mpIn',select); picker('sgChips','sgIn',select);
+rebuild(); fillPickers(); fillAn(); resetSG();
+legend($('coLg')); legend($('mpLg')); legend($('sgLg'));
+G.tabs(n=>{ if(n==='co') $('coWv').textContent=S.win; redraw(); });
+G.onLang(()=>{ legend($('coLg')); legend($('mpLg')); legend($('sgLg')); syncGo(); redraw(); });
+G.initLang(); redraw();
+window.addEventListener('resize',redraw);
+})();
+
+</script>
+</body>
+</html>

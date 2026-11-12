@@ -1,0 +1,332 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Generative AI — Interactive Playgrounds</title>
+<link rel="icon" type="image/png" href="logo.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=Lato:wght@300;400;700&display=swap" rel="stylesheet">
+<script>try{var _l=localStorage.getItem('phxLang');if(_l==='id'||_l==='en')document.documentElement.lang=_l;}catch(e){}</script>
+<style>
+  :root{
+    --paper: #FAF7F2; --paper-line: #EDE4D8; --ink: #2D2D2D; --ink-soft: #6E6259;
+    --moss: #C17A3E; --moss-dim: #F0DCC6; --rust: #A8392A; --rust-dim: #F3DBD5;
+    --gold: #2F7069; --accent-deep: #8F5620; --gold-dim: #D3E5E2; --card: #FFFDF9; --border: #E4DACB;
+  }
+  *{ box-sizing: border-box; }
+  html[lang="en"] [data-lang="id"], html[lang="id"] [data-lang="en"]{ display: none !important; }
+  body{
+    margin:0; background: var(--paper); color: var(--ink);
+    font-family: Lato, "Helvetica Neue", Helvetica, Arial, sans-serif; line-height: 1.5;
+    background-image: linear-gradient(var(--paper-line) 1px, transparent 1px), linear-gradient(90deg, var(--paper-line) 1px, transparent 1px);
+    background-size: 28px 28px; background-attachment: fixed;
+  }
+  .wrap{ max-width: 900px; margin: 0 auto; padding: 48px 24px 80px; }
+  header.top{ margin-bottom: 34px; border-bottom: 2px solid var(--ink); padding-bottom: 18px; }
+  .topnav{ display: flex; align-items: center; gap: 16px; margin-bottom: 28px; font-family: "SF Mono", SFMono-Regular, Consolas, monospace; font-size: 13px; flex-wrap: wrap; }
+  .topnav .spacer{ flex: 1; min-width: 12px; }
+  .topnav a{ text-decoration: none; color: var(--ink-soft); }
+  .topnav a:hover{ color: var(--ink); }
+  .topnav a.home{ display: inline-flex; align-items: center; gap: 9px; color: var(--ink); font-weight: 600; }
+  .topnav a.home img{ width: 30px; height: 30px; border-radius: 7px; display: block; }
+  .topnav a.here{ color: var(--accent-deep); font-weight: 600; }
+  .langtog{ display: inline-flex; border: 1px solid var(--border); border-radius: 20px; overflow: hidden; }
+  .langtog button{ font-family: inherit; font-size: 11.5px; letter-spacing: 0.06em; padding: 4px 11px; border: 0; background: #fff; color: var(--ink-soft); cursor: pointer; }
+  .langtog button.on{ background: var(--accent-deep); color: #fff; font-weight: 700; }
+  .eyebrow{ font-family: "SF Mono", SFMono-Regular, Consolas, monospace; font-size: 12px; letter-spacing: 0.12em; text-transform: uppercase; color: var(--moss); margin: 0; }
+  h1{ font-family: "Playfair Display", Georgia, serif; font-weight: 600; font-size: 36px; margin: 0 0 10px; }
+  header.top p{ margin: 0; color: var(--ink-soft); max-width: 640px; font-size: 15px; }
+  header.top p.eyebrow{ color: var(--accent-deep); }
+
+  .cathead{ font-family:"SF Mono", SFMono-Regular, Consolas, monospace; font-size:12px; letter-spacing:0.12em; text-transform:uppercase; color:var(--accent-deep); font-weight:700; margin:30px 0 4px; padding-bottom:6px; border-bottom:1px solid var(--border); }
+  .cathead:first-child{ margin-top:4px; }
+  .catnote{ margin:2px 0 -4px; font-size:13px; color:var(--ink-soft); }
+  .grid{ display: grid; grid-template-columns: 1fr; gap: 18px; }
+
+  a.card{
+    display: grid; grid-template-columns: 76px 1fr auto; gap: 20px; align-items: start;
+    background: var(--card); border: 1px solid var(--border); border-radius: 4px;
+    padding: 22px 24px; text-decoration: none; color: var(--ink);
+    transition: border-color .15s ease, transform .15s ease;
+  }
+  a.card:hover{ border-color: var(--ink); transform: translateX(4px); }
+  a.card:focus-visible{ outline: 2px solid var(--moss); outline-offset: 2px; }
+  .ill{
+    display: flex; flex-direction: column; align-items: center; gap: 8px;
+    border-right: 1px solid var(--border); padding-right: 18px;
+  }
+  .ill svg{ width: 46px; height: 46px; display: block; }
+  .ill small{ font-family: "SF Mono", SFMono-Regular, Consolas, monospace; font-size: 9.5px; letter-spacing: 0.09em; text-transform: uppercase; color: var(--ink-soft); text-align: center; line-height: 1.3; }
+  .card h2{ font-family: "Playfair Display", Georgia, serif; font-weight: 600; font-size: 21px; margin: 0 0 6px; }
+  .card p{ margin: 0 0 10px; font-size: 13.5px; color: var(--ink-soft); }
+  .tags{ display: flex; flex-wrap: wrap; gap: 6px; }
+  .tag{
+    font-family: "SF Mono", SFMono-Regular, Consolas, monospace; font-size: 11px;
+    padding: 2px 8px; border: 1px solid var(--border); border-radius: 10px; background: #fff; color: var(--ink-soft);
+  }
+  .go{ align-self: center; font-family: "SF Mono", SFMono-Regular, Consolas, monospace; font-size: 13px; color: var(--accent-deep); white-space: nowrap; }
+
+  @media (max-width: 640px){
+    a.card{ grid-template-columns: 1fr; }
+    .ill{ flex-direction: row; justify-content: flex-start; gap: 12px; border-right: none; border-bottom: 1px solid var(--border); padding: 0 0 10px; }
+    .go{ align-self: start; }
+  }
+
+  .crumbs{ font-size: 12.5px; margin: 16px 0 0; font-family: "SF Mono", SFMono-Regular, Consolas, monospace; }
+  .crumbs a{ color: var(--moss); text-decoration: none; }
+  .crumbs a:hover{ text-decoration: underline; }
+  footer{ margin-top: 40px; font-size: 12.5px; color: var(--ink-soft); border-top: 1px solid var(--border); padding-top: 14px; }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<style>
+  .pnav{ display:flex; align-items:center; gap:14px; margin-bottom:24px; font-family:"SF Mono",SFMono-Regular,Consolas,monospace; font-size:13px; flex-wrap:wrap; }
+  .pnav a{ text-decoration:none; color:var(--ink-soft); }
+  .pnav a:hover{ color:var(--ink); }
+  .pnav .brand{ display:inline-flex; align-items:center; gap:9px; color:var(--ink); font-weight:700; }
+  .pnav .brand img{ width:30px; height:30px; border-radius:7px; display:block; }
+  .pnav .spacer{ flex:1; min-width:8px; }
+  .pnav a.ext::after{ content:" \2197"; color:var(--ink-soft); font-size:11px; }
+  .pnav details.topics{ position:relative; }
+  .pnav details.topics>summary{ list-style:none; cursor:pointer; color:var(--ink); font-weight:600; padding:2px 2px; }
+  .pnav details.topics>summary::-webkit-details-marker{ display:none; }
+  .pnav details.topics>summary::after{ content:" \25BE"; }
+  .pnav details.topics[open]>summary::after{ content:" \25B4"; }
+  .pnav .menu{ position:absolute; top:100%; left:0; margin-top:9px; background:var(--card); border:1px solid var(--border); border-radius:7px; padding:14px 16px; box-shadow:0 8px 26px rgba(45,45,45,0.13); z-index:60; display:flex; flex-wrap:wrap; gap:14px 24px; max-width:min(940px,calc(100vw - 32px)); }
+  .pnav .mgroup{ display:flex; flex-direction:column; gap:6px; }
+  .pnav .mgroup>b{ font-size:10px; letter-spacing:0.09em; text-transform:uppercase; color:var(--accent-deep); margin-bottom:2px; }
+  .pnav .mgroup>b a{ color:inherit; text-decoration:none; }
+  .pnav .mgroup>b a:hover{ text-decoration:underline; }
+  .pnav .mgroup a{ color:var(--ink); white-space:nowrap; }
+  .pnav .mgroup a:hover{ color:var(--accent-deep); }
+  .pnav .mgroup a.cur{ color:var(--accent-deep); font-weight:700; }
+  @media(max-width:700px){ .pnav .menu{ flex-direction:column; gap:14px; } }
+</style>
+<nav class="pnav">
+  <a class="brand" href="index.html"><img src="logo.png" alt=""><span data-lang="en">Playgrounds</span><span data-lang="id">Playground</span></a>
+  <details class="topics">
+    <summary><span data-lang="en">Topics</span><span data-lang="id">Topik</span></summary>
+    <div class="menu">
+      <div class="mgroup"><b><a href="optimization.html"><span data-lang="en">Optimization</span><span data-lang="id">Optimasi</span></a></b>
+        <a href="evolutionary_swarm.html"><span data-lang="en">Evolutionary &amp; swarm</span><span data-lang="id">Evolusioner &amp; swarm</span></a>
+        <a href="apps/optimizers/"><span data-lang="en">Gradient descent</span><span data-lang="id">Gradient descent</span></a>
+      </div>
+      <div class="mgroup"><b><a href="machine_learning.html">Machine Learning</a></b>
+        <a href="classical_ml.html"><span data-lang="en">Classical ML</span><span data-lang="id">ML klasik</span></a>
+        <a href="apps/mlp/"><span data-lang="en">Neural net from scratch</span><span data-lang="id">Neural net dari nol</span></a>
+        <a href="convolution.html"><span data-lang="en">Convolution &amp; CNNs</span><span data-lang="id">Konvolusi &amp; CNN</span></a>
+      </div>
+      <div class="mgroup"><b><a href="scientific_ml_index.html">Scientific ML</a></b>
+        <a href="differential_equations.html"><span data-lang="en">Differential equations</span><span data-lang="id">Persamaan diferensial</span></a>
+        <a href="fourier.html">Fourier</a>
+        <a href="scientific_ml.html">Scientific ML</a>
+      </div>
+      <div class="mgroup"><b><a href="mathematical_logic.html"><span data-lang="en">Mathematical Logic</span><span data-lang="id">Logika Matematika</span></a></b>
+        <a href="propositional_logic.html"><span data-lang="en">Propositional logic</span><span data-lang="id">Logika proposisional</span></a>
+        <a href="predicate_logic.html"><span data-lang="en">Predicate logic</span><span data-lang="id">Logika predikat</span></a>
+        <a href="proof_methods.html"><span data-lang="en">Proof methods</span><span data-lang="id">Metode pembuktian</span></a>
+        <a href="set_theory.html"><span data-lang="en">Set theory</span><span data-lang="id">Teori himpunan</span></a>
+        <a href="logic_algebra.html"><span data-lang="en">Logic algebra</span><span data-lang="id">Aljabar logika</span></a>
+      </div>
+      <div class="mgroup"><b><a href="generative_ai.html">Generative AI</a></b>
+        <a href="autoencoder.html"><span data-lang="en">Autoencoders &amp; VAE</span><span data-lang="id">Autoencoder &amp; VAE</span></a>
+        <a href="gan.html"><span data-lang="en">GANs</span><span data-lang="id">GAN</span></a>
+        <a href="embeddings.html"><span data-lang="en">Embeddings</span><span data-lang="id">Embedding</span></a>
+        <a href="attention.html"><span data-lang="en">Attention</span><span data-lang="id">Attention</span></a>
+        <a href="language_models.html"><span data-lang="en">Language models</span><span data-lang="id">Model bahasa</span></a>
+        <a href="diffusion.html"><span data-lang="en">Diffusion</span><span data-lang="id">Difusi</span></a>
+      </div>
+    </div>
+  </details>
+  <span class="spacer"></span>
+  <a class="ext" href="https://phx.my.id" target="_blank" rel="noopener noreferrer">phx.my.id</a>
+  <a class="ext" href="https://research.phx.my.id" target="_blank" rel="noopener noreferrer"><span data-lang="en">Research</span><span data-lang="id">Riset</span></a>
+  <span class="langtog"><button data-lang-btn="en">EN</button><button data-lang-btn="id">ID</button></span>
+</nav>
+<script>(function(){
+  var path=(location.pathname.split('/').filter(Boolean).pop()||'index.html');
+  var links=document.querySelectorAll('.pnav .menu a');
+  for(var i=0;i<links.length;i++){ var hf=links[i].getAttribute('href')||''; var seg=hf.split('/').filter(Boolean).pop()||'';
+    if(seg===path || (path!=='index.html' && hf.indexOf(path)>=0)) links[i].classList.add('cur'); }
+  document.addEventListener('click',function(e){ var d=document.querySelector('.pnav details[open]'); if(d && !d.contains(e.target)) d.removeAttribute('open'); });
+})();</script>
+
+<header class="top">
+  <p class="eyebrow"><span data-lang="en">Interactive playgrounds · Generative AI</span><span data-lang="id">Playground interaktif · Generative AI</span></p>
+  <h1>Generative AI</h1>
+  <p data-lang="en">How machines learn to make new things: compressing data into a latent space, playing adversarial games, denoising step by step, turning words into vectors, and predicting the next token with attention. Small models, live training, everything visible.</p>
+  <p data-lang="id">Bagaimana mesin belajar membuat hal baru: memampatkan data ke ruang laten, memainkan permainan adversarial, menghilangkan derau selangkah demi selangkah, mengubah kata menjadi vektor, dan memprediksi token berikutnya dengan attention. Model kecil, pelatihan langsung, semuanya terlihat.</p>
+  <p class="crumbs"><a href="index.html"><span data-lang="en">← all playgrounds</span><span data-lang="id">← semua playground</span></a></p>
+</header>
+
+<div class="grid">
+
+<a class="card" href="autoencoder.html">
+    <div class="ill">
+      <svg viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <polygon points="4,8 16,14 16,26 4,32" fill="#F0DCC6" stroke="#C17A3E"/><polygon points="36,8 24,14 24,26 36,32" fill="#F0DCC6" stroke="#C17A3E"/>
+        <rect x="16" y="16" width="8" height="8" fill="#D3E5E2" stroke="#2F7069"/>
+      </svg>
+      <small><span data-lang="en">4 labs</span><span data-lang="id">4 lab</span></small>
+    </div>
+    <div>
+      <h2><span data-lang="en">Autoencoders &amp; VAE</span><span data-lang="id">Autoencoder &amp; VAE</span></h2>
+      <p data-lang="en">Squeeze data through a bottleneck and rebuild it: a latent line that unrolls a curve, a latent atlas trained live as AE or VAE, and the KL term and reparameterization trick made visible.</p>
+      <p data-lang="id">Memeras data lewat leher botol lalu membangunnya kembali: garis laten yang membentangkan kurva, atlas laten yang dilatih langsung sebagai AE atau VAE, serta suku KL dan trik reparameterisasi yang dibuat kasatmata.</p>
+      <div class="tags">
+        <span class="tag">autoencoder</span><span class="tag">VAE</span><span class="tag">latent space</span><span class="tag">KL · β</span><span class="tag">reparameterization</span>
+      </div>
+    </div>
+    <div class="go"><span data-lang="en">open →</span><span data-lang="id">buka →</span></div>
+  </a>
+
+<a class="card" href="gan.html">
+    <div class="ill">
+      <svg viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <rect x="3" y="6" width="14" height="10" fill="#F0DCC6" stroke="#C17A3E"/><rect x="23" y="24" width="14" height="10" fill="#D3E5E2" stroke="#2F7069"/>
+        <path d="M17 11 H 30 V 24" stroke="#6E6259"/><circle cx="30" cy="11" r="2.5" fill="#A8392A"/>
+      </svg>
+      <small><span data-lang="en">3 labs</span><span data-lang="id">3 lab</span></small>
+    </div>
+    <div>
+      <h2><span data-lang="en">GANs</span><span data-lang="id">GAN</span></h2>
+      <p data-lang="en">A counterfeiter and a detective: train a generator and discriminator live on 2-D data, watch D's opinion as a colour field, catch mode collapse, then play the minimax game by hand in 1-D.</p>
+      <p data-lang="id">Pemalsu dan detektif: latih generator dan diskriminator langsung pada data 2-D, lihat pendapat D sebagai medan warna, tangkap mode collapse, lalu mainkan permainan minimax dengan tangan di 1-D.</p>
+      <div class="tags">
+        <span class="tag">generator</span><span class="tag">discriminator</span><span class="tag">mode collapse</span><span class="tag">minimax</span><span class="tag">JS divergence</span>
+      </div>
+    </div>
+    <div class="go"><span data-lang="en">open →</span><span data-lang="id">buka →</span></div>
+  </a>
+
+<a class="card" href="embeddings.html">
+    <div class="ill">
+      <svg viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <g fill="#A8392A"><circle cx="9" cy="10" r="2"/><circle cx="14" cy="14" r="2"/><circle cx="8" cy="17" r="2"/></g>
+        <g fill="#2F7069"><circle cx="29" cy="9" r="2"/><circle cx="33" cy="15" r="2"/><circle cx="26" cy="15" r="2"/></g>
+        <g fill="#4A6FA5"><circle cx="18" cy="30" r="2"/><circle cx="24" cy="33" r="2"/><circle cx="13" cy="34" r="2"/></g>
+        <path d="M10 18 L28 15" stroke="#6E6259" stroke-dasharray="2 2"/>
+      </svg>
+      <small><span data-lang="en">4 labs</span><span data-lang="id">4 lab</span></small>
+    </div>
+    <div>
+      <h2><span data-lang="en">Embeddings</span><span data-lang="id">Embedding</span></h2>
+      <p data-lang="en">Words as points: count which words keep company, squeeze the table into a few dimensions, do king − man + woman arithmetic, and watch a skip-gram network learn the map live from your own sentences.</p>
+      <p data-lang="id">Kata sebagai titik: hitung kata mana yang berteman, padatkan tabelnya ke beberapa dimensi, lakukan aritmetika king − man + woman, dan saksikan jaringan skip-gram mempelajari petanya langsung dari kalimatmu sendiri.</p>
+      <div class="tags">
+        <span class="tag">co-occurrence</span><span class="tag">PPMI · SVD</span><span class="tag">analogies</span><span class="tag">word2vec</span><span class="tag">cosine</span>
+      </div>
+    </div>
+    <div class="go"><span data-lang="en">open →</span><span data-lang="id">buka →</span></div>
+  </a>
+
+<a class="card" href="attention.html">
+    <div class="ill">
+      <svg viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <circle cx="8" cy="20" r="3" fill="#2D2D2D"/>
+        <g stroke="#6E6259"><line x1="8" y1="20" x2="30" y2="8" stroke-width="3" opacity=".6"/><line x1="8" y1="20" x2="30" y2="20" stroke-width="1.5" opacity=".6"/><line x1="8" y1="20" x2="30" y2="32" stroke-width=".8" opacity=".6"/></g>
+        <circle cx="32" cy="8" r="4" fill="#A8392A"/><circle cx="32" cy="20" r="3" fill="#2F7069"/><circle cx="32" cy="32" r="2" fill="#C17A3E"/>
+      </svg>
+      <small><span data-lang="en">5 labs</span><span data-lang="id">5 lab</span></small>
+    </div>
+    <div>
+      <h2><span data-lang="en">Attention</span><span data-lang="id">Attention</span></h2>
+      <p data-lang="en">Attention as a soft lookup you can drag: queries, keys and values in 2-D, why we divide by √d, a hand-wired head reading a real sentence with causal masking, and sinusoidal positions.</p>
+      <p data-lang="id">Attention sebagai pencarian lunak yang bisa diseret: query, key, dan value di 2-D, mengapa dibagi √d, sebuah head rakitan tangan yang membaca kalimat dengan causal masking, dan posisi sinusoidal.</p>
+      <div class="tags">
+        <span class="tag">Q · K · V</span><span class="tag">softmax</span><span class="tag">√d scaling</span><span class="tag">causal mask</span><span class="tag">positional encoding</span>
+      </div>
+    </div>
+    <div class="go"><span data-lang="en">open →</span><span data-lang="id">buka →</span></div>
+  </a>
+
+<a class="card" href="language_models.html">
+    <div class="ill">
+      <svg viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <g stroke="#2D2D2D" stroke-width=".8"><rect x="3" y="8" width="9" height="9" fill="#F0DCC6"/><rect x="13" y="8" width="14" height="9" fill="#D3E5E2"/><rect x="28" y="8" width="9" height="9" fill="#F3DBD5"/><rect x="3" y="23" width="18" height="9" fill="#D3E5E2"/><rect x="22" y="23" width="9" height="9" fill="#F0DCC6"/></g>
+      </svg>
+      <small><span data-lang="en">4 labs</span><span data-lang="id">4 lab</span></small>
+    </div>
+    <div>
+      <h2><span data-lang="en">Language models</span><span data-lang="id">Model bahasa</span></h2>
+      <p data-lang="en">From text to tokens and back: build a BPE tokenizer merge by merge, feel temperature, top-k and top-p on a next-token distribution, and size a transformer from d, L and V.</p>
+      <p data-lang="id">Dari teks ke token dan kembali: bangun tokenizer BPE penggabungan demi penggabungan, rasakan temperatur, top-k, dan top-p pada distribusi token berikutnya, lalu hitung ukuran transformer dari d, L, dan V.</p>
+      <div class="tags">
+        <span class="tag">BPE</span><span class="tag">tokens</span><span class="tag">temperature</span><span class="tag">top-k · top-p</span><span class="tag">parameter count</span>
+      </div>
+    </div>
+    <div class="go"><span data-lang="en">open →</span><span data-lang="id">buka →</span></div>
+  </a>
+
+<a class="card" href="diffusion.html">
+    <div class="ill">
+      <svg viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <g fill="#2F7069"><circle cx="6" cy="30" r="1.8"/><circle cx="10" cy="26" r="1.8"/><circle cx="14" cy="22" r="1.8"/></g>
+        <g fill="#6E6259" opacity=".7"><circle cx="20" cy="12" r="1.8"/><circle cx="25" cy="22" r="1.8"/><circle cx="18" cy="26" r="1.8"/></g>
+        <g fill="#A8392A" opacity=".6"><circle cx="31" cy="8" r="1.8"/><circle cx="35" cy="20" r="1.8"/><circle cx="29" cy="31" r="1.8"/><circle cx="36" cy="33" r="1.8"/></g>
+      </svg>
+      <small><span data-lang="en">4 labs</span><span data-lang="id">4 lab</span></small>
+    </div>
+    <div>
+      <h2><span data-lang="en">Diffusion</span><span data-lang="id">Difusi</span></h2>
+      <p data-lang="en">Destroy data with noise, then generate by reversing it: scrub the noising schedule, watch particles follow an exact score field into the data (DDIM or DDPM), and see what an ideal denoiser guesses.</p>
+      <p data-lang="id">Hancurkan data dengan derau, lalu hasilkan dengan membaliknya: geser jadwal derau, saksikan partikel mengikuti medan skor eksak ke dalam data (DDIM atau DDPM), dan lihat tebakan denoiser ideal.</p>
+      <div class="tags">
+        <span class="tag">forward noising</span><span class="tag">score field</span><span class="tag">DDIM · DDPM</span><span class="tag">denoiser</span><span class="tag">schedules</span>
+      </div>
+    </div>
+    <div class="go"><span data-lang="en">open →</span><span data-lang="id">buka →</span></div>
+  </a>
+
+</div>
+
+<style>
+  .pathbox{ margin-top:26px; background:var(--card); border:1px solid var(--border); border-radius:4px; padding:16px 20px; }
+  .pathbox h3{ font-family:"SF Mono",SFMono-Regular,Consolas,monospace; font-size:12px; letter-spacing:0.1em; text-transform:uppercase; color:var(--ink-soft); margin:0 0 10px; }
+  .pathbox table{ width:100%; border-collapse:collapse; font-size:13px; }
+  .pathbox th,.pathbox td{ border:1px solid var(--border); padding:8px 10px; text-align:left; vertical-align:top; }
+  .pathbox th{ background:var(--paper); font-weight:700; }
+  .pathbox td:first-child{ font-weight:700; background:var(--paper); white-space:nowrap; }
+  .pathbox p{ font-size:13.5px; color:var(--ink-soft); margin:12px 0 0; }
+</style>
+<div class="pathbox">
+  <h3><span data-lang="en">One goal, several answers: learn to sample from p(x)</span><span data-lang="id">Satu tujuan, beberapa jawaban: belajar menyampel dari p(x)</span></h3>
+  <div style="overflow-x:auto"><table>
+    <tr><th></th><th>VAE</th><th>GAN</th><th><span data-lang="en">Diffusion</span><span data-lang="id">Difusi</span></th><th><span data-lang="en">Autoregressive LM</span><span data-lang="id">LM autoregresif</span></th></tr>
+    <tr><td><span data-lang="en">Idea</span><span data-lang="id">Gagasan</span></td><td><span data-lang="en">compress to a tidy latent code, decode</span><span data-lang="id">mampatkan ke kode laten rapi, lalu decode</span></td><td><span data-lang="en">a generator tries to fool a critic</span><span data-lang="id">generator mencoba mengelabui kritikus</span></td><td><span data-lang="en">learn to undo noise, step by step</span><span data-lang="id">belajar membatalkan derau, selangkah demi selangkah</span></td><td><span data-lang="en">predict the next token, repeat</span><span data-lang="id">prediksi token berikutnya, ulangi</span></td></tr>
+    <tr><td><span data-lang="en">Sampling</span><span data-lang="id">Sampling</span></td><td><span data-lang="en">1 pass</span><span data-lang="id">1 pass</span></td><td><span data-lang="en">1 pass</span><span data-lang="id">1 pass</span></td><td><span data-lang="en">many passes</span><span data-lang="id">banyak pass</span></td><td><span data-lang="en">one pass per token</span><span data-lang="id">satu pass per token</span></td></tr>
+    <tr><td><span data-lang="en">Playground</span><span data-lang="id">Playground</span></td><td><a href="autoencoder.html">1</a></td><td><a href="gan.html">2</a></td><td><a href="diffusion.html">6</a></td><td><a href="attention.html">4</a> · <a href="language_models.html">5</a></td></tr>
+  </table></div>
+  <p data-lang="en">Suggested order: start with the autoencoder (what a latent space is), then GANs and diffusion for two ways of generating, embeddings for how words become numbers, and finish with attention and language models — the machinery behind chat assistants. No heavy compute anywhere: every lab runs in your browser tab.</p>
+  <p data-lang="id">Urutan yang disarankan: mulai dari autoencoder (apa itu ruang laten), lalu GAN dan difusi untuk dua cara menghasilkan data, embedding untuk cara kata menjadi angka, dan tutup dengan attention serta model bahasa — mesin di balik asisten chat. Tak ada komputasi berat: setiap lab berjalan di tab browser-mu.</p>
+</div>
+
+<footer>
+  <span data-lang="en">Built for hands-on learning · runs in your browser, nothing to install · new topics added over time.</span>
+  <span data-lang="id">Dibuat untuk belajar langsung · berjalan di browser, tanpa instalasi · topik baru terus ditambah.</span>
+</footer>
+
+</div>
+<script>
+(function(){
+  var KEY='phxLang';
+  function apply(l){
+    document.documentElement.lang=l;
+    var b=document.querySelectorAll('[data-lang-btn]');
+    for(var i=0;i<b.length;i++) b[i].classList.toggle('on', b[i].getAttribute('data-lang-btn')===l);
+    if(window.__onLang){ try{ window.__onLang(l); }catch(e){} }
+  }
+  function set(l){ try{ localStorage.setItem(KEY,l); }catch(e){} apply(l); }
+  var saved=null; try{ saved=localStorage.getItem(KEY); }catch(e){}
+  apply(saved==='id'?'id':'en');
+  var btns=document.querySelectorAll('[data-lang-btn]');
+  for(var i=0;i<btns.length;i++) btns[i].addEventListener('click',function(e){ e.preventDefault(); set(this.getAttribute('data-lang-btn')); });
+  window.setLang=set;
+})();
+</script>
+</body>
+</html>

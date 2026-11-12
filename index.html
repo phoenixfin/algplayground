@@ -96,7 +96,7 @@
   .pnav details.topics>summary::-webkit-details-marker{ display:none; }
   .pnav details.topics>summary::after{ content:" \25BE"; }
   .pnav details.topics[open]>summary::after{ content:" \25B4"; }
-  .pnav .menu{ position:absolute; top:100%; left:0; margin-top:9px; background:var(--card); border:1px solid var(--border); border-radius:7px; padding:14px 16px; box-shadow:0 8px 26px rgba(45,45,45,0.13); z-index:60; display:flex; gap:24px; }
+  .pnav .menu{ position:absolute; top:100%; left:0; margin-top:9px; background:var(--card); border:1px solid var(--border); border-radius:7px; padding:14px 16px; box-shadow:0 8px 26px rgba(45,45,45,0.13); z-index:60; display:flex; flex-wrap:wrap; gap:14px 24px; max-width:min(940px,calc(100vw - 32px)); }
   .pnav .mgroup{ display:flex; flex-direction:column; gap:6px; }
   .pnav .mgroup>b{ font-size:10px; letter-spacing:0.09em; text-transform:uppercase; color:var(--accent-deep); margin-bottom:2px; }
   .pnav .mgroup>b a{ color:inherit; text-decoration:none; }
@@ -132,6 +132,14 @@
         <a href="set_theory.html"><span data-lang="en">Set theory</span><span data-lang="id">Teori himpunan</span></a>
         <a href="logic_algebra.html"><span data-lang="en">Logic algebra</span><span data-lang="id">Aljabar logika</span></a>
       </div>
+      <div class="mgroup"><b><a href="generative_ai.html">Generative AI</a></b>
+        <a href="autoencoder.html"><span data-lang="en">Autoencoders &amp; VAE</span><span data-lang="id">Autoencoder &amp; VAE</span></a>
+        <a href="gan.html"><span data-lang="en">GANs</span><span data-lang="id">GAN</span></a>
+        <a href="embeddings.html"><span data-lang="en">Embeddings</span><span data-lang="id">Embedding</span></a>
+        <a href="attention.html"><span data-lang="en">Attention</span><span data-lang="id">Attention</span></a>
+        <a href="language_models.html"><span data-lang="en">Language models</span><span data-lang="id">Model bahasa</span></a>
+        <a href="diffusion.html"><span data-lang="en">Diffusion</span><span data-lang="id">Difusi</span></a>
+      </div>
     </div>
   </details>
   <span class="spacer"></span>
@@ -150,8 +158,8 @@
 <header class="top">
   <p class="eyebrow"><span data-lang="en">Interactive learning playground</span><span data-lang="id">Playground belajar interaktif</span></p>
   <h1>Interactive Playgrounds</h1>
-  <p data-lang="en">Learn by doing. Every playground runs entirely in your browser — tweak the parameters, edit the data, draw your own inputs, and watch the idea come to life. Four topics so far, twelve playgrounds in all, with more added over time. Nothing to install.</p>
-  <p data-lang="id">Belajar sambil mencoba. Setiap playground berjalan sepenuhnya di browser-mu — ubah parameternya, sunting datanya, gambar sendiri input-nya, lalu lihat idenya jadi hidup. Empat topik sejauh ini, dua belas playground seluruhnya, dan akan terus bertambah. Tanpa instalasi apa pun.</p>
+  <p data-lang="en">Learn by doing. Every playground runs entirely in your browser — tweak the parameters, edit the data, draw your own inputs, and watch the idea come to life. Five topics so far, nineteen playgrounds in all, with more added over time. Nothing to install.</p>
+  <p data-lang="id">Belajar sambil mencoba. Setiap playground berjalan sepenuhnya di browser-mu — ubah parameternya, sunting datanya, gambar sendiri input-nya, lalu lihat idenya jadi hidup. Lima topik sejauh ini, sembilan belas playground seluruhnya, dan akan terus bertambah. Tanpa instalasi apa pun.</p>
 </header>
 
 <div class="grid">
@@ -248,6 +256,48 @@
       <p data-lang="id">Satu semester dalam lima lab: tabel kebenaran yang tersusun kolom demi kolom, kuantor pada dunia yang bisa disunting, bukti yang kamu susun ulang dan bedah, teori himpunan yang dilacak balik ke unit 01, serta aljabar yang menulis ulang rumus sampai jadi rangkaian paling ringkas.</p>
       <div class="tags">
         <span class="tag">truth tables</span><span class="tag">quantifiers</span><span class="tag">proof methods</span><span class="tag">induction</span><span class="tag">Venn · sets</span><span class="tag">De Morgan · K-map</span>
+      </div>
+    </div>
+    <div class="go"><span data-lang="en">open →</span><span data-lang="id">buka →</span></div>
+  </a>
+
+
+<a class="card" href="generative_ai.html">
+    <div class="ill">
+      <svg viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <g fill="#2F7069"><circle cx="6" cy="31" r="1.8"/><circle cx="10" cy="27" r="1.8"/><circle cx="14" cy="23" r="1.8"/></g>
+        <g fill="#A8392A" opacity=".65"><circle cx="30" cy="9" r="1.8"/><circle cx="34" cy="20" r="1.8"/><circle cx="26" cy="29" r="1.8"/></g>
+        <path d="M17 22 C 20 16, 22 14, 26 12" stroke="#C17A3E" stroke-width="2"/><polygon points="26,8 31,12 25,15" fill="#C17A3E"/>
+      </svg>
+      <small><span data-lang="en">6 labs</span><span data-lang="id">6 lab</span></small>
+    </div>
+    <div>
+      <h2><span data-lang="en">Generative AI</span><span data-lang="id">Generative AI</span></h2>
+      <p data-lang="en">How machines learn to make new things: a latent space you can walk through, a generator and critic locked in a game, words as points in an embedding space, attention as a soft lookup, language models from tokens to sampling, and diffusion from noise to data.</p>
+      <p data-lang="id">Bagaimana mesin belajar membuat hal baru: ruang laten yang bisa dijelajahi, generator dan kritikus dalam sebuah permainan, kata sebagai titik di ruang embedding, attention sebagai pencarian lunak, model bahasa dari token hingga sampling, dan difusi dari derau ke data.</p>
+      <div class="tags">
+        <span class="tag">VAE</span><span class="tag">GAN</span><span class="tag">embeddings</span><span class="tag">attention</span><span class="tag">tokens · sampling</span><span class="tag">diffusion</span>
+      </div>
+    </div>
+    <div class="go"><span data-lang="en">open →</span><span data-lang="id">buka →</span></div>
+  </a>
+
+
+<a class="card" href="generative_ai.html">
+    <div class="ill">
+      <svg viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <g fill="#2F7069"><circle cx="6" cy="31" r="1.8"/><circle cx="10" cy="27" r="1.8"/><circle cx="14" cy="23" r="1.8"/></g>
+        <g fill="#A8392A" opacity=".65"><circle cx="30" cy="9" r="1.8"/><circle cx="34" cy="20" r="1.8"/><circle cx="26" cy="29" r="1.8"/></g>
+        <path d="M17 22 C 20 16, 22 14, 26 12" stroke="#C17A3E" stroke-width="2"/><polygon points="26,8 31,12 25,15" fill="#C17A3E"/>
+      </svg>
+      <small><span data-lang="en">5 labs</span><span data-lang="id">5 lab</span></small>
+    </div>
+    <div>
+      <h2><span data-lang="en">Generative AI</span><span data-lang="id">Generative AI</span></h2>
+      <p data-lang="en">How machines learn to make new things: a latent space you can walk through, a generator and critic locked in a game, attention as a soft lookup, language models from tokens to sampling, and diffusion from noise to data.</p>
+      <p data-lang="id">Bagaimana mesin belajar membuat hal baru: ruang laten yang bisa dijelajahi, generator dan kritikus dalam sebuah permainan, attention sebagai pencarian lunak, model bahasa dari token hingga sampling, dan difusi dari derau ke data.</p>
+      <div class="tags">
+        <span class="tag">VAE</span><span class="tag">GAN</span><span class="tag">attention</span><span class="tag">tokens · sampling</span><span class="tag">diffusion</span>
       </div>
     </div>
     <div class="go"><span data-lang="en">open →</span><span data-lang="id">buka →</span></div>

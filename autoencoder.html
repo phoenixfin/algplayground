@@ -1,0 +1,700 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="icon" type="image/png" href="logo.png">
+<script>try{var _l=localStorage.getItem('phxLang');if(_l==='id'||_l==='en')document.documentElement.lang=_l;}catch(e){}</script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=Lato:wght@300;400;700&display=swap" rel="stylesheet">
+<title>Autoencoders & VAE — the latent-space lab</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css" crossorigin="anonymous">
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js" crossorigin="anonymous"></script>
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/contrib/auto-render.min.js" crossorigin="anonymous" onload="window.__mathReady&&window.__mathReady()"></script>
+<style>
+  :root{
+    --paper: #FAF7F2; --paper-line: #EDE4D8; --ink: #2D2D2D; --ink-soft: #6E6259;
+    --moss: #C17A3E; --moss-dim: #F0DCC6; --rust: #A8392A; --rust-dim: #F3DBD5;
+    --gold: #2F7069; --accent-deep: #8F5620; --gold-dim: #D3E5E2; --card: #FFFDF9; --border: #E4DACB;
+  }
+  *{ box-sizing: border-box; }
+  html[lang="en"] [data-lang="id"], html[lang="id"] [data-lang="en"]{ display: none !important; }
+  body{
+    margin:0; background: var(--paper); color: var(--ink);
+    font-family: Lato, "Helvetica Neue", Helvetica, Arial, sans-serif; line-height: 1.5;
+    background-image: linear-gradient(var(--paper-line) 1px, transparent 1px), linear-gradient(90deg, var(--paper-line) 1px, transparent 1px);
+    background-size: 28px 28px; background-attachment: fixed;
+  }
+  .wrap{ max-width: 1100px; margin: 0 auto; padding: 36px 24px 80px; }
+  header.top{ margin-bottom: 18px; border-bottom: 2px solid var(--ink); padding-bottom: 14px; }
+  .eyebrow{ font-family: "SF Mono", SFMono-Regular, Consolas, monospace; font-size: 12px; letter-spacing: 0.12em; text-transform: uppercase; color: var(--moss); margin: 0 0 6px; }
+  h1{ font-family: "Playfair Display", "Playfair Display", Georgia, serif; font-weight: 600; font-size: 32px; margin: 0 0 8px; }
+  header.top p{ margin: 0; color: var(--ink-soft); max-width: 800px; font-size: 15px; }
+  header.top p.eyebrow{ color: var(--accent-deep); }
+  .crumbs{ font-size: 12.5px; margin: 14px 0 0; }
+  .crumbs a{ color: var(--moss); }
+  .langtog{ display:inline-flex; border:1px solid var(--border); border-radius:20px; overflow:hidden; }
+  .langtog button{ font-family:inherit; font-size:11.5px; letter-spacing:0.06em; padding:4px 11px; border:0; background:#fff; color:var(--ink-soft); cursor:pointer; }
+  .langtog button.on{ background:var(--accent-deep); color:#fff; font-weight:700; }
+
+  .tabs{ display: flex; gap: 8px; margin: 0 0 22px; flex-wrap: wrap;  position: sticky; top: 0; z-index: 20; background: var(--paper); padding: 12px 0 10px; border-bottom: 1px solid var(--border); }
+  .tab{ padding: 9px 14px; font-size: 13px; font-weight: 600; border: 1px solid var(--ink); border-radius: 3px; background: var(--card); cursor: pointer; }
+  .tab.active{ background: var(--ink); color: #fff; }
+
+  .section{ display: none; }
+  .section.active{ display: block; }
+
+  .intro{ display:grid; grid-template-columns: 200px 1fr; gap: 20px; align-items:center; background: var(--card); border: 1px solid var(--border); border-radius: 4px; padding: 14px 18px; margin-bottom: 20px; }
+  @media (max-width: 700px){ .intro{ grid-template-columns: 1fr; } }
+  .intro svg{ width: 100%; height: auto; display:block; }
+  .intro .txt h3{ margin: 0 0 6px; font-family: "Playfair Display", Georgia, serif; font-size: 17px; font-weight: 400; }
+  .intro .txt p{ margin: 0; font-size: 13.5px; color: var(--ink-soft); }
+
+  .layout{ display: grid; grid-template-columns: 300px 1fr; gap: 24px; align-items: start; }
+  @media (max-width: 820px){
+    .layout{ grid-template-columns: 1fr; }
+    .panel{ position: static !important; top: auto !important; }
+  }
+  .panel{ background: var(--card); border: 1px solid var(--border); border-radius: 4px; padding: 18px; position: sticky; top: 84px; align-self: start; }
+  .panel h2{ font-family: "SF Mono", SFMono-Regular, Consolas, monospace; font-size: 12px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--ink-soft); margin: 18px 0 12px; border-bottom: 1px solid var(--border); padding-bottom: 6px; }
+  .panel h2:first-child{ margin-top: 0; }
+  .field{ margin-bottom: 14px; }
+  .field label{ display: flex; justify-content: space-between; font-size: 13px; font-weight: 600; margin-bottom: 5px; gap:8px; }
+  .field label span.val{ font-weight: 400; color: var(--moss); font-family: "SF Mono", SFMono-Regular, Consolas, monospace; white-space:nowrap; }
+  .field input[type=range]{ width: 100%; accent-color: var(--moss); }
+  .field select{ width: 100%; padding: 6px 8px; font-size: 13px; border: 1px solid var(--border); border-radius: 3px; background: #fff; font-family: inherit; }
+
+  .btn{ display: inline-block; padding: 8px 14px; font-size: 13px; font-weight: 600; border: 1px solid var(--ink); border-radius: 3px; background: var(--card); color: var(--ink); cursor: pointer; }
+  .btn:hover{ background: var(--paper-line); }
+  .btn.primary{ background: var(--moss); color: #fff; border-color: var(--moss); }
+  .btn.primary:hover{ background: #A6642F; }
+  .btn.toggle.active{ background: var(--ink); color: #fff; }
+  .btn.block{ width: 100%; margin-bottom: 8px; }
+  .btngroup{ display:flex; gap:8px; margin-bottom: 14px; }
+  .btngroup .btn{ flex:1; }
+  .row2{ display: flex; gap: 8px; }
+  .row2 > *{ flex: 1; }
+  .hint{ font-size: 12.5px; color: var(--ink-soft); margin: 10px 0 0; }
+
+  .stats{ display: flex; gap: 12px; margin-bottom: 20px; flex-wrap: wrap; }
+  .stat{ flex: 1; min-width: 120px; background: var(--card); border: 1px solid var(--border); border-radius: 4px; padding: 10px 14px; overflow: hidden; }
+  .stat .label{ font-size: 11px; letter-spacing: 0.08em; text-transform: uppercase; color: var(--ink-soft); font-family: "SF Mono", SFMono-Regular, Consolas, monospace; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .stat .value{ font-size: 20px; font-family: "Playfair Display", Georgia, serif; line-height: 1.3; word-break: break-word; }
+  .stat .value.eqv{ font-size: 15px; padding-top: 4px; }
+  .stat.hi .value{ color: var(--moss); }
+  .stat.warn .value{ color: var(--rust); }
+
+  .box{ background: var(--card); border: 1px solid var(--border); border-radius: 4px; padding: 12px 14px; margin-bottom: 20px; }
+  .box h2{ font-family: "SF Mono", SFMono-Regular, Consolas, monospace; font-size: 12px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--ink-soft); margin: 0 0 10px; }
+  .box p{ font-size: 13.5px; color: var(--ink-soft); margin: 8px 0 0; }
+  .box p b{ color: var(--ink); }
+  canvas{ display:block; width:100%; }
+  canvas.big{ height: 430px; cursor: crosshair; }
+  canvas.mid{ height: 230px; }
+  canvas.small{ height: 160px; }
+  canvas.sq{ aspect-ratio: 1.15/1; height:auto; }
+  canvas.anim{ aspect-ratio: 1.15/1; height:auto; }
+  canvas.heat{ height: 200px; }
+
+  .cols2{ display:grid; grid-template-columns: 1fr 1fr; gap: 18px; margin-bottom:20px; }
+  @media (max-width: 900px){ .cols2{ grid-template-columns: 1fr; } }
+  .cols2 .box{ margin-bottom: 0; }
+
+  .legend{ display:flex; gap:16px; font-size:12px; color: var(--ink-soft); margin-top:8px; flex-wrap:wrap; }
+  .legend span{ display:inline-flex; align-items:center; gap:5px; }
+  .swatch{ width:10px; height:10px; border-radius:50%; display:inline-block; }
+
+  .try{ background: var(--gold-dim); border: 1px solid var(--gold); border-radius: 4px; padding: 10px 14px; font-size: 13px; margin-bottom: 20px; }
+  .try b{ text-transform: uppercase; font-size: 11px; letter-spacing: 0.08em; font-family: "SF Mono", SFMono-Regular, Consolas, monospace; color: #27585A; }
+  .try ol{ margin: 6px 0 0; padding-left: 20px; }
+  .try li{ margin-bottom: 3px; }
+
+  .eqk{ background:#fff; border:1px solid var(--border); border-radius:3px; padding:12px 14px; overflow-x:auto; margin-bottom:0; }
+  .eqk .katex-display{ margin:0; }
+  .katex{ font-size:1.04em; }
+
+  table.cmp{ width:100%; border-collapse:collapse; font-size:13px; }
+  table.cmp th, table.cmp td{ border:1px solid var(--border); padding:9px 12px; text-align:left; vertical-align:top; }
+  table.cmp th{ background:var(--paper); font-family:"Playfair Display", Georgia, serif; font-weight:400; font-size:15px; }
+  table.cmp td:first-child, table.cmp th:first-child{ background:var(--paper); font-weight:600; font-size:12px; text-transform:uppercase; letter-spacing:0.06em; font-family:"SF Mono",SFMono-Regular,Consolas,monospace; color:var(--ink-soft); width:120px; }
+  table.cmp td{ color: var(--ink); }
+
+  .q{ margin-bottom: 18px; }
+  .q .qt{ font-weight: 600; font-size: 14px; margin-bottom: 8px; }
+  .q .opts{ display:flex; flex-direction:column; gap:6px; }
+  .q button.opt{ border:1px solid var(--border); border-radius:3px; padding:8px 12px; cursor:pointer; background:#fff; text-align:left; font-size:13.5px; font-family:inherit; color:var(--ink); }
+  .q button.opt:hover{ border-color: var(--ink); }
+  .q button.opt.correct{ background: var(--moss-dim); border-color: var(--moss); font-weight:600; }
+  .q button.opt.wrong{ background: var(--rust-dim); border-color: var(--rust); }
+  .q .exp{ display:none; font-size:13px; color:var(--ink-soft); margin-top:8px; background:var(--paper); border-left:3px solid var(--moss); padding:8px 12px; }
+
+  .mono{ font-family:"SF Mono",SFMono-Regular,Consolas,monospace; }
+  footer{ margin-top: 30px; border-top: 1px solid var(--border); padding-top: 14px; font-size: 12px; color: var(--ink-soft); }
+
+  .stack{ display:flex; flex-direction:column; gap:0; }
+  .cols3{ display:grid; grid-template-columns:repeat(3,1fr); gap:14px; margin-bottom:20px; }
+  .cols3 .box{ margin-bottom:0; }
+  @media (max-width:900px){ .cols3{ grid-template-columns:1fr; } }
+  .pillrow{ display:flex; flex-wrap:wrap; gap:6px; margin-bottom:12px; }
+  .pill{ font-size:12px; padding:5px 10px; border:1px solid var(--border); background:#fff; border-radius:14px; cursor:pointer; font-family:inherit; color:var(--ink); }
+  .pill.on{ background:var(--ink); color:#fff; border-color:var(--ink); }
+  canvas.sq1{ aspect-ratio:1/1; height:auto; }
+  canvas.wide{ aspect-ratio:2.2/1; height:auto; }
+  .capline{ font-size:11.5px; color:var(--ink-soft); font-family:"SF Mono",SFMono-Regular,Consolas,monospace; margin-top:6px; }
+  .thumbrow{ display:flex; flex-wrap:wrap; gap:6px; }
+  .thumbrow canvas{ width:64px; height:64px; border:1px solid var(--border); border-radius:3px; image-rendering:pixelated; }
+  .formula{ background:#fff; border:1px solid var(--border); border-radius:3px; padding:10px 14px; overflow-x:auto; margin:8px 0 0; font-size:14px; }
+  .katex{ font-size:1.04em; }
+  .hint{ line-height:1.45; }
+
+  .zprev{ display:flex; align-items:center; gap:12px; margin-top:10px; }
+  .zprev canvas{ width:72px; height:72px; border:1px solid var(--border); border-radius:3px; image-rendering:pixelated; }
+  .lblrow{ display:flex; gap:8px; align-items:center; font-size:12px; color:var(--ink-soft); margin:8px 0 4px; font-family:"SF Mono",SFMono-Regular,Consolas,monospace; }
+  .check{ display:flex; gap:7px; align-items:center; font-size:13px; margin:6px 0; }
+  .bar2{ display:flex; height:16px; border:1px solid var(--border); border-radius:3px; overflow:hidden; background:#fff; margin-top:6px; }
+  .bar2 i{ display:block; height:100%; }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<style>
+  .pnav{ display:flex; align-items:center; gap:14px; margin-bottom:24px; font-family:"SF Mono",SFMono-Regular,Consolas,monospace; font-size:13px; flex-wrap:wrap; }
+  .pnav a{ text-decoration:none; color:var(--ink-soft); }
+  .pnav a:hover{ color:var(--ink); }
+  .pnav .brand{ display:inline-flex; align-items:center; gap:9px; color:var(--ink); font-weight:700; }
+  .pnav .brand img{ width:30px; height:30px; border-radius:7px; display:block; }
+  .pnav .spacer{ flex:1; min-width:8px; }
+  .pnav a.ext::after{ content:" \2197"; color:var(--ink-soft); font-size:11px; }
+  .pnav details.topics{ position:relative; }
+  .pnav details.topics>summary{ list-style:none; cursor:pointer; color:var(--ink); font-weight:600; padding:2px 2px; }
+  .pnav details.topics>summary::-webkit-details-marker{ display:none; }
+  .pnav details.topics>summary::after{ content:" \25BE"; }
+  .pnav details.topics[open]>summary::after{ content:" \25B4"; }
+  .pnav .menu{ position:absolute; top:100%; left:0; margin-top:9px; background:var(--card); border:1px solid var(--border); border-radius:7px; padding:14px 16px; box-shadow:0 8px 26px rgba(45,45,45,0.13); z-index:60; display:flex; flex-wrap:wrap; gap:14px 24px; max-width:min(940px,calc(100vw - 32px)); }
+  .pnav .mgroup{ display:flex; flex-direction:column; gap:6px; }
+  .pnav .mgroup>b{ font-size:10px; letter-spacing:0.09em; text-transform:uppercase; color:var(--accent-deep); margin-bottom:2px; }
+  .pnav .mgroup>b a{ color:inherit; text-decoration:none; }
+  .pnav .mgroup>b a:hover{ text-decoration:underline; }
+  .pnav .mgroup a{ color:var(--ink); white-space:nowrap; }
+  .pnav .mgroup a:hover{ color:var(--accent-deep); }
+  .pnav .mgroup a.cur{ color:var(--accent-deep); font-weight:700; }
+  @media(max-width:700px){ .pnav .menu{ flex-direction:column; gap:14px; } }
+</style>
+<nav class="pnav">
+  <a class="brand" href="index.html"><img src="logo.png" alt=""><span data-lang="en">Playgrounds</span><span data-lang="id">Playground</span></a>
+  <details class="topics">
+    <summary><span data-lang="en">Topics</span><span data-lang="id">Topik</span></summary>
+    <div class="menu">
+      <div class="mgroup"><b><a href="optimization.html"><span data-lang="en">Optimization</span><span data-lang="id">Optimasi</span></a></b>
+        <a href="evolutionary_swarm.html"><span data-lang="en">Evolutionary &amp; swarm</span><span data-lang="id">Evolusioner &amp; swarm</span></a>
+        <a href="apps/optimizers/"><span data-lang="en">Gradient descent</span><span data-lang="id">Gradient descent</span></a>
+      </div>
+      <div class="mgroup"><b><a href="machine_learning.html">Machine Learning</a></b>
+        <a href="classical_ml.html"><span data-lang="en">Classical ML</span><span data-lang="id">ML klasik</span></a>
+        <a href="apps/mlp/"><span data-lang="en">Neural net from scratch</span><span data-lang="id">Neural net dari nol</span></a>
+        <a href="convolution.html"><span data-lang="en">Convolution &amp; CNNs</span><span data-lang="id">Konvolusi &amp; CNN</span></a>
+      </div>
+      <div class="mgroup"><b><a href="scientific_ml_index.html">Scientific ML</a></b>
+        <a href="differential_equations.html"><span data-lang="en">Differential equations</span><span data-lang="id">Persamaan diferensial</span></a>
+        <a href="fourier.html">Fourier</a>
+        <a href="scientific_ml.html">Scientific ML</a>
+      </div>
+      <div class="mgroup"><b><a href="mathematical_logic.html"><span data-lang="en">Mathematical Logic</span><span data-lang="id">Logika Matematika</span></a></b>
+        <a href="propositional_logic.html"><span data-lang="en">Propositional logic</span><span data-lang="id">Logika proposisional</span></a>
+        <a href="predicate_logic.html"><span data-lang="en">Predicate logic</span><span data-lang="id">Logika predikat</span></a>
+        <a href="proof_methods.html"><span data-lang="en">Proof methods</span><span data-lang="id">Metode pembuktian</span></a>
+        <a href="set_theory.html"><span data-lang="en">Set theory</span><span data-lang="id">Teori himpunan</span></a>
+        <a href="logic_algebra.html"><span data-lang="en">Logic algebra</span><span data-lang="id">Aljabar logika</span></a>
+      </div>
+      <div class="mgroup"><b><a href="generative_ai.html">Generative AI</a></b>
+        <a href="autoencoder.html"><span data-lang="en">Autoencoders &amp; VAE</span><span data-lang="id">Autoencoder &amp; VAE</span></a>
+        <a href="gan.html"><span data-lang="en">GANs</span><span data-lang="id">GAN</span></a>
+        <a href="embeddings.html"><span data-lang="en">Embeddings</span><span data-lang="id">Embedding</span></a>
+        <a href="attention.html"><span data-lang="en">Attention</span><span data-lang="id">Attention</span></a>
+        <a href="language_models.html"><span data-lang="en">Language models</span><span data-lang="id">Model bahasa</span></a>
+        <a href="diffusion.html"><span data-lang="en">Diffusion</span><span data-lang="id">Difusi</span></a>
+      </div>
+    </div>
+  </details>
+  <span class="spacer"></span>
+  <a class="ext" href="https://phx.my.id" target="_blank" rel="noopener noreferrer">phx.my.id</a>
+  <a class="ext" href="https://research.phx.my.id" target="_blank" rel="noopener noreferrer"><span data-lang="en">Research</span><span data-lang="id">Riset</span></a>
+  <span class="langtog"><button data-lang-btn="en">EN</button><button data-lang-btn="id">ID</button></span>
+</nav>
+<script>(function(){
+  var path=(location.pathname.split('/').filter(Boolean).pop()||'index.html');
+  var links=document.querySelectorAll('.pnav .menu a');
+  for(var i=0;i<links.length;i++){ var hf=links[i].getAttribute('href')||''; var seg=hf.split('/').filter(Boolean).pop()||'';
+    if(seg===path || (path!=='index.html' && hf.indexOf(path)>=0)) links[i].classList.add('cur'); }
+  document.addEventListener('click',function(e){ var d=document.querySelector('.pnav details[open]'); if(d && !d.contains(e.target)) d.removeAttribute('open'); });
+})();</script>
+
+<header class="top">
+  <p class="eyebrow"><span data-lang="en">Generative AI · 1 of 6</span><span data-lang="id">Generative AI · 1 dari 6</span></p>
+  <h1><span data-lang="en">Autoencoders &amp; VAE — the latent-space lab</span><span data-lang="id">Autoencoder &amp; VAE — lab ruang laten</span></h1>
+  <p data-lang="en">An autoencoder squeezes data through a tiny bottleneck and tries to rebuild it. What survives the squeeze is a <b>latent code</b> — a compressed map of the data. A <b>VAE</b> adds one rule that turns that map into something you can <i>sample from</i>. Everything below trains live in your browser.</p>
+  <p data-lang="id">Autoencoder memeras data lewat leher botol yang sempit lalu mencoba membangunnya kembali. Yang selamat dari pemerasan itu adalah <b>kode laten</b> — peta ringkas dari data. <b>VAE</b> menambah satu aturan yang mengubah peta itu menjadi sesuatu yang bisa <i>disampel</i>. Semua di bawah ini dilatih langsung di browser-mu.</p>
+  <p class="crumbs"><a href="generative_ai.html"><span data-lang="en">← Generative AI</span><span data-lang="id">← Generative AI</span></a></p>
+</header>
+
+<div class="tabs">
+  <button class="tab active" data-tab="bn"><span data-lang="en">1 · The bottleneck</span><span data-lang="id">1 · Leher botol</span></button>
+  <button class="tab" data-tab="atlas"><span data-lang="en">2 · Latent atlas: AE vs VAE</span><span data-lang="id">2 · Atlas laten: AE vs VAE</span></button>
+  <button class="tab" data-tab="kl"><span data-lang="en">3 · Reparameterization &amp; KL</span><span data-lang="id">3 · Reparameterisasi &amp; KL</span></button>
+  <button class="tab" data-tab="map"><span data-lang="en">4 · The big picture</span><span data-lang="id">4 · Gambaran besar</span></button>
+</div>
+
+<!-- ============ 1 · BOTTLENECK ============ -->
+<div class="section active" id="sec-bn">
+  <div class="intro">
+    <svg viewBox="0 0 200 120" xmlns="http://www.w3.org/2000/svg">
+      <g fill="#F0DCC6" stroke="#C17A3E" stroke-width="1.5"><polygon points="10,20 70,42 70,78 10,100"/><polygon points="190,20 130,42 130,78 190,100"/></g>
+      <rect x="82" y="50" width="36" height="20" fill="#D3E5E2" stroke="#2F7069" stroke-width="1.5"/>
+      <g stroke="#6E6259" stroke-width="1.4" fill="none"><path d="M70 60 h12"/><path d="M118 60 h12"/></g>
+      <text x="100" y="45" text-anchor="middle" font-family="SF Mono,monospace" font-size="9" fill="#2F7069">z</text>
+      <text x="40" y="115" text-anchor="middle" font-family="SF Mono,monospace" font-size="9" fill="#6E6259">encoder</text>
+      <text x="160" y="115" text-anchor="middle" font-family="SF Mono,monospace" font-size="9" fill="#6E6259">decoder</text>
+    </svg>
+    <div class="txt">
+      <h3><span data-lang="en">Two numbers in, one number in the middle, two numbers out</span><span data-lang="id">Dua angka masuk, satu angka di tengah, dua angka keluar</span></h3>
+      <p data-lang="en">Each point has two coordinates, but we force the network to describe it with a <b>single</b> latent number <i>z</i>. The decoder must rebuild the point from <i>z</i> alone. If the data lies along a curve, <i>z</i> becomes "how far along the curve" — the network has discovered the hidden 1-D structure by itself.</p>
+      <p data-lang="id">Tiap titik punya dua koordinat, tetapi jaringan dipaksa menggambarkannya dengan <b>satu</b> angka laten <i>z</i>. Decoder harus membangun ulang titik itu dari <i>z</i> saja. Jika data terletak di sepanjang kurva, <i>z</i> menjadi "sejauh apa di sepanjang kurva" — jaringan menemukan sendiri struktur 1-D tersembunyi itu.</p>
+    </div>
+  </div>
+  <div class="layout">
+    <div class="panel">
+      <h2><span data-lang="en">Data</span><span data-lang="id">Data</span></h2>
+      <div class="pillrow" id="bnData"></div>
+      <h2><span data-lang="en">Model</span><span data-lang="id">Model</span></h2>
+      <div class="field"><select id="bnModel">
+        <option value="nl" data-lang="en">Nonlinear (tanh hidden layers)</option><option value="nl" data-lang="id">Nonlinear (lapisan tersembunyi tanh)</option>
+        <option value="lin" data-lang="en">Linear (≈ PCA)</option><option value="lin" data-lang="id">Linear (≈ PCA)</option>
+      </select></div>
+      <div class="field"><label><span data-lang="en">Hidden width</span><span data-lang="id">Lebar lapisan tersembunyi</span><span class="val" id="bnHv">12</span></label><input type="range" id="bnH" min="3" max="24" value="12"></div>
+      <div class="btngroup"><button class="btn primary" id="bnTrain"></button><button class="btn" id="bnReset"><span data-lang="en">Reset</span><span data-lang="id">Reset</span></button></div>
+      <p class="hint" data-lang="en">Colour = position along the original curve. If the colours stay in order along the latent line (bottom plot), the network has "unrolled" the curve.</p>
+      <p class="hint" data-lang="id">Warna = posisi di sepanjang kurva asli. Jika warna tetap berurutan di garis laten (plot bawah), jaringan telah "membentangkan" kurvanya.</p>
+    </div>
+    <div>
+      <div class="stats">
+        <div class="stat hi"><div class="label"><span data-lang="en">reconstruction error</span><span data-lang="id">galat rekonstruksi</span></div><div class="value" id="bnMse">–</div></div>
+        <div class="stat"><div class="label"><span data-lang="en">training step</span><span data-lang="id">langkah latih</span></div><div class="value" id="bnEp">0</div></div>
+        <div class="stat"><div class="label"><span data-lang="en">numbers kept</span><span data-lang="id">angka yang disimpan</span></div><div class="value">2 → 1</div></div>
+      </div>
+      <div class="cols2">
+        <div class="box"><h2><span data-lang="en">Data and what the decoder rebuilds</span><span data-lang="id">Data dan hasil bangun ulang decoder</span></h2><canvas id="bnCv" class="sq1" style="cursor:default"></canvas>
+          <div class="legend"><span><span class="swatch" style="background:#bdb2a5"></span><span data-lang="en">input x</span><span data-lang="id">masukan x</span></span><span><span class="swatch" style="background:#C17A3E"></span><span data-lang="en">decoder curve D(z)</span><span data-lang="id">kurva decoder D(z)</span></span><span><span class="swatch" style="background:#2F7069"></span><span data-lang="en">reconstruction x̂</span><span data-lang="id">rekonstruksi x̂</span></span></div></div>
+        <div class="stack">
+          <div class="box"><h2><span data-lang="en">The 1-D latent line</span><span data-lang="id">Garis laten 1-D</span></h2><canvas id="bnZ" class="wide"></canvas></div>
+          <div class="box" style="margin-bottom:0"><h2><span data-lang="en">Error over training</span><span data-lang="id">Galat selama pelatihan</span></h2><canvas id="bnLoss" class="wide"></canvas></div>
+        </div>
+      </div>
+      <div class="try" data-lang="en"><b>Try this</b><ol>
+        <li>Choose <b>line</b> with the <i>linear</i> model: the decoder curve is a straight line through the data — that is PCA. Now switch to <b>arc</b>: a straight line cannot follow the bend, so the error stays high.</li>
+        <li>Switch to <i>nonlinear</i> on <b>arc</b> or <b>S-curve</b>: the decoder curve bends to hug the data and the error collapses. This is why deep autoencoders beat PCA.</li>
+        <li>Try <b>circle</b>: no single number can label every point of a closed loop without a jump — the error never reaches zero. Topology matters!</li>
+        <li>Shrink the hidden width to 3 on <b>spiral</b> and watch the decoder fail to follow the coil.</li>
+      </ol></div>
+      <div class="try" data-lang="id"><b>Coba ini</b><ol>
+        <li>Pilih <b>line</b> dengan model <i>linear</i>: kurva decoder berupa garis lurus menembus data — itulah PCA. Sekarang ganti ke <b>arc</b>: garis lurus tak bisa mengikuti lengkungan, jadi galat tetap tinggi.</li>
+        <li>Ganti ke <i>nonlinear</i> pada <b>arc</b> atau <b>S-curve</b>: kurva decoder melengkung memeluk data dan galat anjlok. Inilah alasan autoencoder dalam mengalahkan PCA.</li>
+        <li>Coba <b>circle</b>: tak ada satu angka pun yang bisa melabeli semua titik pada lingkaran tertutup tanpa lompatan — galat tak pernah nol. Topologi itu penting!</li>
+        <li>Kecilkan lebar tersembunyi jadi 3 pada <b>spiral</b> dan lihat decoder gagal mengikuti lilitannya.</li>
+      </ol></div>
+    </div>
+  </div>
+</div>
+
+<!-- ============ 2 · ATLAS ============ -->
+<div class="section" id="sec-atlas">
+  <div class="intro">
+    <svg viewBox="0 0 200 120" xmlns="http://www.w3.org/2000/svg">
+      <g stroke="#E4DACB"><rect x="12" y="14" width="80" height="92" fill="#FFFDF9"/><line x1="52" y1="14" x2="52" y2="106"/><line x1="12" y1="60" x2="92" y2="60"/></g>
+      <g fill="#C17A3E"><circle cx="30" cy="35" r="3"/><circle cx="40" cy="80" r="3"/><circle cx="70" cy="45" r="3"/><circle cx="75" cy="90" r="3"/></g>
+      <path d="M100 60 h 20" stroke="#2D2D2D" stroke-width="1.5"/><polygon points="120,56 128,60 120,64" fill="#2D2D2D"/>
+      <g stroke="#E4DACB"><rect x="136" y="26" width="54" height="54" fill="#FFFDF9"/></g>
+      <circle cx="150" cy="40" r="6" fill="#2F7069" opacity=".5"/><circle cx="165" cy="52" r="6" fill="#2F7069" opacity=".5"/><circle cx="178" cy="68" r="6" fill="#2F7069" opacity=".5"/>
+      <text x="52" y="116" text-anchor="middle" font-family="SF Mono,monospace" font-size="9" fill="#6E6259">latent plane</text><text x="163" y="96" text-anchor="middle" font-family="SF Mono,monospace" font-size="9" fill="#6E6259">decoded images</text>
+    </svg>
+    <div class="txt">
+      <h3><span data-lang="en">Images whose only secret is "where is the blob?"</span><span data-lang="id">Gambar yang satu-satunya rahasianya "di mana blob-nya?"</span></h3>
+      <p data-lang="en">The 300 training images are 10×10 pixels, each a soft blob at a random position. Only <b>two</b> numbers (x, y) explain every image, so a 2-D latent plane is enough. Train as a plain autoencoder (β = 0) or as a VAE (β &gt; 0) and compare the <b>latent plane</b>, the <b>atlas</b> of decoded images, and what you get by <b>sampling from the prior</b> N(0, I).</p>
+      <p data-lang="id">Ke-300 gambar latih berukuran 10×10 piksel, masing-masing berupa blob lembut di posisi acak. Hanya <b>dua</b> angka (x, y) yang menjelaskan setiap gambar, jadi bidang laten 2-D sudah cukup. Latih sebagai autoencoder biasa (β = 0) atau VAE (β &gt; 0), lalu bandingkan <b>bidang laten</b>, <b>atlas</b> gambar hasil decode, dan hasil <b>sampling dari prior</b> N(0, I).</p>
+    </div>
+  </div>
+  <div class="layout">
+    <div class="panel">
+      <h2><span data-lang="en">Model</span><span data-lang="id">Model</span></h2>
+      <div class="row2" style="margin-bottom:10px"><button class="btn" id="atAE">Autoencoder<br><small>β = 0</small></button><button class="btn" id="atVAE">VAE<br><small>β = 0.1</small></button></div>
+      <div class="field"><label><span data-lang="en">β — weight of the KL term</span><span data-lang="id">β — bobot suku KL</span><span class="val" id="atBv">0.10</span></label><input type="range" id="atB" min="0" max="1" step="0.01" value="0.1"></div>
+      <div class="btngroup"><button class="btn primary" id="atTrain"></button><button class="btn" id="atReset"><span data-lang="en">Reset</span><span data-lang="id">Reset</span></button></div>
+      <h2><span data-lang="en">View</span><span data-lang="id">Tampilan</span></h2>
+      <div class="field"><label><span data-lang="en">Colour points by</span><span data-lang="id">Warnai titik menurut</span></label><select id="atCol"><option value="0">blob x</option><option value="1">blob y</option></select></div>
+      <label class="check"><input type="checkbox" id="atSig"> <span data-lang="en">draw posterior σ (ellipses)</span><span data-lang="id">gambar σ posterior (elips)</span></label>
+      <label class="check"><input type="checkbox" id="atPri" checked> <span data-lang="en">draw prior N(0,1) circles</span><span data-lang="id">gambar lingkaran prior N(0,1)</span></label>
+      <div class="zprev"><canvas id="atPrev" width="10" height="10"></canvas><div class="capline" id="atPrevT"><span data-lang="en">hover either plot → decode that point</span><span data-lang="id">arahkan ke salah satu plot → decode titik itu</span></div></div>
+      <p class="hint" data-lang="en">Training starts automatically. Switch between AE and VAE <i>mid-training</i> to watch the latent plane re-organise.</p>
+      <p class="hint" data-lang="id">Pelatihan mulai otomatis. Pindah antara AE dan VAE <i>di tengah pelatihan</i> untuk melihat bidang laten menata ulang diri.</p>
+    </div>
+    <div>
+      <div class="stats">
+        <div class="stat"><div class="label"><span data-lang="en">epoch</span><span data-lang="id">epoch</span></div><div class="value" id="atEp">0</div></div>
+        <div class="stat hi"><div class="label"><span data-lang="en">recon error / image</span><span data-lang="id">galat rekon. / gambar</span></div><div class="value" id="atRec">–</div></div>
+        <div class="stat"><div class="label">KL / image</div><div class="value" id="atKL">–</div></div>
+        <div class="stat warn"><div class="label"><span data-lang="en">latent spread (prior = 1)</span><span data-lang="id">sebaran laten (prior = 1)</span></div><div class="value" id="atSp">–</div></div>
+      </div>
+      <div class="cols2">
+        <div class="box"><h2><span data-lang="en">Latent plane — one dot per training image</span><span data-lang="id">Bidang laten — satu titik per gambar latih</span></h2><canvas id="atZ" class="sq1" style="cursor:crosshair"></canvas>
+          <p class="capline" id="atZcap"></p></div>
+        <div class="box"><h2><span data-lang="en">Atlas — what the decoder draws at each grid point</span><span data-lang="id">Atlas — gambar decoder di tiap titik grid</span></h2><canvas id="atA" class="sq1" style="cursor:crosshair"></canvas>
+          <p class="capline" data-lang="en">Same axes as the plot on the left.</p><p class="capline" data-lang="id">Sumbu sama dengan plot di kiri.</p></div>
+      </div>
+      <div class="cols2">
+        <div class="box"><h2><span data-lang="en">Sampling from the prior z ~ N(0, I)</span><span data-lang="id">Sampling dari prior z ~ N(0, I)</span></h2><div class="thumbrow" id="atSamp"></div>
+          <p style="margin-top:10px"><button class="btn" id="atResamp"><span data-lang="en">↻ draw new samples</span><span data-lang="id">↻ ambil sampel baru</span></button></p>
+          <p data-lang="en">A generative model must make <i>new</i> data from a known distribution. For the VAE the latent codes match N(0, I), so random draws decode to sensible blobs. For the plain AE the codes live wherever they like — draws from N(0, I) often land in unused territory and decode to smudge.</p>
+          <p data-lang="id">Model generatif harus membuat data <i>baru</i> dari distribusi yang dikenal. Pada VAE kode laten cocok dengan N(0, I), sehingga undian acak ter-decode jadi blob yang masuk akal. Pada AE biasa kode berada di mana saja — undian dari N(0, I) sering jatuh di wilayah tak terpakai dan jadi noda.</p></div>
+        <div class="box"><h2><span data-lang="en">Reconstructions (top: input, bottom: output)</span><span data-lang="id">Rekonstruksi (atas: masukan, bawah: keluaran)</span></h2><div class="thumbrow" id="atRecA"></div><div class="thumbrow" id="atRecB" style="margin-top:6px"></div>
+          <h2 style="margin-top:16px"><span data-lang="en">Interpolating between two images</span><span data-lang="id">Interpolasi antara dua gambar</span></h2>
+          <div class="capline"><span data-lang="en">straight line in latent space</span><span data-lang="id">garis lurus di ruang laten</span></div><div class="thumbrow" id="atIntL"></div>
+          <div class="capline" style="margin-top:6px"><span data-lang="en">plain pixel cross-fade (for contrast)</span><span data-lang="id">cross-fade piksel biasa (sebagai pembanding)</span></div><div class="thumbrow" id="atIntP"></div>
+          <p style="margin-top:10px"><button class="btn" id="atPair"><span data-lang="en">↻ new pair</span><span data-lang="id">↻ pasangan baru</span></button></p></div>
+      </div>
+      <div class="try" data-lang="en"><b>Try this</b><ol>
+        <li>Let the <b>autoencoder</b> train for ~100 epochs. Look at the "latent spread" (≫ 1) and at the prior samples: the codes are huge and unnormalised, so N(0, I) misses them.</li>
+        <li>Press <b>VAE</b> (β = 0.1) and let it continue. The cloud shrinks to fit inside the prior circles, and prior samples start to look like real blobs. That is the whole point of the KL term.</li>
+        <li>Drag β up to 1: the latent becomes very neat (spread ≈ 1) but reconstructions blur — the model is paying a lot for "tidiness". β trades <i>fidelity</i> for <i>smoothness</i>.</li>
+        <li>Look at the interpolation rows: moving through latent space slides a single blob across the image, while a pixel cross-fade just shows two ghosts. That is what a good latent space buys you.</li>
+      </ol></div>
+      <div class="try" data-lang="id"><b>Coba ini</b><ol>
+        <li>Biarkan <b>autoencoder</b> berlatih ~100 epoch. Lihat "sebaran laten" (≫ 1) dan sampel prior: kodenya besar dan tak ternormalisasi, sehingga N(0, I) meleset darinya.</li>
+        <li>Tekan <b>VAE</b> (β = 0.1) dan lanjutkan. Awan titik menyusut masuk ke lingkaran prior, dan sampel prior mulai tampak seperti blob sungguhan. Itulah inti suku KL.</li>
+        <li>Geser β ke 1: laten jadi sangat rapi (sebaran ≈ 1) tetapi rekonstruksi kabur — model membayar mahal untuk "kerapian". β menukar <i>ketelitian</i> dengan <i>kehalusan</i>.</li>
+        <li>Lihat baris interpolasi: bergerak di ruang laten menggeser satu blob melintasi gambar, sedangkan cross-fade piksel hanya menampilkan dua bayangan. Itulah yang dibeli oleh ruang laten yang baik.</li>
+      </ol></div>
+    </div>
+  </div>
+</div>
+
+<!-- ============ 3 · KL / REPARAMETERIZATION ============ -->
+<div class="section" id="sec-kl">
+  <div class="intro">
+    <svg viewBox="0 0 200 120" xmlns="http://www.w3.org/2000/svg">
+      <g font-family="SF Mono,monospace" font-size="9" fill="#2D2D2D" text-anchor="middle">
+        <rect x="6" y="46" width="30" height="24" fill="#F0DCC6" stroke="#C17A3E"/><text x="21" y="62">x</text>
+        <rect x="52" y="22" width="30" height="20" fill="#D3E5E2" stroke="#2F7069"/><text x="67" y="36">μ</text>
+        <rect x="52" y="74" width="30" height="20" fill="#D3E5E2" stroke="#2F7069"/><text x="67" y="88">σ</text>
+        <rect x="52" y="48" width="30" height="20" fill="#F3DBD5" stroke="#A8392A" stroke-dasharray="3 2"/><text x="67" y="62" fill="#A8392A">ε</text>
+        <circle cx="116" cy="58" r="14" fill="#fff" stroke="#2D2D2D"/><text x="116" y="62">z</text>
+        <rect x="140" y="46" width="30" height="24" fill="#F0DCC6" stroke="#C17A3E"/><text x="155" y="62">x̂</text>
+      </g>
+      <g stroke="#6E6259" fill="none"><path d="M36 58 L52 32"/><path d="M36 58 L52 84"/><path d="M82 32 L104 52"/><path d="M82 84 L104 64"/><path d="M82 58 L102 58"/><path d="M130 58 L140 58"/></g>
+      <text x="116" y="92" text-anchor="middle" font-family="SF Mono,monospace" font-size="8.5" fill="#6E6259">z = μ + σ·ε</text>
+    </svg>
+    <div class="txt">
+      <h3><span data-lang="en">Let the encoder describe a <i>cloud</i>, not a point</span><span data-lang="id">Biarkan encoder menggambarkan <i>awan</i>, bukan titik</span></h3>
+      <p data-lang="en">A VAE's encoder outputs a mean μ <i>and</i> a spread σ: "this image lives roughly <i>here</i>, give or take". The decoder is fed a random sample from that cloud. Move the sliders to place one such cloud against the prior and see what the KL penalty charges for it.</p>
+      <p data-lang="id">Encoder VAE mengeluarkan rata-rata μ <i>dan</i> sebaran σ: "gambar ini kira-kira berada <i>di sini</i>, lebih-kurang". Decoder diberi sampel acak dari awan itu. Geser slider untuk menaruh satu awan terhadap prior dan lihat berapa biaya KL untuknya.</p>
+    </div>
+  </div>
+  <div class="layout">
+    <div class="panel">
+      <h2><span data-lang="en">One encoded image</span><span data-lang="id">Satu gambar yang dienkode</span></h2>
+      <div class="field"><label>μ₁<span class="val" id="klm1v"></span></label><input type="range" id="klm1" min="-3" max="3" step="0.05" value="1.2"></div>
+      <div class="field"><label>μ₂<span class="val" id="klm2v"></span></label><input type="range" id="klm2" min="-3" max="3" step="0.05" value="-0.8"></div>
+      <div class="field"><label>σ₁<span class="val" id="kls1v"></span></label><input type="range" id="kls1" min="0.05" max="2.5" step="0.05" value="0.5"></div>
+      <div class="field"><label>σ₂<span class="val" id="kls2v"></span></label><input type="range" id="kls2" min="0.05" max="2.5" step="0.05" value="0.5"></div>
+      <div class="row2" style="margin-bottom:8px"><button class="btn" id="klP1"><span data-lang="en">= prior</span><span data-lang="id">= prior</span></button><button class="btn" id="klP2"><span data-lang="en">far away</span><span data-lang="id">jauh</span></button></div>
+      <div class="row2"><button class="btn" id="klP3"><span data-lang="en">near-point</span><span data-lang="id">nyaris titik</span></button><button class="btn" id="klEps"><span data-lang="en">↻ new ε</span><span data-lang="id">↻ ε baru</span></button></div>
+      <p class="hint" data-lang="en">Dots are 40 draws of z = μ + σ ⊙ ε with ε ~ N(0, I). Hit "new ε": the cloud's shape never changes — only the randomness does.</p>
+      <p class="hint" data-lang="id">Titik-titik adalah 40 undian z = μ + σ ⊙ ε dengan ε ~ N(0, I). Tekan "ε baru": bentuk awan tak berubah — hanya keacakannya.</p>
+    </div>
+    <div>
+      <div class="stats">
+        <div class="stat hi"><div class="label">KL(q‖p)</div><div class="value" id="klTot">–</div></div>
+        <div class="stat"><div class="label"><span data-lang="en">from μ (off-centre)</span><span data-lang="id">dari μ (jauh dari pusat)</span></div><div class="value" id="klMu">–</div></div>
+        <div class="stat"><div class="label"><span data-lang="en">from σ (wrong width)</span><span data-lang="id">dari σ (lebar keliru)</span></div><div class="value" id="klSg">–</div></div>
+      </div>
+      <div class="cols2">
+        <div class="box"><h2><span data-lang="en">The posterior cloud vs the prior</span><span data-lang="id">Awan posterior vs prior</span></h2><canvas id="klCv" class="sq1" style="cursor:default"></canvas>
+          <div class="legend"><span><span class="swatch" style="background:#6E6259"></span><span data-lang="en">prior N(0,1): 1σ &amp; 2σ</span><span data-lang="id">prior N(0,1): 1σ &amp; 2σ</span></span><span><span class="swatch" style="background:#C17A3E"></span><span data-lang="en">q(z|x): 1σ &amp; 2σ</span><span data-lang="id">q(z|x): 1σ &amp; 2σ</span></span><span><span class="swatch" style="background:#2F7069"></span><span data-lang="en">samples</span><span data-lang="id">sampel</span></span></div></div>
+        <div class="box"><h2><span data-lang="en">What the KL term charges</span><span data-lang="id">Apa yang ditagih suku KL</span></h2>
+          <div class="formula" id="klEq1">$$\mathrm{KL}=\tfrac12\sum_i\big(\mu_i^2+\sigma_i^2-\ln\sigma_i^2-1\big)$$</div>
+          <div class="bar2" id="klBar"></div>
+          <div class="legend"><span><span class="swatch" style="background:#C17A3E"></span><span data-lang="en">μ² (distance from centre)</span><span data-lang="id">μ² (jarak dari pusat)</span></span><span><span class="swatch" style="background:#A8392A"></span><span data-lang="en">σ² − ln σ² − 1 (width mismatch)</span><span data-lang="id">σ² − ln σ² − 1 (ketakcocokan lebar)</span></span></div>
+          <p data-lang="en">The penalty is exactly zero only when μ = 0 and σ = 1. Pushing μ away costs <i>quadratically</i>. Making σ tiny (a precise point) costs <i>logarithmically</i> — a VAE has to <b>pay</b> for being certain.</p>
+          <p data-lang="id">Penalti tepat nol hanya saat μ = 0 dan σ = 1. Menjauhkan μ berbiaya <i>kuadratik</i>. Membuat σ sangat kecil (titik presisi) berbiaya <i>logaritmik</i> — VAE harus <b>membayar</b> untuk bersikap yakin.</p></div>
+      </div>
+      <div class="box">
+        <h2><span data-lang="en">The reparameterization trick</span><span data-lang="id">Trik reparameterisasi</span></h2>
+        <p data-lang="en">Training needs gradients to flow from the decoder back into the encoder. A random draw <i>z ~ N(μ, σ²)</i> is a dead end for gradients — but the identical draw written as <b>z = μ + σ·ε</b>, with all the randomness parked in ε ~ N(0, I), is an ordinary differentiable function of μ and σ. Backprop sees μ and σ as inputs and ε as a constant.</p>
+        <p data-lang="id">Pelatihan butuh gradient yang mengalir dari decoder kembali ke encoder. Undian acak <i>z ~ N(μ, σ²)</i> adalah jalan buntu bagi gradient — tetapi undian yang sama ditulis sebagai <b>z = μ + σ·ε</b>, dengan semua keacakan dititipkan di ε ~ N(0, I), adalah fungsi biasa yang bisa diturunkan terhadap μ dan σ. Backprop memandang μ dan σ sebagai input dan ε sebagai konstanta.</p>
+        <div class="formula" id="klEq2">$$\text{loss}=\underbrace{\lVert x-\hat x\rVert^2}_{\text{reconstruction}}+\beta\,\underbrace{\mathrm{KL}\big(q(z|x)\,\Vert\,\mathcal N(0,I)\big)}_{\text{keep codes tidy}}$$</div>
+      </div>
+      <div class="try" data-lang="en"><b>Try this</b><ol>
+        <li>Press <b>= prior</b>: KL is 0 and the orange cloud lies exactly over the grey one — but then the code says nothing about <i>this</i> image. A useful encoder must move away from the prior.</li>
+        <li>Press <b>near-point</b>: the encoding becomes nearly deterministic (like a plain AE). The bar shows the log-term growing: certainty is expensive.</li>
+        <li>Slide μ₁ outward while keeping σ = 1: the orange bar grows with the square of the distance.</li>
+      </ol></div>
+      <div class="try" data-lang="id"><b>Coba ini</b><ol>
+        <li>Tekan <b>= prior</b>: KL = 0 dan awan oranye tepat menimpa yang abu-abu — tetapi kodenya jadi tak bercerita apa-apa tentang gambar <i>ini</i>. Encoder yang berguna harus menjauh dari prior.</li>
+        <li>Tekan <b>nyaris titik</b>: pengodean jadi hampir deterministik (seperti AE biasa). Batang menunjukkan suku log membesar: kepastian itu mahal.</li>
+        <li>Geser μ₁ keluar sambil menjaga σ = 1: batang oranye tumbuh sebanding kuadrat jarak.</li>
+      </ol></div>
+    </div>
+  </div>
+</div>
+
+<!-- ============ 4 · MAP ============ -->
+<div class="section" id="sec-map">
+  <div class="box">
+    <h2><span data-lang="en">Autoencoder vs VAE at a glance</span><span data-lang="id">Autoencoder vs VAE sekilas</span></h2>
+    <div style="overflow-x:auto"><table class="cmp">
+      <tr><th></th><th>Autoencoder</th><th>VAE</th></tr>
+      <tr><td><span data-lang="en">Encoder outputs</span><span data-lang="id">Keluaran encoder</span></td><td><span data-lang="en">one point z</span><span data-lang="id">satu titik z</span></td><td><span data-lang="en">a distribution (μ, σ)</span><span data-lang="id">sebuah distribusi (μ, σ)</span></td></tr>
+      <tr><td><span data-lang="en">Loss</span><span data-lang="id">Loss</span></td><td><span data-lang="en">reconstruction only</span><span data-lang="id">hanya rekonstruksi</span></td><td><span data-lang="en">reconstruction + β·KL</span><span data-lang="id">rekonstruksi + β·KL</span></td></tr>
+      <tr><td><span data-lang="en">Latent space</span><span data-lang="id">Ruang laten</span></td><td><span data-lang="en">arbitrary scale, gaps and holes</span><span data-lang="id">skala sembarang, ada celah dan lubang</span></td><td><span data-lang="en">compact, centred on 0, filled in</span><span data-lang="id">padat, berpusat di 0, terisi penuh</span></td></tr>
+      <tr><td><span data-lang="en">Generate new data?</span><span data-lang="id">Bisa membuat data baru?</span></td><td><span data-lang="en">not reliably — you don't know where to sample</span><span data-lang="id">tak andal — tak tahu harus menyampel di mana</span></td><td><span data-lang="en">yes — draw z ~ N(0, I) and decode</span><span data-lang="id">ya — ambil z ~ N(0, I) lalu decode</span></td></tr>
+      <tr><td><span data-lang="en">Typical use</span><span data-lang="id">Pemakaian umum</span></td><td><span data-lang="en">compression, denoising, anomaly detection</span><span data-lang="id">kompresi, penghilang derau, deteksi anomali</span></td><td><span data-lang="en">generation, smooth interpolation, the "latent" in latent diffusion</span><span data-lang="id">generasi, interpolasi mulus, "laten" pada latent diffusion</span></td></tr>
+    </table></div>
+  </div>
+  <div class="box">
+    <h2><span data-lang="en">Where this connects</span><span data-lang="id">Ke mana ini terhubung</span></h2>
+    <p data-lang="en"><b>→ <a href="gan.html">GANs</a>.</b> Another way to learn a generator from noise — with no encoder and no likelihood, just a game against a critic.</p><p data-lang="id"><b>→ <a href="gan.html">GAN</a>.</b> Cara lain mempelajari generator dari derau — tanpa encoder dan tanpa likelihood, hanya permainan melawan seorang kritikus.</p>
+    <p data-lang="en"><b>→ <a href="diffusion.html">Diffusion</a>.</b> Modern image generators run diffusion not on pixels but inside the latent space of an autoencoder — that is the "latent" in Latent Diffusion / Stable Diffusion.</p><p data-lang="id"><b>→ <a href="diffusion.html">Difusi</a>.</b> Pembangkit gambar modern menjalankan difusi bukan pada piksel, melainkan di ruang laten sebuah autoencoder — itulah "laten" pada Latent Diffusion / Stable Diffusion.</p>
+  </div>
+  <div class="box"><h2><span data-lang="en">Check yourself</span><span data-lang="id">Uji dirimu</span></h2><div id="quizBox"></div></div>
+</div>
+
+
+<footer>
+  <span data-lang="en">Built for hands-on learning · every model, sampler and training step runs live in this page — no server, no GPU · part of the Interactive Playgrounds.</span><span data-lang="id">Dibuat untuk belajar langsung · setiap model, sampler, dan langkah pelatihan berjalan langsung di halaman ini — tanpa server, tanpa GPU · bagian dari Interactive Playgrounds.</span>
+</footer>
+
+</div>
+<script src="genai_lib.js"></script>
+<script>
+
+(function(){
+"use strict";
+const G=GenAI, $=G.$, T=G.T, C=G.col, MLP=G.MLP;
+const ramp=t=>{ t=Math.max(0,Math.min(1,t)); return G.rgb([G.lerp(168,47,t),G.lerp(57,112,t),G.lerp(42,105,t)].map(Math.round)); };
+const fmt=(v,d=2)=>isFinite(v)?v.toFixed(d).replace('-','−'):'–';
+function setBtn(btn,running){ btn.textContent=running?T('⏸ Pause','⏸ Jeda'):T('▶ Train','▶ Latih'); }
+
+/* =========================== TAB 1 : bottleneck =========================== */
+const DSN=[['line','line'],['arc','arc'],['scurve','S-curve'],['spiral','spiral'],['circle','circle'],['blobs','2 blobs']];
+function gen(kind){
+  const r=G.rng(5), g=G.gauss(r), N=kind==='blobs'?120:160, P=[], tt=[];
+  for(let i=0;i<N;i++){
+    let t=(i+.5)/N, x,y;
+    if(kind==='line'){ x=-1.4+2.8*t; y=.5*x; }
+    else if(kind==='arc'){ const a=Math.PI*t; x=1.3*Math.cos(a); y=1.3*Math.sin(a)-.6; }
+    else if(kind==='scurve'){ const a=3*Math.PI*(t-.5); x=.9*Math.sin(a); y=Math.sign(a)*.8*(Math.cos(a)-1); }
+    else if(kind==='spiral'){ const a=3*Math.PI*t, rr=.2+1.2*t; x=rr*Math.cos(a); y=rr*Math.sin(a); }
+    else if(kind==='circle'){ const a=2*Math.PI*t; x=1.1*Math.cos(a); y=1.1*Math.sin(a); }
+    else { const c=r()<.5?0:1; t=c; x=(c?.9:-.9)+.22*g(); y=(c?.6:-.6)+.22*g(); P.push([x,y]); tt.push(t); continue; }
+    P.push([x+.04*g(),y+.04*g()]); tt.push(t);
+  }
+  return {P,t:tt};
+}
+const b1={kind:'arc',data:null,enc:null,dec:null,loss:[],step:0,running:true,lr:0.01};
+function initB1(){
+  b1.data=gen(b1.kind); const lin=$('bnModel').value==='lin', H=+$('bnH').value;
+  b1.enc=new MLP(lin?[2,1]:[2,H,1],lin?['linear']:['tanh','linear'],G.rng(3));
+  b1.dec=new MLP(lin?[1,2]:[1,H,2],lin?['linear']:['tanh','linear'],G.rng(4));
+  b1.loss=[]; b1.step=0; b1.zc=null;
+}
+function trainB1(n){
+  const P=b1.data.P, N=P.length, e=b1.enc, d=b1.dec;
+  for(let s=0;s<n;s++){
+    let L=0;
+    for(let i=0;i<N;i++){
+      const x=Float64Array.from(P[i]), z=Float64Array.from(e.forward(x)), o=d.forward(z);
+      const g0=o[0]-x[0], g1=o[1]-x[1]; L+=g0*g0+g1*g1;
+      e.backward(d.backward([2*g0,2*g1]));
+    }
+    e.step(b1.lr,1/N); d.step(b1.lr,1/N); b1.loss.push(L/N); b1.step++;
+  }
+}
+function drawB1(){
+  const {P,t}=b1.data, N=P.length, e=b1.enc, d=b1.dec;
+  const Z=[], XH=[];
+  for(let i=0;i<N;i++){ const z=e.forward(Float64Array.from(P[i]))[0]; Z.push(z); const o=d.forward(Float64Array.of(z)); XH.push([o[0],o[1]]); }
+  let zmin=Math.min(...Z), zmax=Math.max(...Z); const zr=Math.max(zmax-zmin,1e-6);
+  /* main canvas */
+  let f=G.fit($('bnCv')), ctx=f.ctx, W=f.w, H=f.h; ctx.clearRect(0,0,W,H);
+  const sc=Math.min(W,H)/4.4, X=x=>W/2+x*sc, Y=y=>H/2-y*sc;
+  ctx.strokeStyle=C.border; ctx.lineWidth=1; ctx.beginPath(); ctx.moveTo(0,H/2); ctx.lineTo(W,H/2); ctx.moveTo(W/2,0); ctx.lineTo(W/2,H); ctx.stroke();
+  ctx.strokeStyle='rgba(110,98,89,.25)'; for(let i=0;i<N;i+=2){ ctx.beginPath(); ctx.moveTo(X(P[i][0]),Y(P[i][1])); ctx.lineTo(X(XH[i][0]),Y(XH[i][1])); ctx.stroke(); }
+  ctx.strokeStyle=C.moss; ctx.lineWidth=3; ctx.beginPath();
+  for(let k=0;k<=120;k++){ const z=zmin-.25*zr+(zr*1.5)*k/120, o=d.forward(Float64Array.of(z)); k?ctx.lineTo(X(o[0]),Y(o[1])):ctx.moveTo(X(o[0]),Y(o[1])); } ctx.stroke();
+  for(let i=0;i<N;i++){ ctx.fillStyle='#bdb2a5'; ctx.beginPath(); ctx.arc(X(P[i][0]),Y(P[i][1]),3.4,0,6.3); ctx.fill(); }
+  for(let i=0;i<N;i++){ ctx.fillStyle=ramp(t[i]); ctx.beginPath(); ctx.arc(X(XH[i][0]),Y(XH[i][1]),2.8,0,6.3); ctx.fill(); }
+  /* latent line */
+  f=G.fit($('bnZ')); ctx=f.ctx; W=f.w; H=f.h; ctx.clearRect(0,0,W,H);
+  const pad=24, ZX=z=>pad+(W-2*pad)*(z-zmin)/zr;
+  ctx.strokeStyle=C.ink; ctx.lineWidth=1.2; ctx.beginPath(); ctx.moveTo(pad,H-18); ctx.lineTo(W-pad,H-18); ctx.stroke();
+  ctx.fillStyle=C.soft; ctx.font=G.font; ctx.fillText(fmt(zmin),pad-8,H-4); ctx.fillText(fmt(zmax),W-pad-14,H-4); ctx.fillText('z',W/2,H-4);
+  for(let i=0;i<N;i++){ ctx.fillStyle=ramp(t[i]); ctx.globalAlpha=.85; ctx.beginPath(); ctx.arc(ZX(Z[i]),12+((i*0.618)%1)*(H-44),3.2,0,6.3); ctx.fill(); } ctx.globalAlpha=1;
+  G.lineChart($('bnLoss'),[{data:b1.loss.filter((v,i)=>i%Math.max(1,Math.floor(b1.loss.length/200))===0),color:C.rust,label:'MSE'}],{min:0,empty:T('train to see the curve','latih untuk melihat kurva')});
+  $('bnMse').textContent=b1.loss.length?fmt(b1.loss[b1.loss.length-1],3):'–'; $('bnEp').textContent=b1.step;
+}
+(function(){
+  const row=$('bnData');
+  DSN.forEach(([k,l])=>{ const b=document.createElement('button'); b.className='pill'+(k===b1.kind?' on':''); b.textContent=l; b.onclick=()=>{ b1.kind=k; row.querySelectorAll('.pill').forEach(x=>x.classList.toggle('on',x===b)); initB1(); drawB1(); }; row.appendChild(b); });
+  $('bnModel').onchange=()=>{ initB1(); drawB1(); };
+  $('bnH').oninput=()=>{ $('bnHv').textContent=$('bnH').value; initB1(); drawB1(); };
+  $('bnTrain').onclick=()=>{ b1.running=!b1.running; setBtn($('bnTrain'),b1.running); };
+  $('bnReset').onclick=()=>{ initB1(); drawB1(); };
+  initB1();
+})();
+
+/* =========================== TAB 2 : atlas =========================== */
+const S=10, NB=300, HID=24, BS=32;
+function blob(cx,cy){ const o=new Float64Array(S*S); for(let y=0;y<S;y++)for(let x=0;x<S;x++){ const d=(x-cx)*(x-cx)+(y-cy)*(y-cy); o[y*S+x]=Math.exp(-d/(2*1.3*1.3)); } return o; }
+const dr=G.rng(21), IMG=[], FAC=[];
+for(let i=0;i<NB;i++){ const cx=2.5+dr()*5, cy=2.5+dr()*5; IMG.push(blob(cx,cy)); FAC.push([cx,cy]); }
+const m2={enc:null,dec:null,beta:.1,running:true,epoch:0,rec:NaN,kl:NaN,mu:[],lv:[],R:3,rnd:G.rng(8),hover:null,samp:[],pair:[0,1],recIdx:[3,40,77,120,160,210,250,290]};
+const gs2=G.gauss(m2.rnd);
+function initA(){
+  m2.enc=new MLP([S*S,HID,4],['tanh','linear'],G.rng(1)); m2.dec=new MLP([2,HID,S*S],['tanh','sigmoid'],G.rng(2));
+  m2.epoch=0; m2.rec=NaN; m2.kl=NaN; m2.running=true; setBtn($('atTrain'),true); newSamples();
+}
+function newSamples(){ m2.samp=[]; for(let i=0;i<12;i++) m2.samp.push([gs2(),gs2()]); }
+function trainA(budget){
+  const t0=performance.now(), e=m2.enc, d=m2.dec, beta=m2.beta;
+  let nb=0;
+  while(performance.now()-t0<budget && nb++<40){
+    let rs=0, ks=0;
+    for(let s=0;s<BS;s++){
+      const x=IMG[Math.floor(m2.rnd()*NB)], h=e.forward(x);
+      const eps=[gs2(),gs2()], lv=[Math.max(-8,Math.min(4,h[2])),Math.max(-8,Math.min(4,h[3]))];
+      const z=beta>0?[h[0]+Math.exp(.5*lv[0])*eps[0],h[1]+Math.exp(.5*lv[1])*eps[1]]:[h[0],h[1]];
+      const o=d.forward(Float64Array.from(z)), dout=new Float64Array(S*S);
+      for(let k=0;k<S*S;k++){ const df=o[k]-x[k]; rs+=df*df; dout[k]=2*df; }
+      const dz=d.backward(dout), dh=new Float64Array(4); dh[0]=dz[0]; dh[1]=dz[1];
+      if(beta>0) for(let j=0;j<2;j++){ const sd=Math.exp(.5*lv[j]); dh[j+2]=dz[j]*eps[j]*.5*sd+beta*.5*(Math.exp(lv[j])-1); dh[j]+=beta*h[j]; ks+=.5*(h[j]*h[j]+Math.exp(lv[j])-lv[j]-1); }
+      e.backward(dh);
+    }
+    e.step(3e-3,1/BS); d.step(3e-3,1/BS); m2.epoch+=BS/NB;
+    const a=.05; m2.rec=isNaN(m2.rec)?rs/BS:(1-a)*m2.rec+a*rs/BS; m2.kl=beta>0?(isNaN(m2.kl)?ks/BS:(1-a)*m2.kl+a*ks/BS):NaN;
+  }
+  if(m2.epoch>700){ m2.running=false; setBtn($('atTrain'),false); }
+}
+function encodeAll(){
+  m2.mu=[]; m2.lv=[]; let mx=0;
+  for(let i=0;i<NB;i++){ const h=m2.enc.forward(IMG[i]); m2.mu.push([h[0],h[1]]); m2.lv.push([h[2],h[3]]); mx=Math.max(mx,Math.abs(h[0]),Math.abs(h[1])); }
+  m2.R=Math.max(3,Math.ceil(mx*1.15*2)/2);
+}
+function dec(z){ return m2.dec.forward(Float64Array.from(z)).slice(); }
+function paintImg(cv,arr){ if(cv.width!==S){cv.width=S;cv.height=S;} const c=cv.getContext('2d'), im=c.createImageData(S,S); for(let k=0;k<S*S;k++){ const col=G.seq(arr[k]); im.data[4*k]=col[0]; im.data[4*k+1]=col[1]; im.data[4*k+2]=col[2]; im.data[4*k+3]=255; } c.putImageData(im,0,0); }
+function ensureThumbs(id,n){ const r=$(id); while(r.children.length<n){ const c=document.createElement('canvas'); c.width=S; c.height=S; r.appendChild(c); } return r.children; }
+const off=document.createElement('canvas'); off.width=off.height=9*S;
+function drawA(){
+  encodeAll();
+  const R=m2.R, colk=+$('atCol').value, fmin=2.5, frng=5;
+  /* scatter */
+  let f=G.fit($('atZ')), ctx=f.ctx, W=f.w, H=f.h; ctx.clearRect(0,0,W,H);
+  const X=z=>W/2+z/R*W/2, Y=z=>H/2-z/R*H/2;
+  ctx.strokeStyle=C.border; ctx.lineWidth=1; ctx.beginPath(); ctx.moveTo(0,H/2); ctx.lineTo(W,H/2); ctx.moveTo(W/2,0); ctx.lineTo(W/2,H); ctx.stroke();
+  if($('atPri').checked){ ctx.strokeStyle='rgba(110,98,89,.7)'; ctx.setLineDash([5,4]); for(const r of [1,2]){ ctx.beginPath(); ctx.arc(W/2,H/2,r/R*W/2,0,6.3); ctx.stroke(); } ctx.setLineDash([]); }
+  if($('atSig').checked && m2.beta>0){ ctx.strokeStyle='rgba(193,122,62,.55)'; for(let i=0;i<NB;i+=6){ ctx.beginPath(); ctx.ellipse(X(m2.mu[i][0]),Y(m2.mu[i][1]),Math.exp(.5*m2.lv[i][0])/R*W/2,Math.exp(.5*m2.lv[i][1])/R*H/2,0,0,6.3); ctx.stroke(); } }
+  for(let i=0;i<NB;i++){ ctx.fillStyle=ramp((FAC[i][colk]-fmin)/frng); ctx.beginPath(); ctx.arc(X(m2.mu[i][0]),Y(m2.mu[i][1]),3,0,6.3); ctx.fill(); }
+  ctx.fillStyle=C.soft; ctx.font=G.font; ctx.fillText('±'+R,W-30,H/2-4);
+  if(m2.hover){ ctx.strokeStyle=C.ink; ctx.beginPath(); ctx.arc(X(m2.hover[0]),Y(m2.hover[1]),6,0,6.3); ctx.stroke(); }
+  /* atlas */
+  const oc=off.getContext('2d'), im=oc.createImageData(9*S,9*S);
+  for(let gy=0;gy<9;gy++)for(let gx=0;gx<9;gx++){
+    const o=dec([-R+(gx+.5)*2*R/9, R-(gy+.5)*2*R/9]);
+    for(let y=0;y<S;y++)for(let x=0;x<S;x++){ const col=G.seq(o[y*S+x]), p=((gy*S+y)*9*S+gx*S+x)*4; im.data[p]=col[0]; im.data[p+1]=col[1]; im.data[p+2]=col[2]; im.data[p+3]=255; }
+  }
+  oc.putImageData(im,0,0);
+  f=G.fit($('atA')); ctx=f.ctx; W=f.w; H=f.h; ctx.imageSmoothingEnabled=false; ctx.drawImage(off,0,0,W,H);
+  ctx.strokeStyle='rgba(255,255,255,.35)'; for(let k=1;k<9;k++){ ctx.beginPath(); ctx.moveTo(k*W/9,0); ctx.lineTo(k*W/9,H); ctx.moveTo(0,k*H/9); ctx.lineTo(W,k*H/9); ctx.stroke(); }
+  if($('atPri').checked){ ctx.strokeStyle='rgba(168,57,42,.8)'; ctx.setLineDash([5,4]); for(const r of [1,2]){ ctx.beginPath(); ctx.arc(W/2,H/2,r/R*W/2,0,6.3); ctx.stroke(); } ctx.setLineDash([]); }
+  if(m2.hover){ ctx.strokeStyle=C.rust; ctx.lineWidth=2; ctx.beginPath(); ctx.arc(W/2+m2.hover[0]/R*W/2,H/2-m2.hover[1]/R*H/2,7,0,6.3); ctx.stroke(); ctx.lineWidth=1; }
+  /* samples */
+  let th=ensureThumbs('atSamp',12); m2.samp.forEach((z,i)=>paintImg(th[i],dec(z)));
+  /* reconstructions */
+  const ra=ensureThumbs('atRecA',8), rb=ensureThumbs('atRecB',8);
+  m2.recIdx.forEach((ix,i)=>{ paintImg(ra[i],IMG[ix]); paintImg(rb[i],dec(m2.mu[ix])); });
+  /* interpolation */
+  const [A,B]=m2.pair, il=ensureThumbs('atIntL',8), ip=ensureThumbs('atIntP',8);
+  for(let i=0;i<8;i++){ const a=i/7; paintImg(il[i],dec([m2.mu[A][0]*(1-a)+m2.mu[B][0]*a,m2.mu[A][1]*(1-a)+m2.mu[B][1]*a]));
+    const px=new Float64Array(S*S); for(let k=0;k<S*S;k++) px[k]=IMG[A][k]*(1-a)+IMG[B][k]*a; paintImg(ip[i],px); }
+  if(m2.hover) paintImg($('atPrev'),dec(m2.hover));
+  /* stats */
+  let sx=0,sy=0,mx=0,my=0; m2.mu.forEach(p=>{mx+=p[0]/NB; my+=p[1]/NB;}); m2.mu.forEach(p=>{sx+=(p[0]-mx)**2/NB; sy+=(p[1]-my)**2/NB;});
+  $('atEp').textContent=Math.floor(m2.epoch); $('atRec').textContent=fmt(m2.rec,2); $('atKL').textContent=m2.beta>0?fmt(m2.kl,2):'–'; $('atSp').textContent=fmt(Math.sqrt((sx+sy)/2),2);
+  $('atZcap').textContent=T('axes ±'+R+'  ·  dashed circles = 1σ, 2σ of the prior N(0, I)','sumbu ±'+R+'  ·  lingkaran putus-putus = 1σ, 2σ prior N(0, I)');
+}
+function hoverFrom(cv){ return e=>{ const r=cv.getBoundingClientRect(), R=m2.R; m2.hover=[((e.clientX-r.left)/r.width*2-1)*R,-((e.clientY-r.top)/r.height*2-1)*R]; $('atPrevT').textContent='z = ('+fmt(m2.hover[0])+', '+fmt(m2.hover[1])+')'; if(!m2.running||G.active!=='atlas') drawA(); }; }
+$('atZ').addEventListener('pointermove',hoverFrom($('atZ'))); $('atA').addEventListener('pointermove',hoverFrom($('atA')));
+function setBeta(b){ m2.beta=b; $('atB').value=b; $('atBv').textContent=b.toFixed(2); }
+$('atAE').onclick=()=>setBeta(0); $('atVAE').onclick=()=>setBeta(.1);
+$('atB').oninput=()=>setBeta(+$('atB').value);
+$('atTrain').onclick=()=>{ m2.running=!m2.running; if(m2.running&&m2.epoch>700) m2.epoch=0; setBtn($('atTrain'),m2.running); };
+$('atReset').onclick=()=>{ initA(); drawA(); };
+$('atResamp').onclick=()=>{ newSamples(); drawA(); };
+$('atPair').onclick=()=>{ m2.pair=[Math.floor(m2.rnd()*NB),Math.floor(m2.rnd()*NB)]; drawA(); };
+['atCol','atSig','atPri'].forEach(id=>$(id).addEventListener('change',()=>drawA()));
+m2.pair=[5,222];
+initA();
+
+/* =========================== TAB 3 : KL =========================== */
+const kl={eps:[]}; function newEps(){ const g=G.gauss(G.rng((Math.random()*1e9)|0)); kl.eps=[]; for(let i=0;i<40;i++) kl.eps.push([g(),g()]); } newEps();
+function drawKL(){
+  const m=[+$('klm1').value,+$('klm2').value], s=[+$('kls1').value,+$('kls2').value];
+  $('klm1v').textContent=fmt(m[0]); $('klm2v').textContent=fmt(m[1]); $('kls1v').textContent=fmt(s[0]); $('kls2v').textContent=fmt(s[1]);
+  const f=G.fit($('klCv')), ctx=f.ctx, W=f.w, H=f.h, R=4; ctx.clearRect(0,0,W,H);
+  const X=z=>W/2+z/R*W/2, Y=z=>H/2-z/R*H/2;
+  ctx.strokeStyle=C.border; ctx.lineWidth=1; ctx.beginPath(); ctx.moveTo(0,H/2); ctx.lineTo(W,H/2); ctx.moveTo(W/2,0); ctx.lineTo(W/2,H); ctx.stroke();
+  ctx.strokeStyle='rgba(110,98,89,.8)'; ctx.setLineDash([5,4]); for(const r of [1,2]){ ctx.beginPath(); ctx.arc(W/2,H/2,r/R*W/2,0,6.3); ctx.stroke(); } ctx.setLineDash([]);
+  ctx.strokeStyle=C.moss; ctx.lineWidth=2; for(const r of [1,2]){ ctx.beginPath(); ctx.ellipse(X(m[0]),Y(m[1]),r*s[0]/R*W/2,r*s[1]/R*H/2,0,0,6.3); ctx.stroke(); }
+  ctx.strokeStyle='rgba(47,112,105,.25)'; ctx.lineWidth=1;
+  kl.eps.forEach(e=>{ const zx=m[0]+s[0]*e[0], zy=m[1]+s[1]*e[1]; ctx.beginPath(); ctx.moveTo(X(m[0]),Y(m[1])); ctx.lineTo(X(zx),Y(zy)); ctx.stroke(); ctx.fillStyle=C.teal; ctx.beginPath(); ctx.arc(X(zx),Y(zy),3,0,6.3); ctx.fill(); });
+  ctx.fillStyle=C.rust; ctx.beginPath(); ctx.arc(X(m[0]),Y(m[1]),5,0,6.3); ctx.fill();
+  const klMu=.5*(m[0]*m[0]+m[1]*m[1]), klS=.5*s.reduce((a,v)=>a+v*v-Math.log(v*v)-1,0), tot=klMu+klS;
+  $('klTot').textContent=fmt(tot,2); $('klMu').textContent=fmt(klMu,2); $('klSg').textContent=fmt(klS,2);
+  const mx=Math.max(tot,1e-9), cap=12, sc=Math.min(1,tot/cap);
+  $('klBar').innerHTML='<i style="width:'+(klMu/Math.max(tot,cap)*100)+'%;background:#C17A3E"></i><i style="width:'+(klS/Math.max(tot,cap)*100)+'%;background:#A8392A"></i>';
+}
+['klm1','klm2','kls1','kls2'].forEach(id=>$(id).addEventListener('input',drawKL));
+function setKL(a,b,c,d){ $('klm1').value=a; $('klm2').value=b; $('kls1').value=c; $('kls2').value=d; drawKL(); }
+$('klP1').onclick=()=>setKL(0,0,1,1); $('klP2').onclick=()=>setKL(2.6,-2.2,1,1); $('klP3').onclick=()=>setKL(1.2,-.8,.07,.07);
+$('klEps').onclick=()=>{ newEps(); drawKL(); };
+
+/* =========================== quiz =========================== */
+G.quiz('quizBox',[
+ {q:'Why can a plain autoencoder not be used directly to generate new data?',o:['It has no decoder','Nothing tells you which latent codes are valid — random z often decodes to garbage','It always memorises the pixels','It needs labels'],a:1,e:'The AE only learns to reconstruct training points. The space between and beyond its codes is unconstrained, so a random z has no reason to decode to something sensible.'},
+ {q:'What does the KL term in a VAE do?',o:['Sharpens reconstructions','Pulls each q(z|x) towards N(0, I), keeping the latent space compact and sample-able','Removes the decoder','Makes σ as small as possible'],a:1,e:'KL(q‖p) is zero only when q equals the prior. It keeps codes near the origin with sensible spread, so drawing z ~ N(0, I) lands in decoded territory.'},
+ {q:'What does the reparameterization trick achieve?',o:['It removes randomness from training','It rewrites a random draw as μ + σ·ε so gradients can flow to μ and σ','It makes ε learnable','It speeds up the decoder'],a:1,e:'Sampling z directly blocks backprop. With z = μ + σ⊙ε the randomness lives in ε (a constant for the gradient), and z is a smooth function of μ and σ.'},
+ {q:'You raise β a lot. What do you expect?',o:['Sharper reconstructions','Smoother, tidier latent space but blurrier reconstructions','Nothing changes','The encoder disappears'],a:1,e:'A large β makes "stay close to the prior" dominate. Codes carry less information about each image, so outputs blur — "posterior collapse" in the extreme.'},
+],[
+ {q:'Kenapa autoencoder biasa tidak bisa langsung dipakai untuk membuat data baru?',o:['Ia tak punya decoder','Tak ada yang menentukan kode laten mana yang valid — z acak sering ter-decode jadi sampah','Ia selalu menghafal piksel','Ia butuh label'],a:1,e:'AE hanya belajar merekonstruksi titik latih. Ruang di antara dan di luar kodenya tak dibatasi, jadi z acak tak punya alasan untuk ter-decode jadi sesuatu yang masuk akal.'},
+ {q:'Apa fungsi suku KL pada VAE?',o:['Mempertajam rekonstruksi','Menarik tiap q(z|x) ke N(0, I), menjaga ruang laten padat dan bisa disampel','Menghapus decoder','Membuat σ sekecil mungkin'],a:1,e:'KL(q‖p) bernilai nol hanya jika q sama dengan prior. Ia menjaga kode dekat titik asal dengan sebaran wajar, sehingga undian z ~ N(0, I) jatuh di wilayah yang sudah dipetakan decoder.'},
+ {q:'Apa yang dicapai trik reparameterisasi?',o:['Menghilangkan keacakan dari pelatihan','Menulis undian acak sebagai μ + σ·ε agar gradient bisa mengalir ke μ dan σ','Membuat ε bisa dipelajari','Mempercepat decoder'],a:1,e:'Menyampel z langsung menghalangi backprop. Dengan z = μ + σ⊙ε, keacakan berada di ε (konstanta bagi gradient), dan z adalah fungsi mulus dari μ dan σ.'},
+ {q:'Kamu menaikkan β banyak-banyak. Apa yang diharapkan?',o:['Rekonstruksi lebih tajam','Ruang laten lebih halus dan rapi tetapi rekonstruksi lebih kabur','Tak ada perubahan','Encoder menghilang'],a:1,e:'β besar membuat "tetap dekat prior" mendominasi. Kode memuat lebih sedikit informasi tiap gambar, sehingga keluaran kabur — "posterior collapse" pada ekstremnya.'},
+]);
+
+/* =========================== main loop =========================== */
+G.tabs(name=>{ if(name==='bn') drawB1(); if(name==='atlas') drawA(); if(name==='kl') drawKL(); });
+G.onLang(()=>{ setBtn($('bnTrain'),b1.running); setBtn($('atTrain'),m2.running); if(G.active==='bn') drawB1(); if(G.active==='atlas') drawA(); });
+let lastDraw=0;
+function frame(ts){
+  if(document.hidden){ requestAnimationFrame(frame); return; }
+  if(G.active==='bn' && b1.running){ trainB1(8); if(b1.step>4000){ b1.running=false; setBtn($('bnTrain'),false); } drawB1(); }
+  else if(G.active==='atlas' && m2.running){ trainA(14); drawA(); }
+  requestAnimationFrame(frame);
+}
+G.initLang(); $('bnHv').textContent=$('bnH').value; drawKL(); drawB1();
+window.addEventListener('resize',()=>{ if(G.active==='bn') drawB1(); if(G.active==='atlas') drawA(); if(G.active==='kl') drawKL(); });
+requestAnimationFrame(frame);
+})();
+
+</script>
+</body>
+</html>

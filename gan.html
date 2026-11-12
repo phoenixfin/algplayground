@@ -1,0 +1,529 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="icon" type="image/png" href="logo.png">
+<script>try{var _l=localStorage.getItem('phxLang');if(_l==='id'||_l==='en')document.documentElement.lang=_l;}catch(e){}</script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=Lato:wght@300;400;700&display=swap" rel="stylesheet">
+<title>GANs — the generator vs discriminator arena</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css" crossorigin="anonymous">
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js" crossorigin="anonymous"></script>
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/contrib/auto-render.min.js" crossorigin="anonymous" onload="window.__mathReady&&window.__mathReady()"></script>
+<style>
+  :root{
+    --paper: #FAF7F2; --paper-line: #EDE4D8; --ink: #2D2D2D; --ink-soft: #6E6259;
+    --moss: #C17A3E; --moss-dim: #F0DCC6; --rust: #A8392A; --rust-dim: #F3DBD5;
+    --gold: #2F7069; --accent-deep: #8F5620; --gold-dim: #D3E5E2; --card: #FFFDF9; --border: #E4DACB;
+  }
+  *{ box-sizing: border-box; }
+  html[lang="en"] [data-lang="id"], html[lang="id"] [data-lang="en"]{ display: none !important; }
+  body{
+    margin:0; background: var(--paper); color: var(--ink);
+    font-family: Lato, "Helvetica Neue", Helvetica, Arial, sans-serif; line-height: 1.5;
+    background-image: linear-gradient(var(--paper-line) 1px, transparent 1px), linear-gradient(90deg, var(--paper-line) 1px, transparent 1px);
+    background-size: 28px 28px; background-attachment: fixed;
+  }
+  .wrap{ max-width: 1100px; margin: 0 auto; padding: 36px 24px 80px; }
+  header.top{ margin-bottom: 18px; border-bottom: 2px solid var(--ink); padding-bottom: 14px; }
+  .eyebrow{ font-family: "SF Mono", SFMono-Regular, Consolas, monospace; font-size: 12px; letter-spacing: 0.12em; text-transform: uppercase; color: var(--moss); margin: 0 0 6px; }
+  h1{ font-family: "Playfair Display", "Playfair Display", Georgia, serif; font-weight: 600; font-size: 32px; margin: 0 0 8px; }
+  header.top p{ margin: 0; color: var(--ink-soft); max-width: 800px; font-size: 15px; }
+  header.top p.eyebrow{ color: var(--accent-deep); }
+  .crumbs{ font-size: 12.5px; margin: 14px 0 0; }
+  .crumbs a{ color: var(--moss); }
+  .langtog{ display:inline-flex; border:1px solid var(--border); border-radius:20px; overflow:hidden; }
+  .langtog button{ font-family:inherit; font-size:11.5px; letter-spacing:0.06em; padding:4px 11px; border:0; background:#fff; color:var(--ink-soft); cursor:pointer; }
+  .langtog button.on{ background:var(--accent-deep); color:#fff; font-weight:700; }
+
+  .tabs{ display: flex; gap: 8px; margin: 0 0 22px; flex-wrap: wrap;  position: sticky; top: 0; z-index: 20; background: var(--paper); padding: 12px 0 10px; border-bottom: 1px solid var(--border); }
+  .tab{ padding: 9px 14px; font-size: 13px; font-weight: 600; border: 1px solid var(--ink); border-radius: 3px; background: var(--card); cursor: pointer; }
+  .tab.active{ background: var(--ink); color: #fff; }
+
+  .section{ display: none; }
+  .section.active{ display: block; }
+
+  .intro{ display:grid; grid-template-columns: 200px 1fr; gap: 20px; align-items:center; background: var(--card); border: 1px solid var(--border); border-radius: 4px; padding: 14px 18px; margin-bottom: 20px; }
+  @media (max-width: 700px){ .intro{ grid-template-columns: 1fr; } }
+  .intro svg{ width: 100%; height: auto; display:block; }
+  .intro .txt h3{ margin: 0 0 6px; font-family: "Playfair Display", Georgia, serif; font-size: 17px; font-weight: 400; }
+  .intro .txt p{ margin: 0; font-size: 13.5px; color: var(--ink-soft); }
+
+  .layout{ display: grid; grid-template-columns: 300px 1fr; gap: 24px; align-items: start; }
+  @media (max-width: 820px){
+    .layout{ grid-template-columns: 1fr; }
+    .panel{ position: static !important; top: auto !important; }
+  }
+  .panel{ background: var(--card); border: 1px solid var(--border); border-radius: 4px; padding: 18px; position: sticky; top: 84px; align-self: start; }
+  .panel h2{ font-family: "SF Mono", SFMono-Regular, Consolas, monospace; font-size: 12px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--ink-soft); margin: 18px 0 12px; border-bottom: 1px solid var(--border); padding-bottom: 6px; }
+  .panel h2:first-child{ margin-top: 0; }
+  .field{ margin-bottom: 14px; }
+  .field label{ display: flex; justify-content: space-between; font-size: 13px; font-weight: 600; margin-bottom: 5px; gap:8px; }
+  .field label span.val{ font-weight: 400; color: var(--moss); font-family: "SF Mono", SFMono-Regular, Consolas, monospace; white-space:nowrap; }
+  .field input[type=range]{ width: 100%; accent-color: var(--moss); }
+  .field select{ width: 100%; padding: 6px 8px; font-size: 13px; border: 1px solid var(--border); border-radius: 3px; background: #fff; font-family: inherit; }
+
+  .btn{ display: inline-block; padding: 8px 14px; font-size: 13px; font-weight: 600; border: 1px solid var(--ink); border-radius: 3px; background: var(--card); color: var(--ink); cursor: pointer; }
+  .btn:hover{ background: var(--paper-line); }
+  .btn.primary{ background: var(--moss); color: #fff; border-color: var(--moss); }
+  .btn.primary:hover{ background: #A6642F; }
+  .btn.toggle.active{ background: var(--ink); color: #fff; }
+  .btn.block{ width: 100%; margin-bottom: 8px; }
+  .btngroup{ display:flex; gap:8px; margin-bottom: 14px; }
+  .btngroup .btn{ flex:1; }
+  .row2{ display: flex; gap: 8px; }
+  .row2 > *{ flex: 1; }
+  .hint{ font-size: 12.5px; color: var(--ink-soft); margin: 10px 0 0; }
+
+  .stats{ display: flex; gap: 12px; margin-bottom: 20px; flex-wrap: wrap; }
+  .stat{ flex: 1; min-width: 120px; background: var(--card); border: 1px solid var(--border); border-radius: 4px; padding: 10px 14px; overflow: hidden; }
+  .stat .label{ font-size: 11px; letter-spacing: 0.08em; text-transform: uppercase; color: var(--ink-soft); font-family: "SF Mono", SFMono-Regular, Consolas, monospace; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .stat .value{ font-size: 20px; font-family: "Playfair Display", Georgia, serif; line-height: 1.3; word-break: break-word; }
+  .stat .value.eqv{ font-size: 15px; padding-top: 4px; }
+  .stat.hi .value{ color: var(--moss); }
+  .stat.warn .value{ color: var(--rust); }
+
+  .box{ background: var(--card); border: 1px solid var(--border); border-radius: 4px; padding: 12px 14px; margin-bottom: 20px; }
+  .box h2{ font-family: "SF Mono", SFMono-Regular, Consolas, monospace; font-size: 12px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--ink-soft); margin: 0 0 10px; }
+  .box p{ font-size: 13.5px; color: var(--ink-soft); margin: 8px 0 0; }
+  .box p b{ color: var(--ink); }
+  canvas{ display:block; width:100%; }
+  canvas.big{ height: 430px; cursor: crosshair; }
+  canvas.mid{ height: 230px; }
+  canvas.small{ height: 160px; }
+  canvas.sq{ aspect-ratio: 1.15/1; height:auto; }
+  canvas.anim{ aspect-ratio: 1.15/1; height:auto; }
+  canvas.heat{ height: 200px; }
+
+  .cols2{ display:grid; grid-template-columns: 1fr 1fr; gap: 18px; margin-bottom:20px; }
+  @media (max-width: 900px){ .cols2{ grid-template-columns: 1fr; } }
+  .cols2 .box{ margin-bottom: 0; }
+
+  .legend{ display:flex; gap:16px; font-size:12px; color: var(--ink-soft); margin-top:8px; flex-wrap:wrap; }
+  .legend span{ display:inline-flex; align-items:center; gap:5px; }
+  .swatch{ width:10px; height:10px; border-radius:50%; display:inline-block; }
+
+  .try{ background: var(--gold-dim); border: 1px solid var(--gold); border-radius: 4px; padding: 10px 14px; font-size: 13px; margin-bottom: 20px; }
+  .try b{ text-transform: uppercase; font-size: 11px; letter-spacing: 0.08em; font-family: "SF Mono", SFMono-Regular, Consolas, monospace; color: #27585A; }
+  .try ol{ margin: 6px 0 0; padding-left: 20px; }
+  .try li{ margin-bottom: 3px; }
+
+  .eqk{ background:#fff; border:1px solid var(--border); border-radius:3px; padding:12px 14px; overflow-x:auto; margin-bottom:0; }
+  .eqk .katex-display{ margin:0; }
+  .katex{ font-size:1.04em; }
+
+  table.cmp{ width:100%; border-collapse:collapse; font-size:13px; }
+  table.cmp th, table.cmp td{ border:1px solid var(--border); padding:9px 12px; text-align:left; vertical-align:top; }
+  table.cmp th{ background:var(--paper); font-family:"Playfair Display", Georgia, serif; font-weight:400; font-size:15px; }
+  table.cmp td:first-child, table.cmp th:first-child{ background:var(--paper); font-weight:600; font-size:12px; text-transform:uppercase; letter-spacing:0.06em; font-family:"SF Mono",SFMono-Regular,Consolas,monospace; color:var(--ink-soft); width:120px; }
+  table.cmp td{ color: var(--ink); }
+
+  .q{ margin-bottom: 18px; }
+  .q .qt{ font-weight: 600; font-size: 14px; margin-bottom: 8px; }
+  .q .opts{ display:flex; flex-direction:column; gap:6px; }
+  .q button.opt{ border:1px solid var(--border); border-radius:3px; padding:8px 12px; cursor:pointer; background:#fff; text-align:left; font-size:13.5px; font-family:inherit; color:var(--ink); }
+  .q button.opt:hover{ border-color: var(--ink); }
+  .q button.opt.correct{ background: var(--moss-dim); border-color: var(--moss); font-weight:600; }
+  .q button.opt.wrong{ background: var(--rust-dim); border-color: var(--rust); }
+  .q .exp{ display:none; font-size:13px; color:var(--ink-soft); margin-top:8px; background:var(--paper); border-left:3px solid var(--moss); padding:8px 12px; }
+
+  .mono{ font-family:"SF Mono",SFMono-Regular,Consolas,monospace; }
+  footer{ margin-top: 30px; border-top: 1px solid var(--border); padding-top: 14px; font-size: 12px; color: var(--ink-soft); }
+
+  .stack{ display:flex; flex-direction:column; gap:0; }
+  .cols3{ display:grid; grid-template-columns:repeat(3,1fr); gap:14px; margin-bottom:20px; }
+  .cols3 .box{ margin-bottom:0; }
+  @media (max-width:900px){ .cols3{ grid-template-columns:1fr; } }
+  .pillrow{ display:flex; flex-wrap:wrap; gap:6px; margin-bottom:12px; }
+  .pill{ font-size:12px; padding:5px 10px; border:1px solid var(--border); background:#fff; border-radius:14px; cursor:pointer; font-family:inherit; color:var(--ink); }
+  .pill.on{ background:var(--ink); color:#fff; border-color:var(--ink); }
+  canvas.sq1{ aspect-ratio:1/1; height:auto; }
+  canvas.wide{ aspect-ratio:2.2/1; height:auto; }
+  .capline{ font-size:11.5px; color:var(--ink-soft); font-family:"SF Mono",SFMono-Regular,Consolas,monospace; margin-top:6px; }
+  .thumbrow{ display:flex; flex-wrap:wrap; gap:6px; }
+  .thumbrow canvas{ width:64px; height:64px; border:1px solid var(--border); border-radius:3px; image-rendering:pixelated; }
+  .formula{ background:#fff; border:1px solid var(--border); border-radius:3px; padding:10px 14px; overflow-x:auto; margin:8px 0 0; font-size:14px; }
+  .katex{ font-size:1.04em; }
+  .hint{ line-height:1.45; }
+
+  .rngnote{ font-size:12px; color:var(--ink-soft); margin-top:6px; }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<style>
+  .pnav{ display:flex; align-items:center; gap:14px; margin-bottom:24px; font-family:"SF Mono",SFMono-Regular,Consolas,monospace; font-size:13px; flex-wrap:wrap; }
+  .pnav a{ text-decoration:none; color:var(--ink-soft); }
+  .pnav a:hover{ color:var(--ink); }
+  .pnav .brand{ display:inline-flex; align-items:center; gap:9px; color:var(--ink); font-weight:700; }
+  .pnav .brand img{ width:30px; height:30px; border-radius:7px; display:block; }
+  .pnav .spacer{ flex:1; min-width:8px; }
+  .pnav a.ext::after{ content:" \2197"; color:var(--ink-soft); font-size:11px; }
+  .pnav details.topics{ position:relative; }
+  .pnav details.topics>summary{ list-style:none; cursor:pointer; color:var(--ink); font-weight:600; padding:2px 2px; }
+  .pnav details.topics>summary::-webkit-details-marker{ display:none; }
+  .pnav details.topics>summary::after{ content:" \25BE"; }
+  .pnav details.topics[open]>summary::after{ content:" \25B4"; }
+  .pnav .menu{ position:absolute; top:100%; left:0; margin-top:9px; background:var(--card); border:1px solid var(--border); border-radius:7px; padding:14px 16px; box-shadow:0 8px 26px rgba(45,45,45,0.13); z-index:60; display:flex; flex-wrap:wrap; gap:14px 24px; max-width:min(940px,calc(100vw - 32px)); }
+  .pnav .mgroup{ display:flex; flex-direction:column; gap:6px; }
+  .pnav .mgroup>b{ font-size:10px; letter-spacing:0.09em; text-transform:uppercase; color:var(--accent-deep); margin-bottom:2px; }
+  .pnav .mgroup>b a{ color:inherit; text-decoration:none; }
+  .pnav .mgroup>b a:hover{ text-decoration:underline; }
+  .pnav .mgroup a{ color:var(--ink); white-space:nowrap; }
+  .pnav .mgroup a:hover{ color:var(--accent-deep); }
+  .pnav .mgroup a.cur{ color:var(--accent-deep); font-weight:700; }
+  @media(max-width:700px){ .pnav .menu{ flex-direction:column; gap:14px; } }
+</style>
+<nav class="pnav">
+  <a class="brand" href="index.html"><img src="logo.png" alt=""><span data-lang="en">Playgrounds</span><span data-lang="id">Playground</span></a>
+  <details class="topics">
+    <summary><span data-lang="en">Topics</span><span data-lang="id">Topik</span></summary>
+    <div class="menu">
+      <div class="mgroup"><b><a href="optimization.html"><span data-lang="en">Optimization</span><span data-lang="id">Optimasi</span></a></b>
+        <a href="evolutionary_swarm.html"><span data-lang="en">Evolutionary &amp; swarm</span><span data-lang="id">Evolusioner &amp; swarm</span></a>
+        <a href="apps/optimizers/"><span data-lang="en">Gradient descent</span><span data-lang="id">Gradient descent</span></a>
+      </div>
+      <div class="mgroup"><b><a href="machine_learning.html">Machine Learning</a></b>
+        <a href="classical_ml.html"><span data-lang="en">Classical ML</span><span data-lang="id">ML klasik</span></a>
+        <a href="apps/mlp/"><span data-lang="en">Neural net from scratch</span><span data-lang="id">Neural net dari nol</span></a>
+        <a href="convolution.html"><span data-lang="en">Convolution &amp; CNNs</span><span data-lang="id">Konvolusi &amp; CNN</span></a>
+      </div>
+      <div class="mgroup"><b><a href="scientific_ml_index.html">Scientific ML</a></b>
+        <a href="differential_equations.html"><span data-lang="en">Differential equations</span><span data-lang="id">Persamaan diferensial</span></a>
+        <a href="fourier.html">Fourier</a>
+        <a href="scientific_ml.html">Scientific ML</a>
+      </div>
+      <div class="mgroup"><b><a href="mathematical_logic.html"><span data-lang="en">Mathematical Logic</span><span data-lang="id">Logika Matematika</span></a></b>
+        <a href="propositional_logic.html"><span data-lang="en">Propositional logic</span><span data-lang="id">Logika proposisional</span></a>
+        <a href="predicate_logic.html"><span data-lang="en">Predicate logic</span><span data-lang="id">Logika predikat</span></a>
+        <a href="proof_methods.html"><span data-lang="en">Proof methods</span><span data-lang="id">Metode pembuktian</span></a>
+        <a href="set_theory.html"><span data-lang="en">Set theory</span><span data-lang="id">Teori himpunan</span></a>
+        <a href="logic_algebra.html"><span data-lang="en">Logic algebra</span><span data-lang="id">Aljabar logika</span></a>
+      </div>
+      <div class="mgroup"><b><a href="generative_ai.html">Generative AI</a></b>
+        <a href="autoencoder.html"><span data-lang="en">Autoencoders &amp; VAE</span><span data-lang="id">Autoencoder &amp; VAE</span></a>
+        <a href="gan.html"><span data-lang="en">GANs</span><span data-lang="id">GAN</span></a>
+        <a href="embeddings.html"><span data-lang="en">Embeddings</span><span data-lang="id">Embedding</span></a>
+        <a href="attention.html"><span data-lang="en">Attention</span><span data-lang="id">Attention</span></a>
+        <a href="language_models.html"><span data-lang="en">Language models</span><span data-lang="id">Model bahasa</span></a>
+        <a href="diffusion.html"><span data-lang="en">Diffusion</span><span data-lang="id">Difusi</span></a>
+      </div>
+    </div>
+  </details>
+  <span class="spacer"></span>
+  <a class="ext" href="https://phx.my.id" target="_blank" rel="noopener noreferrer">phx.my.id</a>
+  <a class="ext" href="https://research.phx.my.id" target="_blank" rel="noopener noreferrer"><span data-lang="en">Research</span><span data-lang="id">Riset</span></a>
+  <span class="langtog"><button data-lang-btn="en">EN</button><button data-lang-btn="id">ID</button></span>
+</nav>
+<script>(function(){
+  var path=(location.pathname.split('/').filter(Boolean).pop()||'index.html');
+  var links=document.querySelectorAll('.pnav .menu a');
+  for(var i=0;i<links.length;i++){ var hf=links[i].getAttribute('href')||''; var seg=hf.split('/').filter(Boolean).pop()||'';
+    if(seg===path || (path!=='index.html' && hf.indexOf(path)>=0)) links[i].classList.add('cur'); }
+  document.addEventListener('click',function(e){ var d=document.querySelector('.pnav details[open]'); if(d && !d.contains(e.target)) d.removeAttribute('open'); });
+})();</script>
+
+<header class="top">
+  <p class="eyebrow"><span data-lang="en">Generative AI · 2 of 6</span><span data-lang="id">Generative AI · 2 dari 6</span></p>
+  <h1><span data-lang="en">GANs — the generator vs discriminator arena</span><span data-lang="id">GAN — arena generator vs diskriminator</span></h1>
+  <p data-lang="en">A <b>generative adversarial network</b> learns to make data by playing a game. A <b>generator</b> turns random noise into fake samples; a <b>discriminator</b> tries to tell fakes from real. Each gets better by beating the other. Watch both train live on 2-D data — and watch what goes wrong.</p>
+  <p data-lang="id">Sebuah <b>generative adversarial network</b> belajar membuat data lewat sebuah permainan. <b>Generator</b> mengubah derau acak menjadi sampel palsu; <b>diskriminator</b> mencoba membedakan palsu dari asli. Keduanya membaik dengan mengalahkan lawannya. Saksikan keduanya berlatih langsung pada data 2-D — dan lihat apa yang bisa salah.</p>
+  <p class="crumbs"><a href="generative_ai.html"><span data-lang="en">← Generative AI</span><span data-lang="id">← Generative AI</span></a></p>
+</header>
+
+<div class="tabs">
+  <button class="tab active" data-tab="arena"><span data-lang="en">1 · The arena (live training)</span><span data-lang="id">1 · Arena (pelatihan langsung)</span></button>
+  <button class="tab" data-tab="game"><span data-lang="en">2 · The minimax game in 1-D</span><span data-lang="id">2 · Permainan minimax 1-D</span></button>
+  <button class="tab" data-tab="map"><span data-lang="en">3 · The big picture</span><span data-lang="id">3 · Gambaran besar</span></button>
+</div>
+
+<!-- ============ 1 · ARENA ============ -->
+<div class="section active" id="sec-arena">
+  <div class="intro">
+    <svg viewBox="0 0 200 120" xmlns="http://www.w3.org/2000/svg">
+      <g font-family="SF Mono,monospace" font-size="7.5" text-anchor="middle" fill="#2D2D2D">
+        <rect x="4" y="14" width="44" height="24" fill="#F3DBD5" stroke="#A8392A"/><text x="26" y="29">noise z</text>
+        <rect x="62" y="14" width="52" height="24" fill="#F0DCC6" stroke="#C17A3E"/><text x="88" y="29">Generator</text>
+        <rect x="62" y="76" width="52" height="24" fill="#D3E5E2" stroke="#2F7069"/><text x="88" y="91">real data</text>
+        <rect x="136" y="42" width="60" height="30" fill="#fff" stroke="#2D2D2D" stroke-width="1.5"/><text x="166" y="60">Discriminator</text>
+        <text x="166" y="92" fill="#6E6259">real or fake?</text>
+      </g>
+      <g stroke="#6E6259" fill="none"><path d="M48 26 H62"/><path d="M114 26 H125 V50 H136"/><path d="M114 88 H125 V64 H136"/></g>
+    </svg>
+    <div class="txt">
+      <h3><span data-lang="en">A counterfeiter and a detective</span><span data-lang="id">Pemalsu dan detektif</span></h3>
+      <p data-lang="en">The <b>background colour</b> is the discriminator's opinion: teal where it thinks "real", rust where it thinks "fake". The generator is nudged to move its points <i>into the teal</i>. The discriminator is nudged to repaint so that the generator's points fall in rust. If the game goes well, the generator's points settle on the real ones and the background fades to neutral (D = 0.5 — it can't tell).</p>
+      <p data-lang="id"><b>Warna latar</b> adalah pendapat diskriminator: teal di tempat yang ia anggap "asli", rust di tempat yang ia anggap "palsu". Generator didorong memindahkan titiknya <i>ke area teal</i>. Diskriminator didorong mengecat ulang agar titik generator jatuh di rust. Jika permainan berjalan baik, titik generator menetap di atas yang asli dan latar memudar jadi netral (D = 0.5 — ia tak bisa membedakan).</p>
+    </div>
+  </div>
+  <div class="layout">
+    <div class="panel">
+      <h2><span data-lang="en">Real data</span><span data-lang="id">Data asli</span></h2>
+      <div class="pillrow" id="gnData"></div>
+      <h2><span data-lang="en">Training</span><span data-lang="id">Pelatihan</span></h2>
+      <div class="btngroup"><button class="btn primary" id="gnTrain"></button><button class="btn" id="gnStep"><span data-lang="en">1 step</span><span data-lang="id">1 langkah</span></button></div>
+      <button class="btn block" id="gnReset"><span data-lang="en">Reset networks</span><span data-lang="id">Reset jaringan</span></button>
+      <div class="field"><label><span data-lang="en">D steps per G step</span><span data-lang="id">Langkah D per langkah G</span><span class="val" id="gnKv">1</span></label><input type="range" id="gnK" min="1" max="5" value="1"></div>
+      <div class="field"><label><span data-lang="en">Learning rate D</span><span data-lang="id">Learning rate D</span><span class="val" id="gnLDv"></span></label><input type="range" id="gnLD" min="-3.5" max="-1.7" step="0.05" value="-2.7"></div>
+      <div class="field"><label><span data-lang="en">Learning rate G</span><span data-lang="id">Learning rate G</span><span class="val" id="gnLGv"></span></label><input type="range" id="gnLG" min="-3.5" max="-1.7" step="0.05" value="-2.7"></div>
+      <div class="field"><label><span data-lang="en">Generator loss</span><span data-lang="id">Loss generator</span></label><select id="gnLoss">
+        <option value="ns" data-lang="en">Non-saturating: maximise log D(G(z))</option><option value="ns" data-lang="id">Non-saturating: maksimalkan log D(G(z))</option>
+        <option value="mm" data-lang="en">Original minimax: minimise log(1 − D(G(z)))</option><option value="mm" data-lang="id">Minimax asli: minimalkan log(1 − D(G(z)))</option>
+      </select></div>
+      <p class="hint" data-lang="en">Both networks are tiny MLPs (2→16→16→out) trained with Adam in plain JavaScript. It takes ~20–40 s to settle on the ring.</p>
+      <p class="hint" data-lang="id">Kedua jaringan adalah MLP mungil (2→16→16→keluaran) yang dilatih dengan Adam di JavaScript murni. Perlu ~20–40 dtk untuk menetap pada ring.</p>
+    </div>
+    <div>
+      <div class="stats">
+        <div class="stat"><div class="label"><span data-lang="en">iteration</span><span data-lang="id">iterasi</span></div><div class="value" id="gnIt">0</div></div>
+        <div class="stat"><div class="label">D(real)</div><div class="value" id="gnDr" style="color:#2F7069">–</div></div>
+        <div class="stat"><div class="label">D(fake)</div><div class="value" id="gnDf" style="color:#A8392A">–</div></div>
+        <div class="stat hi"><div class="label"><span data-lang="en">modes covered</span><span data-lang="id">mode terjangkau</span></div><div class="value" id="gnMode">–</div></div>
+      </div>
+      <div class="cols2">
+        <div class="box"><h2><span data-lang="en">Arena — D's opinion as background</span><span data-lang="id">Arena — pendapat D sebagai latar</span></h2><canvas id="gnCv" class="sq1" style="cursor:default"></canvas>
+          <div class="legend"><span><span class="swatch" style="background:#2F7069"></span><span data-lang="en">real samples</span><span data-lang="id">sampel asli</span></span><span><span class="swatch" style="background:#A8392A"></span><span data-lang="en">generator output</span><span data-lang="id">keluaran generator</span></span></div></div>
+        <div class="stack">
+          <div class="box"><h2><span data-lang="en">Losses</span><span data-lang="id">Loss</span></h2><canvas id="gnLossCv" class="wide"></canvas></div>
+          <div class="box" style="margin-bottom:0"><h2><span data-lang="en">D's average verdict</span><span data-lang="id">Rata-rata vonis D</span></h2><canvas id="gnVerd" class="wide"></canvas>
+            <p class="capline" data-lang="en">Equilibrium: both lines meet at 0.5.</p><p class="capline" data-lang="id">Kesetimbangan: kedua garis bertemu di 0.5.</p></div>
+        </div>
+      </div>
+      <div class="try" data-lang="en"><b>Try this</b><ol>
+        <li>Press <b>Train</b> on the <b>ring</b>. First the fake blob wanders to the ring's edge, then spreads round it. The background turns neutral as D loses its edge.</li>
+        <li>If many fake points cluster on just <i>a few</i> of the 8 blobs, that is <b>mode collapse</b>: the generator found a few spots D finds hard to refute and stopped exploring. Watch "modes covered" — it can rise and fall.</li>
+        <li>Set <b>Learning rate D</b> high and <b>G</b> low: D wins too easily and the gradients it gives G go flat. Try <i>Original minimax</i> loss too — it learns far slower early on, which is why the non-saturating loss was invented.</li>
+        <li>Switch data to <b>moons</b> — GANs need no density formula, only samples.</li>
+      </ol></div>
+      <div class="try" data-lang="id"><b>Coba ini</b><ol>
+        <li>Tekan <b>Latih</b> pada <b>ring</b>. Mula-mula gumpalan palsu berkelana ke tepi ring, lalu menyebar mengelilinginya. Latar menjadi netral saat D kehilangan keunggulan.</li>
+        <li>Jika banyak titik palsu menumpuk di <i>sedikit</i> dari 8 gumpalan, itulah <b>mode collapse</b>: generator menemukan beberapa tempat yang sulit dibantah D lalu berhenti menjelajah. Perhatikan "mode terjangkau" — bisa naik dan turun.</li>
+        <li>Naikkan <b>Learning rate D</b> dan turunkan <b>G</b>: D menang terlalu mudah dan gradient untuk G jadi datar. Coba juga loss <i>minimax asli</i> — belajarnya jauh lebih lambat di awal, itulah sebabnya loss non-saturating diciptakan.</li>
+        <li>Ganti data ke <b>moons</b> — GAN tak butuh rumus densitas, hanya sampel.</li>
+      </ol></div>
+    </div>
+  </div>
+</div>
+
+<!-- ============ 2 · GAME ============ -->
+<div class="section" id="sec-game">
+  <div class="intro">
+    <svg viewBox="0 0 200 120" xmlns="http://www.w3.org/2000/svg">
+      <path d="M10 100 Q 40 20 70 100" fill="#D3E5E2" stroke="#2F7069" stroke-width="1.5"/>
+      <path d="M50 100 Q 90 10 130 100" fill="#F3DBD5" stroke="#A8392A" stroke-width="1.5" opacity=".8"/>
+      <path d="M8 90 C 40 90, 60 70, 100 50 S 170 20 195 20" stroke="#2D2D2D" stroke-width="1.5" fill="none"/>
+      <line x1="8" y1="55" x2="195" y2="55" stroke="#6E6259" stroke-dasharray="3 3"/>
+      <text x="196" y="52" text-anchor="end" font-family="SF Mono,monospace" font-size="8" fill="#6E6259">D = 0.5</text>
+    </svg>
+    <div class="txt">
+      <h3><span data-lang="en">The best possible discriminator has a formula</span><span data-lang="id">Diskriminator terbaik punya rumus</span></h3>
+      <p data-lang="en">If you could train D perfectly against a fixed generator, it would output <b>D*(x) = p<sub>data</sub>(x) / (p<sub>data</sub>(x) + p<sub>g</sub>(x))</b> — "what fraction of the density here is real". Plug that into the game and the generator is secretly minimising the <b>Jensen–Shannon divergence</b> between the two distributions. Move the generator's bell curve by hand and watch D* and the divergence react.</p>
+      <p data-lang="id">Jika D bisa dilatih sempurna melawan generator tetap, keluarannya adalah <b>D*(x) = p<sub>data</sub>(x) / (p<sub>data</sub>(x) + p<sub>g</sub>(x))</b> — "berapa bagian densitas di sini yang asli". Masukkan ke dalam permainan, dan generator ternyata diam-diam meminimalkan <b>divergensi Jensen–Shannon</b> antara kedua distribusi. Geser lonceng generator dengan tangan dan lihat D* serta divergensinya bereaksi.</p>
+    </div>
+  </div>
+  <div class="layout">
+    <div class="panel">
+      <h2><span data-lang="en">Real data p<sub>data</sub></span><span data-lang="id">Data asli p<sub>data</sub></span></h2>
+      <div class="pillrow" id="mgData"></div>
+      <h2><span data-lang="en">Generator p<sub>g</sub> = N(μ, σ²)</span><span data-lang="id">Generator p<sub>g</sub> = N(μ, σ²)</span></h2>
+      <div class="field"><label>μ<span class="val" id="mgMv"></span></label><input type="range" id="mgM" min="-4" max="4" step="0.05" value="-1"></div>
+      <div class="field"><label>σ<span class="val" id="mgSv"></span></label><input type="range" id="mgS" min="0.2" max="3" step="0.05" value="0.6"></div>
+      <h2><span data-lang="en">Shortcuts</span><span data-lang="id">Jalan pintas</span></h2>
+      <button class="btn block" id="mgBest"><span data-lang="en">Best single bell (min JS)</span><span data-lang="id">Lonceng tunggal terbaik (min JS)</span></button>
+      <div class="row2"><button class="btn" id="mgL"><span data-lang="en">left mode</span><span data-lang="id">mode kiri</span></button><button class="btn" id="mgR"><span data-lang="en">right mode</span><span data-lang="id">mode kanan</span></button></div>
+      <p class="hint" data-lang="en">Only the two-bump data shows the interesting effect: one bell cannot match two bumps.</p>
+      <p class="hint" data-lang="id">Hanya data dua-bukit yang menunjukkan efek menarik: satu lonceng tak bisa mencocokkan dua bukit.</p>
+    </div>
+    <div>
+      <div class="stats">
+        <div class="stat hi"><div class="label"><span data-lang="en">JS divergence (bits)</span><span data-lang="id">divergensi JS (bit)</span></div><div class="value" id="mgJS">–</div></div>
+        <div class="stat"><div class="label"><span data-lang="en">G's loss at optimal D</span><span data-lang="id">loss G pada D optimal</span></div><div class="value" id="mgV">–</div></div>
+      </div>
+      <div class="box"><h2><span data-lang="en">Densities and the optimal discriminator</span><span data-lang="id">Densitas dan diskriminator optimal</span></h2><canvas id="mgCv" class="wide" style="aspect-ratio:2.6/1"></canvas>
+        <div class="legend"><span><span class="swatch" style="background:#2F7069"></span>p<sub>data</sub></span><span><span class="swatch" style="background:#A8392A"></span>p<sub>g</sub></span><span><span class="swatch" style="background:#2D2D2D"></span>D*(x) <span data-lang="en">(right axis, 0–1)</span><span data-lang="id">(sumbu kanan, 0–1)</span></span></div></div>
+      <div class="box"><h2><span data-lang="en">What the numbers mean</span><span data-lang="id">Arti angka-angka itu</span></h2>
+        <div class="formula">$$V(G,D^*)=-\log 4+2\,\mathrm{JS}(p_{\text{data}}\Vert p_g)$$</div>
+        <p data-lang="en">JS = 0 only when the two curves coincide, where D* = ½ everywhere. JS is at most 1 bit — when the curves don't overlap at all D* is exactly 0 or 1 and gives <i>no useful slope</i> to the generator; this is the vanishing-gradient trouble with perfect discriminators.</p>
+        <p data-lang="id">JS = 0 hanya saat kedua kurva berimpit, dengan D* = ½ di mana-mana. JS maksimal 1 bit — saat kurva sama sekali tak tumpang tindih, D* tepat 0 atau 1 dan <i>tak memberi kemiringan berguna</i> bagi generator; inilah masalah gradient lenyap pada diskriminator yang sempurna.</p></div>
+      <div class="try" data-lang="en"><b>Try this</b><ol>
+        <li>On <b>one bump</b>, drag μ and σ until JS ≈ 0: the red curve hides under the teal and D* flattens to 0.5. That's a solved game.</li>
+        <li>Switch to <b>two bumps</b> and press <b>Best single bell</b>. It can only compromise — a wide bell straddling both, with plenty of mass in the empty middle.</li>
+        <li>Now press <b>left mode</b>: a narrow bell sitting on one bump. JS is not much worse — a generator can be "mostly happy" while ignoring half the data. That is mode collapse in one picture.</li>
+      </ol></div>
+      <div class="try" data-lang="id"><b>Coba ini</b><ol>
+        <li>Pada <b>satu bukit</b>, geser μ dan σ sampai JS ≈ 0: kurva merah bersembunyi di bawah yang teal dan D* mendatar di 0.5. Itulah permainan yang selesai.</li>
+        <li>Ganti ke <b>dua bukit</b> lalu tekan <b>Lonceng tunggal terbaik</b>. Ia hanya bisa berkompromi — lonceng lebar yang mengangkangi keduanya, dengan banyak massa di tengah yang kosong.</li>
+        <li>Sekarang tekan <b>mode kiri</b>: lonceng sempit di atas satu bukit. JS tak jauh lebih buruk — generator bisa "cukup puas" sambil mengabaikan separuh data. Itulah mode collapse dalam satu gambar.</li>
+      </ol></div>
+    </div>
+  </div>
+</div>
+
+<!-- ============ 3 · MAP ============ -->
+<div class="section" id="sec-map">
+  <div class="box">
+    <h2><span data-lang="en">GAN at a glance</span><span data-lang="id">GAN sekilas</span></h2>
+    <div style="overflow-x:auto"><table class="cmp">
+      <tr><th></th><th><span data-lang="en">Idea</span><span data-lang="id">Gagasan</span></th><th><span data-lang="en">Catch</span><span data-lang="id">Kendala</span></th></tr>
+      <tr><td><span data-lang="en">Generator</span><span data-lang="id">Generator</span></td><td><span data-lang="en">noise in, sample out — one forward pass</span><span data-lang="id">derau masuk, sampel keluar — satu forward pass</span></td><td><span data-lang="en">no density: you can sample but not ask "how likely is x?"</span><span data-lang="id">tanpa densitas: bisa menyampel tetapi tak bisa bertanya "seberapa mungkin x?"</span></td></tr>
+      <tr><td><span data-lang="en">Discriminator</span><span data-lang="id">Diskriminator</span></td><td><span data-lang="en">a learned, ever-improving loss function</span><span data-lang="id">fungsi loss yang dipelajari dan terus membaik</span></td><td><span data-lang="en">the target moves — training can oscillate or diverge</span><span data-lang="id">targetnya bergerak — pelatihan bisa berosilasi atau divergen</span></td></tr>
+      <tr><td><span data-lang="en">Strength</span><span data-lang="id">Kekuatan</span></td><td><span data-lang="en">sharp samples, very fast generation</span><span data-lang="id">sampel tajam, generasi sangat cepat</span></td><td><span data-lang="en">mode collapse, hard to evaluate</span><span data-lang="id">mode collapse, sulit dievaluasi</span></td></tr>
+    </table></div>
+  </div>
+  <div class="box">
+    <h2><span data-lang="en">Where this connects</span><span data-lang="id">Ke mana ini terhubung</span></h2>
+    <p data-lang="en"><b>← <a href="autoencoder.html">Autoencoders &amp; VAE</a>.</b> The VAE gets a stable likelihood-based loss at the price of blur; the GAN trades that stability for sharpness.</p><p data-lang="id"><b>← <a href="autoencoder.html">Autoencoder &amp; VAE</a>.</b> VAE mendapat loss berbasis likelihood yang stabil dengan harga gambar kabur; GAN menukar kestabilan itu dengan ketajaman.</p>
+    <p data-lang="en"><b>→ <a href="diffusion.html">Diffusion</a>.</b> Diffusion models mostly replaced GANs for images: no adversary, a plain regression loss, far more stable training — at the cost of many sampling steps.</p><p data-lang="id"><b>→ <a href="diffusion.html">Difusi</a>.</b> Model difusi sebagian besar menggantikan GAN untuk gambar: tanpa lawan, loss regresi biasa, pelatihan jauh lebih stabil — dengan harga banyak langkah sampling.</p>
+  </div>
+  <div class="box"><h2><span data-lang="en">Check yourself</span><span data-lang="id">Uji dirimu</span></h2><div id="quizBox"></div></div>
+</div>
+
+
+<footer>
+  <span data-lang="en">Built for hands-on learning · every model, sampler and training step runs live in this page — no server, no GPU · part of the Interactive Playgrounds.</span><span data-lang="id">Dibuat untuk belajar langsung · setiap model, sampler, dan langkah pelatihan berjalan langsung di halaman ini — tanpa server, tanpa GPU · bagian dari Interactive Playgrounds.</span>
+</footer>
+
+</div>
+<script src="genai_lib.js"></script>
+<script>
+
+(function(){
+"use strict";
+const G=GenAI,$=G.$,T=G.T,C=G.col,MLP=G.MLP;
+const fmt=(v,d=2)=>isFinite(v)?v.toFixed(d).replace('-','−'):'–';
+const sig=x=>1/(1+Math.exp(-x));
+function setBtn(btn,r){ btn.textContent=r?T('⏸ Pause','⏸ Jeda'):T('▶ Train','▶ Latih'); }
+
+/* ================= TAB 1 : arena ================= */
+const R=3.5, rnd=G.rng(9), gs=G.gauss(rnd);
+const ringC=[]; for(let i=0;i<8;i++){ const a=i/8*2*Math.PI; ringC.push([2*Math.cos(a),2*Math.sin(a)]); }
+const DS={
+  ring:{label:'ring ×8',centers:ringC,sample(){ const c=ringC[Math.floor(rnd()*8)]; return [c[0]+.1*gs(),c[1]+.1*gs()]; }},
+  three:{label:T('3 clusters','3 kluster'),centers:[[-1.8,-1.2],[1.8,-1.2],[0,2]],sample(){ const c=this.centers[Math.floor(rnd()*3)]; return [c[0]+.18*gs(),c[1]+.18*gs()]; }},
+  moons:{label:'moons',centers:null,sample(){ const a=Math.PI*rnd(); return rnd()<.5?[1.6*Math.cos(a)-.8+.08*gs(),1.6*Math.sin(a)-.6+.08*gs()]:[.8-1.6*Math.cos(a)+.08*gs(),.6-1.6*Math.sin(a)+.08*gs()]; }},
+  gauss:{label:'gaussian',centers:null,sample(){ return [1+.5*gs(),.5+.5*gs()]; }}
+};
+const gan={ds:'ring',G:null,D:null,it:0,running:false,lD:[],lG:[],vr:[],vf:[],emaD:NaN,emaG:NaN,emaR:NaN,emaF:NaN,zs:[],cover:NaN};
+for(let i=0;i<250;i++) gan.zs.push(Float64Array.of(gs(),gs()));
+function initGan(){
+  gan.G=new MLP([2,16,16,2],['lrelu','lrelu','linear'],G.rng(11)); gan.D=new MLP([2,16,16,1],['lrelu','lrelu','linear'],G.rng(12));
+  gan.it=0; gan.lD=[]; gan.lG=[]; gan.vr=[]; gan.vf=[]; gan.emaD=gan.emaG=gan.emaR=gan.emaF=NaN; gan.cover=NaN;
+}
+const lr=id=>Math.pow(10,+$(id).value);
+function ema(k,v){ gan[k]=isNaN(gan[k])?v:.97*gan[k]+.03*v; }
+function ganStep(){
+  const B=32, Dn=gan.D, Gn=gan.G, ds=DS[gan.ds], K=+$('gnK').value;
+  let ld=0,lg=0,pr=0,pf=0;
+  for(let k=0;k<K;k++){
+    ld=0;pr=0;pf=0;
+    for(let s=0;s<B;s++){
+      const o=Dn.forward(Float64Array.from(ds.sample()))[0]; Dn.backward([sig(o)-1]); ld+=Math.log1p(Math.exp(-o)); pr+=sig(o);
+      const f=Float64Array.from(Gn.forward(Float64Array.of(gs(),gs()))), o2=Dn.forward(f)[0]; Dn.backward([sig(o2)]); ld+=Math.log1p(Math.exp(o2)); pf+=sig(o2);
+    }
+    Dn.step(lr('gnLD'),1/B);
+  }
+  const ns=$('gnLoss').value==='ns';
+  for(let s=0;s<B;s++){
+    const f=Float64Array.from(Gn.forward(Float64Array.of(gs(),gs()))), o=Dn.forward(f)[0];
+    lg+=ns?Math.log1p(Math.exp(-o)):Math.log(Math.max(1e-9,1-sig(o)));
+    Gn.backward(Dn.backward([ns?sig(o)-1:-sig(o)],false));
+  }
+  Gn.step(lr('gnLG'),1/B);
+  gan.it++; ema('emaD',ld/B); ema('emaG',lg/B); ema('emaR',pr/B); ema('emaF',pf/B);
+  if(gan.it%10===0){ gan.lD.push(gan.emaD); gan.lG.push(gan.emaG); gan.vr.push(gan.emaR); gan.vf.push(gan.emaF); }
+}
+const off=document.createElement('canvas'); const GR=44; off.width=off.height=GR;
+function drawGan(){
+  const f=G.fit($('gnCv')), ctx=f.ctx, W=f.w, H=f.h; ctx.clearRect(0,0,W,H);
+  const oc=off.getContext('2d'), im=oc.createImageData(GR,GR);
+  for(let j=0;j<GR;j++)for(let i=0;i<GR;i++){ const x=-R+(i+.5)*2*R/GR, y=R-(j+.5)*2*R/GR, p=sig(gan.D.forward(Float64Array.of(x,y))[0]), c=G.div((p-.5)*2), k=4*(j*GR+i); im.data[k]=c[0]; im.data[k+1]=c[1]; im.data[k+2]=c[2]; im.data[k+3]=255; }
+  oc.putImageData(im,0,0); ctx.imageSmoothingEnabled=true; ctx.drawImage(off,0,0,W,H);
+  const X=x=>W/2+x/R*W/2, Y=y=>H/2-y/R*H/2, ds=DS[gan.ds];
+  const r2=G.rng(77), g2=G.gauss(r2); const saved=rnd;
+  ctx.fillStyle='rgba(47,112,105,.9)'; const rr=G.rng(3);
+  for(let i=0;i<300;i++){ const a=DSsample(gan.ds,rr); ctx.beginPath(); ctx.arc(X(a[0]),Y(a[1]),2.2,0,6.3); ctx.fill(); }
+  const fk=gan.zs.map(z=>Array.from(gan.G.forward(z)));
+  ctx.fillStyle='rgba(168,57,42,.95)'; ctx.strokeStyle='#fff'; ctx.lineWidth=.8;
+  fk.forEach(p=>{ ctx.beginPath(); ctx.arc(X(p[0]),Y(p[1]),3,0,6.3); ctx.fill(); ctx.stroke(); });
+  if(ds.centers){ const cnt=ds.centers.map(()=>0); fk.forEach(p=>{ let bi=0,bd=1e9; ds.centers.forEach((c,i)=>{ const d=Math.hypot(p[0]-c[0],p[1]-c[1]); if(d<bd){bd=d;bi=i;} }); if(bd<.55) cnt[bi]++; });
+    const cv=cnt.filter(c=>c>=.3/ds.centers.length*fk.length*.5).length; $('gnMode').textContent=cv+' / '+ds.centers.length; } else $('gnMode').textContent='–';
+  $('gnIt').textContent=gan.it; $('gnDr').textContent=fmt(gan.emaR); $('gnDf').textContent=fmt(gan.emaF);
+  G.lineChart($('gnLossCv'),[{data:gan.lD,color:C.teal,label:'D'},{data:gan.lG,color:C.rust,label:'G'}],{labels:1,empty:T('press Train','tekan Latih')});
+  G.lineChart($('gnVerd'),[{data:gan.vr,color:C.teal,label:'D(real)'},{data:gan.vf,color:C.rust,label:'D(fake)'}],{min:0,max:1,labels:1,empty:T('press Train','tekan Latih')});
+}
+function DSsample(k,r){ return sampleFixed(k,r); }
+function sampleFixed(k,r){ const g=G.gauss(r);
+  if(k==='ring'){ const c=ringC[Math.floor(r()*8)]; return [c[0]+.1*g(),c[1]+.1*g()]; }
+  if(k==='three'){ const c=DS.three.centers[Math.floor(r()*3)]; return [c[0]+.18*g(),c[1]+.18*g()]; }
+  if(k==='moons'){ const a=Math.PI*r(); return r()<.5?[1.6*Math.cos(a)-.8+.08*g(),1.6*Math.sin(a)-.6+.08*g()]:[.8-1.6*Math.cos(a)+.08*g(),.6-1.6*Math.sin(a)+.08*g()]; }
+  return [1+.5*g(),.5+.5*g()];
+}
+(function(){
+  const row=$('gnData'); Object.keys(DS).forEach(k=>{ const b=document.createElement('button'); b.className='pill'+(k===gan.ds?' on':''); b.textContent=DS[k].label; b.onclick=()=>{ gan.ds=k; row.querySelectorAll('.pill').forEach(x=>x.classList.toggle('on',x===b)); initGan(); drawGan(); }; row.appendChild(b); });
+})();
+$('gnTrain').onclick=()=>{ gan.running=!gan.running; setBtn($('gnTrain'),gan.running); };
+$('gnStep').onclick=()=>{ ganStep(); drawGan(); };
+$('gnReset').onclick=()=>{ initGan(); drawGan(); };
+$('gnK').oninput=()=>$('gnKv').textContent=$('gnK').value;
+function lrLabels(){ $('gnLDv').textContent=lr('gnLD').toExponential(1); $('gnLGv').textContent=lr('gnLG').toExponential(1); }
+$('gnLD').oninput=lrLabels; $('gnLG').oninput=lrLabels;
+initGan();
+
+/* ================= TAB 2 : minimax 1-D ================= */
+const N1=(x,m,s)=>Math.exp(-.5*((x-m)/s)**2)/(s*Math.sqrt(2*Math.PI));
+const MD={uni:{label:T('one bump','satu bukit'),c:[[1,0,.9]]},bi:{label:T('two bumps','dua bukit'),c:[[.5,-2.2,.55],[.5,2.2,.55]]}};
+const mg={ds:'bi'}; const XS=[]; for(let i=0;i<400;i++) XS.push(-7+14*i/399); const DX=14/399;
+const pdOf=x=>MD[mg.ds].c.reduce((a,c)=>a+c[0]*N1(x,c[1],c[2]),0);
+function js(m,s){ let a=0; for(const x of XS){ const p=pdOf(x), q=N1(x,m,s), mm=.5*(p+q); if(p>1e-12) a+=.5*p*Math.log(p/mm)*DX; if(q>1e-12) a+=.5*q*Math.log(q/mm)*DX; } return a/Math.LN2; }
+function drawMG(){
+  const m=+$('mgM').value, s=+$('mgS').value; $('mgMv').textContent=fmt(m); $('mgSv').textContent=fmt(s);
+  const f=G.fit($('mgCv')), ctx=f.ctx, W=f.w, H=f.h, pl=10, pb=20; ctx.clearRect(0,0,W,H);
+  const X=x=>pl+(W-2*pl)*(x+7)/14, pd=XS.map(pdOf), pg=XS.map(x=>N1(x,m,s)), mx=Math.max(...pd,...pg)*1.1, Y=v=>H-pb-(H-pb-8)*v/mx, YD=v=>H-pb-(H-pb-8)*v;
+  ctx.strokeStyle=C.border; ctx.beginPath(); ctx.moveTo(pl,H-pb); ctx.lineTo(W-pl,H-pb); ctx.stroke();
+  [[pd,'47,112,105'],[pg,'168,57,42']].forEach(([a,c])=>{ ctx.beginPath(); ctx.moveTo(X(-7),H-pb); XS.forEach((x,i)=>ctx.lineTo(X(x),Y(a[i]))); ctx.lineTo(X(7),H-pb); ctx.closePath(); ctx.fillStyle='rgba('+c+',.28)'; ctx.fill(); ctx.strokeStyle='rgb('+c+')'; ctx.lineWidth=1.6; ctx.stroke(); });
+  ctx.setLineDash([4,4]); ctx.strokeStyle=C.soft; ctx.lineWidth=1; ctx.beginPath(); ctx.moveTo(pl,YD(.5)); ctx.lineTo(W-pl,YD(.5)); ctx.stroke(); ctx.setLineDash([]);
+  ctx.strokeStyle=C.ink; ctx.lineWidth=2; ctx.beginPath(); XS.forEach((x,i)=>{ const d=pd[i]/(pd[i]+pg[i]+1e-300); i?ctx.lineTo(X(x),YD(d)):ctx.moveTo(X(x),YD(d)); }); ctx.stroke();
+  ctx.fillStyle=C.soft; ctx.font=G.font; ctx.fillText('D*=1',W-pl-30,YD(1)+10); ctx.fillText('0.5',W-pl-22,YD(.5)-4); ctx.fillText('x',W/2,H-5);
+  const j=js(m,s); $('mgJS').textContent=fmt(j,3); $('mgV').textContent=fmt(-Math.log(4)+2*j*Math.LN2,3);
+}
+(function(){
+  const row=$('mgData'); Object.keys(MD).forEach(k=>{ const b=document.createElement('button'); b.className='pill'+(k===mg.ds?' on':''); b.textContent=MD[k].label; b.onclick=()=>{ mg.ds=k; row.querySelectorAll('.pill').forEach(x=>x.classList.toggle('on',x===b)); drawMG(); }; row.appendChild(b); });
+})();
+function setMG(m,s){ $('mgM').value=m; $('mgS').value=s; drawMG(); }
+$('mgM').oninput=drawMG; $('mgS').oninput=drawMG;
+$('mgBest').onclick=()=>{ let b=[0,1,9]; for(let m=-4;m<=4.001;m+=.1)for(let s=.2;s<=3.001;s+=.05){ const j=js(m,s); if(j<b[2]) b=[m,s,j]; } setMG(Math.round(b[0]*20)/20,Math.round(b[1]*20)/20); };
+$('mgL').onclick=()=>setMG(mg.ds==='bi'?-2.2:0,mg.ds==='bi'?.55:.9); $('mgR').onclick=()=>setMG(mg.ds==='bi'?2.2:0,mg.ds==='bi'?.55:.9);
+
+/* ================= quiz ================= */
+G.quiz('quizBox',[
+ {q:'What does the discriminator output?',o:['A new sample','The probability that its input is real','The generator\'s loss','A latent code'],a:1,e:'D(x) ∈ (0, 1): its belief that x came from the real data. The background colour in the arena is exactly this number.'},
+ {q:'The two networks reach a perfect equilibrium. What is D(x) everywhere?',o:['0','1','0.5 — it can no longer tell real from fake','undefined'],a:2,e:'If p_g = p_data then D* = p_data / (p_data + p_g) = ½: the best the discriminator can do is flip a coin.'},
+ {q:'What is mode collapse?',o:['D forgets how to train','G produces only a few of the data\'s modes, ignoring the rest','The data becomes one point','Loss reaches zero'],a:1,e:'G finds a few outputs that fool D and keeps producing them; nothing in the loss forces it to cover the whole distribution.'},
+ {q:'Why is the non-saturating generator loss used?',o:['It is cheaper to compute','Early on D wins easily, and log(1 − D(G(z))) has almost no gradient there; −log D(G(z)) does','It removes the discriminator','It guarantees no mode collapse'],a:1,e:'Same fixed point, much stronger gradient when the generator is still bad — try the toggle in tab 1.'},
+],[
+ {q:'Apa keluaran diskriminator?',o:['Sampel baru','Probabilitas bahwa inputnya asli','Loss generator','Kode laten'],a:1,e:'D(x) ∈ (0, 1): keyakinannya bahwa x berasal dari data asli. Warna latar di arena persis angka ini.'},
+ {q:'Kedua jaringan mencapai kesetimbangan sempurna. Berapa D(x) di mana-mana?',o:['0','1','0.5 — ia tak lagi bisa membedakan asli dari palsu','tak terdefinisi'],a:2,e:'Jika p_g = p_data maka D* = p_data / (p_data + p_g) = ½: yang terbaik bagi diskriminator hanyalah melempar koin.'},
+ {q:'Apa itu mode collapse?',o:['D lupa cara berlatih','G hanya menghasilkan sedikit mode data dan mengabaikan sisanya','Data menjadi satu titik','Loss mencapai nol'],a:1,e:'G menemukan beberapa keluaran yang mengelabui D dan terus memproduksinya; tak ada di loss yang memaksanya mencakup seluruh distribusi.'},
+ {q:'Kenapa loss generator non-saturating dipakai?',o:['Lebih murah dihitung','Di awal D menang mudah, dan log(1 − D(G(z))) nyaris tanpa gradient di sana; −log D(G(z)) punya','Ia menghapus diskriminator','Ia menjamin tak ada mode collapse'],a:1,e:'Titik tetap sama, tetapi gradient jauh lebih kuat saat generator masih buruk — coba tombol pilihan di tab 1.'},
+]);
+
+/* ================= loop ================= */
+G.tabs(n=>{ if(n==='arena') drawGan(); if(n==='game') drawMG(); });
+G.onLang(()=>{ setBtn($('gnTrain'),gan.running); DS.three.label=T('3 clusters','3 kluster'); MD.uni.label=T('one bump','satu bukit'); MD.bi.label=T('two bumps','dua bukit');
+  $('gnData').querySelectorAll('.pill').forEach((b,i)=>b.textContent=DS[Object.keys(DS)[i]].label); $('mgData').querySelectorAll('.pill').forEach((b,i)=>b.textContent=MD[Object.keys(MD)[i]].label);
+  if(G.active==='arena') drawGan(); if(G.active==='game') drawMG(); });
+function frame(){
+  if(!document.hidden && G.active==='arena' && gan.running){ const t0=performance.now(); let n=0; while(performance.now()-t0<14 && n++<30) ganStep(); drawGan(); }
+  requestAnimationFrame(frame);
+}
+G.initLang(); lrLabels(); setBtn($('gnTrain'),gan.running); $('gnKv').textContent=$('gnK').value; drawGan(); drawMG();
+window.addEventListener('resize',()=>{ if(G.active==='arena') drawGan(); if(G.active==='game') drawMG(); });
+requestAnimationFrame(frame);
+})();
+
+</script>
+</body>
+</html>
